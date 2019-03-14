@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <enum id="com.gitlab.valos.MangaScan.Sorting">
+        <value nick="a-z" value="0" />
+        <value nick="z-a" value="1" />
+        <value nick="last_added" value="2" />
+    </enum>
+    <schema path="/com/gitlab/valos/MangaScan/" id="com.gitlab.valos.MangaScan" gettext-domain="mangascan">
+        <key type="b" name="dark-theme">
+            <default>false</default>
+            <summary>Use dark GTK+ theme</summary>
+            <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
+        </key>
+        <key type="ai" name="window-size">
+            <default>[1050, 600]</default>
+            <summary>Window size</summary>
+            <description>Remember the window size.</description>
+        </key>
+        <key type="b" name="development-backup-mode">
+            <default>false</default>
+            <summary>Backup the database</summary>
+            <description>If an error occurs while saving the database, a backup can be found at ~/.cache/mangascan/backups</description>
+        </key>
+    </schema>
+</schemalist>

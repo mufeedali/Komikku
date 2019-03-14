@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+ <id>@APPID@</id>
+ <name>Manga Scan</name>
+ <launchable type="desktop-id">@APPID@.desktop</launchable>
+ <project_license>GPL-3.0</project_license>
+ <metadata_license></metadata_license>
+ <content_rating type="oars-1.1" />
+ <summary>An online / offline manga reader for Gnome</summary>
+ <description>
+	<p>An online / offline manga reader for Gnome developed with the aim of being used with Librem 5</p>
+ </description>
+ <releases>
+    <release version="0.0.0" date="2019-03-14">
+      <description>
+        <p>First usable version</p>
+        <ul>
+          <li>Add manga (only two servers)</li>
+          <li>Simple reader (next, prev, no zoom, no swipe, no preload)</li>
+        </ul>
+      </description>
+    </release>
+ </releases>
+ <categories>
+   <category>Sundry</category>
+ </categories>
+ <screenshots>
+ </screenshots>
+ <url type="homepage">https://gitlab.com/valos/MangaScan</url>
+ <updatecontact>vfebvre@easter-eggs.com</updatecontact>
+ <developer_name>Valéry Febvre</developer_name>
+</component>

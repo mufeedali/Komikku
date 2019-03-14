@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-13 16:22+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/add_dialog.ui:46
+msgid "Select a server"
+msgstr ""
+
+#: data/add_dialog.ui:54
+msgid "servers"
+msgstr ""
+
+#: data/add_dialog.ui:68
+msgid "search"
+msgstr ""
+
+#: data/add_dialog.ui:82
+msgid "title"
+msgstr ""
+
+#: data/add_dialog.ui:115 data/main_window.ui:177 data/main_window.ui:456
+msgid "manga"
+msgstr ""
+
+#: data/add_dialog.ui:205 data/main_window.ui:303
+msgid "Author"
+msgstr ""
+
+#: data/add_dialog.ui:232 data/main_window.ui:330
+msgid "Type"
+msgstr ""
+
+#: data/add_dialog.ui:259 data/main_window.ui:357
+msgid "Status"
+msgstr ""
+
+#: data/add_dialog.ui:286 data/main_window.ui:384
+msgid "Server"
+msgstr ""
+
+#: data/add_dialog.ui:313 data/main_window.ui:411
+msgid "Synopsis"
+msgstr ""
+
+#: data/shortcuts_overview.ui:14
+msgctxt "Shortcut window description"
+msgid "Application"
+msgstr ""
+
+#: data/shortcuts_overview.ui:18
+msgctxt "Shortcut window description"
+msgid "Add manga"
+msgstr ""
+
+#: data/shortcuts_overview.ui:25
+msgctxt "Shortcut window description"
+msgid "Open preferences"
+msgstr ""
+
+#. Title of the settings dialog
+#: data/settings_dialog.ui:16
+msgid "Settings"
+msgstr ""
+
+#: data/settings_dialog.ui:64
+msgid "General"
+msgstr ""
+
+#: data/settings_dialog.ui:113
+msgid "Dark Theme"
+msgstr ""
+
+#: data/settings_dialog.ui:130
+msgid "Use dark GTK+ theme"
+msgstr ""
+
+#: data/settings_dialog.ui:196
+msgid "Hide First Start Screen"
+msgstr ""
+
+#: data/settings_dialog.ui:213
+msgid "Reopen last opened safe"
+msgstr ""
+
+#. The umbrella sentence of the application on the first start screen
+#: data/main_window.ui:44 data/main_window.ui:145
+msgid "Manga Scan"
+msgstr ""
+
+#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
+#: data/main_window.ui:61
+msgid "An online / offline manga reader."
+msgstr ""
+
+#: data/main_window.ui:99
+msgid "Preferences"
+msgstr ""
+
+#: data/main_window.ui:113
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#. "Manga Scan" is the application name
+#: data/main_window.ui:127
+msgid "About"
+msgstr ""
+
+#: data/main_window.ui:166 data/main_window.ui:267
+msgid "library"
+msgstr ""
+
+#: data/main_window.ui:189 data/main_window.ui:479
+msgid "reader"
+msgstr ""
+
+#: mangascan/add_dialog.py:89
+#, python-brace-format
+msgid "{0} manga added"
+msgstr ""
+
+#: mangascan/add_dialog.py:170
+#, python-brace-format
+msgid "Search in {0}..."
+msgstr ""

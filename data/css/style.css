@@ -1,0 +1,6 @@
+/* Main window - manga page - chapters list */
+
+.listboxrow-chapter {
+    border-bottom: 1px solid #ccc;
+    padding: 16px;
+}

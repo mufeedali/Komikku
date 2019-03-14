@@ -1,0 +1,134 @@
+{
+    "app-id" : "com.gitlab.valos.MangaScanDevel",
+    "runtime" : "org.gnome.Platform",
+    "runtime-version" : "master",
+    "sdk" : "org.gnome.Sdk",
+    "tags" : [
+        "devel",
+        "development",
+        "nightly"
+    ],
+    "desktop-file-name-prefix" : "(Development) ",
+    "command" : "mangascan",
+    "finish-args" : [
+        "--share=ipc",
+        "--share=network",
+        "--socket=x11",
+        "--socket=wayland",
+        "--filesystem=home",
+        "--filesystem=xdg-run/dconf",
+        "--filesystem=~/.config/dconf:ro",
+        "--filesystem=xdg-run/gvfs",
+        "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+        "--talk-name=ca.desrt.dconf",
+        "--talk-name=org.gtk.vfs",
+        "--talk-name=org.gtk.vfs.*",
+        "--talk-name=org.freedesktop.Notifications"
+    ],
+    "modules" : [
+        {
+            "name" : "cfscrape",
+            "buildsystem" : "simple",
+            "build-commands" : [
+                "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} cfscrape"
+            ],
+            "sources" : [
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/62/00/ee1d7de624db8ba7090d1226aebefab96a2c71cd5cfa7629d6ad3f61b79e/urllib3-1.24.1-py2.py3-none-any.whl",
+                    "sha256" : "61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/14/2c/cd551d81dbe15200be1cf41cd03869a46fe7226e7450af7a6545bfc474c9/idna-2.8-py2.py3-none-any.whl",
+                    "sha256" : "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl",
+                    "sha256" : "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/9f/e0/accfc1b56b57e9750eba272e24c4dddeac86852c2bebd1236674d7887e8a/certifi-2018.11.29-py2.py3-none-any.whl",
+                    "sha256" : "993f830721089fef441cdfeb4b2c8c9df86f0c63239f06bd025a76a7daddb033"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/7d/e3/20f3d364d6c8e5d2353c72a67778eb189176f08e873c9900e10c0287b84b/requests-2.21.0-py2.py3-none-any.whl",
+                    "sha256" : "7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/88/15/f1ede66075340071e53d249b340e2e0989b454de09be2312aab18d286446/cfscrape-1.9.6-py3-none-any.whl",
+                    "sha256" : "8aba80eb002869577b2dc59edc158e73ad7cefc837abf39dbead5ca142a55e49"
+                }
+            ],
+            "modules" : [
+                {
+                    "name" : "node",
+                    "sources" : [
+                        {
+                            "type" : "archive",
+                            "url" : "https://github.com/nodejs/node/archive/v11.10.0.tar.gz",
+                            "sha256" : "ed2a5a7430cb67eaca3adf2e3455c75f2d0b4443af76f4e6fb74c4dcb9c30e9e"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name" : "beautifulsoup4",
+            "buildsystem" : "simple",
+            "build-commands" : [
+                "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} beautifulsoup4"
+            ],
+            "sources" : [
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/77/78/bca00cc9fa70bba1226ee70a42bf375c4e048fe69066a0d9b5e69bc2a79a/soupsieve-1.8-py2.py3-none-any.whl",
+                    "sha256" : "afa56bf14907bb09403e5d15fbed6275caa4174d36b975226e3b67a3bb6e2c4b"
+                },
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/1d/5d/3260694a59df0ec52f8b4883f5d23b130bc237602a1411fa670eae12351e/beautifulsoup4-4.7.1-py3-none-any.whl",
+                    "sha256" : "034740f6cb549b4e932ae1ab975581e6103ac8f942200a0e9759065984391858"
+                }
+            ]
+        },
+        {
+            "name" : "libhandy",
+            "buildsystem" : "meson",
+            "config-opts" : [
+                "-Dglade_catalog=disabled"
+            ],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "tag" : "v0.0.8",
+                    "url" : "https://source.puri.sm/Librem5/libhandy.git"
+                }
+            ]
+        },
+        {
+            "name" : "mangascan",
+            "buildsystem" : "meson",
+            "builddir" : true,
+            "config-opts" : [
+                "-Dprofile=development"
+            ],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://gitlab.com/valos/MangaScan.git"
+                }
+            ]
+        }
+    ],
+    "build-options" : {
+        "env" : {
+            "LANGUAGE" : "fr_FR.utf-8",
+            "LANG" : "fr_FR.utf-8"
+        }
+    }
+}
