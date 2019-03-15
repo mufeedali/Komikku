@@ -5,7 +5,6 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Notify
-from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
@@ -31,8 +30,8 @@ class AddDialog():
         self.stack = self.builder.get_object("stack")
 
         # Servers page
-        list_box = self.builder.get_object('servers_page_list_box')
-        list_box.connect("row-activated", self.on_server_clicked)
+        listbox = self.builder.get_object('servers_page_listbox')
+        listbox.connect("row-activated", self.on_server_clicked)
 
         for server in get_servers_list():
             row = Gtk.ListBoxRow()
@@ -59,16 +58,16 @@ class AddDialog():
             flag.set_from_pixbuf(pix)
             box.pack_start(flag, False, True, 0)
 
-            list_box.add(row)
+            listbox.add(row)
 
-        list_box.show_all()
+        listbox.show_all()
 
         # Search page
-        self.custom_title_search_page_search_entry = self.builder.get_object('custom_title_search_page_search_entry')
-        self.custom_title_search_page_search_entry.connect("activate", self.on_search_entry_activated)
+        self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
+        self.custom_title_search_page_searchentry.connect("activate", self.on_search_entry_activated)
 
-        self.search_page_list_box = self.builder.get_object('search_page_list_box')
-        self.search_page_list_box.connect("row-activated", self.on_manga_clicked)
+        self.search_page_listbox = self.builder.get_object('search_page_listbox')
+        self.search_page_listbox.connect("row-activated", self.on_manga_clicked)
 
         # Manga page
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
@@ -77,9 +76,12 @@ class AddDialog():
         self.show_page('servers')
 
     def clear_search(self):
-        self.custom_title_search_page_search_entry.set_text('')
-        for child in self.search_page_list_box.get_children():
-            self.search_page_list_box.remove(child)
+        self.custom_title_search_page_searchentry.set_text('')
+        self.clear_results()
+
+    def clear_results(self):
+        for child in self.search_page_listbox.get_children():
+            self.search_page_listbox.remove(child)
 
     def on_add_button_clicked(self, button):
         self.server.save_manga_data_and_cover(self.manga)
@@ -121,9 +123,6 @@ class AddDialog():
         term = entry.get_text().strip()
         if not term or self.search_lock:
             return
-        self.search_lock = True
-
-        self.clear_search()
 
         def run():
             result = self.server.search(term)
@@ -141,12 +140,15 @@ class AddDialog():
                 label.set_text(item['name'])
                 box.pack_start(label, True, True, 0)
 
-                self.search_page_list_box.add(row)
+                self.search_page_listbox.add(row)
 
-            self.search_page_list_box.show_all()
+            self.search_page_listbox.show_all()
             self.search_lock = False
 
             return False
+
+        self.search_lock = True
+        self.clear_results()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -166,7 +168,7 @@ class AddDialog():
 
     def show_page(self, name):
         if name == 'search':
-            self.custom_title_search_page_search_entry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
+            self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
             if self.page == 'servers':
                 self.clear_search()
         elif name == 'manga':
@@ -175,3 +177,6 @@ class AddDialog():
         self.custom_title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)
         self.page = name
+
+    def show_spinner(self):
+        self.viewport.add(self.builder.get_object('spinner_box'))
