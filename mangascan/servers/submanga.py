@@ -16,8 +16,6 @@ scan_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
 
 
 class Submanga(Server):
-    __server_name__ = server_name
-
     def __init__(self):
         pass
 
@@ -27,7 +25,7 @@ class Submanga(Server):
 
     @property
     def name(self):
-        return self.__server_name__
+        return server_name
 
     def get_manga_data(self, data):
         """

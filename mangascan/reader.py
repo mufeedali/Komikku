@@ -13,14 +13,13 @@ class Reader():
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
-        self.spinner_box = self.builder.get_object('spinner_box')
         self.image = Gtk.Image()
 
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
     def show_spinner(self):
         self.clear()
-        self.viewport.add(self.spinner_box)
+        self.viewport.add(self.builder.get_object('spinner_box'))
 
     def clear(self):
         for child in self.viewport.get_children():
