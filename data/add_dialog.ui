@@ -282,9 +282,10 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
+                                <property name="valign">start</property>
                                 <property name="label">type value</property>
-                                <property name="justify">fill</property>
-                                <property name="wrap">True</property>
+                                <property name="ellipsize">end</property>
+                                <property name="single_line_mode">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -396,6 +397,29 @@
           </packing>
         </child>
       </object>
+    </child>
+  </object>
+  <object class="GtkBox" id="spinner_box">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkSpinner">
+        <property name="width_request">50</property>
+        <property name="height_request">50</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="active">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
     </child>
   </object>
 </interface>

@@ -69,6 +69,9 @@ class AddDialog():
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
         self.search_page_listbox.connect("row-activated", self.on_manga_clicked)
 
+        self.search_page_container = self.search_page_listbox.get_parent()
+        self.spinner_box = self.builder.get_object('spinner_box')
+
         # Manga page
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
         self.builder.get_object('add_button').connect("clicked", self.on_add_button_clicked)
@@ -82,6 +85,10 @@ class AddDialog():
     def clear_results(self):
         for child in self.search_page_listbox.get_children():
             self.search_page_listbox.remove(child)
+
+    def hide_spinner(self):
+        self.search_page_container.remove(self.spinner_box)
+        self.search_page_container.add(self.search_page_listbox)
 
     def on_add_button_clicked(self, button):
         self.server.save_manga_data_and_cover(self.manga)
@@ -129,6 +136,8 @@ class AddDialog():
             GLib.idle_add(populate, result)
 
         def populate(result):
+            self.hide_spinner()
+
             for item in result:
                 print(item)
                 row = Gtk.ListBoxRow()
@@ -149,6 +158,7 @@ class AddDialog():
 
         self.search_lock = True
         self.clear_results()
+        self.show_spinner()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -179,4 +189,5 @@ class AddDialog():
         self.page = name
 
     def show_spinner(self):
-        self.viewport.add(self.builder.get_object('spinner_box'))
+        self.search_page_container.remove(self.search_page_listbox)
+        self.search_page_container.add(self.spinner_box)
