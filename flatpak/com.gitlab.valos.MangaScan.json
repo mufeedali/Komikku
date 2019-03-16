@@ -1,7 +1,7 @@
 {
     "app-id" : "com.gitlab.valos.MangaScanDevel",
     "runtime" : "org.gnome.Platform",
-    "runtime-version" : "master",
+    "runtime-version" : "3.30",
     "sdk" : "org.gnome.Sdk",
     "tags" : [
         "devel",
@@ -100,12 +100,16 @@
             "name" : "libhandy",
             "buildsystem" : "meson",
             "config-opts" : [
+                "-Dtests=false",
+                "-Dexamples=false",
+                "-Dgtk_doc=false",
+                "-Dvapi=false",
                 "-Dglade_catalog=disabled"
             ],
             "sources" : [
                 {
                     "type" : "git",
-                    "tag" : "v0.0.8",
+                    "tag" : "v0.0.9",
                     "url" : "https://source.puri.sm/Librem5/libhandy.git"
                 }
             ]
@@ -127,8 +131,8 @@
     ],
     "build-options" : {
         "env" : {
-            "LANGUAGE" : "fr_FR.utf-8",
-            "LANG" : "fr_FR.utf-8"
+            "LANG" : "fr_FR.utf-8",
+            "LANGUAGE" : "fr_FR.utf-8"
         }
     }
 }
