@@ -93,7 +93,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def create_library(self):
         root_path = os.path.join(str(Path.home()), 'MangaScan')
-        mangas = os.listdir(root_path)
+        mangas = os.listdir(root_path) if os.path.exists(root_path) else None
 
         if not mangas:
             self.create_first_start_screen()
