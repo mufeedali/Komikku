@@ -6,6 +6,8 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
+from mangascan.model import Chapter
+
 
 class Reader():
     def __init__(self, builder):
@@ -17,17 +19,13 @@ class Reader():
 
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
-    def show_spinner(self):
-        self.clear()
-        self.viewport.add(self.builder.get_object('spinner_box'))
-
     def clear(self):
         for child in self.viewport.get_children():
             self.viewport.remove(child)
 
     def init(self, manga, chapter_id):
         self.manga = manga
-        self.chapter = self.manga.data['chapters'][chapter_id]
+        self.chapter_id = chapter_id
         self.page_index = None
 
         # TODO: open last view page
@@ -38,11 +36,11 @@ class Reader():
             sw_width = self.scrolledwindow.get_allocated_width()
 
             if event.x > sw_width / 2:
-                index = self.page_index + 1
-            else:
                 index = self.page_index - 1
+            else:
+                index = self.page_index + 1
 
-            if index >= 0 and index < len(self.chapter['pages']):
+            if index >= 0 and index < len(self.chapter.pages):
                 print(index)
                 self.render_page(index)
             else:
@@ -51,9 +49,10 @@ class Reader():
 
     def render_page(self, index):
         def get_page_image_path():
-            print(self.chapter['id'])
-            self.manga.update_chapter_data(self.chapter['id'])
-            page_path = self.manga.get_chapter_page(self.chapter['id'], self.page_index)
+            self.chapter = Chapter(self.chapter_id, self.manga)
+            self.chapter.update()
+            page_path = self.chapter.get_page(self.page_index)
+
             GLib.idle_add(set_page_image, page_path)
 
         def set_page_image(page_path):
@@ -93,3 +92,7 @@ class Reader():
         thread = threading.Thread(target=get_page_image_path)
         thread.daemon = True
         thread.start()
+
+    def show_spinner(self):
+        self.clear()
+        self.viewport.add(self.builder.get_object('spinner_box'))

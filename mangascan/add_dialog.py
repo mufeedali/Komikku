@@ -8,6 +8,7 @@ from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
+from mangascan.model import Manga
 from mangascan.servers import get_servers_list
 
 
@@ -35,7 +36,7 @@ class AddDialog():
 
         for server in get_servers_list():
             row = Gtk.ListBoxRow()
-            row.data = server
+            row.server_data = server
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
 
@@ -91,9 +92,9 @@ class AddDialog():
         self.search_page_container.add(self.search_page_listbox)
 
     def on_add_button_clicked(self, button):
-        self.server.save_manga_data_and_cover(self.manga)
+        Manga.new(self.manga_data, self.server)
 
-        notification = Notify.Notification.new(_('{0} manga added').format(self.manga['name']))
+        notification = Notify.Notification.new(_('{0} manga added').format(self.manga_data['name']))
         notification.set_timeout(Notify.EXPIRES_NEVER)
         notification.show()
 
@@ -108,21 +109,20 @@ class AddDialog():
             self.show_page('search')
 
     def on_manga_clicked(self, listbox, row):
-        self.manga = self.server.get_manga_data(row.data)
-        print(self.manga)
+        self.manga_data = self.server.get_manga_data(row.manga_data)
 
-        cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga['id']), None)
+        cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
         pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
 
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-        self.builder.get_object('author_value_label').set_text(self.manga['author'] or '-')
-        self.builder.get_object('type_value_label').set_text(self.manga['type'] or '-')
-        self.builder.get_object('status_value_label').set_text(self.manga['status'] or '-')
+        self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
+        self.builder.get_object('types_value_label').set_text(self.manga_data['types'] or '-')
+        self.builder.get_object('status_value_label').set_text(self.manga_data['status'] or '-')
         self.builder.get_object('server_value_label').set_text(
-            '{0} ({1} chapters)'.format(self.server.name, len(self.manga['chapters'])))
+            '{0} ({1} chapters)'.format(self.server.name, len(self.manga_data['chapters'])))
 
-        self.builder.get_object('synopsis_value_label').set_text(self.manga['synopsis'] or '-')
+        self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
 
         self.show_page('manga')
 
@@ -139,9 +139,8 @@ class AddDialog():
             self.hide_spinner()
 
             for item in result:
-                print(item)
                 row = Gtk.ListBoxRow()
-                row.data = item
+                row.manga_data = item
                 box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
                 row.add(box)
                 label = Gtk.Label(xalign=0, margin=6)
@@ -165,8 +164,7 @@ class AddDialog():
         thread.start()
 
     def on_server_clicked(self, listbox, row):
-        self.server = row.data['class']()
-        print(self.server)
+        self.server = row.server_data['class']()
         self.show_page('search')
 
     def open(self, action, param):
@@ -182,7 +180,7 @@ class AddDialog():
             if self.page == 'servers':
                 self.clear_search()
         elif name == 'manga':
-            self.custom_title_manga_page_label.set_text(self.manga['name'])
+            self.custom_title_manga_page_label.set_text(self.manga_data['name'])
 
         self.custom_title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)

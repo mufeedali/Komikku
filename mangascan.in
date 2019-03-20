@@ -15,6 +15,7 @@ pkgdatadir = '@DATA_DIR@'
 extensiondir = '@EXTENSION_DIR@'
 
 from mangascan.application import Application
+from mangascan.model import init_db
 
 def install_excepthook():
     """ Make sure we exit when an unhandled exception occurs. """
@@ -44,6 +45,8 @@ if __name__ == "__main__":
     	Application.application_id = 'com.gitlab.valos.MangaScanDevel'
     else:
     	Application.development_mode = False
+
+    init_db()
 
     app = Application()
 

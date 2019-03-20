@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 from gi.repository import Gio
 from gi.repository import Gdk
 from gi.repository import Gtk
@@ -9,7 +6,8 @@ from gi.repository.GdkPixbuf import Pixbuf
 from mangascan.add_dialog import AddDialog
 import mangascan.config_manager
 from mangascan.settings_dialog import SettingsDialog
-from mangascan.manga import Manga
+from mangascan.model import create_connection
+from mangascan.model import Manga
 from mangascan.reader import Reader
 
 
@@ -22,6 +20,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.logging_manager = kwargs['application'].get_logger()
 
         self.builder = Gtk.Builder()
@@ -92,10 +91,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.add(self.first_start_grid)
 
     def create_library(self):
-        root_path = os.path.join(str(Path.home()), 'MangaScan')
-        mangas = os.listdir(root_path) if os.path.exists(root_path) else None
+        db_conn = create_connection()
+        nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
+        db_conn.close()
 
-        if not mangas:
+        if nb_mangas == 0:
             self.create_first_start_screen()
             return
         elif self.first_start_grid:
@@ -150,7 +150,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.show_page('reader')
 
     def on_delete_button_clicked(self, action, param):
-        print('delete manga')
         self.manga.delete()
         self.populate_library()
         self.show_page('library')
@@ -166,21 +165,16 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_manga_clicked(self, flowbox, child):
         self.manga = Manga(child.get_children()[0].manga_id)
 
-        user_home_path = str(Path.home())
-        root_path = os.path.join(user_home_path, 'MangaScan')
-        manga_path = os.path.join(root_path, self.manga.id)
-        cover_path = os.path.join(manga_path, 'cover.jpg')
-
-        pixbuf = Pixbuf.new_from_file_at_scale(cover_path, 180, -1, True)
+        pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-        self.builder.get_object('author_value_label').set_text(self.manga.data['author'] or '-')
-        self.builder.get_object('type_value_label').set_text(self.manga.data['type'] or '-')
-        self.builder.get_object('status_value_label').set_text(self.manga.data['status'] or '-')
+        self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
+        self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
+        self.builder.get_object('status_value_label').set_text(self.manga.status or '-')
         self.builder.get_object('server_value_label').set_text(
-            '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.data['chapters'])))
+            '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
 
-        self.builder.get_object('synopsis_value_label').set_text(self.manga.data['synopsis'] or '-')
+        self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
 
         listbox = self.builder.get_object('chapters_listbox')
         listbox.connect("row-activated", self.on_chapter_clicked)
@@ -188,17 +182,17 @@ class MainWindow(Gtk.ApplicationWindow):
         for child in listbox.get_children():
             child.destroy()
 
-        for id, chapter_data in self.manga.data['chapters'].items():
+        for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('listboxrow-chapter')
-            row.chapter_id = id
+            row.chapter_id = chapter.id
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
 
             # Chapter title
             label = Gtk.Label(xalign=0)
             label.set_line_wrap(True)
-            label.set_text(chapter_data['title'])
+            label.set_text(chapter.title)
             box.pack_start(label, True, True, 0)
 
             listbox.add(row)
@@ -220,8 +214,8 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.present()
 
     def populate_library(self):
-        root_path = os.path.join(str(Path.home()), 'MangaScan')
-        mangas = os.listdir(root_path)
+        db_conn = create_connection()
+        query = db_conn.execute('SELECT * FROM mangas')
 
         flowbox = self.builder.get_object('library_page_flowbox')
 
@@ -229,17 +223,18 @@ class MainWindow(Gtk.ApplicationWindow):
             flowbox.remove(child)
             child.destroy()
 
-        for manga_id in mangas:
-            cover_path = os.path.join(root_path, manga_id, 'cover.jpg')
-            if os.path.exists(cover_path):
+        for row in query:
+            manga = Manga(row['id'])
+            if manga.cover_path:
                 cover_image = Gtk.Image()
-                pixbuf = Pixbuf.new_from_file_at_scale(cover_path, 180, -1, True)
+                pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_path, 180, -1, True)
                 cover_image.set_from_pixbuf(pixbuf)
-                cover_image.manga_id = manga_id
+                cover_image.manga_id = manga.id
 
                 flowbox.insert(cover_image, -1)
 
         flowbox.show_all()
+        db_conn.close()
 
     def responsive_listener(self, window):
         if self.get_allocation().width < 700:
@@ -262,7 +257,7 @@ class MainWindow(Gtk.ApplicationWindow):
             self.headerbar.set_title('Manga Scan')
             self.builder.get_object('menubutton').set_popover(self.builder.get_object('menubutton_popover'))
         elif name == 'manga':
-            self.headerbar.set_title(self.manga.data['name'])
+            self.headerbar.set_title(self.manga.name)
             self.builder.get_object('menubutton').set_popover(self.builder.get_object('manga_page_menubutton_popover'))
         elif name == 'reader':
             pass

@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 
-from mangascan.servers import Server
-
 server_id = 'submanga'
 server_name = 'Submanga'
 server_country = 'es'
@@ -15,7 +13,7 @@ chapter_url = base_url + '/manga/{0}/{1}'
 scan_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
 
 
-class Submanga(Server):
+class Submanga():
     def __init__(self):
         pass
 
@@ -38,7 +36,7 @@ class Submanga(Server):
 
         data.update(dict(
             author=None,
-            type=None,
+            types=None,
             status=None,
             synopsis=None,
             server_id=self.id,
@@ -55,7 +53,7 @@ class Submanga(Server):
             if label.startswith('Autor'):
                 data['author'] = value
             elif label.startswith('Categorías'):
-                data['type'] = ', '.join([t.strip() for t in value.split(',')])
+                data['types'] = ', '.join([t.strip() for t in value.split(',')])
             elif label.startswith('Estado'):
                 data['status'] = value
             elif label.startswith('Resumen'):

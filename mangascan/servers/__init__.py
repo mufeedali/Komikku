@@ -1,9 +1,7 @@
 import glob
 import importlib
 import inspect
-import json
 import os
-from pathlib import Path
 
 
 def get_servers_list():
@@ -36,27 +34,3 @@ def get_servers_list():
         sl.append(info)
 
     return sl
-
-
-class Server():
-    def get_manga_cover(self):
-        raise NotImplementedError()
-
-    def get_manga_data(self):
-        raise NotImplementedError()
-
-    def save_manga_data_and_cover(self, data):
-        resources_path = os.path.join(str(Path.home()), 'MangaScan', data['id'])
-
-        if not os.path.exists(resources_path):
-            os.makedirs(resources_path)
-
-        with open(os.path.join(resources_path, 'data.json'), 'w') as fp:
-            json.dump(data, fp)
-
-        cover_data = self.get_manga_cover_image(data['id'])
-        with open(os.path.join(resources_path, 'cover.jpg'), 'wb') as fp:
-            fp.write(cover_data)
-
-    def search(self):
-        raise NotImplementedError
