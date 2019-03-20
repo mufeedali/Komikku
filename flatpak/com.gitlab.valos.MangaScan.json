@@ -60,8 +60,8 @@
                 },
                 {
                     "type" : "file",
-                    "url" : "https://files.pythonhosted.org/packages/88/15/f1ede66075340071e53d249b340e2e0989b454de09be2312aab18d286446/cfscrape-1.9.6-py3-none-any.whl",
-                    "sha256" : "8aba80eb002869577b2dc59edc158e73ad7cefc837abf39dbead5ca142a55e49"
+                    "url" : "https://files.pythonhosted.org/packages/4a/72/079479b9eafacf98e01055dc6547cca17d13a2e8012897087b6e0cb1ab92/cfscrape-1.9.7-py3-none-any.whl",
+                    "sha256" : "0794aa78e586a3af578ff0869f95779bd1702adcdbc9369e8dc470435caaf020"
                 }
             ],
             "modules" : [
