@@ -25,22 +25,27 @@ class Submanga():
     def name(self):
         return server_name
 
-    def get_manga_data(self, data):
+    def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
+
+        Inital data should contain manga's slug and name (provided by search)
         """
-        r = requests.get(manga_url.format(data['id']))
+        assert 'slug' in initial_data and 'name' in initial_data, 'Missing slug and/or name in initial data'
+
+        r = requests.get(manga_url.format(initial_data['slug']))
         # print(r.text)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
+        data = initial_data.copy()
         data.update(dict(
             author=None,
             types=None,
             status=None,
             synopsis=None,
+            chapters=[],
             server_id=self.id,
-            chapters=dict(),
         ))
 
         # Details
@@ -65,25 +70,25 @@ class Submanga():
             tds = element.find_all('td')
 
             td_link = tds[0]
-            id = td_link.a.get('href').split('/')[-1]
+            slug = td_link.a.get('href').split('/')[-1]
 
             td_date = tds[1]
             td_date.i.extract()
             td_date.span.extract()
 
-            data['chapters'][id] = dict(
-                id=id,
+            data['chapters'].append(dict(
+                slug=slug,
                 date=td_date.text.strip(),
                 title=td_link.a.text.strip(),
-            )
+            ))
 
         return data
 
-    def get_manga_chapter_data(self, manga_id, chapter_id):
+    def get_manga_chapter_data(self, manga_slug, chapter_slug):
         """
         Returns manga chapter data by scraping chapter HTML page content
         """
-        url = chapter_url.format(manga_id, chapter_id)
+        url = chapter_url.format(manga_slug, chapter_slug)
         r = requests.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -99,20 +104,20 @@ class Submanga():
 
         return data
 
-    def get_manga_chapter_page_image(self, manga_id, chapter_id, page):
+    def get_manga_chapter_page_image(self, manga_slug, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """
-        url = scan_url.format(manga_id, chapter_id, page)
+        url = scan_url.format(manga_slug, chapter_slug, page)
         r = requests.get(url)
 
         return r.content if r.status_code == 200 else None
 
-    def get_manga_cover_image(self, manga_id):
+    def get_manga_cover_image(self, manga_slug):
         """
         Returns manga cover (image) content
         """
-        r = requests.get(cover_url.format(manga_id))
+        r = requests.get(cover_url.format(manga_slug))
 
         return r.content
 
@@ -121,11 +126,11 @@ class Submanga():
 
         # Returned data for each manga:
         # value: name of the manga
-        # data: id of the manga
+        # data: slug of the manga
         results = r.json()['suggestions']
 
         for result in results:
-            result['id'] = result.pop('data')
+            result['slug'] = result.pop('data')
             result['name'] = result.pop('value')
 
         return results
