@@ -66,7 +66,7 @@ class Submanga():
 
         # Chapters
         elements = soup.find('div', class_='capitulos-list').find('table').find_all('tr')
-        for element in elements:
+        for element in reversed(elements):
             tds = element.find_all('td')
 
             td_link = tds[0]

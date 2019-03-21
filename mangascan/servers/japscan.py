@@ -75,7 +75,7 @@ class Japscan():
 
         # Chapters
         elements = soup.find('div', id='chapters_list').find_all('div', class_='chapters_list')
-        for element in elements:
+        for element in reversed(elements):
             slug = element.a.get('href').split('/')[3]
             if element.a.span:
                 element.a.span.extract()
