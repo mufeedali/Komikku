@@ -59,56 +59,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.application.set_accels_for_action("app.settings", ["<Control>p"])
         self.application.set_accels_for_action("app.add", ["<Control>plus"])
 
-    def apply_theme(self):
-        gtk_settings = Gtk.Settings.get_default()
-
-        gtk_settings.set_property("gtk-application-prefer-dark-theme", mangascan.config_manager.get_dark_theme())
-
     def assemble_window(self):
         window_size = mangascan.config_manager.get_window_size()
         self.set_default_size(window_size[0], window_size[1])
 
-        self.create_titlebar()
-        self.create_library()
-
-        self.connect("delete-event", self.on_application_quit)
-        self.connect("check-resize", self.responsive_listener)
-
-        self.custom_css()
-        self.apply_theme()
-        self.show_all()
-
-    def change_layout(self):
-        pass
-
-    def create_first_start_screen(self):
-        self.first_start_grid = self.builder.get_object("first_start_grid")
-
-        pix = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/logo.png", 256, 256, True)
-        app_logo = self.builder.get_object("app_logo")
-        app_logo.set_from_pixbuf(pix)
-
-        self.add(self.first_start_grid)
-
-    def create_library(self):
-        db_conn = create_connection()
-        nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
-        db_conn.close()
-
-        if nb_mangas == 0:
-            self.create_first_start_screen()
-            return
-        elif self.first_start_grid:
-            self.first_start_grid.destroy()
-
-        flowbox = self.builder.get_object('library_page_flowbox')
-        flowbox.connect("child-activated", self.on_manga_clicked)
-
-        self.populate_library()
-
-        self.add(self.stack)
-
-    def create_titlebar(self):
+        # Titlebar
         self.titlebar = self.builder.get_object("titlebar")
         self.headerbar = self.builder.get_object('headerbar')
 
@@ -118,11 +73,23 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.set_titlebar(self.titlebar)
 
-        if Gio.Application.get_default().development_mode is True:
-            context = self.get_style_context()
-            context.add_class("devel")
+        # Fisrt start grid
+        self.first_start_grid = self.builder.get_object("first_start_grid")
+        pix = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/logo.png", 256, 256, True)
+        app_logo = self.builder.get_object("app_logo")
+        app_logo.set_from_pixbuf(pix)
 
-    def custom_css(self):
+        # Library
+        self.library_flowbox = self.builder.get_object('library_page_flowbox')
+        self.library_flowbox.connect("child-activated", self.on_manga_clicked)
+
+        self.populate_library()
+
+        # Window
+        self.connect("delete-event", self.on_application_quit)
+        self.connect("check-resize", self.responsive_listener)
+
+        # Custom CSS
         screen = Gdk.Screen.get_default()
 
         css_provider = Gtk.CssProvider()
@@ -131,6 +98,17 @@ class MainWindow(Gtk.ApplicationWindow):
 
         context = Gtk.StyleContext()
         context.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        if Gio.Application.get_default().development_mode is True:
+            context.add_class("devel")
+
+        # Apply theme
+        gtk_settings = Gtk.Settings.get_default()
+        gtk_settings.set_property("gtk-application-prefer-dark-theme", mangascan.config_manager.get_dark_theme())
+
+        self.show_all()
+
+    def change_layout(self):
+        pass
 
     def on_about_menu_clicked(self, action, param):
         builder = Gtk.Builder()
@@ -215,15 +193,22 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def populate_library(self):
         db_conn = create_connection()
-        query = db_conn.execute('SELECT * FROM mangas')
+        mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC, last_update DESC').fetchall()
 
-        flowbox = self.builder.get_object('library_page_flowbox')
+        if self.first_start_grid.is_ancestor(self):
+            self.remove(self.first_start_grid)
+        else:
+            self.remove(self.stack)
 
-        for child in flowbox.get_children():
-            flowbox.remove(child)
+        if len(mangas_rows) == 0:
+            self.add(self.first_start_grid)
+            return
+
+        for child in self.library_flowbox.get_children():
+            self.library_flowbox.remove(child)
             child.destroy()
 
-        for row in query:
+        for row in mangas_rows:
             manga = Manga(row['id'])
             if manga.cover_path:
                 cover_image = Gtk.Image()
@@ -231,10 +216,13 @@ class MainWindow(Gtk.ApplicationWindow):
                 cover_image.set_from_pixbuf(pixbuf)
                 cover_image.manga_id = manga.id
 
-                flowbox.insert(cover_image, -1)
+                self.library_flowbox.insert(cover_image, -1)
 
-        flowbox.show_all()
         db_conn.close()
+
+        self.library_flowbox.show_all()
+
+        self.add(self.stack)
 
     def responsive_listener(self, window):
         if self.get_allocation().width < 700:
