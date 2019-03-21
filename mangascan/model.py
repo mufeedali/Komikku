@@ -1,3 +1,4 @@
+import datetime
 import importlib
 import os
 from pathlib import Path
@@ -39,18 +40,21 @@ def init_db():
         types text,
         synopsis text,
         status text,
+        last_read timestamp,
+        last_update timestamp,
         UNIQUE (slug, server_id)
     );"""
 
     sql_create_chapters_table = """CREATE TABLE IF NOT EXISTS chapters (
         id integer PRIMARY KEY,
         slug text NOT NULL,
-        manga_id integer NOT NULL,
+        manga_id integer REFERENCES mangas(id) ON DELETE CASCADE,
         title text NOT NULL,
         pages text,
         date text,
-        UNIQUE (slug, manga_id),
-        FOREIGN KEY (manga_id) REFERENCES mangas (id)
+        rank integer,
+        last_page_read_index integer,
+        UNIQUE (slug, manga_id)
     );"""
 
     db_conn = create_connection()
@@ -74,7 +78,7 @@ class Manga(object):
             for key in row.keys():
                 setattr(self, key, row[key])
 
-            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ?', (id,)).fetchall()
+            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (id,)).fetchall()
             db_conn.close()
 
             self.chapters = []
@@ -108,6 +112,9 @@ class Manga(object):
 
     def delete(self):
         db_conn = create_connection()
+        # Enable integrity constraint
+        db_conn.execute('PRAGMA foreign_keys = ON')
+
         with db_conn:
             db_conn.execute('DELETE FROM mangas WHERE id = ?', (self.id, ))
 
@@ -124,15 +131,15 @@ class Manga(object):
         db_conn = create_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO mangas (slug, server_id, name, author, types, synopsis, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.server_id, self.name, self.author, self.types, self.synopsis, self.status)
+                'INSERT INTO mangas (slug, server_id, name, author, types, synopsis, status, last_update) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (self.slug, self.server_id, self.name, self.author, self.types, self.synopsis, self.status, datetime.datetime.now())
             )
             manga_id = cursor.lastrowid
         db_conn.close()
 
         self.chapters = []
-        for chapter_data in chapters:
-            self.chapters.append(Chapter.new(chapter_data, manga_id))
+        for rank, chapter_data in enumerate(chapters):
+            self.chapters.append(Chapter.new(chapter_data, rank, manga_id))
 
         if not os.path.exists(self.resources_path):
             os.makedirs(self.resources_path)
@@ -143,12 +150,26 @@ class Manga(object):
             with open(cover_path, 'wb') as fp:
                 fp.write(cover_data)
 
+    def update(self, data):
+        """
+        Updates manga
+
+        :param data: dictionary of fields to update
+        """
+        for key in data.keys():
+            setattr(self, key, data[key])
+
+        db_conn = create_connection()
+        with db_conn:
+            db_conn.execute(
+                'UPDATE mangas SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
+                tuple(data.values()) + (self.id,)
+            )
+        db_conn.close()
+
 
 class Chapter(object):
     def __init__(self, id=None, manga=None):
-        # self.db_conn = sqlite3.connect(db_path)
-        # self.db_conn.row_factory = sqlite3.Row
-
         if id:
             db_conn = create_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
@@ -161,9 +182,9 @@ class Chapter(object):
                 self.manga = manga
 
     @classmethod
-    def new(cls, data, manga_id):
+    def new(cls, data, rank, manga_id):
         c = cls()
-        c._save(data, manga_id)
+        c._save(data, rank, manga_id)
 
         return c
 
@@ -188,7 +209,7 @@ class Chapter(object):
         else:
             return None
 
-    def _save(self, data, manga_id):
+    def _save(self, data, rank, manga_id):
         self.manga_id = manga_id
 
         for key in data.keys():
@@ -197,19 +218,33 @@ class Chapter(object):
         db_conn = create_connection()
         with db_conn:
             db_conn.execute(
-                'INSERT INTO chapters (slug, manga_id, title, pages, date) VALUES (?, ?, ?, ?, ?)',
-                (self.slug, self.manga_id, self.title, None, self.date)
+                'INSERT INTO chapters (slug, manga_id, title, pages, date, rank, last_page_read_index) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (self.slug, self.manga_id, self.title, None, self.date, rank, 0)
             )
         db_conn.close()
 
-    def update(self):
-        if self.pages:
-            return
+    def update(self, data=None):
+        """
+        Updates chapter
 
-        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
-        self.pages = ','.join(data['pages'])
+        :param data: dictionary of fields to update
+
+        If data is None, fetches and save data available in chapter's HTML page on server
+        """
+        if data is None:
+            if self.pages:
+                return
+
+            data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
+            data['pages'] = ','.join(data['pages'])
+
+        for key in data.keys():
+            setattr(self, key, data[key])
 
         db_conn = create_connection()
         with db_conn:
-            db_conn.execute('UPDATE chapters SET pages = ? WHERE id = ?', (self.pages, self.id))
+            db_conn.execute(
+                'UPDATE chapters SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
+                tuple(data.values()) + (self.id,)
+            )
         db_conn.close()

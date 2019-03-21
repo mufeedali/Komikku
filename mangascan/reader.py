@@ -1,3 +1,4 @@
+import datetime
 import threading
 
 from gi.repository import Gdk
@@ -24,12 +25,12 @@ class Reader():
             self.viewport.remove(child)
 
     def init(self, manga, chapter_id):
-        self.manga = manga
-        self.chapter_id = chapter_id
+        self.chapter = Chapter(chapter_id, manga)
         self.page_index = None
 
-        # TODO: open last view page
-        self.render_page(0)
+        manga.update(dict(last_read=datetime.datetime.now()))
+
+        self.render_page(self.chapter.last_page_read_index)
 
     def on_button_press(self, widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
@@ -49,7 +50,6 @@ class Reader():
 
     def render_page(self, index):
         def get_page_image_path():
-            self.chapter = Chapter(self.chapter_id, self.manga)
             self.chapter.update()
             page_path = self.chapter.get_page(self.page_index)
 
@@ -86,6 +86,7 @@ class Reader():
             return False
 
         self.page_index = index
+        self.chapter.update(dict(last_page_read_index=index))
 
         self.show_spinner()
 

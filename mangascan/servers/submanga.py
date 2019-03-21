@@ -87,6 +87,8 @@ class Submanga():
     def get_manga_chapter_data(self, manga_slug, chapter_slug):
         """
         Returns manga chapter data by scraping chapter HTML page content
+
+        Currently, only pages (list of images filenames) are expected.
         """
         url = chapter_url.format(manga_slug, chapter_slug)
         r = requests.get(url)
