@@ -123,7 +123,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.save_window_size()
 
     def on_chapter_clicked(self, listbox, row):
-        self.reader.init(self.manga, row.chapter_id)
+        self.reader.init(row.chapter)
 
         self.show_page('reader')
 

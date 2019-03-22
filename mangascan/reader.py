@@ -24,11 +24,10 @@ class Reader():
         for child in self.viewport.get_children():
             self.viewport.remove(child)
 
-    def init(self, manga, chapter_id):
-        self.chapter = Chapter(chapter_id, manga)
-        self.page_index = None
+    def init(self, chapter):
+        self.chapter = chapter
 
-        manga.update(dict(last_read=datetime.datetime.now()))
+        chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
         self.render_page(self.chapter.last_page_read_index)
 
@@ -42,7 +41,6 @@ class Reader():
                 index = self.page_index + 1
 
             if index >= 0 and index < len(self.chapter.pages):
-                print(index)
                 self.render_page(index)
             else:
                 # TODO: next or prev chapter
