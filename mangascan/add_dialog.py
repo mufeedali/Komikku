@@ -92,13 +92,13 @@ class AddDialog():
         self.search_page_container.add(self.search_page_listbox)
 
     def on_add_button_clicked(self, button):
-        Manga.new(self.manga_data, self.server)
+        manga = Manga.new(self.manga_data, self.server)
 
         notification = Notify.Notification.new(_('{0} manga added').format(self.manga_data['name']))
         notification.set_timeout(Notify.EXPIRES_NEVER)
         notification.show()
 
-        self.window.populate_library()
+        self.window.on_manga_added(manga)
 
     def on_back_button_clicked(self, button):
         if self.page == 'servers':

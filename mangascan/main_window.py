@@ -6,7 +6,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from mangascan.add_dialog import AddDialog
 import mangascan.config_manager
 from mangascan.settings_dialog import SettingsDialog
-from mangascan.model import create_connection
+from mangascan.model import create_db_connection
 from mangascan.model import Manga
 from mangascan.reader import Reader
 
@@ -38,7 +38,7 @@ class MainWindow(Gtk.ApplicationWindow):
         add_action.connect("activate", self.on_left_button_clicked)
 
         delete_action = Gio.SimpleAction.new("delete", None)
-        delete_action.connect("activate", self.on_delete_button_clicked)
+        delete_action.connect("activate", self.on_delete_menu_clicked)
 
         settings_action = Gio.SimpleAction.new("settings", None)
         settings_action.connect("activate", self.on_settings_menu_clicked)
@@ -82,6 +82,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # Library
         self.library_flowbox = self.builder.get_object('library_page_flowbox')
         self.library_flowbox.connect("child-activated", self.on_manga_clicked)
+        self.library_flowbox.set_sort_func(self.sort_library)
 
         self.populate_library_page()
 
@@ -110,6 +111,15 @@ class MainWindow(Gtk.ApplicationWindow):
     def change_layout(self):
         pass
 
+    def insert_manga_into_library_flowbox(self, manga, position=-1):
+        cover_image = Gtk.Image()
+        pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_path, 180, -1, True)
+        cover_image.set_from_pixbuf(pixbuf)
+        cover_image.manga = manga
+        cover_image.show()
+
+        self.library_flowbox.insert(cover_image, position)
+
     def on_about_menu_clicked(self, action, param):
         builder = Gtk.Builder()
         builder.add_from_resource("/com/gitlab/valos/MangaScan/about_dialog.ui")
@@ -127,23 +137,56 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.show_page('reader')
 
-    def on_delete_button_clicked(self, action, param):
-        self.manga.delete()
-        self.populate_library()
+    def on_delete_menu_clicked(self, action, param):
+        db_conn = create_db_connection()
+        nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
+        db_conn.close()
+
+        if nb_mangas == 1:
+            self.manga.delete()
+
+            # Library is now empty
+            self.remove(self.stack)
+            self.populate_library_page()
+        else:
+            # Remove manga cover in library flowbox
+            for child in self.library_flowbox.get_children():
+                if child.get_children()[0].manga == self.manga:
+                    child.destroy()
+                    break
+
+            self.manga.delete()
+
         self.show_page('library')
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
             AddDialog(self).open(action, param)
         elif self.page == 'manga':
-            self.populate_library_page()
+            # Invalidate sort to trigger library flowbox sort function
+            self.library_flowbox.invalidate_sort()
             self.show_page('library')
         elif self.page == 'reader':
             self.populate_manga_page()
             self.show_page('manga')
 
+    def on_manga_added(self, manga):
+        """
+        Called from 'Add dialog' when user clicks on + button
+        """
+        db_conn = create_db_connection()
+        nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
+        db_conn.close()
+
+        if nb_mangas == 1:
+            # Library was previously empty
+            self.remove(self.first_start_grid)
+            self.populate_library_page()
+        else:
+            self.insert_manga_into_library_flowbox(manga)
+
     def on_manga_clicked(self, flowbox, child):
-        self.manga = Manga(child.get_children()[0].manga_id)
+        self.manga = child.get_children()[0].manga
 
         self.populate_manga_page()
 
@@ -162,37 +205,28 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.present()
 
     def populate_library_page(self):
-        db_conn = create_connection()
-        mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC, last_update DESC').fetchall()
-
-        if self.first_start_grid.is_ancestor(self):
-            self.remove(self.first_start_grid)
-        else:
-            self.remove(self.stack)
+        db_conn = create_db_connection()
+        mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
         if len(mangas_rows) == 0:
+            # Display first start message
             self.add(self.first_start_grid)
             return
 
+        self.add(self.stack)
+
+        # Clear library flowbox
         for child in self.library_flowbox.get_children():
             self.library_flowbox.remove(child)
             child.destroy()
 
+        # Populate flowbox with mangas covers
         for row in mangas_rows:
-            manga = Manga(row['id'])
-            if manga.cover_path:
-                cover_image = Gtk.Image()
-                pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_path, 180, -1, True)
-                cover_image.set_from_pixbuf(pixbuf)
-                cover_image.manga_id = manga.id
-
-                self.library_flowbox.insert(cover_image, -1)
+            self.insert_manga_into_library_flowbox(Manga(row['id']))
 
         db_conn.close()
 
         self.library_flowbox.show_all()
-
-        self.add(self.stack)
 
     def populate_manga_page(self):
         pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
@@ -264,3 +298,21 @@ class MainWindow(Gtk.ApplicationWindow):
         self.left_button_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)
         self.page = name
+
+    def sort_library(self, child1, child2):
+        manga1 = child1.get_children()[0].manga
+        manga2 = child2.get_children()[0].manga
+
+        # TODO: improve me
+        if manga1.last_read is not None and manga2.last_read is not None:
+            if manga1.last_read > manga2.last_read:
+                return -1
+            elif manga1.last_read < manga2.last_read:
+                return 1
+            else:
+                return 0
+
+        if manga1.last_read:
+            return -1
+        else:
+            return 1

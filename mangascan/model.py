@@ -9,8 +9,8 @@ user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
 
 
-def create_connection():
-    con = sqlite3.connect(db_path)
+def create_db_connection():
+    con = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
     if con is None:
         print("Error: Can not create the database connection.")
         return None
@@ -57,7 +57,7 @@ def init_db():
         UNIQUE (slug, manga_id)
     );"""
 
-    db_conn = create_connection()
+    db_conn = create_db_connection()
     if db_conn is not None:
         create_table(db_conn, sql_create_mangas_table)
         create_table(db_conn, sql_create_chapters_table)
@@ -73,7 +73,7 @@ class Manga(object):
             self.server = server
 
         if id:
-            db_conn = create_connection()
+            db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
             for key in row.keys():
                 setattr(self, key, row[key])
@@ -111,7 +111,7 @@ class Manga(object):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.slug)
 
     def delete(self):
-        db_conn = create_connection()
+        db_conn = create_db_connection()
         # Enable integrity constraint
         db_conn.execute('PRAGMA foreign_keys = ON')
 
@@ -123,27 +123,36 @@ class Manga(object):
         db_conn.close()
 
     def _save(self, data):
+        # Fill data with internal data or not yet scraped values
+        data.update(dict(
+            last_read=None,
+            last_update=None,
+        ))
+
         chapters = data.pop('chapters')
 
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_connection()
+        db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO mangas (slug, server_id, name, author, types, synopsis, status, last_update) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.server_id, self.name, self.author, self.types, self.synopsis, self.status, datetime.datetime.now())
+                'INSERT INTO mangas (slug, server_id, name, author, types, synopsis, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (self.slug, self.server_id, self.name, self.author, self.types, self.synopsis, self.status)
             )
-            manga_id = cursor.lastrowid
+            self.id = cursor.lastrowid
         db_conn.close()
 
         self.chapters = []
         for rank, chapter_data in enumerate(chapters):
-            self.chapters.append(Chapter.new(chapter_data, rank, manga_id))
+            chapter = Chapter.new(chapter_data, rank, self.id)
+            chapter.manga = self
+            self.chapters.append(chapter)
 
         if not os.path.exists(self.resources_path):
             os.makedirs(self.resources_path)
 
+        # Save cover image file
         cover_path = os.path.join(self.resources_path, 'cover.jpg')
         if not os.path.exists(cover_path):
             cover_data = self.server.get_manga_cover_image(self.slug)
@@ -159,7 +168,7 @@ class Manga(object):
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_connection()
+        db_conn = create_db_connection()
         with db_conn:
             db_conn.execute(
                 'UPDATE mangas SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
@@ -171,7 +180,7 @@ class Manga(object):
 class Chapter(object):
     def __init__(self, id=None, manga=None):
         if id:
-            db_conn = create_connection()
+            db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
             db_conn.close()
 
@@ -210,17 +219,25 @@ class Chapter(object):
             return None
 
     def _save(self, data, rank, manga_id):
+        # Fill data with internal data or not yet scraped values
+        data.update(dict(
+            pages=None,  # later scraped value
+            last_page_read_index=0,
+            rank=rank,
+        ))
+
         self.manga_id = manga_id
 
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_connection()
+        db_conn = create_db_connection()
         with db_conn:
-            db_conn.execute(
+            cursor = db_conn.execute(
                 'INSERT INTO chapters (slug, manga_id, title, pages, date, rank, last_page_read_index) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 (self.slug, self.manga_id, self.title, None, self.date, rank, 0)
             )
+            self.id = cursor.lastrowid
         db_conn.close()
 
     def update(self, data=None):
@@ -241,7 +258,7 @@ class Chapter(object):
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_connection()
+        db_conn = create_db_connection()
         with db_conn:
             db_conn.execute(
                 'UPDATE chapters SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
