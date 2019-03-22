@@ -83,7 +83,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.library_flowbox = self.builder.get_object('library_page_flowbox')
         self.library_flowbox.connect("child-activated", self.on_manga_clicked)
 
-        self.populate_library()
+        self.populate_library_page()
 
         # Window
         self.connect("delete-event", self.on_application_quit)
@@ -136,46 +136,16 @@ class MainWindow(Gtk.ApplicationWindow):
         if self.page == 'library':
             AddDialog(self).open(action, param)
         elif self.page == 'manga':
+            self.populate_library_page()
             self.show_page('library')
         elif self.page == 'reader':
+            self.populate_manga_page()
             self.show_page('manga')
 
     def on_manga_clicked(self, flowbox, child):
         self.manga = Manga(child.get_children()[0].manga_id)
 
-        pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
-        self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-
-        self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
-        self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
-        self.builder.get_object('status_value_label').set_text(self.manga.status or '-')
-        self.builder.get_object('server_value_label').set_text(
-            '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
-
-        self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
-
-        listbox = self.builder.get_object('chapters_listbox')
-        listbox.connect("row-activated", self.on_chapter_clicked)
-
-        for child in listbox.get_children():
-            child.destroy()
-
-        for chapter in self.manga.chapters:
-            row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('listboxrow-chapter')
-            row.chapter_id = chapter.id
-            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-            row.add(box)
-
-            # Chapter title
-            label = Gtk.Label(xalign=0)
-            label.set_line_wrap(True)
-            label.set_text(chapter.title)
-            box.pack_start(label, True, True, 0)
-
-            listbox.add(row)
-
-        listbox.show_all()
+        self.populate_manga_page()
 
         self.show_page('manga')
 
@@ -191,7 +161,7 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.set_transient_for(self)
         shortcuts_overview.present()
 
-    def populate_library(self):
+    def populate_library_page(self):
         db_conn = create_connection()
         mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC, last_update DESC').fetchall()
 
@@ -223,6 +193,47 @@ class MainWindow(Gtk.ApplicationWindow):
         self.library_flowbox.show_all()
 
         self.add(self.stack)
+
+    def populate_manga_page(self):
+        pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
+        self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
+
+        self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
+        self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
+        self.builder.get_object('status_value_label').set_text(self.manga.status or '-')
+        self.builder.get_object('server_value_label').set_text(
+            '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
+
+        self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
+
+        listbox = self.builder.get_object('chapters_listbox')
+        listbox.connect("row-activated", self.on_chapter_clicked)
+
+        for child in listbox.get_children():
+            child.destroy()
+
+        for chapter in self.manga.chapters:
+            row = Gtk.ListBoxRow()
+            row.get_style_context().add_class('listboxrow-chapter')
+            row.chapter = chapter
+            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            row.add(box)
+
+            # Chapter title
+            label = Gtk.Label(xalign=0)
+            label.set_line_wrap(True)
+            label.set_text(chapter.title)
+            box.pack_start(label, True, True, 0)
+
+            # Nb read / Nb pages
+            label = Gtk.Label(xalign=0)
+            if chapter.pages is not None:
+                label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages.split(','))))
+            box.pack_start(label, True, True, 0)
+
+            listbox.add(row)
+
+        listbox.show_all()
 
     def responsive_listener(self, window):
         if self.get_allocation().width < 700:
