@@ -12,12 +12,15 @@ cover_url = base_url + '/imgs/mangas/{0}.jpg'
 chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
 scan_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
 
+session = None
+
 
 class Japscan():
     __server_name__ = server_name
 
     def __init__(self):
-        self.session = cfscrape.create_scraper()
+        global session
+        session = cfscrape.create_scraper()
 
     @property
     def id(self):
@@ -35,7 +38,7 @@ class Japscan():
         """
         assert 'slug' in initial_data and 'name' in initial_data, 'Missing slug and/or name in initial data'
 
-        r = self.session.get(manga_url.format(initial_data['slug']))
+        r = session.get(manga_url.format(initial_data['slug']))
         # print(r.text)
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -95,7 +98,7 @@ class Japscan():
         Currently, only pages (list of images filenames) are expected.
         """
         url = chapter_url.format(manga_slug, chapter_slug)
-        r = self.session.get(url)
+        r = session.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
         # print(r.text)
@@ -118,7 +121,7 @@ class Japscan():
         chapter_slug = chapter_slug.capitalize()
 
         url = scan_url.format(manga_slug, chapter_slug, page)
-        r = self.session.get(url)
+        r = session.get(url)
 
         return r.content if r.status_code == 200 else None
 
@@ -127,12 +130,12 @@ class Japscan():
         Returns manga cover (image) content
         """
         manga_slug = '-'.join(w.capitalize() for w in manga_slug.split('-'))
-        r = self.session.get(cover_url.format(manga_slug))
+        r = session.get(cover_url.format(manga_slug))
 
         return r.content
 
     def search(self, term):
-        r = self.session.post(search_url, data=dict(search=term))
+        r = session.post(search_url, data=dict(search=term))
 
         # Returned data for each manga:
         # name:  name of the manga
