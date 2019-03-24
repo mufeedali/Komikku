@@ -8,6 +8,7 @@ from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
+from mangascan.model import create_db_connection
 from mangascan.model import Manga
 from mangascan.servers import get_servers_list
 
@@ -16,12 +17,15 @@ class AddDialog():
     server = None
     page = None
     manga = None
+    manga_data = None
     search_lock = False
 
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
         self.builder.add_from_resource("/com/gitlab/valos/MangaScan/add_dialog.ui")
+
+        self.dialog = self.builder.get_object("search_dialog")
 
         # Header bar
         self.headerbar = self.builder.get_object('headerbar')
@@ -75,7 +79,10 @@ class AddDialog():
 
         # Manga page
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
-        self.builder.get_object('add_button').connect("clicked", self.on_add_button_clicked)
+        self.add_button = self.builder.get_object('add_button')
+        self.add_button.connect("clicked", self.on_add_button_clicked)
+        self.read_button = self.builder.get_object('read_button')
+        self.read_button.connect("clicked", self.on_read_button_clicked)
 
         self.show_page('servers')
 
@@ -92,13 +99,28 @@ class AddDialog():
         self.search_page_container.add(self.search_page_listbox)
 
     def on_add_button_clicked(self, button):
-        manga = Manga.new(self.manga_data, self.server)
+        def run():
+            self.manga = Manga.new(self.manga_data, self.server)
+            GLib.idle_add(complete)
 
-        notification = Notify.Notification.new(_('{0} manga added').format(self.manga_data['name']))
-        notification.set_timeout(Notify.EXPIRES_NEVER)
-        notification.show()
+        def complete():
+            notification = Notify.Notification.new(_('{0} manga added').format(self.manga.name))
+            notification.set_timeout(Notify.EXPIRES_NEVER)
+            notification.show()
 
-        self.window.on_manga_added(manga)
+            self.window.on_manga_added(self.manga)
+
+            self.add_button.set_sensitive(True)
+            self.add_button.hide()
+            self.read_button.show()
+
+            return False
+
+        self.add_button.set_sensitive(False)
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
 
     def on_back_button_clicked(self, button):
         if self.page == 'servers':
@@ -111,6 +133,17 @@ class AddDialog():
     def on_manga_clicked(self, listbox, row):
         self.manga_data = self.server.get_manga_data(row.manga_data)
 
+        # Check if manga is already in library
+        db_conn = create_db_connection()
+        row = db_conn.execute(
+            'SELECT * FROM mangas WHERE slug = ? AND server_id = ?',
+            (self.manga_data['slug'], self.manga_data['server_id'])
+        ).fetchone()
+        db_conn.close()
+
+        self.manga = Manga(row['id'], self.server) if row else None
+
+        # Populate manga card
         cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
         pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
 
@@ -126,6 +159,10 @@ class AddDialog():
 
         self.show_page('manga')
 
+    def on_read_button_clicked(self, button):
+        self.dialog.close()
+        self.window.read_manga(self.manga)
+
     def on_search_entry_activated(self, entry):
         term = entry.get_text().strip()
         if not term or self.search_lock:
@@ -133,9 +170,9 @@ class AddDialog():
 
         def run():
             result = self.server.search(term)
-            GLib.idle_add(populate, result)
+            GLib.idle_add(complete, result)
 
-        def populate(result):
+        def complete(result):
             self.hide_spinner()
 
             for item in result:
@@ -168,8 +205,6 @@ class AddDialog():
         self.show_page('search')
 
     def open(self, action, param):
-        self.dialog = self.builder.get_object("search_dialog")
-
         self.dialog.set_modal(True)
         self.dialog.set_transient_for(self.window)
         self.dialog.present()
@@ -181,6 +216,13 @@ class AddDialog():
                 self.clear_search()
         elif name == 'manga':
             self.custom_title_manga_page_label.set_text(self.manga_data['name'])
+
+            if self.manga:
+                self.read_button.show()
+                self.add_button.hide()
+            else:
+                self.add_button.show()
+                self.read_button.hide()
 
         self.custom_title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)

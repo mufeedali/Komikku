@@ -269,6 +269,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
         listbox.show_all()
 
+    def read_manga(self, manga):
+        self.manga = manga
+        self.populate_manga_page()
+        self.show_page('manga')
+
     def responsive_listener(self, window):
         if self.get_allocation().width < 700:
             if self.mobile_width is True:
