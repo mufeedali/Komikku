@@ -61,13 +61,12 @@ class Reader():
             pixbuf = Pixbuf.new_from_file(page_path)
 
             sw_width = self.scrolledwindow.get_allocated_width()
-
-            sw_height = self.scrolledwindow.get_allocated_height()
+            width = pixbuf.get_width()
             height = pixbuf.get_height()
 
             pixbuf = pixbuf.scale_simple(
                 sw_width,
-                height / (height / sw_height),
+                height / (width / sw_width),
                 InterpType.BILINEAR
             )
             self.image.set_from_pixbuf(pixbuf)
