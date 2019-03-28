@@ -1,4 +1,3 @@
-import datetime
 import importlib
 import os
 from pathlib import Path
@@ -7,6 +6,19 @@ import shutil
 
 user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
+
+
+def adapt_stringlist(l):
+    return ','.join(l)
+
+
+def convert_stringlist(s):
+    # s is a byte string
+    return s.decode().split(',')
+
+
+sqlite3.register_adapter(list, adapt_stringlist)
+sqlite3.register_converter('stringlist', convert_stringlist)
 
 
 def create_db_connection():
@@ -50,7 +62,7 @@ def init_db():
         slug text NOT NULL,
         manga_id integer REFERENCES mangas(id) ON DELETE CASCADE,
         title text NOT NULL,
-        pages text,
+        pages stringlist,
         date text,
         rank integer,
         last_page_read_index integer,
@@ -72,7 +84,7 @@ class Manga(object):
         if server:
             self.server = server
 
-        if id:
+        if id is not None:
             db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
             for key in row.keys():
@@ -94,7 +106,7 @@ class Manga(object):
     @classmethod
     def new(cls, data, server=None):
         m = cls(server=server)
-        m._save(data)
+        m._save(data.copy())
 
         return m
 
@@ -193,9 +205,18 @@ class Chapter(object):
     @classmethod
     def new(cls, data, rank, manga_id):
         c = cls()
-        c._save(data, rank, manga_id)
+        c._save(data.copy(), rank, manga_id)
 
         return c
+
+    def purge(self):
+        chapter_path = os.path.join(self.manga.resources_path, self.slug)
+        shutil.rmtree(chapter_path)
+
+        self.update(dict(
+            pages=None,
+            last_page_read_index=0,
+        ))
 
     def get_page(self, page_index):
         chapter_path = os.path.join(self.manga.resources_path, self.slug)
@@ -203,7 +224,7 @@ class Chapter(object):
         if not os.path.exists(chapter_path):
             os.mkdir(chapter_path)
 
-        page = self.pages.split(',')[page_index]
+        page = self.pages[page_index]
         page_path = os.path.join(chapter_path, page)
         if os.path.exists(page_path):
             return page_path
@@ -246,14 +267,13 @@ class Chapter(object):
 
         :param data: dictionary of fields to update
 
-        If data is None, fetches and save data available in chapter's HTML page on server
+        If data is None, fetches and saves data available in chapter's HTML page on server
         """
         if data is None:
             if self.pages:
                 return
 
             data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
-            data['pages'] = ','.join(data['pages'])
 
         for key in data.keys():
             setattr(self, key, data[key])

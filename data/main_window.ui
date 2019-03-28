@@ -3,6 +3,31 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libhandy" version="0.0"/>
+  <object class="GtkPopover" id="card_page_menubutton_popover">
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton" id="delete_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.delete</property>
+            <property name="text" translatable="yes">Delete</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">6</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkGrid" id="first_start_grid">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -77,31 +102,6 @@
         <property name="left_attach">0</property>
         <property name="top_attach">0</property>
       </packing>
-    </child>
-  </object>
-  <object class="GtkPopover" id="manga_page_menubutton_popover">
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkModelButton" id="delete_button">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.delete</property>
-            <property name="text" translatable="yes">Delete</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="padding">6</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-      </object>
     </child>
   </object>
   <object class="GtkPopover" id="menubutton_popover">
@@ -201,8 +201,8 @@
                     <property name="icon_name">go-previous-symbolic</property>
                   </object>
                   <packing>
-                    <property name="name">manga</property>
-                    <property name="title" translatable="yes">manga</property>
+                    <property name="name">card</property>
+                    <property name="title" translatable="yes">card</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -270,15 +270,16 @@
   <object class="GtkStack" id="stack">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="transition_type">slide-left-right</property>
     <child>
       <object class="GtkScrolledWindow">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="shadow_type">in</property>
         <child>
           <object class="GtkViewport">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="shadow_type">none</property>
             <child>
               <object class="GtkFlowBox" id="library_page_flowbox">
                 <property name="visible">True</property>
@@ -304,7 +305,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkGrid" id="manga_page_grid">
+              <object class="GtkGrid" id="card_page_grid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="row_spacing">6</property>
@@ -482,8 +483,8 @@
         </child>
       </object>
       <packing>
-        <property name="name">manga</property>
-        <property name="title" translatable="yes">manga</property>
+        <property name="name">card</property>
+        <property name="title" translatable="yes">card</property>
         <property name="position">1</property>
       </packing>
     </child>

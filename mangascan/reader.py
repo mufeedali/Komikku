@@ -7,12 +7,11 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
-from mangascan.model import Chapter
-
 
 class Reader():
-    def __init__(self, builder):
-        self.builder = builder
+    def __init__(self, window):
+        self.window = window
+        self.builder = window.builder
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()

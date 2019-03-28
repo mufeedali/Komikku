@@ -117,7 +117,7 @@ class Japscan():
         """
         Returns chapter page scan (image) content
         """
-        # This server use a specific slug for images (capitalize kebab-case)
+        # This server use a specific slug for images (capitalized kebab-case)
         manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
         chapter_slug = chapter_slug.capitalize()
 
@@ -130,7 +130,7 @@ class Japscan():
         """
         Returns manga cover (image) content
         """
-        # This server use a specific slug for images (capitalize kebab-case)
+        # This server use a specific slug for images (capitalized kebab-case)
         manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
         r = session.get(cover_url.format(manga_slug))
 

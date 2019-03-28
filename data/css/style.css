@@ -4,3 +4,7 @@
     border-bottom: 1px solid #ccc;
     padding: 16px;
 }
+
+.listboxrow-chapter-counter {
+    font-size: 10px;
+}

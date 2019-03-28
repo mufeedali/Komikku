@@ -100,15 +100,17 @@ class AddDialog():
 
     def on_add_button_clicked(self, button):
         def run():
-            self.manga = Manga.new(self.manga_data, self.server)
-            GLib.idle_add(complete)
+            manga = Manga.new(self.manga_data, self.server)
+            GLib.idle_add(complete, manga)
 
-        def complete():
+        def complete(manga):
+            self.manga = manga
+
             notification = Notify.Notification.new(_('{0} manga added').format(self.manga.name))
             notification.set_timeout(Notify.EXPIRES_NEVER)
             notification.show()
 
-            self.window.on_manga_added(self.manga)
+            self.window.library.on_manga_added(self.manga)
 
             self.add_button.set_sensitive(True)
             self.add_button.hide()
@@ -133,22 +135,11 @@ class AddDialog():
     def on_manga_clicked(self, listbox, row):
         self.manga_data = self.server.get_manga_data(row.manga_data)
 
-        # Check if manga is already in library
-        db_conn = create_db_connection()
-        row = db_conn.execute(
-            'SELECT * FROM mangas WHERE slug = ? AND server_id = ?',
-            (self.manga_data['slug'], self.manga_data['server_id'])
-        ).fetchone()
-        db_conn.close()
-
-        self.manga = Manga(row['id'], self.server) if row else None
-
         # Populate manga card
         cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
         pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
 
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-
         self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
         self.builder.get_object('types_value_label').set_text(self.manga_data['types'] or '-')
         self.builder.get_object('status_value_label').set_text(self.manga_data['status'] or '-')
@@ -160,8 +151,8 @@ class AddDialog():
         self.show_page('manga')
 
     def on_read_button_clicked(self, button):
+        self.window.card.open_manga(self.manga)
         self.dialog.close()
-        self.window.read_manga(self.manga)
 
     def on_search_entry_activated(self, entry):
         term = entry.get_text().strip()
@@ -217,7 +208,15 @@ class AddDialog():
         elif name == 'manga':
             self.custom_title_manga_page_label.set_text(self.manga_data['name'])
 
-            if self.manga:
+            # Check if selected manga is already in library
+            db_conn = create_db_connection()
+            row = db_conn.execute(
+                'SELECT * FROM mangas WHERE slug = ? AND server_id = ?',
+                (self.manga_data['slug'], self.manga_data['server_id'])
+            ).fetchone()
+            db_conn.close()
+
+            if row:
                 self.read_button.show()
                 self.add_button.hide()
             else:
