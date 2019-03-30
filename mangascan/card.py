@@ -49,6 +49,8 @@ class Card():
             )
             notification.show()
 
+            chapter.update(dict(downloaded=1))
+
             self.populate_chapter(box, chapter)
 
             return False
@@ -125,6 +127,9 @@ class Card():
         listbox.show_all()
 
     def populate_chapter(self, box, chapter):
+        if box.get_parent() is None:
+            return
+
         for child in box.get_children():
             child.destroy()
 
@@ -137,11 +142,11 @@ class Card():
         # Counter: nb read / nb pages
         label = Gtk.Label(xalign=0, yalign=1)
         label.get_style_context().add_class('listboxrow-chapter-counter')
-        if chapter.pages is not None and chapter.last_page_read_index > 0:
+        if chapter.pages is not None and chapter.last_page_read_index is not None:
             label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
         box.pack_start(label, False, True, 0)
 
-        if chapter.pages is not None:
+        if chapter.last_page_read_index is not None or chapter.downloaded:
             # Delete button
             button = Gtk.Button.new_from_icon_name('user-trash-symbolic', Gtk.IconSize.BUTTON)
             button.connect('clicked', self.delete_chapter, box, chapter)

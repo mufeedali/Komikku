@@ -29,6 +29,7 @@ class Reader():
         chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
         self.render_page(self.chapter.last_page_read_index)
+        self.render_page(self.chapter.last_page_read_index or 0)
 
     def on_button_press(self, widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
