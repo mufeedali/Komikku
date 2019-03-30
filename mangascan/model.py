@@ -160,7 +160,7 @@ class Manga(object):
         for rank, chapter_data in enumerate(chapters):
             chapter = Chapter.new(chapter_data, rank, self.id)
             chapter.manga = self
-            self.chapters.append(chapter)
+            self.chapters = [chapter, ] + self.chapters
 
         if not os.path.exists(self.resources_path):
             os.makedirs(self.resources_path)
