@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from bs4 import BeautifulSoup
 import requests
 
@@ -60,7 +62,8 @@ class Submanga():
             elif label.startswith('Categorías'):
                 data['types'] = ', '.join([t.strip() for t in value.split(',')])
             elif label.startswith('Estado'):
-                data['status'] = value
+                # possible values: ongoing, complete, None
+                data['status'] = value.lower()
             elif label.startswith('Resumen'):
                 data['synopsis'] = value
 

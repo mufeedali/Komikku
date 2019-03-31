@@ -71,7 +71,8 @@ class Japscan():
             elif label.startswith('Type'):
                 data['types'] = value
             elif label.startswith('Statut'):
-                data['status'] = value
+                # possible values: ongoing, complete, None
+                data['status'] = 'ongoing' if value == 'En Cours' else 'complete'
 
         # Synopsis
         data['synopsis'] = card_element.find('p', class_='list-group-item-primary').text.strip()
