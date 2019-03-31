@@ -79,6 +79,16 @@ def init_db():
         db_conn.close()
 
 
+def update_row(table, id, data):
+    db_conn = create_db_connection()
+    with db_conn:
+        db_conn.execute(
+            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data.keys()])),
+            tuple(data.values()) + (id,)
+        )
+    db_conn.close()
+
+
 class Manga(object):
     server = None
 
@@ -187,13 +197,7 @@ class Manga(object):
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_db_connection()
-        with db_conn:
-            db_conn.execute(
-                'UPDATE mangas SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
-                tuple(data.values()) + (self.id,)
-            )
-        db_conn.close()
+        update_row('mangas', self.id, data)
 
 
 class Chapter(object):
@@ -287,10 +291,4 @@ class Chapter(object):
         for key in data.keys():
             setattr(self, key, data[key])
 
-        db_conn = create_db_connection()
-        with db_conn:
-            db_conn.execute(
-                'UPDATE chapters SET {0} WHERE id = ?'.format(', '.join([k + ' = ?' for k in data.keys()])),
-                tuple(data.values()) + (self.id,)
-            )
-        db_conn.close()
+        update_row('chapters', self.id, data)
