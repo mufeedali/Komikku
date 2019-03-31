@@ -101,7 +101,7 @@ class Card():
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
         self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
-        self.builder.get_object('status_value_label').set_text(self.manga.status or '-')
+        self.builder.get_object('status_value_label').set_text(_(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_text(
             '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
 

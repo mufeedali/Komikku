@@ -1,3 +1,4 @@
+from gettext import gettext as _
 import importlib
 import os
 from pathlib import Path
@@ -80,6 +81,11 @@ def init_db():
 
 class Manga(object):
     server = None
+
+    STATUSES = dict(
+        complete=_('Complete'),
+        ongoing=_('On going')
+    )
 
     def __init__(self, id=None, server=None):
         if server:

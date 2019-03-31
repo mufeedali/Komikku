@@ -83,7 +83,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">10</property>
-            <property name="label" translatable="yes" comments="The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.">An online / offline manga reader.</property>
+            <property name="label" translatable="yes" comments="The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.">An online / offline manga reader</property>
             <property name="use_markup">True</property>
             <property name="wrap">True</property>
             <property name="track_visited_links">False</property>
@@ -191,7 +191,6 @@
                   </object>
                   <packing>
                     <property name="name">library</property>
-                    <property name="title" translatable="yes">library</property>
                   </packing>
                 </child>
                 <child>
@@ -202,7 +201,6 @@
                   </object>
                   <packing>
                     <property name="name">card</property>
-                    <property name="title" translatable="yes">card</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -214,7 +212,6 @@
                   </object>
                   <packing>
                     <property name="name">reader</property>
-                    <property name="title" translatable="yes">reader</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -292,7 +289,6 @@
       </object>
       <packing>
         <property name="name">library</property>
-        <property name="title" translatable="yes">library</property>
       </packing>
     </child>
     <child>
@@ -484,7 +480,6 @@
       </object>
       <packing>
         <property name="name">card</property>
-        <property name="title" translatable="yes">card</property>
         <property name="position">1</property>
       </packing>
     </child>
@@ -507,7 +502,6 @@
       </object>
       <packing>
         <property name="name">reader</property>
-        <property name="title" translatable="yes">reader</property>
         <property name="position">2</property>
       </packing>
     </child>

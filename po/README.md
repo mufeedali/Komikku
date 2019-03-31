@@ -1,32 +1,37 @@
-## Update pot files from source files
+## Update POTFILES.in
+
+Search for left out files, which must been listed in POTFILES.in
+
 ```
 cd po
 
 intltool-update --maintain
-
-cd ..
-
-find mangascan -iname "*.py" | xargs xgettext --language=Python --keyword=_ --output=po/mangascan-python.pot
-
-find data -iname "*.ui" | xargs xgettext --output=po/mangascan-glade.pot -L Glade
-
-msgcat --to-code=UTF-8 --use-first po/mangascan-glade.pot po/mangascan-python.pot > po/mangascan.pot
-
-rm po/mangascan-glade.pot po/mangascan-python.pot
 ```
 
-## Generate po file for language
+Check missing and notexist files and update POTFILES.in
+
+## Generate po file for new language
 ```
 cd po
 
 msginit --locale=xx --input=mangascan.pot
 ```
 
+## Update pot file (template)
+```
+xgettext -f POTFILES.in -o mangascan.pot
+```
+
 ## Update language po file
 ```
 cd po
 
-msgmerge -N xx.po mangascan.pot
+msgmerge --update -N --backup=none xx.po mangascan.pot
+```
+
+## Translate po file
+```
+poedit xx.po
 ```
 
 ## Compile po file

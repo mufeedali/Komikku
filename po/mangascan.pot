@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-13 16:22+0100\n"
+"POT-Creation-Date: 2019-03-31 23:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,123 +17,192 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/add_dialog.ui:46
+#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
+#: ../data/about_dialog.ui.in:11 ../data/main_window.ui:86
+#: ../data/com.gitlab.valos.MangaScan.desktop.in.in:4
+msgid "An online / offline manga reader"
+msgstr ""
+
+#: ../data/about_dialog.ui.in:13
+msgid "Learn more about Manga Scan"
+msgstr ""
+
+#. Add your name to the translator credits list
+#: ../data/about_dialog.ui.in:15
+msgid "translator-credits"
+msgstr ""
+
+#: ../data/add_dialog.ui:46
 msgid "Select a server"
 msgstr ""
 
-#: data/add_dialog.ui:54
-msgid "servers"
-msgstr ""
-
-#: data/add_dialog.ui:68
-msgid "search"
-msgstr ""
-
-#: data/add_dialog.ui:82
-msgid "title"
-msgstr ""
-
-#: data/add_dialog.ui:115 data/main_window.ui:177 data/main_window.ui:456
-msgid "manga"
-msgstr ""
-
-#: data/add_dialog.ui:205 data/main_window.ui:303
+#: ../data/add_dialog.ui:259 ../data/main_window.ui:327
 msgid "Author"
 msgstr ""
 
-#: data/add_dialog.ui:232 data/main_window.ui:330
+#: ../data/add_dialog.ui:286 ../data/main_window.ui:354
 msgid "Type"
 msgstr ""
 
-#: data/add_dialog.ui:259 data/main_window.ui:357
+#: ../data/add_dialog.ui:316 ../data/main_window.ui:384
 msgid "Status"
 msgstr ""
 
-#: data/add_dialog.ui:286 data/main_window.ui:384
+#: ../data/add_dialog.ui:343 ../data/main_window.ui:411
 msgid "Server"
 msgstr ""
 
-#: data/add_dialog.ui:313 data/main_window.ui:411
+#: ../data/add_dialog.ui:370 ../data/main_window.ui:438
 msgid "Synopsis"
 msgstr ""
 
-#: data/shortcuts_overview.ui:14
-msgctxt "Shortcut window description"
-msgid "Application"
-msgstr ""
-
-#: data/shortcuts_overview.ui:18
-msgctxt "Shortcut window description"
-msgid "Add manga"
-msgstr ""
-
-#: data/shortcuts_overview.ui:25
-msgctxt "Shortcut window description"
-msgid "Open preferences"
-msgstr ""
-
-#. Title of the settings dialog
-#: data/settings_dialog.ui:16
-msgid "Settings"
-msgstr ""
-
-#: data/settings_dialog.ui:64
-msgid "General"
-msgstr ""
-
-#: data/settings_dialog.ui:113
-msgid "Dark Theme"
-msgstr ""
-
-#: data/settings_dialog.ui:130
-msgid "Use dark GTK+ theme"
-msgstr ""
-
-#: data/settings_dialog.ui:196
-msgid "Hide First Start Screen"
-msgstr ""
-
-#: data/settings_dialog.ui:213
-msgid "Reopen last opened safe"
+#: ../data/main_window.ui:19
+msgid "Delete"
 msgstr ""
 
 #. The umbrella sentence of the application on the first start screen
-#: data/main_window.ui:44 data/main_window.ui:145
+#: ../data/main_window.ui:69 ../data/main_window.ui:173
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:4
+#: ../data/com.gitlab.valos.MangaScan.desktop.in.in:3
 msgid "Manga Scan"
 msgstr ""
 
-#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: data/main_window.ui:61
-msgid "An online / offline manga reader."
-msgstr ""
-
-#: data/main_window.ui:99
+#: ../data/main_window.ui:124
 msgid "Preferences"
 msgstr ""
 
-#: data/main_window.ui:113
+#: ../data/main_window.ui:139
 msgid "Keyboard Shortcuts"
 msgstr ""
 
 #. "Manga Scan" is the application name
-#: data/main_window.ui:127
+#: ../data/main_window.ui:154
 msgid "About"
 msgstr ""
 
-#: data/main_window.ui:166 data/main_window.ui:267
-msgid "library"
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:9
+msgid "An online / offline manga reader for Gnome"
 msgstr ""
 
-#: data/main_window.ui:189 data/main_window.ui:479
-msgid "reader"
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:11
+msgid ""
+"An online / offline manga reader for Gnome developed with the aim of being "
+"used with Librem 5"
 msgstr ""
 
-#: mangascan/add_dialog.py:89
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:16
+msgid "First usable version"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:18
+msgid "Add manga (only two servers)"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:19
+msgid "Simple reader (next, prev, no zoom, no swipe, no preload)"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:31
+msgid "Valéry Febvre"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.desktop.in.in:6
+msgid "@ICON@"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.desktop.in.in:13
+msgid "manga;reader;"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:11
+#: ../data/settings_dialog.ui:130
+msgid "Use dark GTK+ theme"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:12
+msgid ""
+"Use the dark variant of your GTK+ theme. Please note that not every GTK+ "
+"theme has a dark variant."
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:16
+msgid "Window size"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:17
+msgid "Remember the window size."
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:21
+msgid "Backup the database"
+msgstr ""
+
+#: ../data/com.gitlab.valos.MangaScan.gschema.xml:22
+msgid ""
+"If an error occurs while saving the database, a backup can be found at ~/."
+"cache/mangascan/backups"
+msgstr ""
+
+#. Title of the settings dialog
+#: ../data/settings_dialog.ui:16
+msgid "Settings"
+msgstr ""
+
+#: ../data/settings_dialog.ui:64
+msgid "General"
+msgstr ""
+
+#: ../data/settings_dialog.ui:113
+msgid "Dark Theme"
+msgstr ""
+
+#: ../data/shortcuts_overview.ui:14
+msgctxt "Shortcut window description"
+msgid "Application"
+msgstr ""
+
+#: ../data/shortcuts_overview.ui:18
+msgctxt "Shortcut window description"
+msgid "Add manga"
+msgstr ""
+
+#: ../data/shortcuts_overview.ui:25
+msgctxt "Shortcut window description"
+msgid "Open preferences"
+msgstr ""
+
+#: ../mangascan/add_dialog.py:109
 #, python-brace-format
 msgid "{0} manga added"
 msgstr ""
 
-#: mangascan/add_dialog.py:170
+#: ../mangascan/add_dialog.py:205
 #, python-brace-format
 msgid "Search in {0}..."
+msgstr ""
+
+#: ../mangascan/card.py:38 ../mangascan/card.py:47
+#, python-brace-format
+msgid "[{0}] Chapter {1}"
+msgstr ""
+
+#: ../mangascan/card.py:39
+#, python-brace-format
+msgid "Download page {0} / {1}"
+msgstr ""
+
+#: ../mangascan/card.py:48
+msgid "Download completed"
+msgstr ""
+
+#: ../mangascan/card.py:62
+msgid "Download chapter"
+msgstr ""
+
+#: ../mangascan/model.py:86
+msgid "Complete"
+msgstr ""
+
+#: ../mangascan/model.py:87
+msgid "On going"
 msgstr ""
