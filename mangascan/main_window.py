@@ -36,6 +36,9 @@ class MainWindow(Gtk.ApplicationWindow):
         delete_action = Gio.SimpleAction.new("delete", None)
         delete_action.connect("activate", self.card.on_delete_menu_clicked)
 
+        update_action = Gio.SimpleAction.new("update", None)
+        update_action.connect("activate", self.card.on_update_menu_clicked)
+
         settings_action = Gio.SimpleAction.new("settings", None)
         settings_action.connect("activate", self.on_settings_menu_clicked)
 
@@ -46,7 +49,10 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_action.connect("activate", self.on_shortcuts_menu_clicked)
 
         self.application.add_action(add_action)
+
         self.application.add_action(delete_action)
+        self.application.add_action(update_action)
+
         self.application.add_action(settings_action)
         self.application.add_action(about_action)
         self.application.add_action(shortcuts_action)

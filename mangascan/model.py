@@ -188,12 +188,43 @@ class Manga(object):
             with open(cover_path, 'wb') as fp:
                 fp.write(cover_data)
 
-    def update(self, data):
+    def update(self, data=None):
         """
         Updates manga
 
         :param data: dictionary of fields to update
+
+        If data is None, fetches and saves data available in manga's HTML page on server
         """
+        if data is None:
+            data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
+            chapters_data = data.pop('chapters')
+
+            # Update chapters
+            db_conn = create_db_connection()
+
+            for rank, chapter_data in enumerate(chapters_data):
+                row = db_conn.execute(
+                    'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
+                ).fetchone()
+                if row:
+                    # Update chapter
+                    chapter = Chapter(row['id'])
+                    chapter_data['rank'] = rank
+                    chapter.update(chapter_data)
+                else:
+                    # Add new chapter
+                    Chapter.new(chapter_data, rank, self.id)
+
+            self.chapters = []
+            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
+            for row in rows:
+                chapter = Chapter(row['id'])
+                chapter.manga = self
+                self.chapters.append(chapter)
+
+            db_conn.close()
+
         for key in data.keys():
             setattr(self, key, data[key])
 
@@ -201,7 +232,7 @@ class Manga(object):
 
 
 class Chapter(object):
-    def __init__(self, id=None, manga=None):
+    def __init__(self, id=None):
         if id:
             db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
@@ -209,9 +240,6 @@ class Chapter(object):
 
             for key in row.keys():
                 setattr(self, key, row[key])
-
-            if manga:
-                self.manga = manga
 
     @classmethod
     def new(cls, data, rank, manga_id):

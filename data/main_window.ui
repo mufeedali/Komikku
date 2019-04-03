@@ -25,6 +25,21 @@
             <property name="position">0</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkModelButton" id="update_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.update</property>
+            <property name="text" translatable="yes">Update</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">6</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
