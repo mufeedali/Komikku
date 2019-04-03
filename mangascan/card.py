@@ -121,6 +121,7 @@ class Card():
         self.builder.get_object('status_value_label').set_text(_(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_text(
             '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
+        self.builder.get_object('last_update_value_label').set_text(self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
 

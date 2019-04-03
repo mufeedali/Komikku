@@ -19,13 +19,13 @@ MangaScan is licensed under the GPLv3+.
 * Library page
     - ~~Sort mangas by last read date~~
     - Show title and server's logo in mangas covers
-    - Update / refresh a manga
     - Adjust covers width to a multiple of window width
     - ~~Improve library rendering (avoid full redraw) when order changes, a manga is added or a manga is deleted~~
-* Improve manga page
+* Improve manga card page
     - ~~Sort chapters~~
     - ~~Delete manga~~
-    - Show last update date
+    - ~~Update / refresh a manga~~
+    - ~~Show last update date~~
     - ~~Delete a chapter (files on disk)~~
     - ~~Download a chapter (for offline reading)~~
 * Reader

@@ -1,3 +1,4 @@
+import datetime
 from gettext import gettext as _
 import importlib
 import os
@@ -203,6 +204,7 @@ class Manga(object):
             # Update chapters
             db_conn = create_db_connection()
 
+            updated = False
             for rank, chapter_data in enumerate(chapters_data):
                 row = db_conn.execute(
                     'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
@@ -215,6 +217,10 @@ class Manga(object):
                 else:
                     # Add new chapter
                     Chapter.new(chapter_data, rank, self.id)
+                    updated = True
+
+            if updated:
+                data['last_update'] = datetime.datetime.now()
 
             self.chapters = []
             rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
