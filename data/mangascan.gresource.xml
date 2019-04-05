@@ -7,8 +7,10 @@
      <file compressed="true" preprocess="xml-stripblanks">main_window.ui</file>
      <file compressed="true" preprocess="xml-stripblanks">settings_dialog.ui</file>
      <file compressed="true" preprocess="xml-stripblanks">shortcuts_overview.ui</file>
+     <file compressed="true">icons/ui/flags/en.png</file>
      <file compressed="true">icons/ui/flags/es.png</file>
      <file compressed="true">icons/ui/flags/fr.png</file>
+     <file compressed="true">icons/ui/favicons/hatigarmscans.ico</file>
      <file compressed="true">icons/ui/favicons/japscan.ico</file>
      <file compressed="true">icons/ui/favicons/submanga.ico</file>
      <file compressed="true">images/logo.png</file>
