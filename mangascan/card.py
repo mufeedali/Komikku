@@ -70,6 +70,7 @@ class Card():
     def on_chapter_clicked(self, listbox, row):
         self.window.reader.init(row.chapter)
 
+        # TODO: save scrolledwindow vadjustment
         self.window.show_page('reader')
 
     def on_delete_menu_clicked(self, action, param):
@@ -111,6 +112,11 @@ class Card():
 
     def populate(self, manga=None):
         if manga:
+            if manga != self.manga:
+                # Scroll scrolledwindow to top when manga is changed
+                vadjustment = self.window.stack.get_child_by_name('card').get_vadjustment()
+                vadjustment.set_value(0)
+
             self.manga = manga
 
         pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
@@ -118,10 +124,12 @@ class Card():
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
         self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
-        self.builder.get_object('status_value_label').set_text(_(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
+        self.builder.get_object('status_value_label').set_text(
+            _(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_text(
             '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
-        self.builder.get_object('last_update_value_label').set_text(self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
+        self.builder.get_object('last_update_value_label').set_text(
+            self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
 
