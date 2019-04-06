@@ -98,7 +98,7 @@ class Manga(object):
         ongoing=_('On going')
     )
 
-    def __init__(self, id=None, server=None):
+    def __init__(self, id=None, server=None, backref=True):
         if server:
             self.server = server
 
@@ -111,11 +111,11 @@ class Manga(object):
             rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (id,)).fetchall()
             db_conn.close()
 
-            self.chapters = []
-            for row in rows:
-                chapter = Chapter(row['id'])
-                chapter.manga = self
-                self.chapters.append(chapter)
+            if backref is True:
+                self.chapters = []
+                for row in rows:
+                    chapter = Chapter(row['id'])
+                    self.chapters.append(chapter)
 
             if server is None:
                 server_module = importlib.import_module('.' + self.server_id, package="mangascan.servers")
@@ -176,7 +176,6 @@ class Manga(object):
         self.chapters = []
         for rank, chapter_data in enumerate(chapters):
             chapter = Chapter.new(chapter_data, rank, self.id)
-            chapter.manga = self
             self.chapters = [chapter, ] + self.chapters
 
         if not os.path.exists(self.resources_path):
@@ -211,7 +210,7 @@ class Manga(object):
                 ).fetchone()
                 if row:
                     # Update chapter
-                    chapter = Chapter(row['id'])
+                    chapter = Chapter(row['id'], backref=False)
                     chapter_data['rank'] = rank
                     chapter.update(chapter_data)
                 else:
@@ -226,7 +225,6 @@ class Manga(object):
             rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
             for row in rows:
                 chapter = Chapter(row['id'])
-                chapter.manga = self
                 self.chapters.append(chapter)
 
             db_conn.close()
@@ -238,7 +236,7 @@ class Manga(object):
 
 
 class Chapter(object):
-    def __init__(self, id=None):
+    def __init__(self, id=None, backref=True):
         if id:
             db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
@@ -246,6 +244,9 @@ class Chapter(object):
 
             for key in row.keys():
                 setattr(self, key, row[key])
+
+            if backref is True:
+                self.manga = Manga(self.manga_id, backref=False)
 
     @classmethod
     def new(cls, data, rank, manga_id):

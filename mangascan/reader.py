@@ -7,8 +7,12 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
+from mangascan.model import create_db_connection
+from mangascan.model import Chapter
+
 
 class Reader():
+    chapter = None
     pixbuf = None
     size = None
 
@@ -27,12 +31,31 @@ class Reader():
         for child in self.viewport.get_children():
             self.viewport.remove(child)
 
-    def init(self, chapter):
-        self.chapter = chapter
+    def init(self, chapter_id, index=None):
+        self.chapter = Chapter(chapter_id)
 
-        chapter.manga.update(dict(last_read=datetime.datetime.now()))
+        db_conn = create_db_connection()
+        # Get previous chapter Id
+        row = db_conn.execute(
+            'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
+        self.prev_chapter_id = row['id'] if row else None
 
-        self.render_page(self.chapter.last_page_read_index or 0)
+        # Get next chapter Id
+        row = db_conn.execute(
+            'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
+        self.next_chapter_id = row['id'] if row else None
+        db_conn.close()
+
+        self.chapter.manga.update(dict(last_read=datetime.datetime.now()))
+
+        if index is None:
+            index = self.chapter.last_page_read_index or 0
+        elif index == 'first':
+            index = 0
+        elif index == 'last':
+            index = len(self.chapter.pages) - 1
+
+        self.render_page(index)
 
     def on_button_press(self, widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
@@ -43,9 +66,10 @@ class Reader():
 
             if index >= 0 and index < len(self.chapter.pages):
                 self.render_page(index)
+            elif index < 0:
+                self.init(self.prev_chapter_id, 'last')
             else:
-                # TODO: next or prev chapter
-                print('BEGIN or END')
+                self.init(self.next_chapter_id, 'first')
 
     def on_resize(self, window):
         size = self.viewport.get_allocated_size()[0]
@@ -75,6 +99,8 @@ class Reader():
             self.image.show()
 
             return False
+
+        print('{0} {1}/{2}'.format(self.chapter.title, index + 1, len(self.chapter.pages)))
 
         self.page_index = index
         self.chapter.update(dict(last_page_read_index=index))

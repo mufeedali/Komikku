@@ -68,7 +68,7 @@ class Card():
         thread.start()
 
     def on_chapter_clicked(self, listbox, row):
-        self.window.reader.init(row.chapter)
+        self.window.reader.init(row.chapter_id)
 
         # TODO: save scrolledwindow vadjustment
         self.window.show_page('reader')
@@ -142,7 +142,7 @@ class Card():
         for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('listboxrow-chapter')
-            row.chapter = chapter
+            row.chapter_id = chapter.id
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
 
