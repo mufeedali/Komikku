@@ -124,7 +124,7 @@ class Submanga():
         """
         r = requests.get(cover_url.format(manga_slug))
 
-        return r.content
+        return r.content if r.status_code == 200 else None
 
     def search(self, term):
         r = requests.get(search_url, params=dict(query=term))

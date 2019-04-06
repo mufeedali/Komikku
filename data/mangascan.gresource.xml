@@ -14,5 +14,6 @@
      <file compressed="true">icons/ui/favicons/japscan.ico</file>
      <file compressed="true">icons/ui/favicons/submanga.ico</file>
      <file compressed="true">images/logo.png</file>
+     <file compressed="true">images/missing_file.png</file>
   </gresource>
 </gresources>

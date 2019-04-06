@@ -185,8 +185,9 @@ class Manga(object):
         cover_path = os.path.join(self.resources_path, 'cover.jpg')
         if not os.path.exists(cover_path):
             cover_data = self.server.get_manga_cover_image(self.slug)
-            with open(cover_path, 'wb') as fp:
-                fp.write(cover_data)
+            if cover_data is not None:
+                with open(cover_path, 'wb') as fp:
+                    fp.write(cover_data)
 
     def update(self, data=None):
         """

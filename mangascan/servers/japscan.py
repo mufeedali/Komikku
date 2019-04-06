@@ -135,7 +135,7 @@ class Japscan():
         manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
         r = session.get(cover_url.format(manga_slug))
 
-        return r.content
+        return r.content if r.status_code == 200 else None
 
     def search(self, term):
         r = session.post(search_url, data=dict(search=term))

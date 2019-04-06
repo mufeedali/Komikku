@@ -136,8 +136,12 @@ class AddDialog():
         self.manga_data = self.server.get_manga_data(row.manga_data)
 
         # Populate manga card
-        cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
-        pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
+        cover_data = self.server.get_manga_cover_image(self.manga_data['slug'])
+        if cover_data is not None:
+            cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
+            pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
+        else:
+            pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
 
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
         self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')

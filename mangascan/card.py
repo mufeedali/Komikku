@@ -119,7 +119,10 @@ class Card():
 
             self.manga = manga
 
-        pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
+        if self.manga.cover_path is not None:
+            pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
+        else:
+            pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
