@@ -8,6 +8,7 @@ from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 
 from mangascan.model import create_db_connection
+from mangascan.model import Manga
 
 
 class Card():
@@ -35,7 +36,7 @@ class Card():
 
         def update_notification(index):
             notification.update(
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title),
+                _('[{0}] Chapter {1}').format(self.manga.name, chapter.title),
                 _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
             )
             notification.show()
@@ -44,7 +45,7 @@ class Card():
 
         def complete():
             notification.update(
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title),
+                _('[{0}] Chapter {1}').format(self.manga.name, chapter.title),
                 _('Download completed')
             )
             notification.show()
@@ -68,7 +69,7 @@ class Card():
         thread.start()
 
     def on_chapter_clicked(self, listbox, row):
-        self.window.reader.init(row.chapter_id)
+        self.window.reader.init(row.chapter.id)
 
         # TODO: save scrolledwindow vadjustment
         self.window.show_page('reader')
@@ -112,12 +113,14 @@ class Card():
 
     def populate(self, manga=None):
         if manga:
-            if manga != self.manga:
+            if self.manga and manga.id != self.manga.id:
                 # Scroll scrolledwindow to top when manga is changed
                 vadjustment = self.window.stack.get_child_by_name('card').get_vadjustment()
                 vadjustment.set_value(0)
 
             self.manga = manga
+        else:
+            self.manga = Manga(self.manga.id)
 
         if self.manga.cover_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
@@ -145,7 +148,7 @@ class Card():
         for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('listboxrow-chapter')
-            row.chapter_id = chapter.id
+            row.chapter = chapter
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
 

@@ -211,7 +211,7 @@ class Manga(object):
                 ).fetchone()
                 if row:
                     # Update chapter
-                    chapter = Chapter(row['id'], backref=False)
+                    chapter = Chapter(row['id'])
                     chapter_data['rank'] = rank
                     chapter.update(chapter_data)
                 else:
@@ -237,7 +237,7 @@ class Manga(object):
 
 
 class Chapter(object):
-    def __init__(self, id=None, backref=True):
+    def __init__(self, id=None, backref=False):
         if id:
             db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
