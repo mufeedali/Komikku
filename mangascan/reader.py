@@ -22,14 +22,16 @@ class Reader():
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
+        self.overlay = self.scrolledwindow.get_parent()
         self.image = Gtk.Image()
+        self.viewport.add(self.image)
+        self.spinner_box = self.builder.get_object('spinner_box')
 
         self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
-    def clear(self):
-        for child in self.viewport.get_children():
-            self.viewport.remove(child)
+    def hide_spinner(self):
+        self.overlay.remove(self.spinner_box)
 
     def init(self, chapter_id, index=None):
         def run():
@@ -105,15 +107,14 @@ class Reader():
 
         def show_page_image(page_path):
             if page_path is None:
-                # TODO: Display not found page
+                # TODO: Display not found page (missing_file.png image)
                 return False
 
             self.pixbuf = Pixbuf.new_from_file(page_path)
             self.size = self.viewport.get_allocated_size()[0]
             self.set_page_image_from_pixbuf()
 
-            self.clear()
-            self.viewport.add(self.image)
+            self.hide_spinner()
             self.image.show()
 
             return False
@@ -142,5 +143,4 @@ class Reader():
         self.image.set_from_pixbuf(pixbuf)
 
     def show_spinner(self):
-        self.clear()
-        self.viewport.add(self.builder.get_object('spinner_box'))
+        self.overlay.add_overlay(self.spinner_box)
