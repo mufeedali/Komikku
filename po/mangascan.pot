@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-31 23:15+0200\n"
+"POT-Creation-Date: 2019-04-11 00:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/about_dialog.ui.in:11 ../data/main_window.ui:86
+#: ../data/about_dialog.ui.in:11 ../data/main_window.ui:101
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:4
 msgid "An online / offline manga reader"
 msgstr ""
@@ -29,30 +29,30 @@ msgstr ""
 
 #. Add your name to the translator credits list
 #: ../data/about_dialog.ui.in:15
-msgid "translator-credits"
+msgid "Valéry Febvre <vfebvre@easter-eggs.com>"
 msgstr ""
 
 #: ../data/add_dialog.ui:46
 msgid "Select a server"
 msgstr ""
 
-#: ../data/add_dialog.ui:259 ../data/main_window.ui:327
+#: ../data/add_dialog.ui:259 ../data/main_window.ui:342
 msgid "Author"
 msgstr ""
 
-#: ../data/add_dialog.ui:286 ../data/main_window.ui:354
+#: ../data/add_dialog.ui:286 ../data/main_window.ui:369
 msgid "Type"
 msgstr ""
 
-#: ../data/add_dialog.ui:316 ../data/main_window.ui:384
+#: ../data/add_dialog.ui:316 ../data/main_window.ui:399
 msgid "Status"
 msgstr ""
 
-#: ../data/add_dialog.ui:343 ../data/main_window.ui:411
+#: ../data/add_dialog.ui:343 ../data/main_window.ui:426
 msgid "Server"
 msgstr ""
 
-#: ../data/add_dialog.ui:370 ../data/main_window.ui:438
+#: ../data/add_dialog.ui:370 ../data/main_window.ui:453
 msgid "Synopsis"
 msgstr ""
 
@@ -60,24 +60,32 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#: ../data/main_window.ui:34
+msgid "Update"
+msgstr ""
+
 #. The umbrella sentence of the application on the first start screen
-#: ../data/main_window.ui:69 ../data/main_window.ui:173
+#: ../data/main_window.ui:84 ../data/main_window.ui:188
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:4
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:3
 msgid "Manga Scan"
 msgstr ""
 
-#: ../data/main_window.ui:124
+#: ../data/main_window.ui:139
 msgid "Preferences"
 msgstr ""
 
-#: ../data/main_window.ui:139
+#: ../data/main_window.ui:154
 msgid "Keyboard Shortcuts"
 msgstr ""
 
 #. "Manga Scan" is the application name
-#: ../data/main_window.ui:154
+#: ../data/main_window.ui:169
 msgid "About"
+msgstr ""
+
+#: ../data/main_window.ui:496
+msgid "Last update"
 msgstr ""
 
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:9
@@ -111,7 +119,7 @@ msgid "@ICON@"
 msgstr ""
 
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:13
-msgid "manga;reader;"
+msgid "manga;reader;scan;offline;"
 msgstr ""
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:11
@@ -176,33 +184,38 @@ msgstr ""
 msgid "{0} manga added"
 msgstr ""
 
-#: ../mangascan/add_dialog.py:205
+#: ../mangascan/add_dialog.py:209
 #, python-brace-format
 msgid "Search in {0}..."
 msgstr ""
 
-#: ../mangascan/card.py:38 ../mangascan/card.py:47
+#: ../mangascan/card.py:43 ../mangascan/card.py:52
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
 msgstr ""
 
-#: ../mangascan/card.py:39
+#: ../mangascan/card.py:44
 #, python-brace-format
 msgid "Download page {0} / {1}"
 msgstr ""
 
-#: ../mangascan/card.py:48
+#: ../mangascan/card.py:53
 msgid "Download completed"
 msgstr ""
 
-#: ../mangascan/card.py:62
+#: ../mangascan/card.py:67
 msgid "Download chapter"
 msgstr ""
 
-#: ../mangascan/model.py:86
+#: ../mangascan/card.py:105
+#, python-brace-format
+msgid "[{0}] Successfully updated"
+msgstr ""
+
+#: ../mangascan/model.py:98
 msgid "Complete"
 msgstr ""
 
-#: ../mangascan/model.py:87
+#: ../mangascan/model.py:99
 msgid "On going"
 msgstr ""

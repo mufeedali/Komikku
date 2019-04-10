@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-31 23:15+0200\n"
+"POT-Creation-Date: 2019-04-11 00:12+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -13,77 +13,87 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/about_dialog.ui.in:11 ../data/main_window.ui:86
+#: ../data/about_dialog.ui.in:11 ../data/main_window.ui:101
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:4
 msgid "An online / offline manga reader"
-msgstr ""
+msgstr "Un lecteur de manga en ligne / hors ligne"
 
 #: ../data/about_dialog.ui.in:13
 msgid "Learn more about Manga Scan"
-msgstr ""
+msgstr "En apprendre plus sur Manga Scan"
 
 #. Add your name to the translator credits list
 #: ../data/about_dialog.ui.in:15
-msgid "translator-credits"
+msgid "Valéry Febvre <vfebvre@easter-eggs.com>"
 msgstr ""
 
 #: ../data/add_dialog.ui:46
 msgid "Select a server"
-msgstr ""
+msgstr "Choisissez un serveur"
 
-#: ../data/add_dialog.ui:259 ../data/main_window.ui:327
+#: ../data/add_dialog.ui:259 ../data/main_window.ui:342
 msgid "Author"
 msgstr "Auteur"
 
-#: ../data/add_dialog.ui:286 ../data/main_window.ui:354
+#: ../data/add_dialog.ui:286 ../data/main_window.ui:369
 msgid "Type"
-msgstr ""
+msgstr "Genre"
 
-#: ../data/add_dialog.ui:316 ../data/main_window.ui:384
+#: ../data/add_dialog.ui:316 ../data/main_window.ui:399
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
-#: ../data/add_dialog.ui:343 ../data/main_window.ui:411
+#: ../data/add_dialog.ui:343 ../data/main_window.ui:426
 msgid "Server"
-msgstr ""
+msgstr "Serveur"
 
-#: ../data/add_dialog.ui:370 ../data/main_window.ui:438
+#: ../data/add_dialog.ui:370 ../data/main_window.ui:453
 msgid "Synopsis"
-msgstr ""
+msgstr "Synopsis"
 
 #: ../data/main_window.ui:19
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
+
+#: ../data/main_window.ui:34
+msgid "Update"
+msgstr "Mettre à jour"
 
 #. The umbrella sentence of the application on the first start screen
-#: ../data/main_window.ui:69 ../data/main_window.ui:173
+#: ../data/main_window.ui:84 ../data/main_window.ui:188
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:4
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:3
 msgid "Manga Scan"
 msgstr ""
 
-#: ../data/main_window.ui:124
-msgid "Preferences"
-msgstr ""
-
 #: ../data/main_window.ui:139
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../data/main_window.ui:154
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Raccourcis clavier"
 
 #. "Manga Scan" is the application name
-#: ../data/main_window.ui:154
+#: ../data/main_window.ui:169
 msgid "About"
 msgstr "À propos"
 
+#: ../data/main_window.ui:496
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:9
 msgid "An online / offline manga reader for Gnome"
-msgstr ""
+msgstr "Un lecteur de manga en ligne / hors ligne pour Gnome"
 
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:11
 msgid ""
 "An online / offline manga reader for Gnome developed with the aim of being "
 "used with Librem 5"
 msgstr ""
+"Un lecteur de manga en ligne / hors ligne pour Gnome développé dans le but "
+"d'être utilisé avec le Librem 5"
 
 #: ../data/com.gitlab.valos.MangaScan.appdata.xml.in.in:16
 msgid "First usable version"
@@ -106,19 +116,22 @@ msgid "@ICON@"
 msgstr ""
 
 #: ../data/com.gitlab.valos.MangaScan.desktop.in.in:13
-msgid "manga;reader;"
-msgstr ""
+msgid "manga;reader;scan;offline;"
+msgstr "manga;lecteur;scan;hors ligne;"
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:11
 #: ../data/settings_dialog.ui:130
 msgid "Use dark GTK+ theme"
-msgstr ""
+msgstr "Utiliser le thème GTK+ sombre"
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:12
 msgid ""
 "Use the dark variant of your GTK+ theme. Please note that not every GTK+ "
 "theme has a dark variant."
 msgstr ""
+"Utiliser la variante sombre du thème GTK+. Notez que tous les thèmes GTK"
+"+ \n"
+"ne disposent pas d’une variante sombre."
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:16
 msgid "Window size"
@@ -126,7 +139,7 @@ msgstr ""
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:17
 msgid "Remember the window size."
-msgstr ""
+msgstr "Se souvenir de la taille de la fenêtre."
 
 #: ../data/com.gitlab.valos.MangaScan.gschema.xml:21
 msgid "Backup the database"
@@ -141,63 +154,68 @@ msgstr ""
 #. Title of the settings dialog
 #: ../data/settings_dialog.ui:16
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: ../data/settings_dialog.ui:64
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: ../data/settings_dialog.ui:113
 msgid "Dark Theme"
-msgstr ""
+msgstr "Thème sombre"
 
 #: ../data/shortcuts_overview.ui:14
 msgctxt "Shortcut window description"
 msgid "Application"
-msgstr ""
+msgstr "Application"
 
 #: ../data/shortcuts_overview.ui:18
 msgctxt "Shortcut window description"
 msgid "Add manga"
-msgstr ""
+msgstr "Ajouter un manga"
 
 #: ../data/shortcuts_overview.ui:25
 msgctxt "Shortcut window description"
 msgid "Open preferences"
-msgstr ""
+msgstr "Ouvrir préférences"
 
 #: ../mangascan/add_dialog.py:109
 #, python-brace-format
 msgid "{0} manga added"
-msgstr ""
+msgstr "{0} manga ajouté"
 
-#: ../mangascan/add_dialog.py:205
+#: ../mangascan/add_dialog.py:209
 #, python-brace-format
 msgid "Search in {0}..."
-msgstr ""
+msgstr "Rechercher dans {0}..."
 
-#: ../mangascan/card.py:38 ../mangascan/card.py:47
+#: ../mangascan/card.py:43 ../mangascan/card.py:52
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
-msgstr ""
+msgstr "[{0}] Chapitre {1}"
 
-#: ../mangascan/card.py:39
+#: ../mangascan/card.py:44
 #, python-brace-format
 msgid "Download page {0} / {1}"
-msgstr ""
+msgstr "Télécharger le page {0} / {1}"
 
-#: ../mangascan/card.py:48
+#: ../mangascan/card.py:53
 msgid "Download completed"
-msgstr ""
+msgstr "Téléchargement terminé"
 
-#: ../mangascan/card.py:62
+#: ../mangascan/card.py:67
 msgid "Download chapter"
-msgstr ""
+msgstr "Télécharger le chapitre"
 
-#: ../mangascan/model.py:86
+#: ../mangascan/card.py:105
+#, python-brace-format
+msgid "[{0}] Successfully updated"
+msgstr "[{0}] Mis à jour avec succès"
+
+#: ../mangascan/model.py:98
 msgid "Complete"
 msgstr "Terminé"
 
-#: ../mangascan/model.py:87
+#: ../mangascan/model.py:99
 msgid "On going"
 msgstr "En cours"
