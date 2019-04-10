@@ -91,6 +91,7 @@ def update_row(table, id, data):
 
 
 class Manga(object):
+    chapters_ = None
     server = None
 
     STATUSES = dict(
@@ -98,7 +99,7 @@ class Manga(object):
         ongoing=_('On going')
     )
 
-    def __init__(self, id=None, server=None, backref=True):
+    def __init__(self, id=None, server=None):
         if server:
             self.server = server
 
@@ -107,15 +108,6 @@ class Manga(object):
             row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
             for key in row.keys():
                 setattr(self, key, row[key])
-
-            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (id,)).fetchall()
-            db_conn.close()
-
-            if backref is True:
-                self.chapters = []
-                for row in rows:
-                    chapter = Chapter(row['id'])
-                    self.chapters.append(chapter)
 
             if server is None:
                 server_module = importlib.import_module('.' + self.server_id, package="mangascan.servers")
@@ -127,6 +119,19 @@ class Manga(object):
         m._save(data.copy())
 
         return m
+
+    @property
+    def chapters(self):
+        if self.chapters_ is None:
+            db_conn = create_db_connection()
+            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
+            db_conn.close()
+
+            self.chapters_ = []
+            for row in rows:
+                self.chapters_.append(Chapter(row['id']))
+
+        return self.chapters_
 
     @property
     def cover_path(self):
@@ -173,10 +178,10 @@ class Manga(object):
             self.id = cursor.lastrowid
         db_conn.close()
 
-        self.chapters = []
+        self.chapters_ = []
         for rank, chapter_data in enumerate(chapters):
             chapter = Chapter.new(chapter_data, rank, self.id)
-            self.chapters = [chapter, ] + self.chapters
+            self.chapters_ = [chapter, ] + self.chapters_
 
         if not os.path.exists(self.resources_path):
             os.makedirs(self.resources_path)
@@ -222,11 +227,7 @@ class Manga(object):
             if updated:
                 data['last_update'] = datetime.datetime.now()
 
-            self.chapters = []
-            rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
-            for row in rows:
-                chapter = Chapter(row['id'])
-                self.chapters.append(chapter)
+            self.chapters_ = None
 
             db_conn.close()
 
@@ -237,7 +238,9 @@ class Manga(object):
 
 
 class Chapter(object):
-    def __init__(self, id=None, backref=False):
+    manga_ = None
+
+    def __init__(self, id=None):
         if id:
             db_conn = create_db_connection()
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
@@ -246,8 +249,12 @@ class Chapter(object):
             for key in row.keys():
                 setattr(self, key, row[key])
 
-            if backref is True:
-                self.manga = Manga(self.manga_id, backref=False)
+    @property
+    def manga(self):
+        if self.manga_ is None:
+            self.manga_ = Manga(self.manga_id)
+
+        return self.manga_
 
     @classmethod
     def new(cls, data, rank, manga_id):
