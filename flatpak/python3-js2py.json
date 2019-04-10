@@ -1,0 +1,34 @@
+{
+    "name": "python3-js2py",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} js2py"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/af/be/6c59e30e208a5f28da85751b93ec7b97e4612268bb054d0dff396e758a90/pytz-2018.9.tar.gz",
+            "sha256": "d5f05e487007e29e03409f9398d074e158d920d36eb82eaf66fb1136b0c5374c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/cb/89/e3687d3ed99bc882793f82634e9824e62499fdfdc4b1ae39e211c5b05017/tzlocal-1.5.1.tar.gz",
+            "sha256": "4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/dd/bf/4138e7bfb757de47d1f4b6994648ec67a51efe58fa907c1e11e350cddfca/six-1.12.0.tar.gz",
+            "sha256": "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/17/3d/59f7f0cd6a7cdab611b36d8921c9d2d6c5564033d938ec2eb934cdca0e48/pyjsparser-2.5.2.tar.gz",
+            "sha256": "e4a659df3db42a2ff9fbc961eb6d4076a0b945e1aadfc20d48f913ad5dca011d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/2e/f4/5aa62fcb7c6173361da2fb644198c31052da690e4198e023330c58ddf6f5/Js2Py-0.60.tar.gz",
+            "sha256": "6deaf6c2e49f91b6800581fbddd24b0ee51164e916e63681a368199f1de593ab"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import cfscrape
+import requests
 
 server_id = 'japscan'
 server_name = 'JapScan'
@@ -12,15 +13,17 @@ cover_url = base_url + '/imgs/mangas/{0}.jpg'
 chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
 scan_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
 
-session = None
+cf = None
 
 
 class Japscan():
     __server_name__ = server_name
 
     def __init__(self):
-        global session
-        session = cfscrape.create_scraper()
+        global cf
+
+        session = requests.session()
+        cf = cfscrape.create_scraper(sess=session)
 
     @property
     def id(self):
@@ -38,7 +41,7 @@ class Japscan():
         """
         assert 'slug' in initial_data and 'name' in initial_data, 'Missing slug and/or name in initial data'
 
-        r = session.get(manga_url.format(initial_data['slug']))
+        r = cf.get(manga_url.format(initial_data['slug']))
         # print(r.text)
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -99,7 +102,7 @@ class Japscan():
         Currently, only pages (list of images filenames) are expected.
         """
         url = chapter_url.format(manga_slug, chapter_slug)
-        r = session.get(url)
+        r = cf.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
         # print(r.text)
@@ -123,7 +126,7 @@ class Japscan():
         chapter_slug = chapter_slug.capitalize()
 
         url = scan_url.format(manga_slug, chapter_slug, page)
-        r = session.get(url)
+        r = cf.get(url)
 
         return r.content if r.status_code == 200 else None
 
@@ -133,12 +136,12 @@ class Japscan():
         """
         # This server use a specific slug for images (capitalized kebab-case)
         manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
-        r = session.get(cover_url.format(manga_slug))
+        r = cf.get(cover_url.format(manga_slug))
 
         return r.content if r.status_code == 200 else None
 
     def search(self, term):
-        r = session.post(search_url, data=dict(search=term))
+        r = cf.post(search_url, data=dict(search=term))
 
         # Returned data for each manga:
         # name:  name of the manga
