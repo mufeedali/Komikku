@@ -23,15 +23,20 @@ class Reader():
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
         self.overlay = self.scrolledwindow.get_parent()
+
         self.image = Gtk.Image()
         self.viewport.add(self.image)
+
         self.spinner_box = self.builder.get_object('spinner_box')
+        self.overlay.add_overlay(self.spinner_box)
+        self.hide_spinner()
 
         self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
     def hide_spinner(self):
-        self.overlay.remove(self.spinner_box)
+        self.spinner_box.hide()
+        self.spinner_box.get_children()[0].stop()
 
     def init(self, chapter_id, index=None):
         def run():
@@ -63,11 +68,15 @@ class Reader():
             elif index == 'last':
                 index = len(self.chapter.pages) - 1
 
+            self.hide_spinner()
             self.render_page(index)
 
+        if index is None:
+            # We come from library
+            self.image.clear()
         self.show_spinner()
 
-        self.chapter = Chapter(chapter_id, backref=True)
+        self.chapter = Chapter(chapter_id)
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -106,16 +115,17 @@ class Reader():
             GLib.idle_add(show_page_image, page_path)
 
         def show_page_image(page_path):
-            if page_path is None:
-                # TODO: Display not found page (missing_file.png image)
-                return False
+            if page_path:
+                self.pixbuf = Pixbuf.new_from_file(page_path)
+                self.size = self.viewport.get_allocated_size()[0]
+                self.set_page_image_from_pixbuf()
 
-            self.pixbuf = Pixbuf.new_from_file(page_path)
-            self.size = self.viewport.get_allocated_size()[0]
-            self.set_page_image_from_pixbuf()
+                self.image.show()
+            else:
+                # TODO: Display not found page (missing_file.png image)
+                pass
 
             self.hide_spinner()
-            self.image.show()
 
             return False
 
@@ -143,4 +153,5 @@ class Reader():
         self.image.set_from_pixbuf(pixbuf)
 
     def show_spinner(self):
-        self.overlay.add_overlay(self.spinner_box)
+        self.spinner_box.get_children()[0].start()
+        self.spinner_box.show()
