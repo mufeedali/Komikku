@@ -18,6 +18,10 @@ class Card():
         self.window = window
         self.builder = window.builder
 
+        # Chapters listbox
+        self.listbox = self.builder.get_object('chapters_listbox')
+        self.listbox.connect("row-activated", self.on_chapter_clicked)
+
     def delete_chapter(self, delete_button, box, chapter):
         chapter.purge()
 
@@ -139,10 +143,7 @@ class Card():
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
 
-        listbox = self.builder.get_object('chapters_listbox')
-        listbox.connect("row-activated", self.on_chapter_clicked)
-
-        for child in listbox.get_children():
+        for child in self.listbox.get_children():
             child.destroy()
 
         for chapter in self.manga.chapters:
@@ -154,9 +155,9 @@ class Card():
 
             self.populate_chapter(box, chapter)
 
-            listbox.add(row)
+            self.listbox.add(row)
 
-        listbox.show_all()
+        self.listbox.show_all()
 
     def populate_chapter(self, box, chapter):
         if box.get_parent() is None:
