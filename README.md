@@ -6,47 +6,50 @@
 
 MangaScan is licensed under the GPLv3+.
 
-## Features
+## Building from source
 
-### Present
+#### Option 1: with GNOME Builder
 
-- 
-- 
-- 
+Open GNOME Builder, click the "Clone..." button, paste the repository url.
+Clone the project and hit the "Play" button to start building Manga Scan.
 
-### TODO
+#### Option 2: with Flatpak Builder
+```
+# Clone Manga Scan repository
+git clone https://gitlab.com/valos/MangaScan.git
+cd MangaScan
+# Add Flathub repository
+flatpak remote-add flathub --if-not-exists https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add gnome-nightly --if-not-exists https://sdk.gnome.org/gnome-nightly.flatpakrepo
+# Install the required GNOME runtimes
+flatpak install gnome-nightly org.gnome.Platform//master org.gnome.Sdk//master
+# Start building
+flatpak-builder --repo=repo com.gitlab.valos.MangaScan flatpak/com.gitlab.valos.MangaScan.json --force-clean
+# Create the Flatpak
+flatpak build-export repo com.gitlab.valos.MangaScan
+flatpak build-bundle repo com.gitlab.valos.MangaScan.flatpak com.gitlab.valos.MangaScan
+# Install the Flatpak
+flatpak install com.gitlab.valos.MangaScan.flatpak
+```
 
-* Library page
-    - ~~Sort mangas by last read date~~
-    - Show title and server's logo in mangas covers
-    - Adjust covers width to a multiple of window width
-    - ~~Improve library rendering (avoid full redraw) when order changes, a manga is added or a manga is deleted~~
-* Improve manga card page
-    - ~~Sort chapters~~
-    - ~~Delete manga~~
-    - ~~Update / refresh a manga~~
-    - ~~Show last update date~~
-    - ~~Delete a chapter (files on disk)~~
-    - ~~Download a chapter (for offline reading)~~
-* Reader
-    - ~~Save chapter's last page read~~
-    - Image adjustment: width, height, original size, best
-    - Zooming
-    - Show current page number / pages navigation
-    - Swipe gesture
-    - Reading direction
-    - Use full screen
-* Add dialog
-    - ~~Hide '+ Add' button in title bar if manga is already present in library or just added and replace it with a '> Read' button~~
-* Check network state: [code example](https://developer.puri.sm/Librem5/Apps/Examples/Networking/NetworkState/index.html)
-* ~~Store and reuse requests session of servers when they use a DDoS protection (CloudFlare)~~
-* ...
-* Add more servers
+#### Option 3: with Meson
+##### Prerequisites:
+* python >= 3.6.5
+* gtk >= 3.24.1
+* libhandy >= 0.0.9
+* meson >= 0.46.0
+* git
 
-## Building
+```
+git clone https://gitlab.com/valos/MangaScan.git
+cd MangaScan
+meson . _build --prefix=/usr
+ninja -C _build
+sudo ninja -C _build install
+```
 
-## Dependencies
+## Translations
+Helping to translate Manga Scan or add support to a new language is very welcome.
 
-## Build from Git repo
-
-## Running
+## Authors
+</> with &hearts; by Valéry Febvre
