@@ -117,13 +117,13 @@ class Reader():
         def show_page_image(page_path):
             if page_path:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
-                self.size = self.viewport.get_allocated_size()[0]
-                self.set_page_image_from_pixbuf()
-
-                self.image.show()
             else:
-                # TODO: Display not found page (missing_file.png image)
-                pass
+                self.pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
+
+            self.size = self.viewport.get_allocated_size()[0]
+            self.set_page_image_from_pixbuf()
+
+            self.image.show()
 
             self.hide_spinner()
 

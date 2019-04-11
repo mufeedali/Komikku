@@ -11,7 +11,7 @@ class Library():
         self.builder = window.builder
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
-        self.flowbox.connect("child-activated", self.on_manga_clicked)
+        self.flowbox.connect('child-activated', self.on_manga_clicked)
         self.flowbox.set_sort_func(self.sort)
 
         self.populate()
@@ -21,7 +21,7 @@ class Library():
         if manga.cover_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_path, 180, -1, True)
         else:
-            pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
         cover_image.set_from_pixbuf(pixbuf)
         cover_image.manga = manga
         cover_image.show()
