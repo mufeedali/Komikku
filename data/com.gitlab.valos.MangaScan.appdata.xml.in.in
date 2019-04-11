@@ -4,11 +4,11 @@
  <name>Manga Scan</name>
  <launchable type="desktop-id">@APPID@.desktop</launchable>
  <project_license>GPL-3.0</project_license>
- <metadata_license></metadata_license>
+ <metadata_license>CC0-1.0</metadata_license>
  <content_rating type="oars-1.1" />
  <summary>An online / offline manga reader for Gnome</summary>
  <description>
-	<p>An online / offline manga reader for Gnome developed with the aim of being used with Librem 5</p>
+	<p>An online / offline manga reader for Gnome developed with the aim of being used with the Librem 5 phone</p>
  </description>
  <releases>
     <release version="0.0.0" date="2019-03-14">
