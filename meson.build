@@ -1,6 +1,6 @@
 project('mangascan', 'c',
   version: '0.0.0',
-  meson_version: '>= 0.46.0'
+  meson_version: '>= 0.48.0'
 )
 i18n = import('i18n')
 python = import('python3')
