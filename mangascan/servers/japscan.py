@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import cfscrape
+from collections import OrderedDict
 import requests
 
 server_id = 'japscan'
@@ -15,6 +16,17 @@ scan_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
 
 cf = None
 
+headers = OrderedDict(
+    [
+        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
+        ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('Accept-Language', 'en-US,en;q=0.5'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('Connection', 'close'),
+        ('Upgrade-Insecure-Requests', '1')
+    ]
+)
+
 
 class Japscan():
     __server_name__ = server_name
@@ -23,6 +35,7 @@ class Japscan():
         global cf
 
         session = requests.session()
+        session.headers = headers
         cf = cfscrape.create_scraper(sess=session)
 
     @property
