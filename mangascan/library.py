@@ -17,8 +17,11 @@ class Library():
         self.populate()
 
     def add_manga(self, manga, position=-1):
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        box.manga = manga
+        overlay = Gtk.Overlay()
+        overlay.set_size_request(180, 250)
+        overlay.set_halign(Gtk.Align.CENTER)
+        overlay.set_valign(Gtk.Align.CENTER)
+        overlay.manga = manga
 
         # Cover
         image = Gtk.Image()
@@ -27,13 +30,18 @@ class Library():
         else:
             pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
         image.set_from_pixbuf(pixbuf)
-        box.pack_start(image, True, True, 0)
+        overlay.add_overlay(image)
 
         # Name
-        label = Gtk.Label(manga.name)
-        box.pack_start(label, True, True, 0)
+        label = Gtk.Label()
+        label.get_style_context().add_class('library-manga-name-label')
+        label.set_valign(Gtk.Align.END)
+        label.set_ellipsize(3)  # ellipsize at end
+        label.set_text(manga.name)
+        overlay.add_overlay(label)
 
-        self.flowbox.insert(box, position)
+        overlay.show_all()
+        self.flowbox.insert(overlay, position)
 
     def on_manga_added(self, manga):
         """

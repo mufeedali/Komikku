@@ -148,7 +148,7 @@ class Card():
 
         for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('listboxrow-chapter')
+            row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
@@ -174,7 +174,7 @@ class Card():
 
         # Counter: nb read / nb pages
         label = Gtk.Label(xalign=0, yalign=1)
-        label.get_style_context().add_class('listboxrow-chapter-counter')
+        label.get_style_context().add_class('card-chapter-counter-label')
         if chapter.pages is not None and chapter.last_page_read_index is not None:
             label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
         box.pack_start(label, False, True, 0)

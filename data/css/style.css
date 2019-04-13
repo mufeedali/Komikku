@@ -1,10 +1,14 @@
-/* Main window - manga page - chapters list */
+/* Main window - library page - manga cover */
+.library-manga-name-label {
+    background: rgba(0, 0, 0, .5);
+}
 
-.listboxrow-chapter {
+/* Main window - manga page - chapters list */
+.card-chapter-listboxrow {
     border-bottom: 1px solid #ccc;
     padding: 16px;
 }
 
-.listboxrow-chapter-counter {
+.card-chapter-counter-label {
     font-size: 10px;
 }
