@@ -45,10 +45,10 @@ class AddDialog():
             row.add(box)
 
             # Server logo
-            pix = Pixbuf.new_from_resource_at_scale(
+            pixbuf = Pixbuf.new_from_resource_at_scale(
                 '/com/gitlab/valos/MangaScan/icons/ui/favicons/{0}.ico'.format(server['id']), 16, 16, True)
             logo = Gtk.Image(xalign=0)
-            logo.set_from_pixbuf(pix)
+            logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
 
             # Server title

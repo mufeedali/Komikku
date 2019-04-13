@@ -1,4 +1,6 @@
+from gi.repository import Gdk
 from gi.repository import Gtk
+from gi.repository import Pango
 from gi.repository.GdkPixbuf import Pixbuf
 
 from mangascan.model import create_db_connection
@@ -32,13 +34,40 @@ class Library():
         image.set_from_pixbuf(pixbuf)
         overlay.add_overlay(image)
 
-        # Name
+        # Name (bottom)
         label = Gtk.Label()
         label.get_style_context().add_class('library-manga-name-label')
         label.set_valign(Gtk.Align.END)
-        label.set_ellipsize(3)  # ellipsize at end
+        label.set_ellipsize(Pango.EllipsizeMode.END)
         label.set_text(manga.name)
         overlay.add_overlay(label)
+
+        # Server logo (top left corner)
+        def draw(da, ctx):
+            size = 40
+
+            ctx.save()
+
+            # Draw triangle
+            ctx.set_source_rgba(0, 0, 0, .5)
+            ctx.new_path()
+            ctx.move_to(0, 0)
+            ctx.rel_line_to(0, size)
+            ctx.rel_line_to(size, -size)
+            ctx.close_path()
+            ctx.fill()
+
+            # Draw logo
+            pixbuf = Pixbuf.new_from_resource_at_scale(
+                '/com/gitlab/valos/MangaScan/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
+            Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 2, 2)
+            ctx.paint()
+
+            ctx.restore()
+
+        drawingarea = Gtk.DrawingArea()
+        drawingarea.connect('draw', draw)
+        overlay.add_overlay(drawingarea)
 
         overlay.show_all()
         self.flowbox.insert(overlay, position)

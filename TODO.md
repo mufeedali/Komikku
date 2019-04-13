@@ -2,7 +2,7 @@
 
 * Library page
     - ~~Sort mangas by last read date~~
-    - Show title and server's logo in mangas covers
+    - ~~Show title and server's logo in mangas covers~~
     - Adjust covers width to a multiple of window width
     - ~~Improve library rendering (avoid full redraw) when order changes, a manga is added or a manga is deleted~~
 * Improve manga card page

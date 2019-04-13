@@ -1,6 +1,7 @@
 /* Main window - library page - manga cover */
 .library-manga-name-label {
     background: rgba(0, 0, 0, .5);
+    color: #fff;
 }
 
 /* Main window - manga page - chapters list */
