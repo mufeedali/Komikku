@@ -221,6 +221,8 @@ class AddDialog():
             db_conn.close()
 
             if row:
+                self.manga = Manga(row['id'], self.server)
+
                 self.read_button.show()
                 self.add_button.hide()
             else:
