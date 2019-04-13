@@ -87,8 +87,7 @@ class Library():
             self.add_manga(manga)
 
     def on_manga_clicked(self, flowbox, child):
-        self.window.card.populate(child.get_children()[0].manga)
-        self.window.card.show()
+        self.window.card.open_manga(child.get_children()[0].manga)
 
     def on_manga_deleted(self, manga):
         # Remove manga cover in flowbox

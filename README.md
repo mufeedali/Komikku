@@ -11,6 +11,7 @@ MangaScan is licensed under the GPLv3+.
 #### Option 1: with GNOME Builder
 
 Open GNOME Builder, click the "Clone..." button, paste the repository url.
+
 Clone the project and hit the "Play" button to start building Manga Scan.
 
 #### Option 2: with Flatpak Builder
