@@ -12,6 +12,7 @@
     - ~~Show last update date~~
     - ~~Delete a chapter (files on disk)~~
     - ~~Download a chapter (for offline reading)~~
+    - Memorize the scroll position for each manga
 * Reader
     - ~~Save chapter's last page read~~
     - Image adjustment: width, height, original size, best

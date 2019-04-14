@@ -155,7 +155,7 @@ class AddDialog():
         self.show_page('manga')
 
     def on_read_button_clicked(self, button):
-        self.window.card.open_manga(self.manga)
+        self.window.card.open_manga(self.manga, transition=False)
         self.dialog.close()
 
     def on_search_entry_activated(self, entry):

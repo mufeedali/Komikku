@@ -160,7 +160,17 @@ class MainWindow(Gtk.ApplicationWindow):
         window_size = [self.get_size().width, self.get_size().height]
         mangascan.config_manager.set_window_size(window_size)
 
-    def show_page(self, name):
+    def show_page(self, name, transition=True):
         self.left_button_stack.set_visible_child_name(name)
+
+        if not transition:
+            # Save defined transition type
+            transition_type = self.stack.get_transition_type()
+            # Set transition type to NONE
+            self.stack.set_transition_type(Gtk.StackTransitionType.NONE)
         self.stack.set_visible_child_name(name)
+        if not transition:
+            # Restore transition type
+            self.stack.set_transition_type(transition_type)
+
         self.page = name

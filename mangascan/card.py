@@ -111,9 +111,9 @@ class Card():
         thread.daemon = True
         thread.start()
 
-    def open_manga(self, manga):
+    def open_manga(self, manga, transition=True):
         self.populate(manga)
-        self.show()
+        self.show(transition)
 
     def populate(self, manga=None):
         if manga:
@@ -194,8 +194,8 @@ class Card():
 
         box.show_all()
 
-    def show(self):
+    def show(self, transition):
         self.window.headerbar.set_title(self.manga.name)
         self.builder.get_object('menubutton').set_popover(self.builder.get_object('card_page_menubutton_popover'))
 
-        self.window.show_page('card')
+        self.window.show_page('card', transition=transition)
