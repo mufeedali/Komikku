@@ -95,19 +95,21 @@ class Card():
         self.window.show_page('library')
 
     def on_update_menu_clicked(self, action, param):
-        def run():
-            self.manga.update()
-            GLib.idle_add(complete)
+        def run(manga):
+            manga.update()
+            GLib.idle_add(complete, manga)
 
-        def complete():
-            self.populate()
+        def complete(manga):
+            # Update card if manga has not changed
+            if self.manga.id == manga.id:
+                self.populate()
 
-            notification = Notify.Notification.new(_('[{0}] Successfully updated').format(self.manga.name))
+            notification = Notify.Notification.new(_('[{0}] Successfully updated').format(manga.name))
             notification.show()
 
             return False
 
-        thread = threading.Thread(target=run)
+        thread = threading.Thread(target=run, args=(self.manga,))
         thread.daemon = True
         thread.start()
 
