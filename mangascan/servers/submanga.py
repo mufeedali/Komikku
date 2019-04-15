@@ -5,7 +5,7 @@ import requests
 
 server_id = 'submanga'
 server_name = 'Submanga'
-server_country = 'es'
+server_lang = 'es'
 
 base_url = 'https://submanga.online'
 search_url = base_url + '/search'

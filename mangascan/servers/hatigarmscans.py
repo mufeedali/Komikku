@@ -5,7 +5,7 @@ import requests
 
 server_id = 'hatigarmscans'
 server_name = 'Hatigarm Scans'
-server_country = 'en'
+server_lang = 'en'
 
 base_url = 'https://www.hatigarmscans.net'
 search_url = base_url + '/search'

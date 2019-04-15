@@ -56,9 +56,9 @@ class AddDialog():
             label.set_text(server['name'])
             box.pack_start(label, True, True, 0)
 
-            # Server country flag
+            # Server flag (indicates the language)
             pix = Pixbuf.new_from_resource_at_scale(
-                '/com/gitlab/valos/MangaScan/icons/ui/flags/{0}.png'.format(server['country']), 32, 32, True)
+                '/com/gitlab/valos/MangaScan/icons/ui/flags/{0}.png'.format(server['lang']), 32, 32, True)
             flag = Gtk.Image(xalign=1)
             flag.set_from_pixbuf(pix)
             box.pack_start(flag, False, True, 0)

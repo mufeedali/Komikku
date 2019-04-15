@@ -5,7 +5,7 @@ import requests
 
 server_id = 'japscan'
 server_name = 'JapScan'
-server_country = 'fr'
+server_lang = 'fr'
 
 base_url = 'https://www.japscan.to'
 search_url = base_url + '/search/'

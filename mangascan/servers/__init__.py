@@ -26,8 +26,8 @@ def get_servers_list():
                 info['id'] = attr
             elif member == 'server_name':
                 info['name'] = attr
-            elif member == 'server_country':
-                info['country'] = attr
+            elif member == 'server_lang':
+                info['lang'] = attr
             elif inspect.isclass(attr) and attr.__module__.startswith('mangascan.servers') and member != 'Server':
                 info['class'] = attr
 
