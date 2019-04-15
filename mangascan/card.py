@@ -168,6 +168,15 @@ class Card():
 
         # Title
         label = Gtk.Label(xalign=0)
+        ctx = label.get_style_context()
+        ctx.add_class('card-chapter-label')
+        if chapter.last_page_read_index is not None:
+            if chapter.last_page_read_index == len(chapter.pages) - 1:
+                # Chapter reading ended
+                ctx.add_class('card-chapter-label-ended')
+            else:
+                # Chapter reading started
+                ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         label.set_text(chapter.title)
         box.pack_start(label, True, True, 0)

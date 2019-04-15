@@ -4,10 +4,19 @@
     color: #fff;
 }
 
-/* Main window - manga page - chapters list */
+/* Main window - manga card page - chapters list */
 .card-chapter-listboxrow {
     border-bottom: 1px solid #ccc;
     padding: 16px;
+}
+.card-chapter-label {
+    font-size: 14px;
+}
+.card-chapter-label-started {
+    color: #3949ab;
+}
+.card-chapter-label-ended {
+    color: #bbb;
 }
 
 .card-chapter-counter-label {
