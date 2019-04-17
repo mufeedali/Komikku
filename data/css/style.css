@@ -22,3 +22,8 @@
 .card-chapter-counter-label {
     font-size: 10px;
 }
+
+/* Add dialog - servers page */
+.add-dialog-server-listboxrow {
+    padding: 16px;
+}

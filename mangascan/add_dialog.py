@@ -41,6 +41,7 @@ class AddDialog():
 
         for server in get_servers_list():
             row = Gtk.ListBoxRow()
+            row.get_style_context().add_class('add-dialog-server-listboxrow')
             row.server_data = server
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
@@ -58,10 +59,10 @@ class AddDialog():
             box.pack_start(label, True, True, 0)
 
             # Server flag (indicates the language)
-            pix = Pixbuf.new_from_resource_at_scale(
-                '/com/gitlab/valos/MangaScan/icons/ui/flags/{0}.png'.format(server['lang']), 32, 32, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale(
+                '/com/gitlab/valos/MangaScan/icons/ui/flags/{0}.png'.format(server['lang']), 30, 16, True)
             flag = Gtk.Image(xalign=1)
-            flag.set_from_pixbuf(pix)
+            flag.set_from_pixbuf(pixbuf)
             box.pack_start(flag, False, True, 0)
 
             listbox.add(row)
