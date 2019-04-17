@@ -1,36 +1,27 @@
-import glob
-import importlib
-import inspect
-import os
+from importlib import resources
 
 
 def get_servers_list():
-    sl = []
-    current_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-    current_module_name = os.path.splitext(os.path.basename(current_dir))[0]
+    servers_list = []
 
-    for file in glob.glob(current_dir + "/*.py"):
-        name = os.path.splitext(os.path.basename(file))[0]
-
+    for server in resources.contents(package='mangascan.servers'):
         # Ignore __ files
-        if name.startswith("__"):
+        if server.startswith('__'):
             continue
 
-        module = importlib.import_module("." + name, package="mangascan." + current_module_name)
-
+        # Get servers properties: id, name, lang
+        # For reasons of speed, we don't want import modules
         info = dict()
-        for member in dir(module):
-            attr = getattr(module, member)
+        with resources.open_text('mangascan.servers', server) as fid:
+            for line in fid.readlines():
+                if line.startswith('class'):
+                    break
 
-            if member == 'server_id':
-                info['id'] = attr
-            elif member == 'server_name':
-                info['name'] = attr
-            elif member == 'server_lang':
-                info['lang'] = attr
-            elif inspect.isclass(attr) and attr.__module__.startswith('mangascan.servers') and member != 'Server':
-                info['class'] = attr
+                if line.startswith('server_'):
+                    prop, value = line.strip().split(' = ')
+                    info[prop.strip().replace('server_', '')] = value.strip().replace("'", '')
 
-        sl.append(info)
+            info['class'] = info['id'].capitalize()
+            servers_list.append(info)
 
-    return sl
+    return servers_list

@@ -1,4 +1,5 @@
 from gettext import gettext as _
+from pydoc import locate
 import threading
 
 from gi.repository import Gio
@@ -196,7 +197,7 @@ class AddDialog():
         thread.start()
 
     def on_server_clicked(self, listbox, row):
-        self.server = row.server_data['class']()
+        self.server = locate('mangascan.servers.{0}.{1}'.format(row.server_data['id'], row.server_data['class']))()
         self.show_page('search')
 
     def open(self, action, param):
