@@ -5,6 +5,8 @@ server_id = 'submanga'
 server_name = 'Submanga'
 server_lang = 'es'
 
+session = None
+
 
 class Submanga():
     id = server_id
@@ -19,7 +21,10 @@ class Submanga():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        pass
+        global session
+
+        if session is None:
+            session = requests.Session()
 
     def get_manga_data(self, initial_data):
         """
@@ -29,7 +34,7 @@ class Submanga():
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = requests.get(self.manga_url.format(initial_data['slug']))
+        r = session.get(self.manga_url.format(initial_data['slug']))
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -88,7 +93,7 @@ class Submanga():
         Currently, only pages (list of images filenames) are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = requests.get(url)
+        r = session.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -110,7 +115,7 @@ class Submanga():
         Returns chapter page scan (image) content
         """
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
-        r = requests.get(url)
+        r = session.get(url)
 
         return (page['image'], r.content) if r.status_code == 200 else (None, None)
 
@@ -118,12 +123,12 @@ class Submanga():
         """
         Returns manga cover (image) content
         """
-        r = requests.get(self.cover_url.format(cover_path))
+        r = session.get(self.cover_url.format(cover_path))
 
         return r.content if r.status_code == 200 else None
 
     def search(self, term):
-        r = requests.get(self.search_url, params=dict(query=term))
+        r = session.get(self.search_url, params=dict(query=term))
 
         # Returned data for each manga:
         # value: name of the manga

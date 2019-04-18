@@ -32,8 +32,9 @@ class Ninemanga():
     def __init__(self):
         global session
 
-        session = requests.Session()
-        session.headers = headers
+        if session is None:
+            session = requests.Session()
+            session.headers = headers
 
     def get_manga_data(self, initial_data):
         """

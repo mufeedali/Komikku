@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
+import requests
 
-from collections import OrderedDict
-
+from mangascan.servers.ninemanga import headers
 from mangascan.servers.ninemanga import Ninemanga
 
 server_id = 'ninemanga_de'
@@ -9,12 +8,6 @@ server_name = 'Nine Manga'
 server_lang = 'de'
 
 session = None
-headers = OrderedDict(
-    [
-        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
-        ('Accept-Language', 'en-US,en;q=0.5'),
-    ]
-)
 
 
 class Ninemanga_de(Ninemanga):
@@ -30,4 +23,8 @@ class Ninemanga_de(Ninemanga):
     cover_url = 'https://img.wiemanga.com{0}'
 
     def __init__(self):
-        Ninemanga.__init__(self)
+        global session
+
+        if session is None:
+            session = requests.Session()
+            session.headers = headers

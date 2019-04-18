@@ -35,9 +35,10 @@ class Japscan():
     def __init__(self):
         global cf
 
-        session = requests.Session()
-        session.headers = headers
-        cf = cfscrape.create_scraper(sess=session)
+        if cf is None:
+            session = requests.Session()
+            session.headers = headers
+            cf = cfscrape.create_scraper(sess=session)
 
     def get_manga_data(self, initial_data):
         """
@@ -79,7 +80,7 @@ class Japscan():
             elif label.startswith('Genre'):
                 data['genres'] = [genre.strip() for genre in value.split(',')]
             elif label.startswith('Statut'):
-                # possible values: ongoing, complete, None
+                # Possible values: ongoing, complete
                 data['status'] = 'ongoing' if value == 'En Cours' else 'complete'
 
         # Synopsis
