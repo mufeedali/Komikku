@@ -24,20 +24,25 @@ class AddDialog():
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource("/com/gitlab/valos/MangaScan/add_dialog.ui")
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/add_dialog.ui')
 
-        self.dialog = self.builder.get_object("search_dialog")
+        self.dialog = self.builder.get_object('search_dialog')
 
         # Header bar
         self.headerbar = self.builder.get_object('headerbar')
-        self.builder.get_object('back_button').connect("clicked", self.on_back_button_clicked)
+        self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
+        self.custom_title_stack = self.builder.get_object('custom_title_stack')
 
-        self.custom_title_stack = self.builder.get_object("custom_title_stack")
-        self.stack = self.builder.get_object("stack")
+        self.overlay = self.builder.get_object('overlay')
+        self.stack = self.builder.get_object('stack')
+
+        self.spinner_box = self.builder.get_object('spinner_box')
+        self.overlay.add_overlay(self.spinner_box)
+        self.hide_spinner()
 
         # Servers page
         listbox = self.builder.get_object('servers_page_listbox')
-        listbox.connect("row-activated", self.on_server_clicked)
+        listbox.connect('row-activated', self.on_server_clicked)
 
         for server in get_servers_list():
             row = Gtk.ListBoxRow()
@@ -71,20 +76,17 @@ class AddDialog():
 
         # Search page
         self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
-        self.custom_title_search_page_searchentry.connect("activate", self.on_search_entry_activated)
+        self.custom_title_search_page_searchentry.connect('activate', self.on_search_entry_activated)
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
-        self.search_page_listbox.connect("row-activated", self.on_manga_clicked)
-
-        self.search_page_container = self.search_page_listbox.get_parent()
-        self.spinner_box = self.builder.get_object('spinner_box')
+        self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
         # Manga page
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
         self.add_button = self.builder.get_object('add_button')
-        self.add_button.connect("clicked", self.on_add_button_clicked)
+        self.add_button.connect('clicked', self.on_add_button_clicked)
         self.read_button = self.builder.get_object('read_button')
-        self.read_button.connect("clicked", self.on_read_button_clicked)
+        self.read_button.connect('clicked', self.on_read_button_clicked)
 
         self.show_page('servers')
 
@@ -97,8 +99,8 @@ class AddDialog():
             self.search_page_listbox.remove(child)
 
     def hide_spinner(self):
-        self.search_page_container.remove(self.spinner_box)
-        self.search_page_container.add(self.search_page_listbox)
+        self.spinner_box.hide()
+        self.spinner_box.get_children()[0].stop()
 
     def on_add_button_clicked(self, button):
         def run():
@@ -117,9 +119,11 @@ class AddDialog():
             self.add_button.set_sensitive(True)
             self.add_button.hide()
             self.read_button.show()
+            self.hide_spinner()
 
             return False
 
+        self.show_spinner()
         self.add_button.set_sensitive(False)
 
         thread = threading.Thread(target=run)
@@ -135,28 +139,40 @@ class AddDialog():
             self.show_page('search')
 
     def on_manga_clicked(self, listbox, row):
-        self.manga_data = self.server.get_manga_data(row.manga_data)
+        def run():
+            self.manga_data = self.server.get_manga_data(row.manga_data)
+            GLib.idle_add(complete)
 
-        # Populate manga card
-        cover_data = self.server.get_manga_cover_image(self.manga_data['cover_path'])
-        if cover_data is not None:
-            cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
-            pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
-        else:
-            pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
+        def complete():
+            # Populate manga card
+            cover_data = self.server.get_manga_cover_image(self.manga_data['cover_path'])
+            if cover_data is not None:
+                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
+                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
+            else:
+                pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
 
-        self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-        self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
-        self.builder.get_object('genres_value_label').set_text(
-            ', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-')
-        self.builder.get_object('status_value_label').set_text(
-            _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-')
-        self.builder.get_object('server_value_label').set_text(
-            '{0} ({1} chapters)'.format(self.server.name, len(self.manga_data['chapters'])))
+            self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
+            self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
+            self.builder.get_object('genres_value_label').set_text(
+                ', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-')
+            self.builder.get_object('status_value_label').set_text(
+                _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-')
+            self.builder.get_object('server_value_label').set_text(
+                '{0} ({1} chapters)'.format(self.server.name, len(self.manga_data['chapters'])))
 
-        self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
+            self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
 
-        self.show_page('manga')
+            self.hide_spinner()
+            self.show_page('manga')
+
+            return False
+
+        self.show_spinner()
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
 
     def on_read_button_clicked(self, button):
         self.window.card.open_manga(self.manga, transition=False)
@@ -238,5 +254,5 @@ class AddDialog():
         self.page = name
 
     def show_spinner(self):
-        self.search_page_container.remove(self.search_page_listbox)
-        self.search_page_container.add(self.spinner_box)
+        self.spinner_box.get_children()[0].start()
+        self.spinner_box.show()
