@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from bs4 import BeautifulSoup
 import requests
 
@@ -7,36 +5,31 @@ server_id = 'submanga'
 server_name = 'Submanga'
 server_lang = 'es'
 
-base_url = 'https://submanga.online'
-search_url = base_url + '/search'
-manga_url = base_url + '/manga/{0}'
-cover_url = base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
-chapter_url = base_url + '/manga/{0}/{1}'
-scan_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
-
 
 class Submanga():
+    id = server_id
+    name = server_name
+    lang = server_lang
+
+    base_url = 'https://submanga.online'
+    search_url = base_url + '/search'
+    manga_url = base_url + '/manga/{0}'
+    chapter_url = base_url + '/manga/{0}/{1}'
+    image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
+    cover_url = base_url + '{0}'
+
     def __init__(self):
         pass
-
-    @property
-    def id(self):
-        return server_id
-
-    @property
-    def name(self):
-        return server_name
 
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
 
-        Inital data should contain manga's slug and name (provided by search)
+        Inital data should contain at least manga's slug (provided by search)
         """
-        assert 'slug' in initial_data and 'name' in initial_data, 'Missing slug and/or name in initial data'
+        assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = requests.get(manga_url.format(initial_data['slug']))
-        # print(r.text)
+        r = requests.get(self.manga_url.format(initial_data['slug']))
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -48,6 +41,7 @@ class Submanga():
             synopsis=None,
             chapters=[],
             server_id=self.id,
+            cover_path='/uploads/manga/{0}/cover/cover_250x350.jpg'.format(data['slug']),
         ))
 
         # Details
@@ -60,7 +54,7 @@ class Submanga():
             if label.startswith('Autor'):
                 data['author'] = value
             elif label.startswith('Categorías'):
-                data['types'] = ', '.join([t.strip() for t in value.split(',')])
+                data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Estado'):
                 # possible values: ongoing, complete, None
                 data['status'] = value.lower()
@@ -93,11 +87,10 @@ class Submanga():
 
         Currently, only pages (list of images filenames) are expected.
         """
-        url = chapter_url.format(manga_slug, chapter_slug)
+        url = self.chapter_url.format(manga_slug, chapter_slug)
         r = requests.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
-        # print(r.text)
 
         pages_imgs = soup.find('div', id='all').find_all('img')
 
@@ -105,7 +98,10 @@ class Submanga():
             pages=[],
         )
         for img in pages_imgs:
-            data['pages'].append(img.get('data-src').strip().split('/')[-1])
+            data['pages'].append(dict(
+                slug=None,  # not necessary, we know image url directly
+                image=img.get('data-src').strip().split('/')[-1],
+            ))
 
         return data
 
@@ -113,21 +109,21 @@ class Submanga():
         """
         Returns chapter page scan (image) content
         """
-        url = scan_url.format(manga_slug, chapter_slug, page)
+        url = self.image_url.format(manga_slug, chapter_slug, page['image'])
         r = requests.get(url)
 
-        return r.content if r.status_code == 200 else None
+        return (page['image'], r.content) if r.status_code == 200 else (None, None)
 
-    def get_manga_cover_image(self, manga_slug):
+    def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
-        r = requests.get(cover_url.format(manga_slug))
+        r = requests.get(self.cover_url.format(cover_path))
 
         return r.content if r.status_code == 200 else None
 
     def search(self, term):
-        r = requests.get(search_url, params=dict(query=term))
+        r = requests.get(self.search_url, params=dict(query=term))
 
         # Returned data for each manga:
         # value: name of the manga

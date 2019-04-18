@@ -138,17 +138,19 @@ class AddDialog():
         self.manga_data = self.server.get_manga_data(row.manga_data)
 
         # Populate manga card
-        cover_data = self.server.get_manga_cover_image(self.manga_data['slug'])
+        cover_data = self.server.get_manga_cover_image(self.manga_data['cover_path'])
         if cover_data is not None:
-            cover_stream = Gio.MemoryInputStream.new_from_data(self.server.get_manga_cover_image(self.manga_data['slug']), None)
+            cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
             pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
         else:
             pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
 
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
         self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
-        self.builder.get_object('types_value_label').set_text(self.manga_data['types'] or '-')
-        self.builder.get_object('status_value_label').set_text(self.manga_data['status'] or '-')
+        self.builder.get_object('genres_value_label').set_text(
+            ', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-')
+        self.builder.get_object('status_value_label').set_text(
+            _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-')
         self.builder.get_object('server_value_label').set_text(
             '{0} ({1} chapters)'.format(self.server.name, len(self.manga_data['chapters'])))
 

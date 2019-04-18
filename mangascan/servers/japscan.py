@@ -7,15 +7,7 @@ server_id = 'japscan'
 server_name = 'JapScan'
 server_lang = 'fr'
 
-base_url = 'https://www.japscan.to'
-search_url = base_url + '/search/'
-manga_url = base_url + '/manga/{0}/'
-cover_url = base_url + '/imgs/mangas/{0}.jpg'
-chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
-scan_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
-
 cf = None
-
 headers = OrderedDict(
     [
         ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
@@ -29,40 +21,40 @@ headers = OrderedDict(
 
 
 class Japscan():
-    __server_name__ = server_name
+    id = server_id
+    name = server_name
+    lang = server_lang
+
+    base_url = 'https://www.japscan.to'
+    search_url = base_url + '/search/'
+    manga_url = base_url + '/manga/{0}/'
+    chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
+    image_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
+    cover_url = base_url + '{0}'
 
     def __init__(self):
         global cf
 
-        session = requests.session()
+        session = requests.Session()
         session.headers = headers
         cf = cfscrape.create_scraper(sess=session)
-
-    @property
-    def id(self):
-        return server_id
-
-    @property
-    def name(self):
-        return self.__server_name__
 
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
 
-        Inital data should contain manga's slug and name (provided by search)
+        Inital data should contain at least manga's slug (provided by search)
         """
-        assert 'slug' in initial_data and 'name' in initial_data, 'Missing slug and/or name in initial data'
+        assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = cf.get(manga_url.format(initial_data['slug']))
-        # print(r.text)
+        r = cf.get(self.manga_url.format(initial_data['slug']))
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         data = initial_data.copy()
         data.update(dict(
             author=None,
-            types=None,
+            genres=[],
             status=None,
             chapters=[],
             server_id=self.id,
@@ -84,8 +76,8 @@ class Japscan():
 
             if label.startswith('Auteur'):
                 data['author'] = value
-            elif label.startswith('Type'):
-                data['types'] = value
+            elif label.startswith('Genre'):
+                data['genres'] = [genre.strip() for genre in value.split(',')]
             elif label.startswith('Statut'):
                 # possible values: ongoing, complete, None
                 data['status'] = 'ongoing' if value == 'En Cours' else 'complete'
@@ -112,13 +104,12 @@ class Japscan():
         """
         Returns manga chapter data by scraping chapter HTML page content
 
-        Currently, only pages (list of images filenames) are expected.
+        Currently, only pages are expected.
         """
-        url = chapter_url.format(manga_slug, chapter_slug)
+        url = self.chapter_url.format(manga_slug, chapter_slug)
         r = cf.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
-        # print(r.text)
 
         pages_options = soup.find('select', id='pages').find_all('option')
 
@@ -126,7 +117,10 @@ class Japscan():
             pages=[],
         )
         for option in pages_options:
-            data['pages'].append(option.get('data-img'))
+            data['pages'].append(dict(
+                slug=None,  # not necessary, we know image url directly
+                image=option.get('data-img').split('/')[-1],
+            ))
 
         return data
 
@@ -134,37 +128,36 @@ class Japscan():
         """
         Returns chapter page scan (image) content
         """
-        # This server use a specific slug for images (capitalized kebab-case)
+        # This server use a specific manga slug for url images (capitalized kebab-case)
         manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
         chapter_slug = chapter_slug.capitalize()
 
-        url = scan_url.format(manga_slug, chapter_slug, page)
+        url = self.image_url.format(manga_slug, chapter_slug, page['image'])
+        imagename = url.split('/')[-1]
         r = cf.get(url)
 
-        return r.content if r.status_code == 200 else None
+        return (imagename, r.content) if r.status_code == 200 else (None, None)
 
-    def get_manga_cover_image(self, manga_slug):
+    def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
-        # This server use a specific slug for images (capitalized kebab-case)
-        manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
-        r = cf.get(cover_url.format(manga_slug))
+        r = cf.get(self.cover_url.format(cover_path))
 
         return r.content if r.status_code == 200 else None
 
     def search(self, term):
-        r = cf.post(search_url, data=dict(search=term))
+        r = cf.post(self.search_url, data=dict(search=term))
 
         # Returned data for each manga:
         # name:  name of the manga
-        # image: relative path of cover image
-        # url:   relative path of manga page
+        # image: path of cover image
+        # url:   path of manga page
         results = r.json()
 
         for result in results:
             # Extract slug from url
             result['slug'] = result.pop('url').split('/')[2]
-            result.pop('image')
+            result['cover_path'] = result.pop('image')
 
         return results

@@ -27,8 +27,8 @@ class Library():
 
         # Cover
         image = Gtk.Image()
-        if manga.cover_path is not None:
-            pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_path, 180, -1, True)
+        if manga.cover_fs_path is not None:
+            pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 180, -1, True)
         else:
             pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
         image.set_from_pixbuf(pixbuf)

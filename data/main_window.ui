@@ -362,11 +362,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="type_label_label">
+                  <object class="GtkLabel" id="genres_label_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
-                    <property name="label" translatable="yes">Type</property>
+                    <property name="label" translatable="yes">Genres</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -377,12 +377,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="type_value_label">
+                  <object class="GtkLabel" id="genres_value_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="valign">start</property>
-                    <property name="label">type value</property>
+                    <property name="label">genres value</property>
                     <property name="ellipsize">end</property>
                     <property name="single_line_mode">True</property>
                   </object>

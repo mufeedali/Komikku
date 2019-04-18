@@ -128,14 +128,14 @@ class Card():
         else:
             self.manga = Manga(self.manga.id)
 
-        if self.manga.cover_path is not None:
-            pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_path, 180, -1, True)
+        if self.manga.cover_fs_path is not None:
+            pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 180, -1, True)
         else:
             pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
-        self.builder.get_object('type_value_label').set_text(self.manga.types or '-')
+        self.builder.get_object('genres_value_label').set_text(', '.join(self.manga.genres) if self.manga.genres else '-')
         self.builder.get_object('status_value_label').set_text(
             _(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_text(
@@ -205,7 +205,7 @@ class Card():
 
         box.show_all()
 
-    def show(self, transition):
+    def show(self, transition=True):
         self.window.headerbar.set_title(self.manga.name)
         self.builder.get_object('menubutton').set_popover(self.builder.get_object('card_page_menubutton_popover'))
 

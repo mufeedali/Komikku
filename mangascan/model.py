@@ -1,6 +1,7 @@
 import datetime
 from gettext import gettext as _
 import importlib
+import json
 import os
 from pathlib import Path
 import sqlite3
@@ -10,17 +11,18 @@ user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
 
 
-def adapt_stringlist(l):
-    return ','.join(l)
+def adapt_json(data):
+    return (json.dumps(data, sort_keys=True)).encode()
 
 
-def convert_stringlist(s):
-    # s is a byte string
-    return s.decode().split(',')
+def convert_json(blob):
+    return json.loads(blob.decode())
 
 
-sqlite3.register_adapter(list, adapt_stringlist)
-sqlite3.register_converter('stringlist', convert_stringlist)
+sqlite3.register_adapter(dict, adapt_json)
+sqlite3.register_adapter(list, adapt_json)
+sqlite3.register_adapter(tuple, adapt_json)
+sqlite3.register_converter('json', convert_json)
 
 
 def create_db_connection():
@@ -51,9 +53,11 @@ def init_db():
         server_id text NOT NULL,
         name text NOT NULL,
         author text,
-        types text,
+        genres json,
         synopsis text,
         status text,
+        cover_path text,
+        sort text,
         last_read timestamp,
         last_update timestamp,
         UNIQUE (slug, server_id)
@@ -64,7 +68,7 @@ def init_db():
         slug text NOT NULL,
         manga_id integer REFERENCES mangas(id) ON DELETE CASCADE,
         title text NOT NULL,
-        pages stringlist,
+        pages json,
         date text,
         rank integer,
         downloaded integer,
@@ -96,7 +100,7 @@ class Manga(object):
 
     STATUSES = dict(
         complete=_('Complete'),
-        ongoing=_('On going')
+        ongoing=_('Ongoing')
     )
 
     def __init__(self, id=None, server=None):
@@ -134,7 +138,7 @@ class Manga(object):
         return self.chapters_
 
     @property
-    def cover_path(self):
+    def cover_fs_path(self):
         path = os.path.join(self.resources_path, 'cover.jpg')
         if os.path.exists(path):
             return path
@@ -143,7 +147,7 @@ class Manga(object):
 
     @property
     def resources_path(self):
-        return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.slug)
+        return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
 
     def delete(self):
         db_conn = create_db_connection()
@@ -153,7 +157,8 @@ class Manga(object):
         with db_conn:
             db_conn.execute('DELETE FROM mangas WHERE id = ?', (self.id, ))
 
-            shutil.rmtree(self.resources_path)
+            if os.path.exists(self.resources_path):
+                shutil.rmtree(self.resources_path)
 
         db_conn.close()
 
@@ -172,8 +177,8 @@ class Manga(object):
         db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO mangas (slug, server_id, name, author, types, synopsis, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.server_id, self.name, self.author, self.types, self.synopsis, self.status)
+                'INSERT INTO mangas (slug, server_id, name, author, genres, synopsis, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (self.slug, self.server_id, self.name, self.author, self.genres, self.synopsis, self.status)
             )
             self.id = cursor.lastrowid
         db_conn.close()
@@ -187,11 +192,11 @@ class Manga(object):
             os.makedirs(self.resources_path)
 
         # Save cover image file
-        cover_path = os.path.join(self.resources_path, 'cover.jpg')
-        if not os.path.exists(cover_path):
-            cover_data = self.server.get_manga_cover_image(self.slug)
+        cover_fs_path = os.path.join(self.resources_path, 'cover.jpg')
+        if not os.path.exists(cover_fs_path):
+            cover_data = self.server.get_manga_cover_image(self.cover_path)
             if cover_data is not None:
-                with open(cover_path, 'wb') as fp:
+                with open(cover_fs_path, 'wb') as fp:
                     fp.write(cover_data)
 
     def update(self, data=None):
@@ -265,7 +270,8 @@ class Chapter(object):
 
     def purge(self):
         chapter_path = os.path.join(self.manga.resources_path, self.slug)
-        shutil.rmtree(chapter_path)
+        if os.path.exists(chapter_path):
+            shutil.rmtree(chapter_path)
 
         self.update(dict(
             pages=None,
@@ -279,16 +285,23 @@ class Chapter(object):
         if not os.path.exists(chapter_path):
             os.mkdir(chapter_path)
 
-        page = self.pages[page_index]
-        page_path = os.path.join(chapter_path, page)
-        if os.path.exists(page_path):
-            return page_path
+        # self.pages[page_index]['image'] can be an image name or an image path
+        imagename = self.pages[page_index]['image'].split('/')[-1] if self.pages[page_index]['image'] else None
+        if imagename is not None:
+            page_path = os.path.join(chapter_path, imagename)
+            if os.path.exists(page_path):
+                return page_path
 
-        data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, page)
+        imagename, data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, self.pages[page_index])
 
-        if data:
+        if imagename and data:
+            page_path = os.path.join(chapter_path, imagename)
             with open(page_path, 'wb') as fp:
                 fp.write(data)
+
+            if self.pages[page_index]['image'] is None:
+                self.pages[page_index]['image'] = imagename
+                self.update(dict(pages=self.pages))
 
             return page_path
         else:
@@ -311,8 +324,8 @@ class Chapter(object):
         db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO chapters (slug, manga_id, title, pages, date, rank, downloaded) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.manga_id, self.title, None, self.date, rank, 0)
+                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded) VALUES (?, ?, ?, ?, ?, ?)',
+                (self.slug, self.manga_id, self.title, self.date, rank, 0)
             )
             self.id = cursor.lastrowid
         db_conn.close()
