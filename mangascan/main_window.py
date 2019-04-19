@@ -125,8 +125,6 @@ class MainWindow(Gtk.ApplicationWindow):
         if self.page == 'library':
             AddDialog(self).open(action, param)
         elif self.page == 'card':
-            # Invalidate sort to trigger library flowbox sort function
-            self.library.flowbox.invalidate_sort()
             self.library.show()
         elif self.page == 'reader':
             self.card.populate()

@@ -14,7 +14,25 @@ class Library():
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
-        self.flowbox.set_sort_func(self.sort)
+
+        def sort(child1, child2):
+            """
+            This function gets two children and has to return:
+            - a negative integer if the firstone should come before the second one
+            - zero if they are equal
+            - a positive integer if the second one should come before the firstone
+            """
+            manga1 = Manga(child1.get_children()[0].manga.id)
+            manga2 = Manga(child2.get_children()[0].manga.id)
+
+            if manga1.last_read > manga2.last_read:
+                return -1
+            elif manga1.last_read < manga2.last_read:
+                return 1
+            else:
+                return 0
+
+        self.flowbox.set_sort_func(sort)
 
         self.populate()
 
@@ -131,22 +149,5 @@ class Library():
         self.window.headerbar.set_title('Manga Scan')
         self.builder.get_object('menubutton').set_popover(self.builder.get_object('menubutton_popover'))
 
+        self.flowbox.invalidate_sort()
         self.window.show_page('library')
-
-    def sort(self, child1, child2):
-        manga1 = child1.get_children()[0].manga
-        manga2 = child2.get_children()[0].manga
-
-        # TODO: improve me
-        if manga1.last_read is not None and manga2.last_read is not None:
-            if manga1.last_read > manga2.last_read:
-                return -1
-            elif manga1.last_read < manga2.last_read:
-                return 1
-            else:
-                return 0
-
-        if manga1.last_read:
-            return -1
-        else:
-            return 1

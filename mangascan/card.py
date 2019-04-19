@@ -73,9 +73,7 @@ class Card():
         thread.start()
 
     def on_chapter_clicked(self, listbox, row):
-        self.window.reader.init(row.chapter.id)
-
-        # TODO: save scrolledwindow vadjustment
+        self.window.reader.init(row.chapter)
         self.window.show_page('reader')
 
     def on_delete_menu_clicked(self, action, param):
@@ -100,9 +98,9 @@ class Card():
             GLib.idle_add(complete, manga)
 
         def complete(manga):
-            # Update card if manga has not changed
+            # Update card only if manga has not changed
             if self.manga.id == manga.id:
-                self.populate()
+                self.populate(manga)
 
             notification = Notify.Notification.new(_('[{0}] Successfully updated').format(manga.name))
             notification.show()

@@ -165,7 +165,7 @@ class Manga(object):
     def _save(self, data):
         # Fill data with internal data or not yet scraped values
         data.update(dict(
-            last_read=None,
+            last_read=datetime.datetime.now(),
             last_update=None,
         ))
 
@@ -177,8 +177,8 @@ class Manga(object):
         db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO mangas (slug, server_id, name, author, genres, synopsis, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.server_id, self.name, self.author, self.genres, self.synopsis, self.status)
+                'INSERT INTO mangas (slug, server_id, name, author, genres, synopsis, status, last_read) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (self.slug, self.server_id, self.name, self.author, self.genres, self.synopsis, self.status, self.last_read)
             )
             self.id = cursor.lastrowid
         db_conn.close()

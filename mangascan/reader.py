@@ -38,27 +38,13 @@ class Reader():
         self.spinner_box.hide()
         self.spinner_box.get_children()[0].stop()
 
-    def init(self, chapter_id, index=None):
+    def init(self, chapter, index=None):
         def run():
             self.chapter.update()
 
             GLib.idle_add(complete, index)
 
         def complete(index):
-            db_conn = create_db_connection()
-
-            # Get previous chapter Id
-            row = db_conn.execute(
-                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
-            self.prev_chapter_id = row['id'] if row else None
-
-            # Get next chapter Id
-            row = db_conn.execute(
-                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
-            self.next_chapter_id = row['id'] if row else None
-
-            db_conn.close()
-
             self.chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
             if index is None:
@@ -76,7 +62,7 @@ class Reader():
             self.image.clear()
         self.show_spinner()
 
-        self.chapter = Chapter(chapter_id)
+        self.chapter = chapter
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -96,10 +82,24 @@ class Reader():
 
             if index >= 0 and index < len(self.chapter.pages):
                 self.render_page(index)
-            elif self.prev_chapter_id and index == -1:
-                self.init(self.prev_chapter_id, 'last')
-            elif self.next_chapter_id and index == len(self.chapter.pages):
-                self.init(self.next_chapter_id, 'first')
+            elif index == -1:
+                # Get previous chapter
+                db_conn = create_db_connection()
+                row = db_conn.execute(
+                    'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
+                db_conn.close()
+
+                if row:
+                    self.init(Chapter(row['id']), 'last')
+            elif index == len(self.chapter.pages):
+                # Get next chapter
+                db_conn = create_db_connection()
+                row = db_conn.execute(
+                    'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
+                db_conn.close()
+
+                if row:
+                    self.init(Chapter(row['id']), 'first')
 
     def on_resize(self, window):
         size = self.viewport.get_allocated_size()[0]
