@@ -4,11 +4,69 @@ import threading
 from gi.repository import Gdk
 from gi.repository import GLib
 from gi.repository import Gtk
+from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from mangascan.model import create_db_connection
 from mangascan.model import Chapter
+
+
+class Controls():
+    visible = False
+    reader = None
+    chapter = None
+
+    def __init__(self, reader):
+        self.reader = reader
+
+        self.box = Gtk.VBox()
+        self.box.get_style_context().add_class('reader-controls-box')
+        self.box.set_valign(Gtk.Align.END)
+
+        # Chapter's title
+        self.label = Gtk.Label()
+        self.label.get_style_context().add_class('reader-controls-title-label')
+        self.label.set_halign(Gtk.Align.START)
+        self.label.set_ellipsize(Pango.EllipsizeMode.END)
+        self.box.pack_start(self.label, True, True, 4)
+
+        # Chapter's pages slider: current / nb
+        self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
+        self.scale.get_style_context().add_class('reader-controls-pages-scale')
+        self.scale.set_inverted(True)
+        self.scale.set_value_pos(Gtk.PositionType.RIGHT)
+
+        def format(scale, value):
+            return '{0}/{1}'.format(int(value), len(self.chapter.pages))
+
+        self.scale.connect('format-value', format)
+        self.scale.connect('value-changed', self.on_scale_value_changed)
+        self.box.pack_start(self.scale, True, True, 0)
+
+        self.reader.overlay.add_overlay(self.box)
+
+    def goto_page(self, index):
+        if self.scale.get_value() == index:
+            self.scale.emit('value-changed')
+        else:
+            self.scale.set_value(index)
+
+    def hide(self):
+        self.visible = False
+        self.box.hide()
+
+    def init(self, chapter):
+        self.chapter = chapter
+        self.scale.set_range(1, len(chapter.pages))
+        self.label.set_text(chapter.title)
+
+    def on_scale_value_changed(self, scale):
+        self.reader.render_page(int(scale.get_value()) - 1)
+
+    def show(self):
+        self.visible = True
+        self.box.show()
 
 
 class Reader():
@@ -27,9 +85,12 @@ class Reader():
         self.image = Gtk.Image()
         self.viewport.add(self.image)
 
+        # Spinner
         self.spinner_box = self.builder.get_object('spinner_box')
         self.overlay.add_overlay(self.spinner_box)
-        self.hide_spinner()
+
+        # Controls
+        self.controls = Controls(self)
 
         self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
@@ -55,11 +116,14 @@ class Reader():
                 index = len(self.chapter.pages) - 1
 
             self.hide_spinner()
-            self.render_page(index)
+            self.controls.init(self.chapter)
+            self.controls.goto_page(index + 1)
 
         if index is None:
             # We come from library
             self.image.clear()
+            self.controls.hide()
+
         self.show_spinner()
 
         self.chapter = chapter
@@ -77,11 +141,15 @@ class Reader():
                 # Last third of the page
                 index = self.page_index - 1
             else:
-                # Center: no action yet
+                # Center part of the page
+                if self.controls.visible:
+                    self.controls.hide()
+                else:
+                    self.controls.show()
                 return
 
             if index >= 0 and index < len(self.chapter.pages):
-                self.render_page(index)
+                self.controls.goto_page(index + 1)
             elif index == -1:
                 # Get previous chapter
                 db_conn = create_db_connection()
@@ -128,8 +196,6 @@ class Reader():
             self.hide_spinner()
 
             return False
-
-        print('{0} {1}/{2}'.format(self.chapter.title, index + 1, len(self.chapter.pages) if self.chapter.pages else '?'))
 
         self.page_index = index
         self.chapter.update(dict(last_page_read_index=index))

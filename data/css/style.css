@@ -23,6 +23,18 @@
     font-size: 10px;
 }
 
+/* Main window - reader page - controls */
+.reader-controls-box {
+    background: rgba(0, 0, 0, .75);
+}
+.reader-controls-title-label {
+    padding: 0 12px 0 12px;
+    color: #fff;
+}
+.reader-controls-pages-scale {
+    color: #fff;
+}
+
 /* Add dialog - servers page */
 .add-dialog-server-listboxrow {
     padding: 16px;

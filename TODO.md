@@ -15,9 +15,9 @@
     - Memorize the scroll position for each manga
 * Reader
     - ~~Save chapter's last page read~~
+    - ~~Controls: pages slider + chapter's title, current page number / number of pages~~
     - Image adjustment: width, height, original size, best
     - Zooming
-    - Show current page number / pages navigation
     - Swipe gesture
     - Reading direction
     - Use full screen
