@@ -1,4 +1,5 @@
 from importlib import resources
+from operator import itemgetter
 
 
 def get_servers_list():
@@ -23,5 +24,7 @@ def get_servers_list():
 
             info['class'] = info['id'].capitalize()
             servers_list.append(info)
+
+    servers_list = sorted(servers_list, key=itemgetter('lang', 'name'))
 
     return servers_list
