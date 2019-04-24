@@ -24,6 +24,7 @@
         <file compressed="true" alias="icons/ui/favicons/ninemanga_es.ico">icons/ui/favicons/ninemanga.ico</file>
         <file compressed="true" alias="icons/ui/favicons/ninemanga_fr.ico">icons/ui/favicons/ninemanga.ico</file>
         <file compressed="true" alias="icons/ui/favicons/ninemanga_it.ico">icons/ui/favicons/ninemanga.ico</file>
+        <file compressed="true">icons/ui/favicons/scanvf.ico</file>
         <file compressed="true">icons/ui/favicons/submanga.ico</file>
 
         <file compressed="true">images/logo.png</file>

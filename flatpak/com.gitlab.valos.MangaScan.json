@@ -28,6 +28,7 @@
     "modules" : [
         "python3-js2py.json",
         "python3-requests_toolbelt.json",
+        "lxml.json",
         {
             "name" : "cfscrape",
             "buildsystem" : "simple",
