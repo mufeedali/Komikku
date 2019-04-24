@@ -64,7 +64,7 @@ class Hatigarmscans():
             if label.startswith('Author'):
                 data['author'] = ', '.join([t.strip() for t in value.split(',')])
             elif label.startswith('Categories'):
-                data['genres'] = ', '.join([t.strip() for t in value.split(',')])
+                data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
                 # possible values: ongoing, complete, None
                 data['status'] = value.lower()
