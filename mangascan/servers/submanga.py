@@ -41,7 +41,7 @@ class Submanga():
         data = initial_data.copy()
         data.update(dict(
             author=None,
-            types=None,
+            genres=None,
             status=None,
             synopsis=None,
             chapters=[],
