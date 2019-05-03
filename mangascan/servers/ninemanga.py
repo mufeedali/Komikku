@@ -25,7 +25,7 @@ class Ninemanga():
     base_url = 'http://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     manga_url = base_url + '/manga/{0}.html'
-    chapter_url = base_url + '/chapter/{0}/{1}.html'
+    chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
     cover_url = 'https://ta1.taadd.com{0}'
 
