@@ -6,6 +6,12 @@
 
 MangaScan is licensed under the GPLv3+.
 
+## Features
+
+* Online reading from servers
+* Offline reading of downloaded mangas
+* Light and dark themes
+
 ## Building from source
 
 #### Option 1: with GNOME Builder
@@ -51,6 +57,9 @@ sudo ninja -C _build install
 
 ## Translations
 Helping to translate Manga Scan or add support to a new language is very welcome.
+
+## Disclaimer
+The developer of this application does not have any affiliation with the content providers available.
 
 ## Authors
 </> with &hearts; by Valéry Febvre
