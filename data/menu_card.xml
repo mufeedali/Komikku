@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <menu id="menu-card">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Delete</attribute>
+        <attribute name="action">app.card.delete</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Update</attribute>
+        <attribute name="action">app.card.update</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

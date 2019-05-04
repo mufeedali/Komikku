@@ -22,6 +22,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.builder = Gtk.Builder()
         self.builder.add_from_resource("/com/gitlab/valos/MangaScan/main_window.ui")
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu.xml')
         self.stack = self.builder.get_object('stack')
 
         self.assemble_window()
@@ -33,12 +34,6 @@ class MainWindow(Gtk.ApplicationWindow):
         add_action = Gio.SimpleAction.new("add", None)
         add_action.connect("activate", self.on_left_button_clicked)
 
-        delete_action = Gio.SimpleAction.new("delete", None)
-        delete_action.connect("activate", self.card.on_delete_menu_clicked)
-
-        update_action = Gio.SimpleAction.new("update", None)
-        update_action.connect("activate", self.card.on_update_menu_clicked)
-
         settings_action = Gio.SimpleAction.new("settings", None)
         settings_action.connect("activate", self.on_settings_menu_clicked)
 
@@ -49,13 +44,12 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_action.connect("activate", self.on_shortcuts_menu_clicked)
 
         self.application.add_action(add_action)
-
-        self.application.add_action(delete_action)
-        self.application.add_action(update_action)
-
         self.application.add_action(settings_action)
         self.application.add_action(about_action)
         self.application.add_action(shortcuts_action)
+
+        self.card.add_actions()
+        self.reader.add_actions()
 
     def add_global_accelerators(self):
         self.application.set_accels_for_action("app.settings", ["<Control>p"])
@@ -71,9 +65,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.left_button = self.builder.get_object("left_button")
         self.left_button.connect("clicked", self.on_left_button_clicked, None)
-        self.left_button_stack = self.builder.get_object("left_button_stack")
 
         self.set_titlebar(self.titlebar)
+
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu'))
 
         # Fisrt start grid
         self.first_start_grid = self.builder.get_object("first_start_grid")
@@ -159,8 +154,6 @@ class MainWindow(Gtk.ApplicationWindow):
         mangascan.config_manager.set_window_size(window_size)
 
     def show_page(self, name, transition=True):
-        self.left_button_stack.set_visible_child_name(name)
-
         if not transition:
             # Save defined transition type
             transition_type = self.stack.get_transition_type()

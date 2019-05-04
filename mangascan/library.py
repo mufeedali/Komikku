@@ -147,7 +147,11 @@ class Library():
 
     def show(self):
         self.window.headerbar.set_title('Manga Scan')
-        self.builder.get_object('menubutton').set_popover(self.builder.get_object('menubutton_popover'))
+
+        self.builder.get_object('left_button_image').set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu'))
+        self.builder.get_object('menubutton_image').set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
 
         self.flowbox.invalidate_sort()
         self.window.show_page('library')

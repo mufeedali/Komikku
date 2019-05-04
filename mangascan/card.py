@@ -2,6 +2,7 @@ from gettext import gettext as _
 import threading
 import time
 
+from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Notify
@@ -17,10 +18,21 @@ class Card():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card.xml')
 
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
         self.listbox.connect("row-activated", self.on_chapter_clicked)
+
+    def add_actions(self):
+        delete_action = Gio.SimpleAction.new("card.delete", None)
+        delete_action.connect("activate", self.on_delete_menu_clicked)
+
+        update_action = Gio.SimpleAction.new("card.update", None)
+        update_action.connect("activate", self.on_update_menu_clicked)
+
+        self.window.application.add_action(delete_action)
+        self.window.application.add_action(update_action)
 
     def delete_chapter(self, delete_button, box, chapter):
         chapter.purge()
@@ -74,7 +86,6 @@ class Card():
 
     def on_chapter_clicked(self, listbox, row):
         self.window.reader.init(row.chapter)
-        self.window.show_page('reader')
 
     def on_delete_menu_clicked(self, action, param):
         db_conn = create_db_connection()
@@ -205,6 +216,10 @@ class Card():
 
     def show(self, transition=True):
         self.window.headerbar.set_title(self.manga.name)
-        self.builder.get_object('menubutton').set_popover(self.builder.get_object('card_page_menubutton_popover'))
+
+        self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-card'))
+        self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
         self.window.show_page('card', transition=transition)

@@ -9,6 +9,10 @@
         <file compressed="true" preprocess="xml-stripblanks">settings_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">shortcuts_overview.ui</file>
 
+        <file compressed="true" preprocess="xml-stripblanks">menu.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">menu_card.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">menu_reader.xml</file>
+
         <file compressed="true">icons/ui/flags/br.png</file>
         <file compressed="true">icons/ui/flags/de.png</file>
         <file compressed="true">icons/ui/flags/en.png</file>

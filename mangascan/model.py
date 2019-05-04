@@ -58,6 +58,10 @@ def init_db():
         status text,
         cover_path text,
         sort text,
+        filters json,
+        reading_direction text,
+        background_color text,
+        scaling text,
         last_read timestamp,
         last_update timestamp,
         UNIQUE (slug, server_id)

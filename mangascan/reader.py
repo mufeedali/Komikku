@@ -2,6 +2,7 @@ import datetime
 import threading
 
 from gi.repository import Gdk
+from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Pango
@@ -34,7 +35,6 @@ class Controls():
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
         self.scale.get_style_context().add_class('reader-controls-pages-scale')
-        self.scale.set_inverted(True)
         self.scale.set_value_pos(Gtk.PositionType.RIGHT)
 
         def format(scale, value):
@@ -64,6 +64,9 @@ class Controls():
     def on_scale_value_changed(self, scale):
         self.reader.render_page(int(scale.get_value()) - 1)
 
+    def set_scale_direction(self, inverted):
+        self.scale.set_inverted(inverted)
+
     def show(self):
         self.visible = True
         self.box.show()
@@ -77,6 +80,7 @@ class Reader():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_reader.xml')
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
@@ -94,6 +98,13 @@ class Reader():
 
         self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
+
+    def add_actions(self):
+        self.reading_direction_action = Gio.SimpleAction.new_stateful(
+            'reader.reading-direction', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
+        self.reading_direction_action.connect('change-state', self.on_reading_direction_changed)
+
+        self.window.application.add_action(self.reading_direction_action)
 
     def hide_spinner(self):
         self.spinner_box.hide()
@@ -123,10 +134,12 @@ class Reader():
             # We come from library
             self.image.clear()
             self.controls.hide()
-
-        self.show_spinner()
+            self.show()
 
         self.chapter = chapter
+
+        self.show_spinner()
+        self.set_reading_direction()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -134,12 +147,14 @@ class Reader():
 
     def on_button_press(self, widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
+            reading_direction = self.chapter.manga.reading_direction or 'right-to-left'
+
             if event.x < self.size.width / 3:
                 # 1st third of the page
-                index = self.page_index + 1
+                index = self.page_index + 1 if reading_direction == 'right-to-left' else self.page_index - 1
             elif event.x > 2 * self.size.width / 3:
                 # Last third of the page
-                index = self.page_index - 1
+                index = self.page_index - 1 if reading_direction == 'right-to-left' else self.page_index + 1
             else:
                 # Center part of the page
                 if self.controls.visible:
@@ -168,6 +183,14 @@ class Reader():
 
                 if row:
                     self.init(Chapter(row['id']), 'first')
+
+    def on_reading_direction_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.chapter.manga.reading_direction:
+            return
+
+        self.chapter.manga.update(dict(reading_direction=value))
+        self.set_reading_direction()
 
     def on_resize(self, window):
         size = self.viewport.get_allocated_size()[0]
@@ -218,6 +241,18 @@ class Reader():
         )
         self.image.set_from_pixbuf(pixbuf)
 
+    def set_reading_direction(self):
+        reading_direction = self.chapter.manga.reading_direction or 'right-to-left'
+
+        self.reading_direction_action.set_state(GLib.Variant('s', reading_direction))
+        self.controls.set_scale_direction(reading_direction == 'right-to-left')
+
     def show_spinner(self):
         self.spinner_box.get_children()[0].start()
         self.spinner_box.show()
+
+    def show(self):
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-reader'))
+        self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+
+        self.window.show_page('reader')
