@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import magic
 import requests
 
 server_id = 'scanvf'
@@ -118,16 +119,18 @@ class Scanvf():
 
         # Get scan image
         r = session.get(self.image_url.format(path))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return (imagename, r.content) if r.status_code == 200 else (None, None)
+        return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
         r = session.get(self.cover_url.format(cover_path))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return r.content if r.status_code == 200 else None
+        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
         r = session.get(self.search_url, params=dict(key=term, send='Recherche'))

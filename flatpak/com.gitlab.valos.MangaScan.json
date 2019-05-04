@@ -27,6 +27,7 @@
     ],
     "modules" : [
         "python3-cloudscraper.json",
+        "python3-python-magic.json",
         "python3-beautifulsoup4.json",
         "lxml.json",
         {

@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import magic
 import requests
 
 server_id = 'submanga'
@@ -116,16 +117,18 @@ class Submanga():
         """
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
         r = session.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return (page['image'], r.content) if r.status_code == 200 else (None, None)
+        return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
         r = session.get(self.cover_url.format(cover_path))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return r.content if r.status_code == 200 else None
+        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
         r = session.get(self.search_url, params=dict(query=term))

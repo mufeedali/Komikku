@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import magic
 import cloudscraper
 
 server_id = 'japscan'
@@ -122,16 +123,18 @@ class Japscan():
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
         imagename = url.split('/')[-1]
         r = scraper.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return (imagename, r.content) if r.status_code == 200 else (None, None)
+        return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
         r = scraper.get(self.cover_url.format(cover_path))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return r.content if r.status_code == 200 else None
+        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
         r = scraper.post(self.search_url, data=dict(search=term))
