@@ -1,23 +1,11 @@
 from bs4 import BeautifulSoup
-import cfscrape
-from collections import OrderedDict
-import requests
+import cloudscraper
 
 server_id = 'japscan'
 server_name = 'JapScan'
 server_lang = 'fr'
 
-cf = None
-headers = OrderedDict(
-    [
-        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
-        ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
-        ('Accept-Language', 'en-US,en;q=0.5'),
-        ('Accept-Encoding', 'gzip, deflate'),
-        ('Connection', 'close'),
-        ('Upgrade-Insecure-Requests', '1')
-    ]
-)
+scraper = None
 
 
 class Japscan():
@@ -33,12 +21,10 @@ class Japscan():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        global cf
+        global scraper
 
-        if cf is None:
-            session = requests.Session()
-            session.headers = headers
-            cf = cfscrape.create_scraper(sess=session)
+        if scraper is None:
+            scraper = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -48,7 +34,7 @@ class Japscan():
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = cf.get(self.manga_url.format(initial_data['slug']))
+        r = scraper.get(self.manga_url.format(initial_data['slug']))
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -108,7 +94,7 @@ class Japscan():
         Currently, only pages are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = cf.get(url)
+        r = scraper.get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -135,7 +121,7 @@ class Japscan():
 
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
         imagename = url.split('/')[-1]
-        r = cf.get(url)
+        r = scraper.get(url)
 
         return (imagename, r.content) if r.status_code == 200 else (None, None)
 
@@ -143,12 +129,12 @@ class Japscan():
         """
         Returns manga cover (image) content
         """
-        r = cf.get(self.cover_url.format(cover_path))
+        r = scraper.get(self.cover_url.format(cover_path))
 
         return r.content if r.status_code == 200 else None
 
     def search(self, term):
-        r = cf.post(self.search_url, data=dict(search=term))
+        r = scraper.post(self.search_url, data=dict(search=term))
 
         # Returned data for each manga:
         # name:  name of the manga

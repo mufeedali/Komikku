@@ -26,41 +26,9 @@
         "--talk-name=org.freedesktop.Notifications"
     ],
     "modules" : [
-        "python3-js2py.json",
-        "python3-requests_toolbelt.json",
+        "python3-cloudscraper.json",
+        "python3-beautifulsoup4.json",
         "lxml.json",
-        {
-            "name" : "cfscrape",
-            "buildsystem" : "simple",
-            "build-commands" : [
-                "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} ."
-            ],
-            "sources" : [
-                {
-                    "type" : "git",
-                    "url" : "https://github.com/VeNoMouS/cloudflare-scrape-js2py.git"
-                }
-            ]
-        },
-        {
-            "name" : "beautifulsoup4",
-            "buildsystem" : "simple",
-            "build-commands" : [
-                "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} beautifulsoup4"
-            ],
-            "sources" : [
-                {
-                    "type" : "file",
-                    "url" : "https://files.pythonhosted.org/packages/77/78/bca00cc9fa70bba1226ee70a42bf375c4e048fe69066a0d9b5e69bc2a79a/soupsieve-1.8-py2.py3-none-any.whl",
-                    "sha256" : "afa56bf14907bb09403e5d15fbed6275caa4174d36b975226e3b67a3bb6e2c4b"
-                },
-                {
-                    "type" : "file",
-                    "url" : "https://files.pythonhosted.org/packages/1d/5d/3260694a59df0ec52f8b4883f5d23b130bc237602a1411fa670eae12351e/beautifulsoup4-4.7.1-py3-none-any.whl",
-                    "sha256" : "034740f6cb549b4e932ae1ab975581e6103ac8f942200a0e9759065984391858"
-                }
-            ]
-        },
         {
             "name" : "libhandy",
             "buildsystem" : "meson",
