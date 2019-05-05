@@ -24,6 +24,26 @@ class Card():
         self.listbox = self.builder.get_object('chapters_listbox')
         self.listbox.connect("row-activated", self.on_chapter_clicked)
 
+        def sort(child1, child2):
+            """
+            This function gets two children and has to return:
+            - a negative integer if the firstone should come before the second one
+            - zero if they are equal
+            - a positive integer if the second one should come before the firstone
+            """
+            if child1.chapter.rank > child2.chapter.rank:
+                return -1 if self.order == 'desc' else 1
+            elif child1.chapter.rank < child2.chapter.rank:
+                return 1 if self.order == 'desc' else -1
+            else:
+                return 0
+
+        self.listbox.set_sort_func(sort)
+
+    @property
+    def order(self):
+        return self.manga.order_ or 'desc'
+
     def add_actions(self):
         delete_action = Gio.SimpleAction.new("card.delete", None)
         delete_action.connect("activate", self.on_delete_menu_clicked)
@@ -31,8 +51,12 @@ class Card():
         update_action = Gio.SimpleAction.new("card.update", None)
         update_action.connect("activate", self.on_update_menu_clicked)
 
+        self.order_action = Gio.SimpleAction.new_stateful('card.order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
+        self.order_action.connect('change-state', self.on_order_changed)
+
         self.window.application.add_action(delete_action)
         self.window.application.add_action(update_action)
+        self.window.application.add_action(self.order_action)
 
     def delete_chapter(self, delete_button, box, chapter):
         chapter.purge()
@@ -103,6 +127,14 @@ class Card():
 
         self.window.show_page('library')
 
+    def on_order_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.manga.order_:
+            return
+
+        self.manga.update(dict(order_=value))
+        self.set_order()
+
     def on_update_menu_clicked(self, action, param):
         def run(manga):
             manga.update()
@@ -168,6 +200,7 @@ class Card():
 
             self.listbox.add(row)
 
+        self.set_order()
         self.listbox.show_all()
 
     def populate_chapter(self, box, chapter):
@@ -213,6 +246,10 @@ class Card():
             box.pack_start(button, False, True, 0)
 
         box.show_all()
+
+    def set_order(self):
+        self.order_action.set_state(GLib.Variant('s', self.order))
+        self.listbox.invalidate_sort()
 
     def show(self, transition=True):
         self.window.headerbar.set_title(self.manga.name)

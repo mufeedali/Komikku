@@ -12,5 +12,24 @@
         <attribute name="action">app.card.update</attribute>
       </item>
     </section>
+    <section>
+      <submenu>
+        <attribute name="label" translatable="yes">Order</attribute>
+        <section>
+          <attribute name="id">card-order</attribute>
+
+          <item>
+            <attribute name="label" translatable="yes">By chapter number (9-0)</attribute>
+            <attribute name="action">app.card.order</attribute>
+            <attribute name="target">desc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">By chapter number</attribute>
+            <attribute name="action">app.card.order</attribute>
+            <attribute name="target">asc</attribute>
+          </item>
+        </section>
+      </submenu>
+    </section>
   </menu>
 </interface>

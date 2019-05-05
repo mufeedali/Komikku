@@ -99,6 +99,10 @@ class Reader():
         self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
+    @property
+    def reading_direction(self):
+        return self.chapter.manga.reading_direction or 'right-to-left'
+
     def add_actions(self):
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
             'reader.reading-direction', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
@@ -147,14 +151,12 @@ class Reader():
 
     def on_button_press(self, widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
-            reading_direction = self.chapter.manga.reading_direction or 'right-to-left'
-
             if event.x < self.size.width / 3:
                 # 1st third of the page
-                index = self.page_index + 1 if reading_direction == 'right-to-left' else self.page_index - 1
+                index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
             elif event.x > 2 * self.size.width / 3:
                 # Last third of the page
-                index = self.page_index - 1 if reading_direction == 'right-to-left' else self.page_index + 1
+                index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
             else:
                 # Center part of the page
                 if self.controls.visible:
@@ -242,10 +244,8 @@ class Reader():
         self.image.set_from_pixbuf(pixbuf)
 
     def set_reading_direction(self):
-        reading_direction = self.chapter.manga.reading_direction or 'right-to-left'
-
-        self.reading_direction_action.set_state(GLib.Variant('s', reading_direction))
-        self.controls.set_scale_direction(reading_direction == 'right-to-left')
+        self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))
+        self.controls.set_scale_direction(self.reading_direction == 'right-to-left')
 
     def show_spinner(self):
         self.spinner_box.get_children()[0].start()
