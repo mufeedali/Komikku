@@ -119,8 +119,8 @@ class Library():
         mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
         if len(mangas_rows) == 0:
-            if self.window.stack.is_ancestor(self.window):
-                self.window.remove(self.window.stack)
+            if self.window.overlay.is_ancestor(self.window):
+                self.window.remove(self.window.overlay)
 
             # Display first start message
             self.window.add(self.window.first_start_grid)
@@ -130,7 +130,7 @@ class Library():
         if self.window.first_start_grid.is_ancestor(self.window):
             self.window.remove(self.window.first_start_grid)
 
-        self.window.add(self.window.stack)
+        self.window.add(self.window.overlay)
 
         # Clear library flowbox
         for child in self.flowbox.get_children():

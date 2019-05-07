@@ -170,9 +170,11 @@ class Manga(object):
         db_conn.close()
 
     def _save(self, data):
-        # Fill data with internal data or not yet scraped values
+        # Fill data with internal data or later scraped values
         data.update(dict(
             last_read=datetime.datetime.now(),
+            order_=None,
+            reading_direction=None,
             last_update=None,
         ))
 

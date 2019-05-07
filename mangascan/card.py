@@ -145,8 +145,7 @@ class Card():
             if self.manga.id == manga.id:
                 self.populate(manga)
 
-            notification = Notify.Notification.new(_('[{0}] Successfully updated').format(manga.name))
-            notification.show()
+            self.window.show_notification(_('[{0}] Successfully updated').format(manga.name))
 
             return False
 
