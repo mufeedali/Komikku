@@ -17,6 +17,7 @@ from mangascan.model import Chapter
 class Controls():
     visible = False
     reader = None
+    chapter = None
 
     def __init__(self, reader):
         self.reader = reader
@@ -38,7 +39,7 @@ class Controls():
         self.scale.set_value_pos(Gtk.PositionType.RIGHT)
 
         def format(scale, value):
-            return '{0}/{1}'.format(int(value), len(self.reader.chapter.pages))
+            return '{0}/{1}'.format(int(value), len(self.chapter.pages))
 
         self.scale.connect('format-value', format)
         self.scale.connect('value-changed', self.on_scale_value_changed)
@@ -56,9 +57,10 @@ class Controls():
         self.visible = False
         self.box.hide()
 
-    def init(self):
-        self.scale.set_range(1, len(self.reader.chapter.pages))
-        self.label.set_text(self.reader.chapter.title)
+    def init(self, chapter):
+        self.chapter = chapter
+        self.scale.set_range(1, len(self.chapter.pages))
+        self.label.set_text(self.chapter.title)
 
     def on_scale_value_changed(self, scale):
         self.reader.render_page(int(scale.get_value()) - 1)
@@ -130,7 +132,7 @@ class Reader():
                 index = len(self.chapter.pages) - 1
 
             self.hide_spinner()
-            self.controls.init()
+            self.controls.init(self.chapter)
             self.controls.goto_page(index + 1)
 
         if index is None:
