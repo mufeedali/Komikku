@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-    <enum id="com.gitlab.valos.MangaScan.Sorting">
-        <value nick="a-z" value="0" />
-        <value nick="z-a" value="1" />
-        <value nick="last_added" value="2" />
+    <enum id="com.gitlab.valos.MangaScan.ReadingDirection">
+        <value nick="right-to-left" value="0" />
+        <value nick="left-to-right" value="1" />
     </enum>
     <schema path="/com/gitlab/valos/MangaScan/" id="com.gitlab.valos.MangaScan" gettext-domain="mangascan">
         <key type="b" name="dark-theme">
             <default>false</default>
             <summary>Use dark GTK+ theme</summary>
             <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
+        </key>
+        <key enum="com.gitlab.valos.MangaScan.ReadingDirection" name="reading-direction">
+            <default>"right-to-left"</default>
+            <summary>Reading direction</summary>
+            <description></description>
         </key>
         <key type="ai" name="window-size">
             <default>[360, 654]</default>

@@ -55,7 +55,7 @@
                         <property name="margin_top">15</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel" id="section_label_general">
+                          <object class="GtkLabel" id="section_general_label">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
@@ -73,14 +73,14 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkFrame" id="section_frame_general">
+                          <object class="GtkFrame" id="section_general_frame">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="margin_bottom">20</property>
                             <property name="label_xalign">0</property>
                             <property name="shadow_type">in</property>
                             <child>
-                              <object class="GtkListBox" id="section_list_box_general">
+                              <object class="GtkListBox" id="section_general_listbox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="selection_mode">none</property>
@@ -104,7 +104,7 @@
                                             <property name="hexpand">True</property>
                                             <property name="orientation">vertical</property>
                                             <child>
-                                              <object class="GtkLabel" id="settings_theme_name">
+                                              <object class="GtkLabel" id="settings_theme_label_label">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
                                                 <property name="halign">start</property>
@@ -120,7 +120,7 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkLabel" id="settings_theme_description">
+                                              <object class="GtkLabel" id="settings_theme_description_label">
                                                 <property name="name">SubtitleLabel</property>
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
@@ -175,6 +175,134 @@
                             <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="section_reader_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="margin_bottom">5</property>
+                            <property name="label" translatable="yes">Reader</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFrame" id="section_reader_frame">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_bottom">20</property>
+                            <property name="label_xalign">0</property>
+                            <property name="shadow_type">in</property>
+                            <child>
+                              <object class="GtkListBox" id="section_reader_listbox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="selection_mode">none</property>
+                                <child>
+                                  <object class="GtkListBoxRow" id="settings_reading_direction_row">
+                                    <property name="width_request">100</property>
+                                    <property name="height_request">50</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <child>
+                                      <object class="GtkBox" id="settings_reading_direction_box">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="margin_left">8</property>
+                                        <property name="margin_right">8</property>
+                                        <child>
+                                          <object class="GtkBox" id="settings_reading_direction_label_box">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="hexpand">True</property>
+                                            <property name="orientation">vertical</property>
+                                            <child>
+                                              <object class="GtkLabel" id="settings_reading_direction_label_label">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">end</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="label" translatable="yes">Reading direction</property>
+                                                <property name="ellipsize">end</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="settings_reading_direction_description_label">
+                                                <property name="name">SubtitleLabel</property>
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">start</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="label" translatable="yes">From right to left</property>
+                                                <property name="ellipsize">end</property>
+                                                <attributes>
+                                                  <attribute name="size" value="9500"/>
+                                                </attributes>
+                                                <style>
+                                                  <class name="dim-label"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="settings_reading_direction_switch">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
+                                            <property name="hexpand">False</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>

@@ -9,6 +9,7 @@ from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
+import mangascan.config_manager
 from mangascan.model import create_db_connection
 from mangascan.model import Chapter
 
@@ -99,7 +100,7 @@ class Reader():
 
     @property
     def reading_direction(self):
-        return self.chapter.manga.reading_direction or 'right-to-left'
+        return self.chapter.manga.reading_direction or mangascan.config_manager.get_reading_direction()
 
     def add_actions(self):
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
