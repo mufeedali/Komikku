@@ -36,6 +36,10 @@ class Japscan():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = scraper.get(self.manga_url.format(initial_data['slug']))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -96,6 +100,10 @@ class Japscan():
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
         r = scraper.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -137,17 +145,29 @@ class Japscan():
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
+        scraper.get(self.base_url)
+
         r = scraper.post(self.search_url, data=dict(search=term))
 
-        # Returned data for each manga:
-        # name:  name of the manga
-        # image: path of cover image
-        # url:   path of manga page
-        results = r.json()
+        if r.status_code == 200:
+            if r.content == b'':
+                # No results
+                return []
 
-        for result in results:
-            # Extract slug from url
-            result['slug'] = result.pop('url').split('/')[2]
-            result['cover_path'] = result.pop('image')
+            try:
+                results = r.json(strict=False)
 
-        return results
+                # Returned data for each manga:
+                # name:  name of the manga
+                # image: path of cover image
+                # url:   path of manga page
+                for result in results:
+                    # Extract slug from url
+                    result['slug'] = result.pop('url').split('/')[2]
+                    result['cover_path'] = result.pop('image')
+
+                return results
+            except Exception:
+                return None
+        else:
+            return None

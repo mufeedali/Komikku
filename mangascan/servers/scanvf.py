@@ -1,12 +1,12 @@
 from bs4 import BeautifulSoup
+import cloudscraper
 import magic
-import requests
 
 server_id = 'scanvf'
 server_name = 'Scanvf'
 server_lang = 'fr'
 
-session = None
+scraper = None
 
 
 class Scanvf():
@@ -23,10 +23,10 @@ class Scanvf():
     cover_url = base_url + '/{0}'
 
     def __init__(self):
-        global session
+        global scraper
 
-        if session is None:
-            session = requests.Session()
+        if scraper is None:
+            scraper = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -36,7 +36,11 @@ class Scanvf():
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = session.get(self.manga_url.format(initial_data['slug']))
+        r = scraper.get(self.manga_url.format(initial_data['slug']))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'lxml')
 
@@ -88,7 +92,11 @@ class Scanvf():
         Currently, only pages are expected.
         """
         url = self.chapter_url.format(chapter_slug)
-        r = session.get(url)
+        r = scraper.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'lxml')
 
@@ -111,14 +119,14 @@ class Scanvf():
         """
         # Scrap HTML page to get image path
         url = self.page_url.format(chapter_slug, page['slug'])
-        r = session.get(url)
+        r = scraper.get(url)
 
         soup = BeautifulSoup(r.text, 'lxml')
         path = soup.find('img', class_='img-fluid').get('src')
         imagename = url.split('/')[-1]
 
         # Get scan image
-        r = session.get(self.image_url.format(path))
+        r = scraper.get(self.image_url.format(path))
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -127,22 +135,28 @@ class Scanvf():
         """
         Returns manga cover (image) content
         """
-        r = session.get(self.cover_url.format(cover_path))
+        r = scraper.get(self.cover_url.format(cover_path))
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
-        r = session.get(self.search_url, params=dict(key=term, send='Recherche'))
+        scraper.get(self.base_url)
 
-        soup = BeautifulSoup(r.text, 'lxml')
+        r = scraper.get(self.search_url, params=dict(key=term, send='Recherche'))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        results = []
-        a_elements = soup.find('div', class_='col-lg-8').find_all('a')
-        for a_element in a_elements:
-            results.append(dict(
-                slug=a_element.get('href'),
-                name=a_element.text,
-            ))
+        if r.status_code == 200 and mime_type == 'text/html':
+            soup = BeautifulSoup(r.text, 'lxml')
 
-        return results
+            results = []
+            a_elements = soup.find('div', class_='col-lg-8').find_all('a')
+            for a_element in a_elements:
+                results.append(dict(
+                    slug=a_element.get('href'),
+                    name=a_element.text,
+                ))
+
+            return results
+        else:
+            return None

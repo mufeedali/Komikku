@@ -1,13 +1,8 @@
-import requests
-
-from mangascan.servers.ninemanga import headers
 from mangascan.servers.ninemanga import Ninemanga
 
 server_id = 'ninemanga_br'
 server_name = 'Nine Manga'
 server_lang = 'br'
-
-session = None
 
 
 class Ninemanga_br(Ninemanga):
@@ -21,10 +16,3 @@ class Ninemanga_br(Ninemanga):
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
     cover_url = 'https://na3.taadd.com{0}'
-
-    def __init__(self):
-        global session
-
-        if session is None:
-            session = requests.Session()
-            session.headers = headers

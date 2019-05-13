@@ -65,14 +65,16 @@ class Card():
 
     def download_chapter(self, download_button, box, chapter):
         def run():
-            chapter.update()
+            if chapter.update():
 
-            for index, page in enumerate(chapter.pages):
-                time.sleep(1)
-                chapter.get_page(index)
-                GLib.idle_add(update_notification, index)
+                for index, page in enumerate(chapter.pages):
+                    time.sleep(1)
+                    chapter.get_page(index)
+                    GLib.idle_add(update_notification, index)
 
-            GLib.idle_add(complete)
+                GLib.idle_add(complete)
+            else:
+                GLib.idle_add(error)
 
         def update_notification(index):
             notification.update(
@@ -93,6 +95,12 @@ class Card():
             chapter.update(dict(downloaded=1))
 
             self.populate_chapter(box, chapter)
+
+            return False
+
+        def error():
+            box.get_children()[-1].set_sensitive(True)
+            self.window.show_notification(_('Oops, download failed. Please try again.'))
 
             return False
 
@@ -137,16 +145,24 @@ class Card():
 
     def on_update_menu_clicked(self, action, param):
         def run(manga):
-            manga.update()
-            GLib.idle_add(complete, manga)
+            self.window.show_notification(_('Start update'))
+
+            if manga.update():
+                GLib.idle_add(complete, manga)
+            else:
+                GLib.idle_add(error)
 
         def complete(manga):
             # Update card only if manga has not changed
             if self.manga.id == manga.id:
                 self.populate(manga)
 
-            self.window.show_notification(_('[{0}] Successfully updated').format(manga.name))
+            self.window.show_notification(_('Successfully updated'))
 
+            return False
+
+        def error():
+            self.window.show_notification(_('Oops, update failed, Please try again.'))
             return False
 
         thread = threading.Thread(target=run, args=(self.manga,))

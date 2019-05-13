@@ -36,6 +36,10 @@ class Submanga():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = session.get(self.manga_url.format(initial_data['slug']))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -95,6 +99,10 @@ class Submanga():
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
         r = session.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 

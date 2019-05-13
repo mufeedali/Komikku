@@ -414,6 +414,45 @@
                 <property name="index">-1</property>
               </packing>
             </child>
+            <child type="overlay">
+              <object class="GtkOverlay" id="notification_overlay">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="valign">start</property>
+                <child>
+                  <object class="GtkRevealer" id="notification_revealer">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkFrame">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="notification_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">app notification message</property>
+                            <property name="ellipsize">end</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="app-notification"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="index">-1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">True</property>

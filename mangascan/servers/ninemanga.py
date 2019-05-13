@@ -9,7 +9,7 @@ server_id = 'ninemanga'
 server_name = 'Nine Manga'
 server_lang = 'en'
 
-session = None
+sessions = dict()
 headers = OrderedDict(
     [
         ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
@@ -31,11 +31,12 @@ class Ninemanga():
     cover_url = 'https://ta1.taadd.com{0}'
 
     def __init__(self):
-        global session
+        global sessions
 
-        if session is None:
+        if self.id not in sessions:
             session = requests.Session()
             session.headers = headers
+            sessions[self.id] = session
 
     def get_manga_data(self, initial_data):
         """
@@ -45,7 +46,11 @@ class Ninemanga():
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        r = session.get(self.manga_url.format(initial_data['slug']))
+        r = sessions[self.id].get(self.manga_url.format(initial_data['slug']))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -104,7 +109,11 @@ class Ninemanga():
         Currently, only pages are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = session.get(url)
+        r = sessions[self.id].get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
         options_elements = soup.find('select', id='page').find_all('option')
@@ -126,14 +135,14 @@ class Ninemanga():
         """
         # Scrap HTML page to get image url
         url = self.page_url.format(manga_slug, page['slug'])
-        r = session.get(url)
+        r = sessions[self.id].get(url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
         url = soup.find('img', id='manga_pic_1').get('src')
         imagename = url.split('/')[-1]
 
         # Get scan image
-        r = session.get(url)
+        r = sessions[self.id].get(url)
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -142,28 +151,34 @@ class Ninemanga():
         """
         Returns manga cover (image) content
         """
-        r = session.get(self.cover_url.format(cover_path))
+        r = sessions[self.id].get(self.cover_url.format(cover_path))
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
-        r = session.get(self.search_url, params=dict(term=term))
+        r = sessions[self.id].get(self.search_url, params=dict(term=term))
 
-        # Returned data for each manga:
-        # 0: cover path
-        # 1: name of the manga
-        # 2: slug of the manga
-        # 3: UNUSED
-        # 4: UNUSED
-        data = r.json(strict=False)
+        if r.status_code == 200:
+            try:
+                # Returned data for each manga:
+                # 0: cover path
+                # 1: name of the manga
+                # 2: slug of the manga
+                # 3: UNUSED
+                # 4: UNUSED
+                data = r.json(strict=False)
 
-        results = []
-        for item in data:
-            results.append(dict(
-                slug=item[2],
-                name=item[1],
-                cover_path=item[0],
-            ))
+                results = []
+                for item in data:
+                    results.append(dict(
+                        slug=item[2],
+                        name=item[1],
+                        cover_path=item[0],
+                    ))
 
-        return results
+                return results
+            except Exception:
+                return None
+        else:
+            return None

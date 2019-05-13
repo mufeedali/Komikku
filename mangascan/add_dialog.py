@@ -98,6 +98,9 @@ class AddDialog():
         for child in self.search_page_listbox.get_children():
             self.search_page_listbox.remove(child)
 
+    def hide_notification(self):
+        self.builder.get_object('notification_revealer').set_reveal_child(False)
+
     def hide_spinner(self):
         self.spinner_box.hide()
         self.spinner_box.get_children()[0].stop()
@@ -140,10 +143,15 @@ class AddDialog():
 
     def on_manga_clicked(self, listbox, row):
         def run():
-            self.manga_data = self.server.get_manga_data(row.manga_data)
-            GLib.idle_add(complete)
+            manga_data = self.server.get_manga_data(row.manga_data)
+            if manga_data is not None:
+                GLib.idle_add(complete, manga_data)
+            else:
+                GLib.idle_add(error)
 
-        def complete():
+        def complete(manga_data):
+            self.manga_data = manga_data
+
             # Populate manga card
             cover_data = self.server.get_manga_cover_image(self.manga_data['cover_path'])
             if cover_data is not None:
@@ -168,6 +176,15 @@ class AddDialog():
 
             return False
 
+        def error():
+            self.hide_spinner()
+            self.show_notification("Oops, failed to retrieve manga's information.")
+
+            return False
+
+        if row.manga_data is None:
+            return
+
         self.show_spinner()
 
         thread = threading.Thread(target=run)
@@ -185,7 +202,10 @@ class AddDialog():
 
         def run():
             result = self.server.search(term)
-            GLib.idle_add(complete, result)
+            if result:
+                GLib.idle_add(complete, result)
+            else:
+                GLib.idle_add(error, result)
 
         def complete(result):
             self.hide_spinner()
@@ -203,9 +223,19 @@ class AddDialog():
                 self.search_page_listbox.add(row)
 
             self.search_page_listbox.show_all()
+
             self.search_lock = False
 
             return False
+
+        def error(result):
+            self.hide_spinner()
+            self.search_lock = False
+
+            if result is None:
+                self.show_notification(_('Oops, search failed. Please try again.'))
+            elif len(result) == 0:
+                self.show_notification(_('No results'))
 
         self.search_lock = True
         self.clear_results()
@@ -223,6 +253,13 @@ class AddDialog():
         self.dialog.set_modal(True)
         self.dialog.set_transient_for(self.window)
         self.dialog.present()
+
+    def show_notification(self, message):
+        self.builder.get_object('notification_label').set_text(message)
+        self.builder.get_object('notification_revealer').set_reveal_child(True)
+
+        revealer_timer = threading.Timer(3.0, GLib.idle_add, args=[self.hide_notification])
+        revealer_timer.start()
 
     def show_page(self, name):
         if name == 'search':

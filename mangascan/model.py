@@ -213,11 +213,15 @@ class Manga(object):
         Updates manga
 
         :param data: dictionary of fields to update
+        :return: True on success False otherwise
 
         If data is None, fetches and saves data available in manga's HTML page on server
         """
         if data is None:
             data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
+            if data is None:
+                return False
+
             chapters_data = data.pop('chapters')
 
             # Update chapters
@@ -249,6 +253,8 @@ class Manga(object):
             setattr(self, key, data[key])
 
         update_row('mangas', self.id, data)
+
+        return True
 
 
 class Chapter(object):
@@ -344,16 +350,21 @@ class Chapter(object):
         Updates chapter
 
         :param data: dictionary of fields to update
+        :return: True on success False otherwise
 
         If data is None, fetches and saves data available in chapter's HTML page on server
         """
         if data is None:
             if self.pages:
-                return
+                return True
 
             data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
+            if data is None:
+                return False
 
         for key in data.keys():
             setattr(self, key, data[key])
 
         update_row('chapters', self.id, data)
+
+        return True

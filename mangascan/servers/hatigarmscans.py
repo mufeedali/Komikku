@@ -36,6 +36,10 @@ class Hatigarmscans():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = session.get(self.manga_url.format(initial_data['slug']))
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -99,6 +103,10 @@ class Hatigarmscans():
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
         r = session.get(url)
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -137,13 +145,19 @@ class Hatigarmscans():
     def search(self, term):
         r = session.get(self.search_url, params=dict(query=term))
 
-        # Returned data for each manga:
-        # value: name of the manga
-        # data: slug of the manga
-        results = r.json()['suggestions']
+        if r.status_code == 200:
+            try:
+                # Returned data for each manga:
+                # value: name of the manga
+                # data: slug of the manga
+                results = r.json()['suggestions']
 
-        for result in results:
-            result['slug'] = result.pop('data')
-            result['name'] = result.pop('value')
+                for result in results:
+                    result['slug'] = result.pop('data')
+                    result['name'] = result.pop('value')
 
-        return results
+                return results
+            except Exception:
+                return None
+        else:
+            return None
