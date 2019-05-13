@@ -2,9 +2,24 @@
     "name": "python3-cloudscraper",
     "buildsystem": "simple",
     "build-commands": [
-        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} cloudscraper"
+        "pip3 install --no-index --no-build-isolation --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} cloudscraper"
     ],
     "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/68/9e/49196946aee219aead1290e00d1e7fdeab8567783e83e1b9ab5585e6206a/pycparser-2.19.tar.gz",
+            "sha256": "a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz",
+            "sha256": "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/fc/f1/8db7daa71f414ddabfa056c4ef792e1461ff655c2ae2928a2b675bfed6b4/asn1crypto-0.24.0.tar.gz",
+            "sha256": "9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49"
+        },
         {
             "type": "file",
             "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
@@ -29,6 +44,11 @@
             "type": "file",
             "url": "https://files.pythonhosted.org/packages/06/b8/d1ea38513c22e8c906275d135818fee16ad8495985956a9b7e2bb21942a1/certifi-2019.3.9.tar.gz",
             "sha256": "b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/07/ca/bc827c5e55918ad223d59d299fff92f3563476c3b00d0a9157d9c0217449/cryptography-2.6.1.tar.gz",
+            "sha256": "26c821cbeb683facb966045e2064303029d572a87ee69ca5a1bf54bf55f93ca6"
         },
         {
             "type": "file",
@@ -57,6 +77,11 @@
         },
         {
             "type": "file",
+            "url": "https://files.pythonhosted.org/packages/40/d0/8efd61531f338a89b4efa48fcf1972d870d2b67a7aea9dcf70783c8464dc/pyOpenSSL-19.0.0.tar.gz",
+            "sha256": "aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200"
+        },
+        {
+            "type": "file",
             "url": "https://files.pythonhosted.org/packages/90/ef/c0800fcfa568ee4baa95a7ceec5a33178bac86e6643857f30cf3ddb78933/Js2Py-0.63.tar.gz",
             "sha256": "5562351d4fdc5b7773390f880585da7550e3a6072d0df854c2f44bd41314d0b4"
         },
@@ -67,8 +92,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/00/ac/5ce61aa45f8a55cf4016e0b2e77b37a4eb01875791289225b0266bdb549c/cloudscraper-1.1.5.tar.gz",
-            "sha256": "e5278b7dc3d4b2538f884253e8a01bcb7726581b212df68cd890a3ff04d56b69"
+            "url": "https://files.pythonhosted.org/packages/e4/b0/47db6e503078356d5a9b0d2ff93645f11b491c4b36c93c05e6db9876356e/cloudscraper-1.1.9.tar.gz",
+            "sha256": "a8447bed933419e242c86dcf0b5f9e575835f6e8ecac022a350a520c83085424"
         }
     ]
 }
