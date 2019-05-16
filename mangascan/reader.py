@@ -104,12 +104,23 @@ class Reader():
     def reading_direction(self):
         return self.chapter.manga.reading_direction or mangascan.config_manager.get_reading_direction()
 
+    @property
+    def scaling(self):
+        return self.chapter.manga.scaling or mangascan.config_manager.get_scaling()
+
     def add_actions(self):
+        # Reading direction
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
             'reader.reading-direction', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
         self.reading_direction_action.connect('change-state', self.on_reading_direction_changed)
 
+        # Scaling
+        self.scaling_action = Gio.SimpleAction.new_stateful(
+            'reader.scaling', GLib.VariantType.new('s'), GLib.Variant('s', 'screen'))
+        self.scaling_action.connect('change-state', self.on_scaling_changed)
+
         self.window.application.add_action(self.reading_direction_action)
+        self.window.application.add_action(self.scaling_action)
 
     def hide_spinner(self):
         self.spinner_box.hide()
@@ -144,7 +155,10 @@ class Reader():
         self.chapter = chapter
 
         self.show_spinner()
+
+        # Init settings
         self.set_reading_direction()
+        self.set_scaling()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -202,6 +216,14 @@ class Reader():
             self.size = size
             self.set_page_image_from_pixbuf()
 
+    def on_scaling_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.chapter.manga.scaling:
+            return
+
+        self.chapter.manga.update(dict(scaling=value))
+        self.set_scaling()
+
     def render_page(self, index):
         def get_page_image_path():
             page_path = self.chapter.get_page(self.page_index)
@@ -236,17 +258,29 @@ class Reader():
         width = self.pixbuf.get_width()
         height = self.pixbuf.get_height()
 
-        # Adjust image on width
-        pixbuf = self.pixbuf.scale_simple(
-            self.size.width,
-            height / (width / self.size.width),
-            InterpType.BILINEAR
-        )
+        if self.scaling == 'width' or (self.scaling == 'screen' and self.size.width <= self.size.height):
+            # Adapt image to width
+            pixbuf = self.pixbuf.scale_simple(
+                self.size.width,
+                height / (width / self.size.width),
+                InterpType.BILINEAR
+            )
+        elif self.scaling == 'height' or (self.scaling == 'screen' and self.size.width > self.size.height):
+            # Adjust image to height
+            pixbuf = self.pixbuf.scale_simple(
+                width / (height / self.size.height),
+                self.size.height,
+                InterpType.BILINEAR
+            )
+
         self.image.set_from_pixbuf(pixbuf)
 
     def set_reading_direction(self):
         self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))
         self.controls.set_scale_direction(self.reading_direction == 'right-to-left')
+
+    def set_scaling(self):
+        self.scaling_action.set_state(GLib.Variant('s', self.scaling))
 
     def show_spinner(self):
         self.spinner_box.get_children()[0].start()

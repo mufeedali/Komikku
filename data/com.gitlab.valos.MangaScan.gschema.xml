@@ -4,6 +4,11 @@
         <value nick="right-to-left" value="0" />
         <value nick="left-to-right" value="1" />
     </enum>
+    <enum id="com.gitlab.valos.MangaScan.Scaling">
+        <value nick="screen" value="0" />
+        <value nick="width" value="1" />
+        <value nick="height" value="2" />
+    </enum>
     <schema path="/com/gitlab/valos/MangaScan/" id="com.gitlab.valos.MangaScan" gettext-domain="mangascan">
         <key type="b" name="dark-theme">
             <default>false</default>
@@ -14,6 +19,11 @@
             <default>"right-to-left"</default>
             <summary>Reading direction</summary>
             <description></description>
+        </key>
+        <key enum="com.gitlab.valos.MangaScan.Scaling" name="scaling">
+            <default>"width"</default>
+            <summary>Type of scaling</summary>
+            <description>Image adjustment</description>
         </key>
         <key type="ai" name="window-size">
             <default>[360, 654]</default>

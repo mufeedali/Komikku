@@ -20,6 +20,29 @@
           </item>
         </section>
       </submenu>
+
+      <submenu>
+        <attribute name="label" translatable="yes">Type of scaling</attribute>
+        <section>
+          <attribute name="id">scaling-section</attribute>
+
+          <item>
+            <attribute name="label" translatable="yes">Adapt to screen</attribute>
+            <attribute name="action">app.reader.scaling</attribute>
+            <attribute name="target">screen</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Adapt to width</attribute>
+            <attribute name="action">app.reader.scaling</attribute>
+            <attribute name="target">width</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Adapt to height</attribute>
+            <attribute name="action">app.reader.scaling</attribute>
+            <attribute name="target">height</attribute>
+          </item>
+        </section>
+      </submenu>
     </section>
   </menu>
 </interface>

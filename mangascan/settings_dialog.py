@@ -1,6 +1,8 @@
 from gettext import gettext as _
 
+from gi.repository import Gio
 from gi.repository import Gtk
+from gi.repository import Handy
 import mangascan.config_manager
 
 
@@ -23,17 +25,59 @@ class SettingsDialog():
         self.set_config_values()
 
     def set_config_values(self):
+        #
+        # General
+        #
+
+        # Dark theme
         settings_theme_switch = self.builder.get_object('settings_theme_switch')
-        settings_theme_switch.connect('notify::active', self.on_settings_theme_switch_switched)
-        settings_theme_switch_value = mangascan.config_manager.get_dark_theme()
-        settings_theme_switch.set_active(settings_theme_switch_value)
+        settings_theme_switch.connect('notify::active', self.on_theme_changed)
+        settings_theme_switch.set_active(mangascan.config_manager.get_dark_theme())
 
-        settings_reading_direction_switch = self.builder.get_object('settings_reading_direction_switch')
-        settings_reading_direction_switch.connect('notify::active', self.on_settings_reading_direction_switch_switched)
-        settings_reading_direction_switch_value = mangascan.config_manager.get_reading_direction()
-        settings_reading_direction_switch.set_active(settings_reading_direction_switch_value)
+        #
+        # Reader
+        #
 
-    def on_settings_theme_switch_switched(self, switch_button, gparam):
+        # Reading direction
+        liststore = Gio.ListStore.new(Handy.ValueObject)
+        liststore.insert(0, Handy.ValueObject.new(_('Right to left')))
+        liststore.insert(1, Handy.ValueObject.new(_('Left to right')))
+
+        row = self.builder.get_object('settings_reading_direction_row')
+        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        row.set_selected_index(mangascan.config_manager.get_reading_direction(nick=False))
+        row.connect('notify::selected-index', self.on_reading_direction_changed)
+
+        # Image scaling
+        liststore = Gio.ListStore.new(Handy.ValueObject)
+        liststore.insert(0, Handy.ValueObject.new(_('Adjust to screen')))
+        liststore.insert(1, Handy.ValueObject.new(_('Adjust to width')))
+        liststore.insert(2, Handy.ValueObject.new(_('Adjust to height')))
+
+        row = self.builder.get_object('settings_scaling_row')
+        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        row.set_selected_index(mangascan.config_manager.get_scaling(nick=False))
+        row.connect('notify::selected-index', self.on_scaling_changed)
+
+    def on_reading_direction_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            mangascan.config_manager.set_reading_direction('right-to-left')
+        elif index == 1:
+            mangascan.config_manager.set_reading_direction('left-to-right')
+
+    def on_scaling_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            mangascan.config_manager.set_scaling('screen')
+        elif index == 1:
+            mangascan.config_manager.set_scaling('width')
+        elif index == 2:
+            mangascan.config_manager.set_scaling('height')
+
+    def on_theme_changed(self, switch_button, gparam):
         gtk_settings = Gtk.Settings.get_default()
 
         if switch_button.get_active():
@@ -42,11 +86,3 @@ class SettingsDialog():
         else:
             mangascan.config_manager.set_dark_theme(False)
             gtk_settings.set_property('gtk-application-prefer-dark-theme', False)
-
-    def on_settings_reading_direction_switch_switched(self, switch_button, gparam):
-        if switch_button.get_active():
-            mangascan.config_manager.set_reading_direction('left-to-right')
-            self.builder.get_object('settings_reading_direction_description_label').set_text(_('From left to right'))
-        else:
-            mangascan.config_manager.set_reading_direction('right-to-left')
-            self.builder.get_object('settings_reading_direction_description_label').set_text(_('From right to left'))
