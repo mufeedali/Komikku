@@ -59,6 +59,17 @@ class SettingsDialog():
         row.set_selected_index(mangascan.config_manager.get_scaling(nick=False))
         row.connect('notify::selected-index', self.on_scaling_changed)
 
+        # Full screen
+        settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
+        settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
+        settings_fullscreen_switch.set_active(mangascan.config_manager.get_fullscreen())
+
+    def on_fullscreen_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            mangascan.config_manager.set_fullscreen(True)
+        else:
+            mangascan.config_manager.set_fullscreen(False)
+
     def on_reading_direction_changed(self, row, param):
         index = row.get_selected_index()
 

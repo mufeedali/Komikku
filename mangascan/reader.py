@@ -19,6 +19,9 @@ class Controls():
     reader = None
     chapter = None
 
+    FULLSCREEN_ICON_NAME = 'view-fullscreen-symbolic'
+    UNFULLSCREEN_ICON_NAME = 'view-restore-symbolic'
+
     def __init__(self, reader):
         self.reader = reader
 
@@ -33,6 +36,8 @@ class Controls():
         self.label.set_ellipsize(Pango.EllipsizeMode.END)
         self.box.pack_start(self.label, True, True, 4)
 
+        box = Gtk.HBox()
+
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
         self.scale.get_style_context().add_class('reader-controls-pages-scale')
@@ -43,7 +48,15 @@ class Controls():
 
         self.scale.connect('format-value', format)
         self.scale.connect('value-changed', self.on_scale_value_changed)
-        self.box.pack_start(self.scale, True, True, 0)
+        box.pack_start(self.scale, True, True, 0)
+
+        # Fullscreen toggle button
+        self.fullscreen_button = Gtk.ToggleButton()
+        self.fullscreen_button.set_active(False)
+        self.fullscreen_button.connect('clicked', self.toggle_fullscreen)
+        box.pack_start(self.fullscreen_button, False, True, 0)
+
+        self.box.pack_start(box, True, True, 0)
 
         self.reader.overlay.add_overlay(self.box)
 
@@ -59,8 +72,16 @@ class Controls():
 
     def init(self, chapter):
         self.chapter = chapter
+
         self.scale.set_range(1, len(self.chapter.pages))
         self.label.set_text(self.chapter.title)
+
+        if self.reader.is_fullscreen:
+            self.fullscreen_button.set_active(True)
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+        else:
+            self.fullscreen_button.set_active(False)
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
 
     def on_scale_value_changed(self, scale):
         self.reader.render_page(int(scale.get_value()) - 1)
@@ -72,9 +93,18 @@ class Controls():
         self.visible = True
         self.box.show()
 
+    def toggle_fullscreen(self, button=None):
+        if self.fullscreen_button.get_active():
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+            self.reader.fullscreen()
+        else:
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+            self.reader.unfullscreen()
+
 
 class Reader():
     chapter = None
+    is_fullscreen = False
     pixbuf = None
     size = None
 
@@ -122,6 +152,22 @@ class Reader():
         self.window.application.add_action(self.reading_direction_action)
         self.window.application.add_action(self.scaling_action)
 
+    def compute_size(self):
+        if self.is_fullscreen:
+            screen = Gtk.Window().get_screen()
+            monitor = screen.get_monitor_at_window(screen.get_active_window())
+
+            self.size = screen.get_monitor_geometry(monitor)
+        else:
+            self.size = self.viewport.get_allocated_size()[0]
+
+    def fullscreen(self):
+        if self.is_fullscreen:
+            return
+
+        self.is_fullscreen = True
+        self.window.fullscreen()
+
     def hide_spinner(self):
         self.spinner_box.hide()
         self.spinner_box.get_children()[0].stop()
@@ -149,10 +195,14 @@ class Reader():
         if index is None:
             # We come from library
             self.image.clear()
+            self.pixbuf = None
             self.controls.hide()
             self.show()
 
         self.chapter = chapter
+
+        if mangascan.config_manager.get_fullscreen():
+            self.fullscreen()
 
         self.show_spinner()
 
@@ -210,10 +260,13 @@ class Reader():
         self.set_reading_direction()
 
     def on_resize(self, window):
-        size = self.viewport.get_allocated_size()[0]
+        if self.window.stack.props.visible_child_name != 'reader' or self.pixbuf is None:
+            return
 
-        if self.size and (size.width != self.size.width or size.height != self.size.height):
-            self.size = size
+        old_size = self.size
+        self.compute_size()
+
+        if old_size and (old_size.width != self.size.width or old_size.height != self.size.height):
             self.set_page_image_from_pixbuf()
 
     def on_scaling_changed(self, action, variant):
@@ -236,7 +289,7 @@ class Reader():
             else:
                 self.pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
 
-            self.size = self.viewport.get_allocated_size()[0]
+            self.compute_size()
             self.set_page_image_from_pixbuf()
 
             self.image.show()
@@ -291,3 +344,10 @@ class Reader():
         self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
         self.window.show_page('reader')
+
+    def unfullscreen(self):
+        if not self.is_fullscreen:
+            return
+
+        self.is_fullscreen = False
+        self.window.unfullscreen()

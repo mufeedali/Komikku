@@ -3,6 +3,7 @@ from gi.repository import GLib, Gio
 setting = Gio.Settings.new('com.gitlab.valos.MangaScan')
 
 dark_theme = 'dark-theme'
+fullscreen = 'fullscreen'
 reading_direction = 'reading-direction'
 scaling = 'scaling'
 window_size = 'window-size'
@@ -15,6 +16,14 @@ def get_dark_theme():
 
 def set_dark_theme(value):
     setting.set_boolean(dark_theme, value)
+
+
+def get_fullscreen():
+    return setting.get_boolean(fullscreen)
+
+
+def set_fullscreen(value):
+    setting.set_boolean(fullscreen, value)
 
 
 def get_reading_direction(nick=True):

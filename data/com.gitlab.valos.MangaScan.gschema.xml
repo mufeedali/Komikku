@@ -25,6 +25,11 @@
             <summary>Type of scaling</summary>
             <description>Image adjustment</description>
         </key>
+        <key type="b" name="fullscreen">
+            <default>false</default>
+            <summary>Full screen</summary>
+            <description>Automatically enter full screen mode</description>
+        </key>
         <key type="ai" name="window-size">
             <default>[360, 654]</default>
             <summary>Window size</summary>
