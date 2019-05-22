@@ -154,10 +154,10 @@ class Reader():
 
     def compute_size(self):
         if self.is_fullscreen:
-            screen = Gtk.Window().get_screen()
-            monitor = screen.get_monitor_at_window(screen.get_active_window())
+            display = Gdk.Display.get_default()
+            monitor = display.get_monitor_at_window(self.window.get_window())
 
-            self.size = screen.get_monitor_geometry(monitor)
+            self.size = monitor.get_geometry()
         else:
             self.size = self.viewport.get_allocated_size()[0]
 
