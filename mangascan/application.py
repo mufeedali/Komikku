@@ -18,7 +18,7 @@ from mangascan.main_window import MainWindow
 
 class Application(Gtk.Application):
     development_mode = False
-    application_id = "com.gitlab.valos.MangaScan"
+    application_id = 'com.gitlab.valos.MangaScan'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_OPEN)
@@ -28,7 +28,7 @@ class Application(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         GLib.set_application_name('Manga Scan')
-        GLib.set_prgname("Manga Scan")
+        GLib.set_prgname('Manga Scan')
 
         Notify.init('Manga Scan')
 
@@ -37,7 +37,7 @@ class Application(Gtk.Application):
 
     def do_activate(self):
         if not self.window:
-            self.window = MainWindow(application=self, title="Manga Scan", icon_name=self.application_id)
+            self.window = MainWindow(application=self, title='Manga Scan', icon_name=self.application_id)
             self.window.application = self
 
             self.add_global_accelerators()
@@ -49,15 +49,15 @@ class Application(Gtk.Application):
         logger = logging.getLogger()
 
         if self.development_mode is True:
-            logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt='%d-%m-%y %H:%M:%S', level=logging.DEBUG)
+            logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.DEBUG)
         else:
-            logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
+            logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
 
         return logger
 
     def add_actions(self):
-        quit_action = Gio.SimpleAction.new("quit", None)
-        quit_action.connect("activate", self.on_quit_menu_clicked)
+        quit_action = Gio.SimpleAction.new('quit', None)
+        quit_action.connect('activate', self.on_quit_menu_clicked)
         self.add_action(quit_action)
 
         self.window.add_actions()
@@ -69,6 +69,6 @@ class Application(Gtk.Application):
         self.quit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = Application()
     app.run(sys.argv)
