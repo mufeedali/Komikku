@@ -102,7 +102,7 @@ class Library():
             # Library was previously empty
             self.populate()
         else:
-            self.add_manga(manga)
+            self.add_manga(manga, position=0)
 
     def on_manga_clicked(self, flowbox, child):
         self.window.card.open_manga(child.get_children()[0].manga)
