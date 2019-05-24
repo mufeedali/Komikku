@@ -107,6 +107,9 @@ class Reader():
     is_fullscreen = False
     pixbuf = None
     size = None
+    button_press_timeout_id = None
+    default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
+    zoomed = False
 
     def __init__(self, window):
         self.window = window
@@ -158,8 +161,10 @@ class Reader():
             monitor = display.get_monitor_at_window(self.window.get_window())
 
             self.size = monitor.get_geometry()
+            # print(self.viewport.get_allocation().width, self.size.width)
         else:
-            self.size = self.viewport.get_allocated_size()[0]
+            # self.size = self.viewport.get_allocated_size()[0]
+            self.size = self.viewport.get_allocation()
 
     def fullscreen(self):
         if self.is_fullscreen:
@@ -215,41 +220,47 @@ class Reader():
         thread.start()
 
     def on_button_press(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
-            if event.x < self.size.width / 3:
-                # 1st third of the page
-                index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
-            elif event.x > 2 * self.size.width / 3:
-                # Last third of the page
-                index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
-            else:
-                # Center part of the page
-                if self.controls.visible:
-                    self.controls.hide()
-                else:
-                    self.controls.show()
-                return
+        if event.button == 1:
+            if self.zoomed is False and self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
+                # Schedule single click event to be able to detect double click
+                self.button_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
 
-            if index >= 0 and index < len(self.chapter.pages):
-                self.controls.goto_page(index + 1)
-            elif index == -1:
-                # Get previous chapter
-                db_conn = create_db_connection()
-                row = db_conn.execute(
-                    'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
-                db_conn.close()
+            elif event.type == Gdk.EventType._2BUTTON_PRESS:
+                # Remove scheduled single click event
+                if self.button_press_timeout_id:
+                    GLib.source_remove(self.button_press_timeout_id)
+                    self.button_press_timeout_id = None
 
-                if row:
-                    self.init(Chapter(row['id']), 'last')
-            elif index == len(self.chapter.pages):
-                # Get next chapter
-                db_conn = create_db_connection()
-                row = db_conn.execute(
-                    'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
-                db_conn.close()
+                GLib.idle_add(self.on_double_click, event.copy())
 
-                if row:
-                    self.init(Chapter(row['id']), 'first')
+    def on_double_click(self, event):
+        # Zoom/unzoom
+
+        def adjust_scroll(hadj, event, ratio):
+            hadj.disconnect(handler_id)
+
+            def adjust():
+                vadj = self.scrolledwindow.get_vadjustment()
+                hadj.set_value(event.x * ratio - event.x)
+                vadj.set_value(event.y * ratio - event.y)
+
+            GLib.idle_add(adjust)
+
+        if self.zoomed is False:
+            # Adjust image to 90% of original size
+            width = self.pixbuf.get_width() * 0.9
+            height = self.pixbuf.get_height() * 0.9
+            ratio = width / self.image.get_pixbuf().get_width()
+
+            handler_id = self.scrolledwindow.get_hadjustment().connect('changed', adjust_scroll, event, ratio)
+
+            pixbuf = self.pixbuf.scale_simple(width, height, InterpType.BILINEAR)
+
+            self.image.set_from_pixbuf(pixbuf)
+            self.zoomed = True
+        else:
+            self.set_page_image_from_pixbuf()
+            self.zoomed = False
 
     def on_reading_direction_changed(self, action, variant):
         value = variant.get_string()
@@ -277,13 +288,60 @@ class Reader():
         self.chapter.manga.update(dict(scaling=value))
         self.set_scaling()
 
+    def on_single_click(self, event):
+        self.button_press_timeout_id = None
+
+        if event.x < self.size.width / 3:
+            # 1st third of the page
+            if self.zoomed:
+                return
+
+            index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
+        elif event.x > 2 * self.size.width / 3:
+            # Last third of the page
+            if self.zoomed:
+                return
+
+            index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
+        else:
+            # Center part of the page
+            if self.controls.visible:
+                self.controls.hide()
+            else:
+                self.controls.show()
+
+            return
+
+        if index >= 0 and index < len(self.chapter.pages):
+            self.controls.goto_page(index + 1)
+        elif index == -1:
+            # Get previous chapter
+            db_conn = create_db_connection()
+            row = db_conn.execute(
+                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
+            db_conn.close()
+
+            if row:
+                self.init(Chapter(row['id']), 'last')
+        elif index == len(self.chapter.pages):
+            # Get next chapter
+            db_conn = create_db_connection()
+            row = db_conn.execute(
+                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
+            db_conn.close()
+
+            if row:
+                self.init(Chapter(row['id']), 'first')
+
+        return False
+
     def render_page(self, index):
-        def get_page_image_path():
+        def run():
             page_path = self.chapter.get_page(self.page_index)
 
-            GLib.idle_add(show_page_image, page_path)
+            GLib.idle_add(complete, page_path)
 
-        def show_page_image(page_path):
+        def complete(page_path):
             if page_path:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
@@ -303,7 +361,7 @@ class Reader():
 
         self.show_spinner()
 
-        thread = threading.Thread(target=get_page_image_path)
+        thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
 
