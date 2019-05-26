@@ -15,7 +15,7 @@ from mangascan.model import Chapter
 
 
 class Controls():
-    visible = False
+    is_visible = False
     reader = None
     chapter = None
 
@@ -67,7 +67,7 @@ class Controls():
             self.scale.set_value(index)
 
     def hide(self):
-        self.visible = False
+        self.is_visible = False
         self.box.hide()
 
     def init(self, chapter):
@@ -90,7 +90,7 @@ class Controls():
         self.scale.set_inverted(inverted)
 
     def show(self):
-        self.visible = True
+        self.is_visible = True
         self.box.show()
 
     def toggle_fullscreen(self, button=None):
@@ -109,7 +109,7 @@ class Reader():
     size = None
     button_press_timeout_id = None
     default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
-    zoomed = False
+    zoom = dict(active=False)
 
     def __init__(self, window):
         self.window = window
@@ -221,7 +221,7 @@ class Reader():
 
     def on_button_press(self, widget, event):
         if event.button == 1:
-            if self.zoomed is False and self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
+            if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
                 self.button_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
 
@@ -236,31 +236,57 @@ class Reader():
     def on_double_click(self, event):
         # Zoom/unzoom
 
-        def adjust_scroll(hadj, event, ratio):
-            hadj.disconnect(handler_id)
+        def adjust_scroll(hadj, h_value, v_value):
+            hadj.disconnect(adjust_scroll_handler_id)
 
             def adjust():
                 vadj = self.scrolledwindow.get_vadjustment()
-                hadj.set_value(event.x * ratio - event.x)
-                vadj.set_value(event.y * ratio - event.y)
+                hadj.set_value(h_value)
+                vadj.set_value(v_value)
 
             GLib.idle_add(adjust)
 
-        if self.zoomed is False:
-            # Adjust image to 90% of original size
-            width = self.pixbuf.get_width() * 0.9
-            height = self.pixbuf.get_height() * 0.9
-            ratio = width / self.image.get_pixbuf().get_width()
+        hadj = self.scrolledwindow.get_hadjustment()
+        vadj = self.scrolledwindow.get_vadjustment()
 
-            handler_id = self.scrolledwindow.get_hadjustment().connect('changed', adjust_scroll, event, ratio)
+        if self.zoom['active'] is False:
+            # Record hadjustment and vadjustment values
+            self.zoom['orig_hadj_value'] = hadj.get_value()
+            self.zoom['orig_vadj_value'] = vadj.get_value()
 
-            pixbuf = self.pixbuf.scale_simple(width, height, InterpType.BILINEAR)
+            # Adjust image to 100% of original size (arbitrary experimental choice)
+            factor = 1
+            orig_width = self.image.get_pixbuf().get_width()
+            orig_height = self.image.get_pixbuf().get_height()
+            zoom_width = self.pixbuf.get_width() * factor
+            zoom_height = self.pixbuf.get_height() * factor
+            ratio = zoom_width / orig_width
+
+            if orig_width <= self.size.width:
+                rel_event_x = event.x - (self.size.width - orig_width) / 2
+            else:
+                rel_event_x = event.x + hadj.get_value()
+            if orig_height <= self.size.height:
+                rel_event_y = event.y - (self.size.height - orig_height) / 2
+            else:
+                rel_event_y = event.y + vadj.get_value()
+
+            h_value = rel_event_x * ratio - event.x
+            v_value = rel_event_y * ratio - event.y
+
+            adjust_scroll_handler_id = hadj.connect('changed', adjust_scroll, h_value, v_value)
+
+            pixbuf = self.pixbuf.scale_simple(zoom_width, zoom_height, InterpType.BILINEAR)
 
             self.image.set_from_pixbuf(pixbuf)
-            self.zoomed = True
+
+            self.zoom['active'] = True
         else:
+            adjust_scroll_handler_id = hadj.connect('changed', adjust_scroll, self.zoom['orig_hadj_value'], self.zoom['orig_vadj_value'])
+
             self.set_page_image_from_pixbuf()
-            self.zoomed = False
+
+            self.zoom['active'] = False
 
     def on_reading_direction_changed(self, action, variant):
         value = variant.get_string()
@@ -293,19 +319,19 @@ class Reader():
 
         if event.x < self.size.width / 3:
             # 1st third of the page
-            if self.zoomed:
+            if self.zoom['active']:
                 return
 
             index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
         elif event.x > 2 * self.size.width / 3:
             # Last third of the page
-            if self.zoomed:
+            if self.zoom['active']:
                 return
 
             index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
         else:
             # Center part of the page
-            if self.controls.visible:
+            if self.controls.is_visible:
                 self.controls.hide()
             else:
                 self.controls.show()
@@ -356,6 +382,7 @@ class Reader():
 
             return False
 
+        self.zoom['active'] = False
         self.page_index = index
         self.chapter.update(dict(last_page_read_index=index))
 
