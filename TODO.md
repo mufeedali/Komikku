@@ -12,18 +12,18 @@
     - ~~Show last update date~~
     - ~~Delete a chapter (files on disk)~~
     - ~~Download a chapter (for offline reading)~~
-    - Memorize the scroll position for each manga
 * Reader
     - ~~Save chapter's last page read~~
     - ~~Controls: pages slider + chapter's title, current page number / number of pages~~
-    - Image adjustment: width, height, original size, best
-    - Zooming
+    - Image adjustment: ~~width~~, ~~height~~, original size, ~~best~~
+    - ~~Zooming~~
+    - ~~Reading direction~~
+    - ~~Use full screen~~
     - Swipe gesture
-    - Reading direction
-    - Use full screen
 * Add dialog
     - ~~Hide '+ Add' button in title bar if manga is already present in library or just added and replace it with a '> Read' button~~
 * Check network state: [code example](https://developer.puri.sm/Librem5/Apps/Examples/Networking/NetworkState/index.html)
-* ~~Store and reuse requests session of servers when they use a DDoS protection (CloudFlare)~~
+* ~~Store and reuse requests session of servers~~
 * ...
 * Add more servers
+* Add more translations
