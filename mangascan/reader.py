@@ -162,16 +162,6 @@ class Reader():
         self.window.application.add_action(self.scaling_action)
         self.window.application.add_action(self.fullscreen_action)
 
-    def compute_size(self):
-        # if self.is_fullscreen:
-        #     display = Gdk.Display.get_default()
-        #     monitor = display.get_monitor_at_window(self.window.get_window())
-        # 
-        #     self.size = monitor.get_geometry()
-        # else:
-        #     self.size = self.viewport.get_allocated_size()[0]
-        self.size = self.viewport.get_allocation()
-
     def hide_spinner(self):
         self.spinner_box.hide()
         self.spinner_box.get_children()[0].stop()
@@ -294,7 +284,7 @@ class Reader():
             return
 
         old_size = self.size
-        self.compute_size()
+        self.size = self.viewport.get_allocation()
 
         if old_size and (old_size.width != self.size.width or old_size.height != self.size.height):
             self.set_page_image_from_pixbuf()
@@ -366,7 +356,7 @@ class Reader():
             else:
                 self.pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
 
-            self.compute_size()
+            self.size = self.viewport.get_allocation()
             self.set_page_image_from_pixbuf()
 
             self.image.show()
