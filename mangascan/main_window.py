@@ -35,6 +35,12 @@ class MainWindow(Gtk.ApplicationWindow):
         if Gio.Application.get_default().development_mode is True:
             mangascan.config_manager.set_development_backup_mode(True)
 
+    def add_accelerators(self):
+        self.application.set_accels_for_action('app.settings', ['<Control>p'])
+        self.application.set_accels_for_action('app.add', ['<Control>plus'])
+
+        self.reader.add_accelerators()
+
     def add_actions(self):
         add_action = Gio.SimpleAction.new('add', None)
         add_action.connect('activate', self.on_left_button_clicked)
@@ -55,10 +61,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.card.add_actions()
         self.reader.add_actions()
-
-    def add_global_accelerators(self):
-        self.application.set_accels_for_action('app.settings', ['<Control>p'])
-        self.application.set_accels_for_action('app.add', ['<Control>plus'])
 
     def assemble_window(self):
         window_size = mangascan.config_manager.get_window_size()

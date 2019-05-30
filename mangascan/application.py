@@ -40,7 +40,7 @@ class Application(Gtk.Application):
             self.window = MainWindow(application=self, title='Manga Scan', icon_name=self.application_id)
             self.window.application = self
 
-            self.add_global_accelerators()
+            self.add_accelerators()
             self.add_actions()
 
         self.window.present()
@@ -62,8 +62,8 @@ class Application(Gtk.Application):
 
         self.window.add_actions()
 
-    def add_global_accelerators(self):
-        self.window.add_global_accelerators()
+    def add_accelerators(self):
+        self.window.add_accelerators()
 
     def on_quit_menu_clicked(self, action, param):
         self.quit()

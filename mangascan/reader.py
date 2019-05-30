@@ -52,6 +52,7 @@ class Controls():
 
         # Fullscreen toggle button
         self.fullscreen_button = Gtk.ToggleButton()
+        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
         self.fullscreen_button.set_active(False)
         self.fullscreen_button.connect('clicked', self.toggle_fullscreen)
         box.pack_start(self.fullscreen_button, False, True, 0)
@@ -76,12 +77,9 @@ class Controls():
         self.scale.set_range(1, len(self.chapter.pages))
         self.label.set_text(self.chapter.title)
 
-        if self.reader.is_fullscreen:
+    def init_fullscreen(self):
+        if mangascan.config_manager.get_fullscreen():
             self.fullscreen_button.set_active(True)
-            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-        else:
-            self.fullscreen_button.set_active(False)
-            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
 
     def on_scale_value_changed(self, scale):
         self.reader.render_page(int(scale.get_value()) - 1)
@@ -93,22 +91,23 @@ class Controls():
         self.is_visible = True
         self.box.show()
 
-    def toggle_fullscreen(self, button=None):
-        if self.fullscreen_button.get_active():
-            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-            self.reader.fullscreen()
-        else:
+    def toggle_fullscreen(self, *args):
+        is_fullscreen = self.reader.window.get_window().get_state() & Gdk.WindowState.FULLSCREEN == Gdk.WindowState.FULLSCREEN
+
+        if is_fullscreen:
             self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-            self.reader.unfullscreen()
+            self.reader.window.unfullscreen()
+        else:
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+            self.reader.window.fullscreen()
 
 
 class Reader():
+    button_press_timeout_id = None
     chapter = None
-    is_fullscreen = False
+    default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
     pixbuf = None
     size = None
-    button_press_timeout_id = None
-    default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
     zoom = dict(active=False)
 
     def __init__(self, window):
@@ -141,6 +140,9 @@ class Reader():
     def scaling(self):
         return self.chapter.manga.scaling or mangascan.config_manager.get_scaling()
 
+    def add_accelerators(self):
+        self.window.application.set_accels_for_action('app.reader.fullscreen', ['F11'])
+
     def add_actions(self):
         # Reading direction
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
@@ -152,26 +154,23 @@ class Reader():
             'reader.scaling', GLib.VariantType.new('s'), GLib.Variant('s', 'screen'))
         self.scaling_action.connect('change-state', self.on_scaling_changed)
 
+        # Fullscreen
+        self.fullscreen_action = Gio.SimpleAction.new('reader.fullscreen', None)
+        self.fullscreen_action.connect('activate', self.controls.toggle_fullscreen)
+
         self.window.application.add_action(self.reading_direction_action)
         self.window.application.add_action(self.scaling_action)
+        self.window.application.add_action(self.fullscreen_action)
 
     def compute_size(self):
-        if self.is_fullscreen:
-            display = Gdk.Display.get_default()
-            monitor = display.get_monitor_at_window(self.window.get_window())
-
-            self.size = monitor.get_geometry()
-            # print(self.viewport.get_allocation().width, self.size.width)
-        else:
-            # self.size = self.viewport.get_allocated_size()[0]
-            self.size = self.viewport.get_allocation()
-
-    def fullscreen(self):
-        if self.is_fullscreen:
-            return
-
-        self.is_fullscreen = True
-        self.window.fullscreen()
+        # if self.is_fullscreen:
+        #     display = Gdk.Display.get_default()
+        #     monitor = display.get_monitor_at_window(self.window.get_window())
+        # 
+        #     self.size = monitor.get_geometry()
+        # else:
+        #     self.size = self.viewport.get_allocated_size()[0]
+        self.size = self.viewport.get_allocation()
 
     def hide_spinner(self):
         self.spinner_box.hide()
@@ -199,15 +198,9 @@ class Reader():
 
         if index is None:
             # We come from library
-            self.image.clear()
-            self.pixbuf = None
-            self.controls.hide()
             self.show()
 
         self.chapter = chapter
-
-        if mangascan.config_manager.get_fullscreen():
-            self.fullscreen()
 
         self.show_spinner()
 
@@ -428,11 +421,9 @@ class Reader():
         self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-reader'))
         self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
+        self.image.clear()
+        self.pixbuf = None
+        self.controls.hide()
+        self.controls.init_fullscreen()
+
         self.window.show_page('reader')
-
-    def unfullscreen(self):
-        if not self.is_fullscreen:
-            return
-
-        self.is_fullscreen = False
-        self.window.unfullscreen()
