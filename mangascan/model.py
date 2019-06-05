@@ -80,10 +80,20 @@ def init_db():
         UNIQUE (slug, manga_id)
     );"""
 
+    sql_create_downloads_table = """CREATE TABLE IF NOT EXISTS downloads (
+        id integer PRIMARY KEY,
+        chapter_id integer REFERENCES chapters(id) ON DELETE CASCADE,
+        status text,
+        percent float,
+        date timestamp,
+        UNIQUE (chapter_id)
+    );"""
+
     db_conn = create_db_connection()
     if db_conn is not None:
         create_table(db_conn, sql_create_mangas_table)
         create_table(db_conn, sql_create_chapters_table)
+        create_table(db_conn, sql_create_downloads_table)
 
         db_conn.close()
 
@@ -325,13 +335,12 @@ class Chapter(object):
     def _save(self, data, rank, manga_id):
         # Fill data with internal data or not yet scraped values
         data.update(dict(
+            manga_id=manga_id,
             pages=None,  # later scraped value
             last_page_read_index=None,
             rank=rank,
             downloaded=0,
         ))
-
-        self.manga_id = manga_id
 
         for key in data.keys():
             setattr(self, key, data[key])
@@ -366,5 +375,92 @@ class Chapter(object):
             setattr(self, key, data[key])
 
         update_row('chapters', self.id, data)
+
+        return True
+
+
+class Download(object):
+    STATUSES = dict(
+        pending=_('Pending'),
+        downloading=_('Downloading'),
+        error=_('Error'),
+    )
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_by_chapter_id(cls, chapter_id):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM downloads WHERE chapter_id = ?', (chapter_id, )).fetchone()
+        db_conn.close()
+
+        if row:
+            c = cls()
+
+            for key in row.keys():
+                setattr(c, key, row[key])
+
+            return c
+        else:
+            return None
+
+    @classmethod
+    def new(cls, chapter_id):
+        c = cls()
+        data = dict(
+            chapter_id=chapter_id,
+            status='pending',
+            percent=0,
+            date=datetime.datetime.now(),
+        )
+
+        for key in data.keys():
+            setattr(c, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            cursor = db_conn.execute(
+                'INSERT INTO downloads (chapter_id, status, percent, date) VALUES (?, ?, ?, ?)', (c.chapter_id, c.status, c.percent, c.date))
+            c.id = cursor.lastrowid
+        db_conn.close()
+
+        return c
+
+    def delete(self):
+        db_conn = create_db_connection()
+        # Enable integrity constraint
+        db_conn.execute('PRAGMA foreign_keys = ON')
+
+        with db_conn:
+            db_conn.execute('DELETE FROM downloads WHERE id = ?', (self.id, ))
+
+        db_conn.close()
+
+    @classmethod
+    def next(cls):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM downloads ORDER BY date DESC').fetchone()
+        db_conn.close()
+
+        if row:
+            c = cls()
+
+            for key in row.keys():
+                setattr(c, key, row[key])
+
+            return c
+        else:
+            return None
+
+    def update(self, data):
+        """
+        Updates download
+
+        :param data: percent of pages downloaded and/or status
+        :return: True on success False otherwise
+        """
+
+        update_row('downloads', self.id, data)
 
         return True

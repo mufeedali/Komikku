@@ -192,7 +192,7 @@ class AddDialog():
         thread.start()
 
     def on_read_button_clicked(self, button):
-        self.window.card.open_manga(self.manga, transition=False)
+        self.window.card.init(self.manga, transition=False)
         self.dialog.close()
 
     def on_search_entry_activated(self, entry):

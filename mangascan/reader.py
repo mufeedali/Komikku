@@ -25,7 +25,7 @@ class Controls():
     def __init__(self, reader):
         self.reader = reader
 
-        self.box = Gtk.VBox()
+        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.box.get_style_context().add_class('reader-controls-box')
         self.box.set_valign(Gtk.Align.END)
 
@@ -36,7 +36,7 @@ class Controls():
         self.label.set_ellipsize(Pango.EllipsizeMode.END)
         self.box.pack_start(self.label, True, True, 4)
 
-        box = Gtk.HBox()
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
@@ -48,16 +48,16 @@ class Controls():
 
         self.scale.connect('format-value', format)
         self.scale.connect('value-changed', self.on_scale_value_changed)
-        box.pack_start(self.scale, True, True, 0)
+        hbox.pack_start(self.scale, True, True, 0)
 
         # Fullscreen toggle button
         self.fullscreen_button = Gtk.ToggleButton()
         self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
         self.fullscreen_button.set_active(False)
         self.fullscreen_button.connect('clicked', self.toggle_fullscreen)
-        box.pack_start(self.fullscreen_button, False, True, 0)
+        hbox.pack_start(self.fullscreen_button, False, True, 0)
 
-        self.box.pack_start(box, True, True, 0)
+        self.box.pack_start(hbox, True, True, 0)
 
         self.reader.overlay.add_overlay(self.box)
 

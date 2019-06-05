@@ -126,14 +126,19 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_application_quit(self, window, event):
         self.save_window_size()
 
+        if self.card.downloader.started:
+            self.card.downloader.stop()
+            return True
+        else:
+            return False
+
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
             AddDialog(self).open(action, param)
         elif self.page == 'card':
             self.library.show()
         elif self.page == 'reader':
-            self.card.populate()
-            self.card.show()
+            self.card.init()
 
     def on_settings_menu_clicked(self, action, param):
         SettingsDialog(self).open(action, param)

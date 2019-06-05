@@ -1,15 +1,15 @@
 from gettext import gettext as _
 import threading
-import time
 
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
-from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 
 from mangascan.model import create_db_connection
+from mangascan.model import Download
 from mangascan.model import Manga
+from mangascan.downloader import Downloader
 
 
 class Card():
@@ -40,6 +40,29 @@ class Card():
 
         self.listbox.set_sort_func(sort)
 
+        # Downloader change callback
+        def downloader_change_cb(chapter):
+            if self.window.stack.props.visible_child_name != 'card':
+                return
+
+            if self.manga is None or self.manga.id != chapter.manga_id:
+                return
+
+            row = None
+            for child in self.listbox.get_children():
+                if child.chapter.id == chapter.id:
+                    row = child
+                    break
+
+            if row is None:
+                return
+
+            box = row.get_children()[0]
+            self.populate_chapter(box, chapter)
+
+        self.downloader = Downloader(downloader_change_cb)
+        self.downloader.start()
+
     @property
     def order(self):
         return self.manga.order_ or 'desc'
@@ -63,58 +86,29 @@ class Card():
 
         self.populate_chapter(box, chapter)
 
-    def download_chapter(self, download_button, box, chapter):
-        def run():
-            if chapter.update():
+    def download_chapter(self, button, box, chapter):
+        # Add chapter in download queue
+        Download.new(chapter.id)
 
-                for index, page in enumerate(chapter.pages):
-                    time.sleep(1)
-                    chapter.get_page(index)
-                    GLib.idle_add(update_notification, index)
+        # Update chapter
+        self.populate_chapter(box, chapter)
 
-                GLib.idle_add(complete)
-            else:
-                GLib.idle_add(error)
+        self.downloader.start()
 
-        def update_notification(index):
-            notification.update(
-                _('[{0}] Chapter {1}').format(self.manga.name, chapter.title),
-                _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
-            )
-            notification.show()
+    def init(self, manga=None, transition=True):
+        if manga and self.manga and manga.id != self.manga.id:
+            # Scroll scrolledwindow to top when manga is changed
+            vadjustment = self.window.stack.get_child_by_name('card').get_vadjustment()
+            vadjustment.set_value(0)
 
-            return False
+        # Create a fresh instance of manga
+        if manga:
+            self.manga = Manga(manga.id)
+        else:
+            self.manga = Manga(self.manga.id)
 
-        def complete():
-            notification.update(
-                _('[{0}] Chapter {1}').format(self.manga.name, chapter.title),
-                _('Download completed')
-            )
-            notification.show()
-
-            chapter.update(dict(downloaded=1))
-
-            self.populate_chapter(box, chapter)
-
-            return False
-
-        def error():
-            box.get_children()[-1].set_sensitive(True)
-            self.window.show_notification(_('Oops, download failed. Please try again.'))
-
-            return False
-
-        # Set download button not sensitive
-        box.get_children()[-1].set_sensitive(False)
-
-        # Create notification
-        notification = Notify.Notification.new(_('Download chapter'))
-        notification.set_timeout(Notify.EXPIRES_DEFAULT)
-        notification.show()
-
-        thread = threading.Thread(target=run)
-        thread.daemon = True
-        thread.start()
+        self.show(transition)
+        self.populate()
 
     def on_chapter_clicked(self, listbox, row):
         self.window.reader.init(row.chapter)
@@ -155,7 +149,7 @@ class Card():
         def complete(manga):
             # Update card only if manga has not changed
             if self.manga.id == manga.id:
-                self.populate(manga)
+                self.init(manga)
 
             self.window.show_notification(_('Successfully updated'))
 
@@ -169,21 +163,7 @@ class Card():
         thread.daemon = True
         thread.start()
 
-    def open_manga(self, manga, transition=True):
-        self.populate(manga)
-        self.show(transition)
-
-    def populate(self, manga=None):
-        if manga:
-            if self.manga and manga.id != self.manga.id:
-                # Scroll scrolledwindow to top when manga is changed
-                vadjustment = self.window.stack.get_child_by_name('card').get_vadjustment()
-                vadjustment.set_value(0)
-
-            self.manga = manga
-        else:
-            self.manga = Manga(self.manga.id)
-
+    def populate(self):
         if self.manga.cover_fs_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 180, -1, True)
         else:
@@ -208,7 +188,7 @@ class Card():
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
-            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             row.add(box)
 
             self.populate_chapter(box, chapter)
@@ -219,12 +199,10 @@ class Card():
         self.listbox.show_all()
 
     def populate_chapter(self, box, chapter):
-        if box.get_parent() is None:
-            return
-
         for child in box.get_children():
             child.destroy()
 
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         # Title
         label = Gtk.Label(xalign=0)
         ctx = label.get_style_context()
@@ -238,27 +216,47 @@ class Card():
                 ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         label.set_text(chapter.title)
-        box.pack_start(label, True, True, 0)
+        hbox.pack_start(label, True, True, 0)
 
-        # Counter: nb read / nb pages
-        label = Gtk.Label(xalign=0, yalign=1)
-        label.get_style_context().add_class('card-chapter-counter-label')
-        if chapter.pages is not None and chapter.last_page_read_index is not None:
-            label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
-        box.pack_start(label, False, True, 0)
+        active_download = Download.get_by_chapter_id(chapter.id)
 
-        if chapter.last_page_read_index is not None or chapter.downloaded:
+        # Download or Delete button
+        if (chapter.last_page_read_index is not None or chapter.downloaded) and active_download is None:
             # Delete button
             button = Gtk.Button.new_from_icon_name('user-trash-symbolic', Gtk.IconSize.BUTTON)
             button.connect('clicked', self.delete_chapter, box, chapter)
-            button.set_relief(Gtk.ReliefStyle.NONE)
-            box.pack_start(button, False, True, 0)
         else:
             # Download button
             button = Gtk.Button.new_from_icon_name('document-save-symbolic', Gtk.IconSize.BUTTON)
+            if active_download:
+                button.set_sensitive(False)
             button.connect('clicked', self.download_chapter, box, chapter)
-            button.set_relief(Gtk.ReliefStyle.NONE)
-            box.pack_start(button, False, True, 0)
+        button.set_relief(Gtk.ReliefStyle.NONE)
+        hbox.pack_start(button, False, True, 0)
+
+        box.pack_start(hbox, True, True, 0)
+
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+
+        # Date + Downloaded state
+        label = Gtk.Label(xalign=0, yalign=1)
+        label.get_style_context().add_class('card-chapter-sublabel')
+        text = chapter.date
+        if chapter.downloaded:
+            text = '{0} - {1}'.format(text, _('DOWNLOADED'))
+        elif active_download:
+            text = '{0} - {1}'.format(text, _(Download.STATUSES[active_download.status]))
+        label.set_text(text)
+        hbox.pack_start(label, True, True, 0)
+
+        # Counter: nb read / nb pages
+        label = Gtk.Label(xalign=0, yalign=1)
+        label.get_style_context().add_class('card-chapter-sublabel')
+        if chapter.pages is not None and chapter.last_page_read_index is not None:
+            label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
+        hbox.pack_start(label, False, True, 0)
+
+        box.pack_start(hbox, True, True, 0)
 
         box.show_all()
 
@@ -267,6 +265,9 @@ class Card():
         self.listbox.invalidate_sort()
 
     def show(self, transition=True):
+        if self.window.stack.props.visible_child_name == 'card':
+            return
+
         self.window.headerbar.set_title(self.manga.name)
 
         self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)

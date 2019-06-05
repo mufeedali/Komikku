@@ -56,17 +56,10 @@ class Application(Gtk.Application):
         return logger
 
     def add_actions(self):
-        quit_action = Gio.SimpleAction.new('quit', None)
-        quit_action.connect('activate', self.on_quit_menu_clicked)
-        self.add_action(quit_action)
-
         self.window.add_actions()
 
     def add_accelerators(self):
         self.window.add_accelerators()
-
-    def on_quit_menu_clicked(self, action, param):
-        self.quit()
 
 
 if __name__ == '__main__':
