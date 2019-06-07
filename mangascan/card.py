@@ -23,7 +23,7 @@ class Card():
 
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
-        self.listbox.connect("row-activated", self.on_chapter_clicked)
+        self.listbox.connect('row-activated', self.on_chapter_clicked)
 
         def sort(child1, child2):
             """
@@ -58,8 +58,8 @@ class Card():
             if row is None:
                 return
 
-            box = row.get_children()[0]
-            self.populate_chapter(box, chapter)
+            row.chapter = chapter
+            self.populate_chapter(row)
 
         self.downloader = Downloader(downloader_change_cb)
         self.downloader.start()
@@ -69,34 +69,55 @@ class Card():
         return self.manga.order_ or 'desc'
 
     def add_actions(self):
-        delete_action = Gio.SimpleAction.new("card.delete", None)
-        delete_action.connect("activate", self.on_delete_menu_clicked)
+        # Menu actions
+        delete_action = Gio.SimpleAction.new('card.delete', None)
+        delete_action.connect('activate', self.on_delete_menu_clicked)
+        self.window.application.add_action(delete_action)
 
-        update_action = Gio.SimpleAction.new("card.update", None)
-        update_action.connect("activate", self.on_update_menu_clicked)
+        update_action = Gio.SimpleAction.new('card.update', None)
+        update_action.connect('activate', self.on_update_menu_clicked)
+        self.window.application.add_action(update_action)
 
         self.order_action = Gio.SimpleAction.new_stateful('card.order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
         self.order_action.connect('change-state', self.on_order_changed)
-
-        self.window.application.add_action(delete_action)
-        self.window.application.add_action(update_action)
         self.window.application.add_action(self.order_action)
 
-    def delete_chapter(self, delete_button, box, chapter):
+        # Chapters menu actions
+        download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
+        download_chapter_action.connect('activate', self.download_chapter)
+        self.window.application.add_action(download_chapter_action)
+
+        delete_chapter_action = Gio.SimpleAction.new('card.delete-chapter', None)
+        delete_chapter_action.connect('activate', self.delete_chapter)
+        self.window.application.add_action(delete_chapter_action)
+
+        mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
+        mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
+        self.window.application.add_action(mark_chapter_as_read_action)
+
+        mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-as-unread', None)
+        mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
+        self.window.application.add_action(mark_chapter_as_unread_action)
+
+    def delete_chapter(self, action, param):
+        chapter = self.action_row.chapter
+
         chapter.purge()
 
-        self.populate_chapter(box, chapter)
+        self.populate_chapter(self.action_row)
 
-    def download_chapter(self, button, box, chapter):
+    def download_chapter(self, action, param):
         if not network_is_available():
             self.window.show_notification(_('No Internet connection'))
             return
+
+        chapter = self.action_row.chapter
 
         # Add chapter in download queue
         Download.new(chapter.id)
 
         # Update chapter
-        self.populate_chapter(box, chapter)
+        self.populate_chapter(self.action_row)
 
         self.downloader.start()
 
@@ -176,7 +197,7 @@ class Card():
         if self.manga.cover_fs_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 180, -1, True)
         else:
-            pixbuf = Pixbuf.new_from_resource_at_scale("/com/gitlab/valos/MangaScan/images/missing_file.png", 180, -1, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
@@ -197,49 +218,41 @@ class Card():
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
-            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            row.add(box)
 
-            self.populate_chapter(box, chapter)
+            self.populate_chapter(row)
 
             self.listbox.add(row)
 
         self.set_order()
         self.listbox.show_all()
 
-    def populate_chapter(self, box, chapter):
-        for child in box.get_children():
+    def populate_chapter(self, row):
+        for child in row.get_children():
             child.destroy()
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        row.add(box)
+
+        chapter = row.chapter
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         # Title
         label = Gtk.Label(xalign=0)
         ctx = label.get_style_context()
         ctx.add_class('card-chapter-label')
-        if chapter.last_page_read_index is not None:
-            if chapter.last_page_read_index == len(chapter.pages) - 1:
-                # Chapter reading ended
-                ctx.add_class('card-chapter-label-ended')
-            else:
-                # Chapter reading started
-                ctx.add_class('card-chapter-label-started')
+        if chapter.read:
+            # Chapter reading ended
+            ctx.add_class('card-chapter-label-ended')
+        elif chapter.last_page_read_index is not None:
+            # Chapter reading started
+            ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         label.set_text(chapter.title)
         hbox.pack_start(label, True, True, 0)
 
-        active_download = Download.get_by_chapter_id(chapter.id)
-
-        # Download or Delete button
-        if (chapter.last_page_read_index is not None or chapter.downloaded) and active_download is None:
-            # Delete button
-            button = Gtk.Button.new_from_icon_name('user-trash-symbolic', Gtk.IconSize.BUTTON)
-            button.connect('clicked', self.delete_chapter, box, chapter)
-        else:
-            # Download button
-            button = Gtk.Button.new_from_icon_name('document-save-symbolic', Gtk.IconSize.BUTTON)
-            if active_download:
-                button.set_sensitive(False)
-            button.connect('clicked', self.download_chapter, box, chapter)
+        # Action button
+        button = Gtk.Button.new_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
+        button.connect('clicked', self.show_chapter_menu, row)
         button.set_relief(Gtk.ReliefStyle.NONE)
         hbox.pack_start(button, False, True, 0)
 
@@ -253,8 +266,10 @@ class Card():
         text = chapter.date
         if chapter.downloaded:
             text = '{0} - {1}'.format(text, _('DOWNLOADED'))
-        elif active_download:
-            text = '{0} - {1}'.format(text, _(Download.STATUSES[active_download.status]))
+        else:
+            active_download = Download.get_by_chapter_id(chapter.id)
+            if active_download:
+                text = '{0} - {1}'.format(text, _(Download.STATUSES[active_download.status]))
         label.set_text(text)
         hbox.pack_start(label, True, True, 0)
 
@@ -285,3 +300,31 @@ class Card():
         self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
         self.window.show_page('card', transition=transition)
+
+    def show_chapter_menu(self, button, row):
+        chapter = row.chapter
+        self.action_row = row
+
+        popover = Gtk.Popover(border_width=4)
+        popover.set_position(Gtk.PositionType.BOTTOM)
+        popover.set_relative_to(button)
+
+        menu = Gio.Menu()
+        if chapter.downloaded:
+            menu.append(_('Delete'), 'app.card.delete-chapter')
+        else:
+            menu.append(_('Download'), 'app.card.download-chapter')
+        if not chapter.read:
+            menu.append(_('Mark as read'), 'app.card.mark-chapter-as-read')
+        if chapter.read or chapter.last_page_read_index is not None:
+            menu.append(_('Mark as unread'), 'app.card.mark-chapter-as-unread')
+
+        popover.bind_model(menu, None)
+        popover.popup()
+
+    def toggle_chapter_read_status(self, action, param, read):
+        chapter = self.action_row.chapter
+
+        chapter.update(dict(read=read))
+
+        self.populate_chapter(self.action_row)
