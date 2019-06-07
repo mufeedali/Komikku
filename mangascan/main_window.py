@@ -1,3 +1,4 @@
+from gettext import gettext as _
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
@@ -12,6 +13,7 @@ from mangascan.card import Card
 from mangascan.library import Library
 from mangascan.reader import Reader
 from mangascan.settings_dialog import SettingsDialog
+from mangascan.utils import network_is_available
 
 
 class MainWindow(Gtk.ApplicationWindow):
@@ -21,7 +23,8 @@ class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.logging_manager = kwargs['application'].get_logger()
+        self.application = kwargs['application']
+        self.logging_manager = self.application.get_logger()
 
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/com/gitlab/valos/MangaScan/main_window.ui')
@@ -134,7 +137,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
-            AddDialog(self).open(action, param)
+            if network_is_available():
+                AddDialog(self).open(action, param)
+            else:
+                self.show_notification(_('No Internet connection'))
         elif self.page == 'card':
             self.library.show()
         elif self.page == 'reader':

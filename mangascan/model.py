@@ -7,6 +7,9 @@ from pathlib import Path
 import sqlite3
 import shutil
 
+from mangascan.utils import network_is_available
+
+
 user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
 
@@ -316,6 +319,9 @@ class Chapter(object):
             page_path = os.path.join(chapter_path, imagename)
             if os.path.exists(page_path):
                 return page_path
+
+        if not network_is_available():
+            return None
 
         imagename, data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, self.pages[page_index])
 

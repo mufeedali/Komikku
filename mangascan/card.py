@@ -6,10 +6,11 @@ from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 
+from mangascan.downloader import Downloader
 from mangascan.model import create_db_connection
 from mangascan.model import Download
 from mangascan.model import Manga
-from mangascan.downloader import Downloader
+from mangascan.utils import network_is_available
 
 
 class Card():
@@ -87,6 +88,10 @@ class Card():
         self.populate_chapter(box, chapter)
 
     def download_chapter(self, button, box, chapter):
+        if not network_is_available():
+            self.window.show_notification(_('No Internet connection'))
+            return
+
         # Add chapter in download queue
         Download.new(chapter.id)
 
@@ -158,6 +163,10 @@ class Card():
         def error():
             self.window.show_notification(_('Oops, update failed, Please try again.'))
             return False
+
+        if not network_is_available():
+            self.window.show_notification(_('No Internet connection'))
+            return
 
         thread = threading.Thread(target=run, args=(self.manga,))
         thread.daemon = True

@@ -1,3 +1,4 @@
+from gettext import gettext as _
 import datetime
 import threading
 
@@ -12,6 +13,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 import mangascan.config_manager
 from mangascan.model import create_db_connection
 from mangascan.model import Chapter
+from mangascan.utils import network_is_available
 
 
 class Controls():
@@ -355,6 +357,8 @@ class Reader():
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
                 self.pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
+                if not network_is_available():
+                    self.window.show_notification(_('No Internet connection'))
 
             self.size = self.viewport.get_allocation()
             self.set_page_image_from_pixbuf()

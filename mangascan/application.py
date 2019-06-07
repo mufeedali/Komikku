@@ -24,6 +24,12 @@ class Application(Gtk.Application):
         super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.window = None
 
+    def add_actions(self):
+        self.window.add_actions()
+
+    def add_accelerators(self):
+        self.window.add_accelerators()
+
     def do_startup(self):
         Gtk.Application.do_startup(self)
 
@@ -38,7 +44,6 @@ class Application(Gtk.Application):
     def do_activate(self):
         if not self.window:
             self.window = MainWindow(application=self, title='Manga Scan', icon_name=self.application_id)
-            self.window.application = self
 
             self.add_accelerators()
             self.add_actions()
@@ -54,12 +59,6 @@ class Application(Gtk.Application):
             logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
 
         return logger
-
-    def add_actions(self):
-        self.window.add_actions()
-
-    def add_accelerators(self):
-        self.window.add_accelerators()
 
 
 if __name__ == '__main__':
