@@ -79,6 +79,7 @@ def init_db():
         date text,
         rank integer,
         downloaded integer,
+        read integer,
         last_page_read_index integer,
         UNIQUE (slug, manga_id)
     );"""
@@ -303,8 +304,9 @@ class Chapter(object):
 
         self.update(dict(
             pages=None,
-            last_page_read_index=None,
             downloaded=0,
+            read=0,
+            last_page_read_index=None,
         ))
 
     def get_page(self, page_index):
@@ -343,9 +345,10 @@ class Chapter(object):
         data.update(dict(
             manga_id=manga_id,
             pages=None,  # later scraped value
-            last_page_read_index=None,
             rank=rank,
             downloaded=0,
+            read=0,
+            last_page_read_index=None,
         ))
 
         for key in data.keys():
@@ -354,8 +357,8 @@ class Chapter(object):
         db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded) VALUES (?, ?, ?, ?, ?, ?)',
-                (self.slug, self.manga_id, self.title, self.date, rank, 0)
+                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded, read) VALUES (?, ?, ?, ?, ?, ?)',
+                (self.slug, self.manga_id, self.title, self.date, rank, 0, 0)
             )
             self.id = cursor.lastrowid
         db_conn.close()
