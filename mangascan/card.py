@@ -21,6 +21,8 @@ class Card():
         self.builder = window.builder
         self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card.xml')
 
+        self.stack = self.builder.get_object('card_stack')
+
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
         self.listbox.connect('row-activated', self.on_chapter_clicked)
@@ -122,10 +124,13 @@ class Card():
         self.downloader.start()
 
     def init(self, manga=None, transition=True):
-        if manga and self.manga and manga.id != self.manga.id:
-            # Scroll scrolledwindow to top when manga is changed
-            vadjustment = self.window.stack.get_child_by_name('card').get_vadjustment()
-            vadjustment.set_value(0)
+        if manga and (self.manga is None or manga.id != self.manga.id):
+            # Default page is Chapters page
+            self.stack.set_visible_child_name('page_card_chapters')
+
+            for child in self.builder.get_object('card_stack').get_children():
+                # Scroll scrolledwindows (of info and chapters pages) to top when manga is changed
+                child.get_vadjustment().set_value(0)
 
         # Create a fresh instance of manga
         if manga:
