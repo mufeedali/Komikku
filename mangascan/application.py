@@ -8,7 +8,6 @@ gi.require_version('Notify', '0.7')
 
 from gi.repository import Gio
 from gi.repository import GLib
-from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Handy
 from gi.repository import Notify
@@ -36,10 +35,8 @@ class Application(Gtk.Application):
         GLib.set_application_name('Manga Scan')
         GLib.set_prgname('Manga Scan')
 
+        Handy.init()
         Notify.init('Manga Scan')
-
-        # Register LibHandy Responsive Column
-        GObject.type_register(Handy.Column)
 
     def do_activate(self):
         if not self.window:
