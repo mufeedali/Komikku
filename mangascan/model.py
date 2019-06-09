@@ -357,7 +357,7 @@ class Chapter(object):
         db_conn = create_db_connection()
         with db_conn:
             cursor = db_conn.execute(
-                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded, read) VALUES (?, ?, ?, ?, ?, ?)',
+                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded, read) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 (self.slug, self.manga_id, self.title, self.date, rank, 0, 0)
             )
             self.id = cursor.lastrowid
