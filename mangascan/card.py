@@ -15,17 +15,21 @@ from mangascan.utils import network_is_available
 
 class Card():
     manga = None
+    selection_mode = False
 
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
         self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card.xml')
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card_selection_mode.xml')
 
         self.stack = self.builder.get_object('card_stack')
 
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
         self.listbox.connect('row-activated', self.on_chapter_clicked)
+        gesture = Gtk.GestureLongPress.new(self.listbox)
+        gesture.connect('pressed', self.enter_selection_mode)
 
         def sort(child1, child2):
             """
@@ -35,9 +39,9 @@ class Card():
             - a positive integer if the second one should come before the firstone
             """
             if child1.chapter.rank > child2.chapter.rank:
-                return -1 if self.order == 'desc' else 1
+                return -1 if self.sort_order == 'desc' else 1
             elif child1.chapter.rank < child2.chapter.rank:
-                return 1 if self.order == 'desc' else -1
+                return 1 if self.sort_order == 'desc' else -1
             else:
                 return 0
 
@@ -67,8 +71,8 @@ class Card():
         self.downloader.start()
 
     @property
-    def order(self):
-        return self.manga.order_ or 'desc'
+    def sort_order(self):
+        return self.manga.sort_order or 'desc'
 
     def add_actions(self):
         # Menu actions
@@ -80,9 +84,26 @@ class Card():
         update_action.connect('activate', self.on_update_menu_clicked)
         self.window.application.add_action(update_action)
 
-        self.order_action = Gio.SimpleAction.new_stateful('card.order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
-        self.order_action.connect('change-state', self.on_order_changed)
-        self.window.application.add_action(self.order_action)
+        self.sort_order_action = Gio.SimpleAction.new_stateful('card.sort-order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
+        self.sort_order_action.connect('change-state', self.on_sort_order_changed)
+        self.window.application.add_action(self.sort_order_action)
+
+        # Menu actions in selection mode
+        download_selected_chapters_action = Gio.SimpleAction.new('card.download-selected-chapters', None)
+        download_selected_chapters_action.connect('activate', self.download_selected_chapters)
+        self.window.application.add_action(download_selected_chapters_action)
+
+        delete_selected_chapters_action = Gio.SimpleAction.new('card.delete-selected-chapters', None)
+        delete_selected_chapters_action.connect('activate', self.delete_selected_chapters)
+        self.window.application.add_action(delete_selected_chapters_action)
+
+        mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
+        mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
+        self.window.application.add_action(mark_selected_chapters_as_read_action)
+
+        mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-unread', None)
+        mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
+        self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
         # Chapters menu actions
         download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
@@ -108,6 +129,16 @@ class Card():
 
         self.populate_chapter(self.action_row)
 
+    def delete_selected_chapters(self, action, param):
+        for row in self.listbox.get_selected_rows():
+            chapter = row.chapter
+
+            chapter.purge()
+
+            self.populate_chapter(row)
+
+        self.leave_selection_mode()
+
     def download_chapter(self, action, param):
         if not network_is_available():
             self.window.show_notification(_('No Internet connection'))
@@ -122,6 +153,33 @@ class Card():
         self.populate_chapter(self.action_row)
 
         self.downloader.start()
+
+    def download_selected_chapters(self, action, param):
+        if not network_is_available():
+            self.window.show_notification(_('No Internet connection'))
+            return
+
+        for row in self.listbox.get_selected_rows():
+            chapter = row.chapter
+
+            # Add chapter in download queue
+            Download.new(chapter.id)
+
+            # Update chapter
+            self.populate_chapter(row)
+
+        self.downloader.start()
+
+        self.leave_selection_mode()
+
+    def enter_selection_mode(self, gesture, x, y):
+        self.selection_mode = True
+
+        self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+
+        self.window.titlebar.set_selection_mode(True)
+
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
     def init(self, manga=None, transition=True):
         if manga and (self.manga is None or manga.id != self.manga.id):
@@ -141,8 +199,26 @@ class Card():
         self.show(transition)
         self.populate()
 
+    def leave_selection_mode(self):
+        self.selection_mode = False
+
+        self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        for row in self.listbox.get_children():
+            row._selected = False
+
+        self.window.titlebar.set_selection_mode(False)
+
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-card'))
+
     def on_chapter_clicked(self, listbox, row):
-        self.window.reader.init(row.chapter)
+        if self.selection_mode:
+            if row._selected:
+                self.listbox.unselect_row(row)
+                row._selected = False
+            else:
+                row._selected = True
+        else:
+            self.window.reader.init(row.chapter)
 
     def on_delete_menu_clicked(self, action, param):
         db_conn = create_db_connection()
@@ -160,13 +236,13 @@ class Card():
 
         self.window.show_page('library')
 
-    def on_order_changed(self, action, variant):
+    def on_sort_order_changed(self, action, variant):
         value = variant.get_string()
-        if value == self.manga.order_:
+        if value == self.manga.sort_order:
             return
 
-        self.manga.update(dict(order_=value))
-        self.set_order()
+        self.manga.update(dict(sort_order=value))
+        self.set_sort_order()
 
     def on_update_menu_clicked(self, action, param):
         def run(manga):
@@ -223,12 +299,13 @@ class Card():
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
+            row._selected = False
 
             self.populate_chapter(row)
 
             self.listbox.add(row)
 
-        self.set_order()
+        self.set_sort_order()
         self.listbox.show_all()
 
     def populate_chapter(self, row):
@@ -289,8 +366,8 @@ class Card():
 
         box.show_all()
 
-    def set_order(self):
-        self.order_action.set_state(GLib.Variant('s', self.order))
+    def set_sort_order(self):
+        self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
         self.listbox.invalidate_sort()
 
     def show(self, transition=True):
@@ -326,6 +403,16 @@ class Card():
 
         popover.bind_model(menu, None)
         popover.popup()
+
+    def toggle_selected_chapters_read_status(self, action, param, read):
+        for row in self.listbox.get_selected_rows():
+            chapter = row.chapter
+
+            chapter.update(dict(read=read))
+
+            self.populate_chapter(row)
+
+        self.leave_selection_mode()
 
     def toggle_chapter_read_status(self, action, param, read):
         chapter = self.action_row.chapter

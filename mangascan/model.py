@@ -60,7 +60,7 @@ def init_db():
         synopsis text,
         status text,
         cover_path text,
-        order_ text,
+        sort_order text,
         filters json,
         reading_direction text,
         background_color text,
@@ -146,7 +146,7 @@ class Manga(object):
     def chapters(self):
         if self.chapters_ is None:
             db_conn = create_db_connection()
-            if self.order_ == 'asc':
+            if self.sort_order == 'asc':
                 rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank ASC', (self.id,)).fetchall()
             else:
                 rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
@@ -187,7 +187,7 @@ class Manga(object):
         # Fill data with internal data or later scraped values
         data.update(dict(
             last_read=datetime.datetime.now(),
-            order_=None,
+            sort_order=None,
             reading_direction=None,
             last_update=None,
         ))

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <menu id="menu-card-selection-mode">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Download</attribute>
+        <attribute name="action">app.card.download-selected-chapters</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Delete</attribute>
+        <attribute name="action">app.card.delete-selected-chapters</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Mark as read</attribute>
+        <attribute name="action">app.card.mark-selected-chapters-as-read</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Mark as unread</attribute>
+        <attribute name="action">app.card.mark-selected-chapters-as-unread</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

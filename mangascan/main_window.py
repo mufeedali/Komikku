@@ -142,7 +142,10 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 self.show_notification(_('No Internet connection'))
         elif self.page == 'card':
-            self.library.show()
+            if self.card.selection_mode:
+                self.card.leave_selection_mode()
+            else:
+                self.library.show()
         elif self.page == 'reader':
             self.card.init()
 
