@@ -14,6 +14,9 @@ localedir = '@LOCALE_DIR@'
 pkgdatadir = '@DATA_DIR@'
 extensiondir = '@EXTENSION_DIR@'
 
+resource = Gio.resource_load(os.path.join(pkgdatadir, 'mangascan.gresource'))
+Gio.Resource._register(resource)
+
 from mangascan.application import Application
 from mangascan.model import init_db
 
@@ -37,8 +40,8 @@ if __name__ == "__main__":
     gettext.bindtextdomain('mangascan', localedir)
     gettext.textdomain('mangascan')
 
-    resource = Gio.resource_load(os.path.join(pkgdatadir, 'mangascan.gresource'))
-    Gio.Resource._register(resource)
+    #resource = Gio.resource_load(os.path.join(pkgdatadir, 'mangascan.gresource'))
+    #Gio.Resource._register(resource)
 
     if @PROFILE@ == 'Devel':
     	Application.development_mode = True
