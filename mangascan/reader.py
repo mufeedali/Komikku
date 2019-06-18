@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gettext import gettext as _
 import datetime
 import threading
@@ -131,7 +137,6 @@ class Reader():
         # Controls
         self.controls = Controls(self)
 
-        self.window.connect('check-resize', self.on_resize)
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
     @property
@@ -281,15 +286,12 @@ class Reader():
         self.chapter.manga.update(dict(reading_direction=value))
         self.set_reading_direction()
 
-    def on_resize(self, window):
-        if self.window.stack.props.visible_child_name != 'reader' or self.pixbuf is None:
+    def on_resize(self):
+        if self.pixbuf is None:
             return
 
-        old_size = self.size
         self.size = self.viewport.get_allocation()
-
-        if old_size and (old_size.width != self.size.width or old_size.height != self.size.height):
-            self.set_page_image_from_pixbuf()
+        self.set_page_image_from_pixbuf()
 
     def on_scaling_changed(self, action, variant):
         value = variant.get_string()

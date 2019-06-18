@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gettext import gettext as _
 from gi.repository import Gdk
 from gi.repository import Gio
@@ -19,6 +25,8 @@ from mangascan.utils import network_is_available
 class MainWindow(Gtk.ApplicationWindow):
     mobile_width = False
     page = 'library'
+
+    _resize_prev_allocation = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -91,7 +99,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Window
         self.connect('delete-event', self.on_application_quit)
-        self.connect('check-resize', self.responsive_listener)
+        self.connect('check-resize', self.on_resize)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()
@@ -149,6 +157,29 @@ class MainWindow(Gtk.ApplicationWindow):
         elif self.page == 'reader':
             self.card.init()
 
+    def on_resize(self, window):
+        prev_allocation = self._resize_prev_allocation
+        allocation = self.get_allocation()
+        if prev_allocation and prev_allocation.width == allocation.width and prev_allocation.height == allocation.height:
+            return
+
+        self._resize_prev_allocation = allocation
+
+        self.library.on_resize()
+        if self.page == 'reader':
+            self.reader.on_resize()
+
+        if allocation.width < 700:
+            if self.mobile_width is True:
+                return
+
+            self.mobile_width = True
+            self.change_layout()
+        else:
+            if self.mobile_width is True:
+                self.mobile_width = False
+                self.change_layout()
+
     def on_settings_menu_clicked(self, action, param):
         SettingsDialog(self).open(action, param)
 
@@ -160,18 +191,6 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.set_modal(True)
         shortcuts_overview.set_transient_for(self)
         shortcuts_overview.present()
-
-    def responsive_listener(self, window):
-        if self.get_allocation().width < 700:
-            if self.mobile_width is True:
-                return
-
-            self.mobile_width = True
-            self.change_layout()
-        else:
-            if self.mobile_width is True:
-                self.mobile_width = False
-                self.change_layout()
 
     def save_window_size(self):
         window_size = [self.get_size().width, self.get_size().height]
@@ -190,7 +209,9 @@ class MainWindow(Gtk.ApplicationWindow):
             transition_type = self.stack.get_transition_type()
             # Set transition type to NONE
             self.stack.set_transition_type(Gtk.StackTransitionType.NONE)
+
         self.stack.set_visible_child_name(name)
+
         if not transition:
             # Restore transition type
             self.stack.set_transition_type(transition_type)

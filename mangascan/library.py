@@ -1,6 +1,13 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import Pango
+from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from mangascan.model import create_db_connection
@@ -36,21 +43,38 @@ class Library():
 
         self.populate()
 
+    @property
+    def cover_size(self):
+        default_width = 180
+        default_height = 250
+
+        box_width = self.window.stack.get_allocation().width
+        # Padding of flowbox children is 4px
+        # https://pastebin.com/Q4ahCcgu
+        padding = 4
+        child_width = default_width + padding * 2
+        if box_width / child_width != box_width // child_width:
+            nb = box_width // child_width + 1
+            width = box_width // nb - (padding * 2)
+            height = default_height // (default_width / width)
+        else:
+            width = default_width
+            height = default_height
+
+        return width, height
+
     def add_manga(self, manga, position=-1):
+        width, height = self.cover_size
+
         overlay = Gtk.Overlay()
-        overlay.set_size_request(180, 250)
         overlay.set_halign(Gtk.Align.CENTER)
         overlay.set_valign(Gtk.Align.CENTER)
         overlay.manga = manga
+        overlay._pixbuf = None
 
         # Cover
-        image = Gtk.Image()
-        if manga.cover_fs_path is not None:
-            pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 180, -1, True)
-        else:
-            pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
-        image.set_from_pixbuf(pixbuf)
-        overlay.add_overlay(image)
+        overlay.add_overlay(Gtk.Image())
+        self.set_manga_cover_image(overlay, width, height)
 
         # Name (bottom)
         label = Gtk.Label()
@@ -92,7 +116,7 @@ class Library():
 
     def on_manga_added(self, manga):
         """
-        Called from 'Add dialog' when user clicks on + button
+        Called from 'Add dialog' when user clicks on [+] button
         """
         db_conn = create_db_connection()
         nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
@@ -114,6 +138,16 @@ class Library():
                 child.destroy()
                 break
 
+    def on_resize(self):
+        if self.window.first_start_grid.is_ancestor(self.window):
+            return
+
+        width, height = self.cover_size
+
+        for child in self.flowbox.get_children():
+            overlay = child.get_children()[0]
+            self.set_manga_cover_image(overlay, width, height)
+
     def populate(self):
         db_conn = create_db_connection()
         mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
@@ -133,17 +167,30 @@ class Library():
         self.window.add(self.window.overlay)
 
         # Clear library flowbox
+        self.flowbox.realize()
         for child in self.flowbox.get_children():
             self.flowbox.remove(child)
             child.destroy()
 
-        # Populate flowbox with mangas covers
+        # Populate flowbox with mangas
         for row in mangas_rows:
             self.add_manga(Manga(row['id']))
 
         db_conn.close()
 
-        self.flowbox.show_all()
+    def set_manga_cover_image(self, overlay, width, height):
+        overlay.set_size_request(width, height)
+
+        if overlay._pixbuf is None:
+            manga = overlay.manga
+            if manga.cover_fs_path is not None:
+                overlay._pixbuf = Pixbuf.new_from_file(manga.cover_fs_path)
+            else:
+                overlay._pixbuf = Pixbuf.new_from_resource('/com/gitlab/valos/MangaScan/images/missing_file.png')
+
+        pixbuf = overlay._pixbuf.scale_simple(width, height, InterpType.BILINEAR)
+        image = overlay.get_children()[0]
+        image.set_from_pixbuf(pixbuf)
 
     def show(self):
         self.window.headerbar.set_title('Manga Scan')
