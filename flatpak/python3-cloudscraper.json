@@ -12,8 +12,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz",
-            "sha256": "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774"
+            "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
+            "sha256": "d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
         },
         {
             "type": "file",
@@ -22,13 +22,28 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
-            "sha256": "d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
+            "url": "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz",
+            "sha256": "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/8a/3c/1bb7ef6c435dea026f06ed9f3ba16aa93f9f4f5d3857a51a35dfa00882f1/urllib3-1.24.3.tar.gz",
-            "sha256": "2393a695cd12afedd0dcb26fe5d50d0cf248e5a66f75dbd89a3d4eb333a61af4"
+            "url": "https://files.pythonhosted.org/packages/48/ef/c72abcfa2c6accd03e7c89c400790fc3d908c5804d50a7c4e9ceabd74d23/pyjsparser-2.7.1.tar.gz",
+            "sha256": "be60da6b778cc5a5296a69d8e7d614f1f870faf94e1b1b6ac591f2ad5d729579"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/cb/89/e3687d3ed99bc882793f82634e9824e62499fdfdc4b1ae39e211c5b05017/tzlocal-1.5.1.tar.gz",
+            "sha256": "4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c5/67/5d0548226bcc34468e23a0333978f0e23d28d0b3f0c71a151aef9c3f7680/certifi-2019.6.16.tar.gz",
+            "sha256": "945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4c/13/2386233f7ee40aa8444b47f7463338f3cbdf00c316627558784e3f542f07/urllib3-1.25.3.tar.gz",
+            "sha256": "dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
         },
         {
             "type": "file",
@@ -42,48 +57,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/06/b8/d1ea38513c22e8c906275d135818fee16ad8495985956a9b7e2bb21942a1/certifi-2019.3.9.tar.gz",
-            "sha256": "b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/07/ca/bc827c5e55918ad223d59d299fff92f3563476c3b00d0a9157d9c0217449/cryptography-2.6.1.tar.gz",
-            "sha256": "26c821cbeb683facb966045e2064303029d572a87ee69ca5a1bf54bf55f93ca6"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/cb/89/e3687d3ed99bc882793f82634e9824e62499fdfdc4b1ae39e211c5b05017/tzlocal-1.5.1.tar.gz",
-            "sha256": "4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
-        },
-        {
-            "type": "file",
             "url": "https://files.pythonhosted.org/packages/dd/bf/4138e7bfb757de47d1f4b6994648ec67a51efe58fa907c1e11e350cddfca/six-1.12.0.tar.gz",
             "sha256": "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/48/ef/c72abcfa2c6accd03e7c89c400790fc3d908c5804d50a7c4e9ceabd74d23/pyjsparser-2.7.1.tar.gz",
-            "sha256": "be60da6b778cc5a5296a69d8e7d614f1f870faf94e1b1b6ac591f2ad5d729579"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/28/30/7bf7e5071081f761766d46820e52f4b16c8a08fef02d2eb4682ca7534310/requests-toolbelt-0.9.1.tar.gz",
-            "sha256": "968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/52/2c/514e4ac25da2b08ca5a464c50463682126385c4272c18193876e91f4bc38/requests-2.21.0.tar.gz",
-            "sha256": "502a824f31acdacb3a35b6690b5fbf0bc41d63a24a45c4004352b0242707598e"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/40/d0/8efd61531f338a89b4efa48fcf1972d870d2b67a7aea9dcf70783c8464dc/pyOpenSSL-19.0.0.tar.gz",
-            "sha256": "aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/90/ef/c0800fcfa568ee4baa95a7ceec5a33178bac86e6643857f30cf3ddb78933/Js2Py-0.63.tar.gz",
-            "sha256": "5562351d4fdc5b7773390f880585da7550e3a6072d0df854c2f44bd41314d0b4"
+            "url": "https://files.pythonhosted.org/packages/c2/95/f43d02315f4ec074219c6e3124a87eba1d2d12196c2767fadfdc07a83884/cryptography-2.7.tar.gz",
+            "sha256": "e6347742ac8f35ded4a46ff835c60e68c22a536a8ae5c4422966d06946b6d4c6"
         },
         {
             "type": "file",
@@ -92,8 +72,28 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/e4/b0/47db6e503078356d5a9b0d2ff93645f11b491c4b36c93c05e6db9876356e/cloudscraper-1.1.9.tar.gz",
-            "sha256": "a8447bed933419e242c86dcf0b5f9e575835f6e8ecac022a350a520c83085424"
+            "url": "https://files.pythonhosted.org/packages/28/30/7bf7e5071081f761766d46820e52f4b16c8a08fef02d2eb4682ca7534310/requests-toolbelt-0.9.1.tar.gz",
+            "sha256": "968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/25/2f/b184437870d15cdcc1cc52b73f1f7d6bb9ab2062d93c6a0b205ce8f323d3/Js2Py-0.66.tar.gz",
+            "sha256": "bf87cb4432944470f11fed9c1cb8d0312dd505e7b867362f55102f24379ab94f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/01/62/ddcf76d1d19885e8579acb1b1df26a852b03472c0e46d2b959a714c90608/requests-2.22.0.tar.gz",
+            "sha256": "11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/40/d0/8efd61531f338a89b4efa48fcf1972d870d2b67a7aea9dcf70783c8464dc/pyOpenSSL-19.0.0.tar.gz",
+            "sha256": "aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b3/a3/96ac40f5968bfc17a23514020f74cbcc44269414210e1a152fb53332373e/cloudscraper-1.1.19.tar.gz",
+            "sha256": "43e287d278b5797ec5b5925f5bea20484e34d4765cdb97c58184175628c7c561"
         }
     ]
 }
