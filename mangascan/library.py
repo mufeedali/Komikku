@@ -134,7 +134,7 @@ class Library():
     def on_manga_deleted(self, manga):
         # Remove manga cover in flowbox
         for child in self.flowbox.get_children():
-            if child.get_children()[0].manga == manga:
+            if child.get_children()[0].manga.id == manga.id:
                 child.destroy()
                 break
 

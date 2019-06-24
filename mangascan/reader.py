@@ -358,7 +358,7 @@ class Reader():
             if page_path:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
-                self.pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
+                self.pixbuf = Pixbuf.new_from_resource('/com/gitlab/valos/MangaScan/images/missing_file.png')
                 if not network_is_available():
                     self.window.show_notification(_('No Internet connection'))
 

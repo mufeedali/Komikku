@@ -234,7 +234,7 @@ class Card():
             self.window.library.on_manga_deleted(self.manga)
             self.manga.delete()
 
-        self.window.show_page('library')
+        self.window.library.show()
 
     def on_sort_order_changed(self, action, variant):
         value = variant.get_string()
