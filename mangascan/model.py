@@ -297,7 +297,7 @@ class Chapter(object):
 
         return c
 
-    def purge(self):
+    def reset(self):
         chapter_path = os.path.join(self.manga.resources_path, self.slug)
         if os.path.exists(chapter_path):
             shutil.rmtree(chapter_path)

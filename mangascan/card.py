@@ -94,10 +94,6 @@ class Card():
         download_selected_chapters_action.connect('activate', self.download_selected_chapters)
         self.window.application.add_action(download_selected_chapters_action)
 
-        delete_selected_chapters_action = Gio.SimpleAction.new('card.delete-selected-chapters', None)
-        delete_selected_chapters_action.connect('activate', self.delete_selected_chapters)
-        self.window.application.add_action(delete_selected_chapters_action)
-
         mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
         mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
         self.window.application.add_action(mark_selected_chapters_as_read_action)
@@ -106,14 +102,14 @@ class Card():
         mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
         self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
+        reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
+        reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
+        self.window.application.add_action(reset_selected_chapters_action)
+
         # Chapters menu actions
         download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
         download_chapter_action.connect('activate', self.download_chapter)
         self.window.application.add_action(download_chapter_action)
-
-        delete_chapter_action = Gio.SimpleAction.new('card.delete-chapter', None)
-        delete_chapter_action.connect('activate', self.delete_chapter)
-        self.window.application.add_action(delete_chapter_action)
 
         mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
         mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
@@ -123,22 +119,9 @@ class Card():
         mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
         self.window.application.add_action(mark_chapter_as_unread_action)
 
-    def delete_chapter(self, action, param):
-        chapter = self.action_row.chapter
-
-        chapter.purge()
-
-        self.populate_chapter(self.action_row)
-
-    def delete_selected_chapters(self, action, param):
-        for row in self.listbox.get_selected_rows():
-            chapter = row.chapter
-
-            chapter.purge()
-
-            self.populate_chapter(row)
-
-        self.leave_selection_mode()
+        reset_chapter_action = Gio.SimpleAction.new('card.reset-chapter', None)
+        reset_chapter_action.connect('activate', self.reset_chapter)
+        self.window.application.add_action(reset_chapter_action)
 
     def download_chapter(self, action, param):
         if not network_is_available():
@@ -367,6 +350,23 @@ class Card():
 
         box.show_all()
 
+    def reset_chapter(self, action, param):
+        chapter = self.action_row.chapter
+
+        chapter.reset()
+
+        self.populate_chapter(self.action_row)
+
+    def reset_selected_chapters(self, action, param):
+        for row in self.listbox.get_selected_rows():
+            chapter = row.chapter
+
+            chapter.reset()
+
+            self.populate_chapter(row)
+
+        self.leave_selection_mode()
+
     def set_sort_order(self):
         self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
         self.listbox.invalidate_sort()
@@ -393,9 +393,9 @@ class Card():
         popover.set_relative_to(button)
 
         menu = Gio.Menu()
-        if chapter.downloaded:
-            menu.append(_('Delete'), 'app.card.delete-chapter')
-        else:
+        if chapter.downloaded or chapter.last_page_read_index is not None:
+            menu.append(_('Reset'), 'app.card.reset-chapter')
+        if not chapter.downloaded:
             menu.append(_('Download'), 'app.card.download-chapter')
         if not chapter.read:
             menu.append(_('Mark as read'), 'app.card.mark-chapter-as-read')
