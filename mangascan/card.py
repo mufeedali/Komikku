@@ -28,8 +28,9 @@ class Card():
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
         self.listbox.connect('row-activated', self.on_chapter_clicked)
-        gesture = Gtk.GestureLongPress.new(self.listbox)
-        gesture.connect('pressed', self.enter_selection_mode)
+        self.gesture = Gtk.GestureLongPress.new(self.listbox)
+        self.gesture.set_touch_only(False)
+        self.gesture.connect('pressed', self.enter_selection_mode)
 
         def sort(child1, child2):
             """
