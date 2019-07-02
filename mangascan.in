@@ -40,9 +40,6 @@ if __name__ == "__main__":
     gettext.bindtextdomain('mangascan', localedir)
     gettext.textdomain('mangascan')
 
-    #resource = Gio.resource_load(os.path.join(pkgdatadir, 'mangascan.gresource'))
-    #Gio.Resource._register(resource)
-
     if @PROFILE@ == 'Devel':
     	Application.development_mode = True
     	Application.application_id = 'com.gitlab.valos.MangaScanDevel'
