@@ -19,7 +19,6 @@ from mangascan.card import Card
 from mangascan.library import Library
 from mangascan.reader import Reader
 from mangascan.settings_dialog import SettingsDialog
-from mangascan.utils import network_is_available
 
 
 class MainWindow(Gtk.ApplicationWindow):
@@ -145,7 +144,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
-            if network_is_available():
+            if self.application.connected:
                 AddDialog(self).open(action, param)
             else:
                 self.show_notification(_('No Internet connection'))

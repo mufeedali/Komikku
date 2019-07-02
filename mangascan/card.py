@@ -10,7 +10,6 @@ from mangascan.downloader import Downloader
 from mangascan.model import create_db_connection
 from mangascan.model import Download
 from mangascan.model import Manga
-from mangascan.utils import network_is_available
 
 
 class Card():
@@ -124,7 +123,7 @@ class Card():
         self.window.application.add_action(reset_chapter_action)
 
     def download_chapter(self, action, param):
-        if not network_is_available():
+        if not self.window.application.connected:
             self.window.show_notification(_('No Internet connection'))
             return
 
@@ -139,7 +138,7 @@ class Card():
         self.downloader.start()
 
     def download_selected_chapters(self, action, param):
-        if not network_is_available():
+        if not self.window.application.connected:
             self.window.show_notification(_('No Internet connection'))
             return
 
@@ -250,7 +249,7 @@ class Card():
             self.window.show_notification(_('Oops, update failed, Please try again.'))
             return False
 
-        if not network_is_available():
+        if not self.window.application.connected:
             self.window.show_notification(_('No Internet connection'))
             return
 
