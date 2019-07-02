@@ -409,7 +409,10 @@ class Card():
         for row in self.listbox.get_selected_rows():
             chapter = row.chapter
 
-            chapter.update(dict(read=read))
+            chapter.update(dict(
+                read=read,
+                last_page_read_index=len(chapter.pages) - 1 if read else None,
+            ))
 
             self.populate_chapter(row)
 
@@ -418,6 +421,9 @@ class Card():
     def toggle_chapter_read_status(self, action, param, read):
         chapter = self.action_row.chapter
 
-        chapter.update(dict(read=read))
+        chapter.update(dict(
+            read=read,
+            last_page_read_index=len(chapter.pages) - 1 if read else None,
+        ))
 
         self.populate_chapter(self.action_row)
