@@ -179,8 +179,8 @@ class Card():
         else:
             self.manga = Manga(self.manga.id)
 
-        self.show(transition)
         self.populate()
+        self.show(transition)
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -258,6 +258,24 @@ class Card():
         thread.start()
 
     def populate(self):
+        # Chapters
+        for child in self.listbox.get_children():
+            child.destroy()
+
+        for chapter in self.manga.chapters:
+            row = Gtk.ListBoxRow()
+            row.get_style_context().add_class('card-chapter-listboxrow')
+            row.chapter = chapter
+            row._selected = False
+
+            self.populate_chapter(row)
+
+            self.listbox.add(row)
+
+        self.set_sort_order(invalidate=False)
+        self.listbox.show_all()
+
+        # Info
         if self.manga.cover_fs_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 180, -1, True)
         else:
@@ -274,22 +292,6 @@ class Card():
             self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
-
-        for child in self.listbox.get_children():
-            child.destroy()
-
-        for chapter in self.manga.chapters:
-            row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('card-chapter-listboxrow')
-            row.chapter = chapter
-            row._selected = False
-
-            self.populate_chapter(row)
-
-            self.listbox.add(row)
-
-        self.set_sort_order()
-        self.listbox.show_all()
 
     def populate_chapter(self, row):
         for child in row.get_children():
@@ -366,9 +368,10 @@ class Card():
 
         self.leave_selection_mode()
 
-    def set_sort_order(self):
+    def set_sort_order(self, invalidate=True):
         self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
-        self.listbox.invalidate_sort()
+        if invalidate:
+            self.listbox.invalidate_sort()
 
     def show(self, transition=True):
         if self.window.stack.props.visible_child_name == 'card':
