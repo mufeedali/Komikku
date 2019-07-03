@@ -331,20 +331,20 @@ class Reader():
             # Get previous chapter
             db_conn = create_db_connection()
             row = db_conn.execute(
-                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
             db_conn.close()
 
             if row:
-                self.init(Chapter(row['id']), 'last')
+                self.init(Chapter(row=row), 'last')
         elif index == len(self.chapter.pages):
             # Get next chapter
             db_conn = create_db_connection()
             row = db_conn.execute(
-                'SELECT id FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
             db_conn.close()
 
             if row:
-                self.init(Chapter(row['id']), 'first')
+                self.init(Chapter(row=row), 'first')
 
         return False
 

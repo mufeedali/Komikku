@@ -147,14 +147,15 @@ class Manga(object):
         if self.chapters_ is None:
             db_conn = create_db_connection()
             if self.sort_order == 'asc':
-                rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank ASC', (self.id,)).fetchall()
+                rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank ASC', (self.id,))
             else:
-                rows = db_conn.execute('SELECT id FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,)).fetchall()
-            db_conn.close()
+                rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,))
 
             self.chapters_ = []
             for row in rows:
-                self.chapters_.append(Chapter(row['id']))
+                self.chapters_.append(Chapter(row=row))
+
+            db_conn.close()
 
         return self.chapters_
 
@@ -248,7 +249,7 @@ class Manga(object):
                 ).fetchone()
                 if row:
                     # Update chapter
-                    chapter = Chapter(row['id'])
+                    chapter = Chapter(row=row)
                     chapter_data['rank'] = rank
                     chapter.update(chapter_data)
                 else:
@@ -274,11 +275,12 @@ class Manga(object):
 class Chapter(object):
     manga_ = None
 
-    def __init__(self, id=None):
-        if id:
-            db_conn = create_db_connection()
-            row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
-            db_conn.close()
+    def __init__(self, id=None, row=None):
+        if id or row:
+            if id:
+                db_conn = create_db_connection()
+                row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
+                db_conn.close()
 
             for key in row.keys():
                 setattr(self, key, row[key])
