@@ -19,7 +19,6 @@ from gi.repository.GdkPixbuf import Pixbuf
 import mangascan.config_manager
 from mangascan.model import create_db_connection
 from mangascan.model import Chapter
-from mangascan.utils import network_is_available
 
 
 class Controls():
@@ -350,7 +349,12 @@ class Reader():
 
     def render_page(self, index):
         def run():
-            page_path = self.chapter.get_page(self.page_index)
+            page_path = self.chapter.get_page_path(index)
+            if page_path is None:
+                if self.window.application.connected:
+                    page_path = self.chapter.get_page(self.page_index)
+                else:
+                    self.window.show_notification(_('No Internet connection'))
 
             GLib.idle_add(complete, page_path)
 
@@ -359,8 +363,11 @@ class Reader():
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
                 self.pixbuf = Pixbuf.new_from_resource('/com/gitlab/valos/MangaScan/images/missing_file.png')
-                if not network_is_available():
-                    self.window.show_notification(_('No Internet connection'))
+
+            self.chapter.update(dict(
+                last_page_read_index=index,
+                read=index == len(self.chapter.pages) - 1,
+            ))
 
             self.size = self.viewport.get_allocation()
             self.set_page_image_from_pixbuf()
@@ -373,7 +380,6 @@ class Reader():
 
         self.zoom['active'] = False
         self.page_index = index
-        self.chapter.update(dict(last_page_read_index=index))
 
         self.show_spinner()
 

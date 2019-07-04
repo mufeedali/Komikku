@@ -1,3 +1,4 @@
+from cached_property import cached_property
 import datetime
 from gettext import gettext as _
 import importlib
@@ -6,8 +7,6 @@ import os
 from pathlib import Path
 import sqlite3
 import shutil
-
-from mangascan.utils import network_is_available
 
 
 user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
@@ -159,7 +158,7 @@ class Manga(object):
 
         return self.chapters_
 
-    @property
+    @cached_property
     def cover_fs_path(self):
         path = os.path.join(self.resources_path, 'cover.jpg')
         if os.path.exists(path):
@@ -167,7 +166,7 @@ class Manga(object):
         else:
             return None
 
-    @property
+    @cached_property
     def resources_path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
 
@@ -292,6 +291,15 @@ class Chapter(object):
 
         return self.manga_
 
+    @cached_property
+    def path(self):
+        p = os.path.join(self.manga.resources_path, self.slug)
+
+        if not os.path.exists(p):
+            os.mkdir(p)
+
+        return p
+
     @classmethod
     def new(cls, data, rank, manga_id):
         c = cls()
@@ -299,38 +307,15 @@ class Chapter(object):
 
         return c
 
-    def reset(self):
-        chapter_path = os.path.join(self.manga.resources_path, self.slug)
-        if os.path.exists(chapter_path):
-            shutil.rmtree(chapter_path)
-
-        self.update(dict(
-            pages=None,
-            downloaded=0,
-            read=0,
-            last_page_read_index=None,
-        ))
-
     def get_page(self, page_index):
-        chapter_path = os.path.join(self.manga.resources_path, self.slug)
-
-        if not os.path.exists(chapter_path):
-            os.mkdir(chapter_path)
-
-        # self.pages[page_index]['image'] can be an image name or an image path
-        imagename = self.pages[page_index]['image'].split('/')[-1] if self.pages[page_index]['image'] else None
-        if imagename is not None:
-            page_path = os.path.join(chapter_path, imagename)
-            if os.path.exists(page_path):
-                return page_path
-
-        if not network_is_available():
-            return None
+        page_path = self.get_page_path(page_index)
+        if page_path and os.path.exists(page_path):
+            return page_path
 
         imagename, data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, self.pages[page_index])
 
         if imagename and data:
-            page_path = os.path.join(chapter_path, imagename)
+            page_path = os.path.join(self.path, imagename)
             with open(page_path, 'wb') as fp:
                 fp.write(data)
 
@@ -341,6 +326,23 @@ class Chapter(object):
             return page_path
         else:
             return None
+
+    def get_page_path(self, page_index):
+        # self.pages[page_index]['image'] can be an image name or an image path
+        imagename = self.pages[page_index]['image'].split('/')[-1] if self.pages[page_index]['image'] else None
+
+        return os.path.join(self.path, imagename) if imagename is not None else None
+
+    def reset(self):
+        if os.path.exists(self.path):
+            shutil.rmtree(self.path)
+
+        self.update(dict(
+            pages=None,
+            downloaded=0,
+            read=0,
+            last_page_read_index=None,
+        ))
 
     def _save(self, data, rank, manga_id):
         # Fill data with internal data or not yet scraped values
