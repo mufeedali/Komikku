@@ -1,4 +1,3 @@
-from cached_property import cached_property
 import datetime
 from gettext import gettext as _
 import importlib
@@ -158,7 +157,7 @@ class Manga(object):
 
         return self.chapters_
 
-    @cached_property
+    @property
     def cover_fs_path(self):
         path = os.path.join(self.resources_path, 'cover.jpg')
         if os.path.exists(path):
@@ -166,7 +165,7 @@ class Manga(object):
         else:
             return None
 
-    @cached_property
+    @property
     def resources_path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
 
@@ -291,14 +290,9 @@ class Chapter(object):
 
         return self.manga_
 
-    @cached_property
+    @property
     def path(self):
-        p = os.path.join(self.manga.resources_path, self.slug)
-
-        if not os.path.exists(p):
-            os.mkdir(p)
-
-        return p
+        return os.path.join(self.manga.resources_path, self.slug)
 
     @classmethod
     def new(cls, data, rank, manga_id):
@@ -309,12 +303,15 @@ class Chapter(object):
 
     def get_page(self, page_index):
         page_path = self.get_page_path(page_index)
-        if page_path and os.path.exists(page_path):
+        if page_path:
             return page_path
 
         imagename, data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, self.pages[page_index])
 
         if imagename and data:
+            if not os.path.exists(self.path):
+                os.mkdir(self.path)
+
             page_path = os.path.join(self.path, imagename)
             with open(page_path, 'wb') as fp:
                 fp.write(data)
@@ -331,7 +328,12 @@ class Chapter(object):
         # self.pages[page_index]['image'] can be an image name or an image path
         imagename = self.pages[page_index]['image'].split('/')[-1] if self.pages[page_index]['image'] else None
 
-        return os.path.join(self.path, imagename) if imagename is not None else None
+        if imagename is not None:
+            path = os.path.join(self.path, imagename)
+
+            return path if os.path.exists(path) else None
+        else:
+            return None
 
     def reset(self):
         if os.path.exists(self.path):

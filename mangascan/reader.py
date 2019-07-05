@@ -352,7 +352,7 @@ class Reader():
             page_path = self.chapter.get_page_path(index)
             if page_path is None:
                 if self.window.application.connected:
-                    page_path = self.chapter.get_page(self.page_index)
+                    page_path = self.chapter.get_page(index)
                 else:
                     self.window.show_notification(_('No Internet connection'))
 
