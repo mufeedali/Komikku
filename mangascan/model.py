@@ -159,14 +159,14 @@ class Manga(object):
 
     @property
     def cover_fs_path(self):
-        path = os.path.join(self.resources_path, 'cover.jpg')
+        path = os.path.join(self.path, 'cover.jpg')
         if os.path.exists(path):
             return path
         else:
             return None
 
     @property
-    def resources_path(self):
+    def path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
 
     def delete(self):
@@ -177,8 +177,8 @@ class Manga(object):
         with db_conn:
             db_conn.execute('DELETE FROM mangas WHERE id = ?', (self.id, ))
 
-            if os.path.exists(self.resources_path):
-                shutil.rmtree(self.resources_path)
+            if os.path.exists(self.path):
+                shutil.rmtree(self.path)
 
         db_conn.close()
 
@@ -210,11 +210,11 @@ class Manga(object):
             chapter = Chapter.new(chapter_data, rank, self.id)
             self.chapters_ = [chapter, ] + self.chapters_
 
-        if not os.path.exists(self.resources_path):
-            os.makedirs(self.resources_path)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
 
         # Save cover image file
-        cover_fs_path = os.path.join(self.resources_path, 'cover.jpg')
+        cover_fs_path = os.path.join(self.path, 'cover.jpg')
         if not os.path.exists(cover_fs_path):
             cover_data = self.server.get_manga_cover_image(self.cover_path)
             if cover_data is not None:
@@ -292,7 +292,7 @@ class Chapter(object):
 
     @property
     def path(self):
-        return os.path.join(self.manga.resources_path, self.slug)
+        return os.path.join(self.manga.path, self.slug)
 
     @classmethod
     def new(cls, data, rank, manga_id):
