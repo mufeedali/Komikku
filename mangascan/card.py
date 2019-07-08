@@ -127,10 +127,9 @@ class Card():
             self.window.show_notification(_('No Internet connection'))
             return
 
-        chapter = self.action_row.chapter
-
         # Add chapter in download queue
-        Download.new(chapter.id)
+        self.downloader.add(self.action_row.chapter.id)
+        self.downloader.add(self.action_row.chapter.id)
 
         # Update chapter
         self.populate_chapter(self.action_row)
@@ -143,10 +142,8 @@ class Card():
             return
 
         for row in self.listbox.get_selected_rows():
-            chapter = row.chapter
-
             # Add chapter in download queue
-            Download.new(chapter.id)
+            self.downloader.add(row.chapter.id)
 
             # Update chapter
             self.populate_chapter(row)

@@ -407,7 +407,7 @@ class Download(object):
     @classmethod
     def get_by_chapter_id(cls, chapter_id):
         db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM downloads WHERE chapter_id = ?', (chapter_id, )).fetchone()
+        row = db_conn.execute('SELECT * FROM downloads WHERE chapter_id = ?', (chapter_id,)).fetchone()
         db_conn.close()
 
         if row:
@@ -422,6 +422,12 @@ class Download(object):
 
     @classmethod
     def new(cls, chapter_id):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM downloads WHERE chapter_id = ?', (chapter_id,)).fetchone()
+        db_conn.close()
+        if row:
+            return None
+
         c = cls()
         data = dict(
             chapter_id=chapter_id,

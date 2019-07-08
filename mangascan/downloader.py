@@ -20,6 +20,9 @@ class Downloader():
         self.change_cb = change_cb
         self.kill_event = threading.Event()
 
+    def add(self, chapter_id):
+        Download.new(chapter_id)
+
     def start(self):
         def run():
             while self.stop_flag is False:
@@ -37,12 +40,13 @@ class Downloader():
                             if self.stop_flag:
                                 break
 
-                            chapter.get_page(index)
+                            if chapter.get_page_path(index) is None:
+                                chapter.get_page(index)
 
-                            download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
-                            GLib.idle_add(update_notification, chapter, index)
+                                download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
+                                GLib.idle_add(update_notification, chapter, index)
 
-                            time.sleep(1)
+                                time.sleep(1)
 
                         if self.stop_flag is False:
                             chapter.update(dict(downloaded=1))
