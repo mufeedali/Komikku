@@ -31,7 +31,7 @@
             <description>Automatically enter full screen mode</description>
         </key>
         <key type="ai" name="window-size">
-            <default>[360, 654]</default>
+            <default>[360, 648]</default>
             <summary>Window size</summary>
             <description>Remember the window size.</description>
         </key>

@@ -140,7 +140,8 @@
                   <object class="GtkScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="propagate_natural_width">True</property>
                     <child>
                       <object class="GtkViewport">
                         <property name="visible">True</property>
@@ -150,6 +151,7 @@
                           <object class="GtkGrid" id="card_page_grid">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="margin_left">6</property>
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <property name="column_homogeneous">True</property>
@@ -157,6 +159,8 @@
                               <object class="GtkImage" id="cover_image">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">center</property>
+                                <property name="valign">start</property>
                                 <property name="stock">gtk-missing-image</property>
                               </object>
                               <packing>
@@ -169,8 +173,8 @@
                               <object class="GtkLabel" id="author_label_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
                                 <property name="label" translatable="yes">Author</property>
+                                <property name="xalign">0</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -184,8 +188,10 @@
                               <object class="GtkLabel" id="author_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="margin_right">6</property>
                                 <property name="label">author value</property>
+                                <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -198,6 +204,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="label" translatable="yes">Genres</property>
+                                <property name="xalign">0</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -211,11 +218,10 @@
                               <object class="GtkLabel" id="genres_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="valign">start</property>
+                                <property name="margin_right">6</property>
                                 <property name="label">genres value</property>
-                                <property name="ellipsize">end</property>
-                                <property name="single_line_mode">True</property>
+                                <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -228,6 +234,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="label" translatable="yes">Status</property>
+                                <property name="xalign">0</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -241,8 +248,10 @@
                               <object class="GtkLabel" id="status_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="margin_right">6</property>
                                 <property name="label">status value</property>
+                                <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -255,6 +264,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="label" translatable="yes">Server</property>
+                                <property name="xalign">0</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -268,8 +278,10 @@
                               <object class="GtkLabel" id="server_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="margin_right">6</property>
                                 <property name="label">server value</property>
+                                <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -281,7 +293,6 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
-                                <property name="margin_left">6</property>
                                 <property name="label" translatable="yes">Synopsis</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
@@ -297,12 +308,11 @@
                               <object class="GtkLabel" id="synopsis_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="margin_left">6</property>
                                 <property name="margin_right">6</property>
                                 <property name="hexpand">True</property>
                                 <property name="label">synopsis value</property>
                                 <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -316,6 +326,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="label" translatable="yes">Last update</property>
+                                <property name="xalign">0</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                 </attributes>
@@ -329,8 +340,10 @@
                               <object class="GtkLabel" id="last_update_value_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="margin_right">6</property>
                                 <property name="label">last update value</property>
+                                <property name="wrap">True</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>

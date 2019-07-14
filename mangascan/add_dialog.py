@@ -156,9 +156,9 @@ class AddDialog():
             cover_data = self.server.get_manga_cover_image(self.manga_data['cover_path'])
             if cover_data is not None:
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
-                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 180, -1, True, None)
+                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
             else:
-                pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 180, -1, True)
+                pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 174, -1, True)
 
             self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
             self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')

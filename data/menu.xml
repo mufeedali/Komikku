@@ -12,7 +12,7 @@
         <attribute name="action">app.shortcuts</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">About</attribute>
+        <attribute name="label" translatable="yes">About Manga Scan</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
