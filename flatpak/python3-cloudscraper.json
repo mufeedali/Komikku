@@ -12,8 +12,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
-            "sha256": "d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
+            "url": "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz",
+            "sha256": "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774"
         },
         {
             "type": "file",
@@ -22,23 +22,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz",
-            "sha256": "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/48/ef/c72abcfa2c6accd03e7c89c400790fc3d908c5804d50a7c4e9ceabd74d23/pyjsparser-2.7.1.tar.gz",
-            "sha256": "be60da6b778cc5a5296a69d8e7d614f1f870faf94e1b1b6ac591f2ad5d729579"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/cb/89/e3687d3ed99bc882793f82634e9824e62499fdfdc4b1ae39e211c5b05017/tzlocal-1.5.1.tar.gz",
-            "sha256": "4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/c5/67/5d0548226bcc34468e23a0333978f0e23d28d0b3f0c71a151aef9c3f7680/certifi-2019.6.16.tar.gz",
-            "sha256": "945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695"
+            "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
+            "sha256": "d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
         },
         {
             "type": "file",
@@ -57,8 +42,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/dd/bf/4138e7bfb757de47d1f4b6994648ec67a51efe58fa907c1e11e350cddfca/six-1.12.0.tar.gz",
-            "sha256": "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
+            "url": "https://files.pythonhosted.org/packages/c5/67/5d0548226bcc34468e23a0333978f0e23d28d0b3f0c71a151aef9c3f7680/certifi-2019.6.16.tar.gz",
+            "sha256": "945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695"
         },
         {
             "type": "file",
@@ -67,18 +52,23 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/cd/9c/7955895f5672ecc85270244582c6b53ff95bb4c24bf77bd9271d42351635/Brotli-1.0.7.zip",
-            "sha256": "0538dc1744fd17c314d2adc409ea7d1b779783b89fd95bcfb0c2acc93a6ea5a7"
+            "url": "https://files.pythonhosted.org/packages/cb/89/e3687d3ed99bc882793f82634e9824e62499fdfdc4b1ae39e211c5b05017/tzlocal-1.5.1.tar.gz",
+            "sha256": "4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/dd/bf/4138e7bfb757de47d1f4b6994648ec67a51efe58fa907c1e11e350cddfca/six-1.12.0.tar.gz",
+            "sha256": "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/48/ef/c72abcfa2c6accd03e7c89c400790fc3d908c5804d50a7c4e9ceabd74d23/pyjsparser-2.7.1.tar.gz",
+            "sha256": "be60da6b778cc5a5296a69d8e7d614f1f870faf94e1b1b6ac591f2ad5d729579"
         },
         {
             "type": "file",
             "url": "https://files.pythonhosted.org/packages/28/30/7bf7e5071081f761766d46820e52f4b16c8a08fef02d2eb4682ca7534310/requests-toolbelt-0.9.1.tar.gz",
             "sha256": "968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/25/2f/b184437870d15cdcc1cc52b73f1f7d6bb9ab2062d93c6a0b205ce8f323d3/Js2Py-0.66.tar.gz",
-            "sha256": "bf87cb4432944470f11fed9c1cb8d0312dd505e7b867362f55102f24379ab94f"
         },
         {
             "type": "file",
@@ -92,8 +82,18 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b3/a3/96ac40f5968bfc17a23514020f74cbcc44269414210e1a152fb53332373e/cloudscraper-1.1.19.tar.gz",
-            "sha256": "43e287d278b5797ec5b5925f5bea20484e34d4765cdb97c58184175628c7c561"
+            "url": "https://files.pythonhosted.org/packages/25/2f/b184437870d15cdcc1cc52b73f1f7d6bb9ab2062d93c6a0b205ce8f323d3/Js2Py-0.66.tar.gz",
+            "sha256": "bf87cb4432944470f11fed9c1cb8d0312dd505e7b867362f55102f24379ab94f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/cd/9c/7955895f5672ecc85270244582c6b53ff95bb4c24bf77bd9271d42351635/Brotli-1.0.7.zip",
+            "sha256": "0538dc1744fd17c314d2adc409ea7d1b779783b89fd95bcfb0c2acc93a6ea5a7"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ee/b8/b91a01f7e9ded212b529b519074d236ccb9134f52703134b5eb995393cdf/cloudscraper-1.1.33.tar.gz",
+            "sha256": "9fc7a59b2d5949474afdc3db0a5dd7f26e45f14d67ae8666ed49a447943b2f95"
         }
     ]
 }
