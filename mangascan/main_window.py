@@ -25,7 +25,7 @@ class MainWindow(Gtk.ApplicationWindow):
     mobile_width = False
     page = 'library'
 
-    _resize_prev_allocation = None
+    _prev_size = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,8 +73,15 @@ class MainWindow(Gtk.ApplicationWindow):
         self.reader.add_actions()
 
     def assemble_window(self):
+        # Default size
         window_size = mangascan.config_manager.get_window_size()
         self.set_default_size(window_size[0], window_size[1])
+
+        # Min size
+        geom = Gdk.Geometry()
+        geom.min_width = 360
+        geom.min_height = 288
+        self.set_geometry_hints(None, geom, Gdk.WindowHints.MIN_SIZE)
 
         # Titlebar
         self.titlebar = self.builder.get_object('titlebar')
@@ -157,18 +164,17 @@ class MainWindow(Gtk.ApplicationWindow):
             self.card.init()
 
     def on_resize(self, window):
-        prev_allocation = self._resize_prev_allocation
-        allocation = self.get_allocation()
-        if prev_allocation and prev_allocation.width == allocation.width and prev_allocation.height == allocation.height:
+        size = self.get_size()
+        if self._prev_size and self._prev_size.width == size.width and self._prev_size.height == size.height:
             return
 
-        self._resize_prev_allocation = allocation
+        self._prev_size = size
 
         self.library.on_resize()
         if self.page == 'reader':
             self.reader.on_resize()
 
-        if allocation.width < 700:
+        if size.width < 700:
             if self.mobile_width is True:
                 return
 
@@ -192,8 +198,8 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.present()
 
     def save_window_size(self):
-        window_size = [self.get_size().width, self.get_size().height]
-        mangascan.config_manager.set_window_size(window_size)
+        size = self.get_size()
+        mangascan.config_manager.set_window_size([size.width, size.height])
 
     def show_notification(self, message):
         self.builder.get_object('notification_label').set_text(message)

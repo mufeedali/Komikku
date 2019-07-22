@@ -170,6 +170,7 @@
                       <object class="GtkViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <object class="HdyColumn">
                             <property name="visible">True</property>
@@ -200,6 +201,7 @@
                       <object class="GtkViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <object class="HdyColumn">
                             <property name="visible">True</property>
@@ -231,6 +233,7 @@
                       <object class="GtkViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <object class="HdyColumn">
                             <property name="visible">True</property>
