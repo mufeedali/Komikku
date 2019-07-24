@@ -283,8 +283,13 @@ class Card():
         self.builder.get_object('genres_value_label').set_text(', '.join(self.manga.genres) if self.manga.genres else '-')
         self.builder.get_object('status_value_label').set_text(
             _(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
-        self.builder.get_object('server_value_label').set_text(
-            '{0} ({1} chapters)'.format(self.manga.server.name, len(self.manga.chapters)))
+        self.builder.get_object('server_value_label').set_markup(
+            '<a href="{0}">{1}</a> ({2} chapters)'.format(
+                self.manga.server.manga_url.format(self.manga.slug),
+                self.manga.server.name,
+                len(self.manga.chapters)
+            )
+        )
         self.builder.get_object('last_update_value_label').set_text(
             self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
 
