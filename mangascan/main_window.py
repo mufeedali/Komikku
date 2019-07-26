@@ -10,6 +10,7 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository import Handy
 
 from threading import Timer
 
@@ -139,6 +140,30 @@ class MainWindow(Gtk.ApplicationWindow):
         about_dialog.set_modal(True)
         about_dialog.set_transient_for(self)
         about_dialog.present()
+
+    def confirm(self, title, message, callback):
+        def on_response(dialog, response_id):
+            if response_id == Gtk.ResponseType.YES:
+                callback()
+
+            dialog.destroy()
+
+        dialog = Handy.Dialog.new(self)
+        dialog.get_style_context().add_class('solid-csd')
+        dialog.connect('response', on_response)
+        dialog.set_title(title)
+        dialog.add_buttons('Yes', Gtk.ResponseType.YES, 'Cancel', Gtk.ResponseType.CANCEL)
+        dialog.set_default_response(Gtk.ResponseType.YES)
+
+        label = Gtk.Label(message)
+        label.set_line_wrap(True)
+        label.set_vexpand(True)
+        label.set_property('margin', 16)
+        label.set_valign(Gtk.Align.CENTER)
+        label.set_halign(Gtk.Align.CENTER)
+        dialog.get_content_area().add(label)
+
+        dialog.show_all()
 
     def on_application_quit(self, window, event):
         self.save_window_size()

@@ -201,20 +201,27 @@ class Card():
             self.window.reader.init(row.chapter)
 
     def on_delete_menu_clicked(self, action, param):
-        db_conn = create_db_connection()
-        nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
-        db_conn.close()
+        def confirm_callback():
+            db_conn = create_db_connection()
+            nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
+            db_conn.close()
 
-        if nb_mangas == 1:
-            self.manga.delete()
+            if nb_mangas == 1:
+                self.manga.delete()
 
-            # Library is now empty
-            self.window.library.populate()
-        else:
-            self.window.library.on_manga_deleted(self.manga)
-            self.manga.delete()
+                # Library is now empty
+                self.window.library.populate()
+            else:
+                self.window.library.on_manga_deleted(self.manga)
+                self.manga.delete()
 
-        self.window.library.show()
+            self.window.library.show()
+
+        self.window.confirm(
+            _('Delete?'),
+            _('Are you sure you want to delete this manga?'),
+            confirm_callback
+        )
 
     def on_sort_order_changed(self, action, variant):
         value = variant.get_string()
