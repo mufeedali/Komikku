@@ -70,6 +70,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.application.add_action(about_action)
         self.application.add_action(shortcuts_action)
 
+        self.library.add_actions()
         self.card.add_actions()
         self.reader.add_actions()
 
@@ -176,7 +177,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
-            if self.application.connected:
+            if self.library.selection_mode:
+                self.library.leave_selection_mode()
+            elif self.application.connected:
                 AddDialog(self).open(action, param)
             else:
                 self.show_notification(_('No Internet connection'))

@@ -4,7 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from gettext import gettext as _
+
 from gi.repository import Gdk
+from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
@@ -15,12 +18,18 @@ from mangascan.model import Manga
 
 
 class Library():
+    selection_mode = False
+
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
+        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_library_selection_mode.xml')
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
+        self.gesture = Gtk.GestureLongPress.new(self.flowbox)
+        self.gesture.set_touch_only(False)
+        self.gesture.connect('pressed', self.enter_selection_mode)
 
         def sort(child1, child2):
             """
@@ -63,6 +72,12 @@ class Library():
 
         return width, height
 
+    def add_actions(self):
+        # Menu actions in selection mode
+        delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
+        delete_selected_action.connect('activate', self.delete_selected)
+        self.window.application.add_action(delete_selected_action)
+
     def add_manga(self, manga, position=-1):
         width, height = self.cover_size
 
@@ -71,6 +86,7 @@ class Library():
         overlay.set_valign(Gtk.Align.CENTER)
         overlay.manga = manga
         overlay._pixbuf = None
+        overlay._selected = False
 
         # Cover
         overlay.add_overlay(Gtk.Image())
@@ -114,6 +130,46 @@ class Library():
         overlay.show_all()
         self.flowbox.insert(overlay, position)
 
+    def delete_selected(self, action, param):
+        def confirm_callback():
+            for child in self.flowbox.get_selected_children():
+                manga = child.get_children()[0].manga
+                manga.delete()
+
+            self.populate()
+
+        self.window.confirm(
+            _('Delete?'),
+            _('Are you sure you want to delete selected mangas?'),
+            confirm_callback
+        )
+
+    def enter_selection_mode(self, gesture, x, y):
+        self.selection_mode = True
+
+        self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+
+        selected_child = self.flowbox.get_child_at_pos(x, y)
+        selected_overlay = selected_child.get_children()[0]
+        self.flowbox.select_child(selected_child)
+        selected_overlay._selected = True
+
+        self.window.titlebar.set_selection_mode(True)
+        self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-library-selection-mode'))
+
+    def leave_selection_mode(self):
+        self.selection_mode = False
+
+        self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        for child in self.flowbox.get_children():
+            overlay = child.get_children()[0]
+            overlay._selected = False
+
+        self.window.titlebar.set_selection_mode(False)
+        self.builder.get_object('left_button_image').set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu'))
+
     def on_manga_added(self, manga):
         """
         Called from 'Add dialog' when user clicks on [+] button
@@ -129,7 +185,15 @@ class Library():
             self.add_manga(manga, position=0)
 
     def on_manga_clicked(self, flowbox, child):
-        self.window.card.init(child.get_children()[0].manga)
+        if self.selection_mode:
+            overlay = child.get_children()[0]
+            if overlay._selected:
+                self.flowbox.unselect_child(child)
+                overlay._selected = False
+            else:
+                overlay._selected = True
+        else:
+            self.window.card.init(child.get_children()[0].manga)
 
     def on_manga_deleted(self, manga):
         # Remove manga cover in flowbox
@@ -164,12 +228,11 @@ class Library():
         if self.window.first_start_grid.is_ancestor(self.window):
             self.window.remove(self.window.first_start_grid)
 
-        self.window.add(self.window.overlay)
+        if not self.window.overlay.is_ancestor(self.window):
+            self.window.add(self.window.overlay)
 
         # Clear library flowbox
-        self.flowbox.realize()
         for child in self.flowbox.get_children():
-            self.flowbox.remove(child)
             child.destroy()
 
         # Populate flowbox with mangas
