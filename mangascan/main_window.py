@@ -162,6 +162,7 @@ class MainWindow(Gtk.ApplicationWindow):
         label.set_property('margin', 16)
         label.set_valign(Gtk.Align.CENTER)
         label.set_halign(Gtk.Align.CENTER)
+        label.set_justify(Gtk.Justification.CENTER)
         dialog.get_content_area().add(label)
 
         dialog.show_all()
@@ -169,8 +170,21 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_application_quit(self, window, event):
         self.save_window_size()
 
-        if self.card.downloader.started:
-            self.card.downloader.stop()
+        if self.card.downloader.status == 'running':
+            def confirm_callback():
+                self.card.downloader.stop()
+
+                while self.card.downloader.status == 'running':
+                    pass
+
+                self.application.quit()
+
+            self.confirm(
+                _('Quit?'),
+                _('Are you sure you want to quit?\nSome chapters are currently being downloaded.'),
+                confirm_callback
+            )
+
             return True
         else:
             return False

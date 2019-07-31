@@ -13,7 +13,7 @@ class Downloader():
     """
     Chapters downloader
     """
-    started = False
+    status = None
     stop_flag = False
 
     def __init__(self, change_cb):
@@ -25,7 +25,7 @@ class Downloader():
 
     def start(self):
         def run():
-            while self.stop_flag is False:
+            while self.status == 'running':
                 download = Download.next()
 
                 if download:
@@ -35,9 +35,10 @@ class Downloader():
                     GLib.idle_add(start, chapter)
 
                     if chapter.update():
-
                         for index, page in enumerate(chapter.pages):
                             if self.stop_flag:
+                                self.status = 'interrupted'
+                                download.update(dict(status='pending'))
                                 break
 
                             if chapter.get_page_path(index) is None:
@@ -46,9 +47,10 @@ class Downloader():
                                 download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
                                 GLib.idle_add(update_notification, chapter, index)
 
-                                time.sleep(1)
+                                if index < len(chapter.pages) - 1 and not self.stop_flag:
+                                    time.sleep(1)
 
-                        if self.stop_flag is False:
+                        if self.status != 'interrupted':
                             chapter.update(dict(downloaded=1))
                             download.delete()
                             GLib.idle_add(complete, chapter)
@@ -56,9 +58,7 @@ class Downloader():
                         download.update(dict(status='error'))
                         GLib.idle_add(error, chapter)
                 else:
-                    self.stop_flag = True
-
-            self.started = False
+                    self.status = 'done'
 
         def update_notification(chapter, index):
             notification.update(
@@ -90,10 +90,10 @@ class Downloader():
 
             return False
 
-        if self.started:
+        if self.status == 'running':
             return
 
-        self.started = True
+        self.status = 'running'
         self.stop_flag = False
 
         # Create notification
@@ -106,5 +106,5 @@ class Downloader():
         thread.start()
 
     def stop(self):
-        if self.started:
+        if self.status == 'running':
             self.stop_flag = True
