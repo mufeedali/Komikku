@@ -289,7 +289,7 @@ class Reader():
         if self.pixbuf is None:
             return
 
-        self.size = self.viewport.get_allocation()
+        self.size = self.window.get_size()
         self.set_page_image_from_pixbuf()
 
     def on_scaling_changed(self, action, variant):
