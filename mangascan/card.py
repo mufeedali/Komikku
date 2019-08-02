@@ -250,7 +250,7 @@ class Card():
             return False
 
         def error():
-            self.window.show_notification(_('Oops, update failed, Please try again.'))
+            self.window.show_notification(_('Oops, update failed. Please try again.'))
             return False
 
         if not self.window.application.connected:
@@ -339,7 +339,7 @@ class Card():
         # Date + Downloaded state
         label = Gtk.Label(xalign=0, yalign=1)
         label.get_style_context().add_class('card-chapter-sublabel')
-        text = chapter.date
+        text = chapter.date or ''
         if chapter.downloaded:
             text = '{0} - {1}'.format(text, _('DOWNLOADED'))
         else:
