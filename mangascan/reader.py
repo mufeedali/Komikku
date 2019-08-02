@@ -174,9 +174,10 @@ class Reader():
 
     def init(self, chapter, index=None):
         def run():
-            self.chapter.update()
-
-            GLib.idle_add(complete, index)
+            if self.chapter.update():
+                GLib.idle_add(complete, index)
+            else:
+                GLib.idle_add(error)
 
         def complete(index):
             self.chapter.manga.update(dict(last_read=datetime.datetime.now()))
@@ -191,6 +192,11 @@ class Reader():
             self.hide_spinner()
             self.controls.init(self.chapter)
             self.controls.goto_page(index + 1)
+
+        def error():
+            self.hide_spinner()
+            self.window.show_notification(_('Oops, failed to retrieve chapter info. Please try again.'))
+            return False
 
         if index is None:
             # We come from library
@@ -353,6 +359,9 @@ class Reader():
             if page_path is None:
                 if self.window.application.connected:
                     page_path = self.chapter.get_page(index)
+                    if page_path is None:
+                        GLib.idle_add(error)
+                        return
                 else:
                     self.window.show_notification(_('No Internet connection'))
 
@@ -376,6 +385,11 @@ class Reader():
 
             self.hide_spinner()
 
+            return False
+
+        def error():
+            self.hide_spinner()
+            self.window.show_notification(_('Oops, failed to retrieve page. Please try again.'))
             return False
 
         self.zoom['active'] = False
