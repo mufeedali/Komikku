@@ -51,7 +51,7 @@ class Hatigarmscans():
             synopsis=None,
             chapters=[],
             server_id=self.id,
-            cover_path='/uploads/manga/{0}/cover/cover_250x350.jpg'.format(data['slug']),
+            cover='/uploads/manga/{0}/cover/cover_250x350.jpg'.format(data['slug']),
         ))
 
         # Details

@@ -174,7 +174,7 @@ class Ninemanga():
                     results.append(dict(
                         slug=item[2],
                         name=item[1],
-                        cover_path=item[0],
+                        cover=item[0],
                     ))
 
                 return results

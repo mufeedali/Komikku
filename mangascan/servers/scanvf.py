@@ -52,7 +52,7 @@ class Scanvf():
             synopsis=None,
             chapters=[],
             server_id=self.id,
-            cover_path='photos/{}.png'.format(data['slug'].replace('mangas-', '')),
+            cover='photos/{}.png'.format(data['slug'].replace('mangas-', '')),
         ))
 
         # Details

@@ -114,7 +114,7 @@ class Japscan():
         )
         for option in pages_options:
             data['pages'].append(dict(
-                slug=None,  # not necessary, we know image url directly
+                slug=None,  # not necessary, we know image url already
                 image=option.get('data-img').split('/')[-1],
             ))
 
@@ -164,7 +164,7 @@ class Japscan():
                 for result in results:
                     # Extract slug from url
                     result['slug'] = result.pop('url').split('/')[2]
-                    result['cover_path'] = result.pop('image')
+                    result['cover'] = result.pop('image')
 
                 return results
             except Exception:

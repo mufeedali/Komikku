@@ -57,7 +57,6 @@ def init_db():
         genres json,
         synopsis text,
         status text,
-        cover_path text,
         sort_order text,
         filters json,
         reading_direction text,
@@ -183,6 +182,8 @@ class Manga(object):
         db_conn.close()
 
     def _save(self, data):
+        cover_path_or_url = data.pop('cover')
+
         # Fill data with internal data or later scraped values
         data.update(dict(
             last_read=datetime.datetime.now(),
@@ -213,10 +214,13 @@ class Manga(object):
         if not os.path.exists(self.path):
             os.makedirs(self.path)
 
+        self._save_cover(cover_path_or_url)
+
+    def _save_cover(self, path_or_url):
         # Save cover image file
         cover_fs_path = os.path.join(self.path, 'cover.jpg')
         if not os.path.exists(cover_fs_path):
-            cover_data = self.server.get_manga_cover_image(self.cover_path)
+            cover_data = self.server.get_manga_cover_image(path_or_url)
             if cover_data is not None:
                 with open(cover_fs_path, 'wb') as fp:
                     fp.write(cover_data)
@@ -257,6 +261,8 @@ class Manga(object):
 
             if updated:
                 data['last_update'] = datetime.datetime.now()
+
+            # TODO: Delete chapters that no longer exist
 
             self.chapters_ = None
 
