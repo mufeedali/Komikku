@@ -4,6 +4,7 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
+from requests.exceptions import ConnectionError
 
 server_id = 'ninemanga'
 server_name = 'Nine Manga'
@@ -46,7 +47,11 @@ class Ninemanga():
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        r = sessions[self.id].get(self.manga_url.format(initial_data['slug']))
+        try:
+            r = sessions[self.id].get(self.manga_url.format(initial_data['slug']))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -109,7 +114,12 @@ class Ninemanga():
         Currently, only pages are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = sessions[self.id].get(url)
+
+        try:
+            r = sessions[self.id].get(url)
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -135,7 +145,11 @@ class Ninemanga():
         """
         # Scrap HTML page to get image url
         url = self.page_url.format(manga_slug, page['slug'])
-        r = sessions[self.id].get(url)
+
+        try:
+            r = sessions[self.id].get(url)
+        except ConnectionError:
+            return (None, None)
 
         soup = BeautifulSoup(r.text, 'html.parser')
         url = soup.find('img', id='manga_pic_1').get('src')
@@ -151,13 +165,20 @@ class Ninemanga():
         """
         Returns manga cover (image) content
         """
-        r = sessions[self.id].get(self.cover_url.format(cover_path))
+        try:
+            r = sessions[self.id].get(self.cover_url.format(cover_path))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
-        r = sessions[self.id].get(self.search_url, params=dict(term=term))
+        try:
+            r = sessions[self.id].get(self.search_url, params=dict(term=term))
+        except ConnectionError:
+            return None
 
         if r.status_code == 200:
             try:

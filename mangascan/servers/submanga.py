@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
+from requests.exceptions import ConnectionError
 
 server_id = 'submanga'
 server_name = 'Submanga'
@@ -35,7 +36,11 @@ class Submanga():
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = session.get(self.manga_url.format(initial_data['slug']))
+        try:
+            r = session.get(self.manga_url.format(initial_data['slug']))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -98,7 +103,12 @@ class Submanga():
         Currently, only pages (list of images filenames) are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = session.get(url)
+
+        try:
+            r = session.get(url)
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -124,7 +134,12 @@ class Submanga():
         Returns chapter page scan (image) content
         """
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
-        r = session.get(url)
+
+        try:
+            r = session.get(url)
+        except ConnectionError:
+            return (None, None)
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -133,21 +148,34 @@ class Submanga():
         """
         Returns manga cover (image) content
         """
-        r = session.get(self.cover_url.format(cover_path))
+        try:
+            r = session.get(self.cover_url.format(cover_path))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
-        r = session.get(self.search_url, params=dict(query=term))
+        try:
+            r = session.get(self.search_url, params=dict(query=term))
+        except ConnectionError:
+            return None
 
-        # Returned data for each manga:
-        # value: name of the manga
-        # data: slug of the manga
-        results = r.json()['suggestions']
+        if r.status_code == 200:
+            try:
+                results = r.json()['suggestions']
 
-        for result in results:
-            result['slug'] = result.pop('data')
-            result['name'] = result.pop('value')
+                # Returned data for each manga:
+                # value: name of the manga
+                # data: slug of the manga
+                for result in results:
+                    result['slug'] = result.pop('data')
+                    result['name'] = result.pop('value')
 
-        return results
+                return results
+            except Exception:
+                return None
+        else:
+            return None

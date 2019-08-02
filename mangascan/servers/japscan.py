@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
-import magic
 import cloudscraper
+import magic
+from requests.exceptions import ConnectionError
 
 server_id = 'japscan'
 server_name = 'JapScan'
@@ -35,7 +36,11 @@ class Japscan():
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        r = scraper.get(self.manga_url.format(initial_data['slug']))
+        try:
+            r = scraper.get(self.manga_url.format(initial_data['slug']))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -99,7 +104,12 @@ class Japscan():
         Currently, only pages are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
-        r = scraper.get(url)
+
+        try:
+            r = scraper.get(url)
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
@@ -130,7 +140,12 @@ class Japscan():
 
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
         imagename = url.split('/')[-1]
-        r = scraper.get(url)
+
+        try:
+            r = scraper.get(url)
+        except ConnectionError:
+            return (None, None)
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -139,15 +154,22 @@ class Japscan():
         """
         Returns manga cover (image) content
         """
-        r = scraper.get(self.cover_url.format(cover_path))
+        try:
+            r = scraper.get(self.cover_url.format(cover_path))
+        except ConnectionError:
+            return None
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def search(self, term):
-        scraper.get(self.base_url)
+        try:
+            scraper.get(self.base_url)
 
-        r = scraper.post(self.search_url, data=dict(search=term))
+            r = scraper.post(self.search_url, data=dict(search=term))
+        except ConnectionError:
+            return None
 
         if r.status_code == 200:
             if r.content == b'':
