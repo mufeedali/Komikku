@@ -42,10 +42,10 @@ class Downloader():
                                 break
 
                             if chapter.get_page_path(index) is None:
-                                chapter.get_page(index)
+                                path = chapter.get_page(index)
 
                                 download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
-                                GLib.idle_add(update_notification, chapter, index)
+                                GLib.idle_add(notify_progress, chapter, index, path is not None)
 
                                 if index < len(chapter.pages) - 1 and not self.stop_flag:
                                     time.sleep(1)
@@ -60,10 +60,14 @@ class Downloader():
                 else:
                     self.status = 'done'
 
-        def update_notification(chapter, index):
+        def notify_progress(chapter, index, success):
+            summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
+            if not success:
+                summary = '{0} ({1})'.format(summary, _('error'))
+
             notification.update(
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title),
-                _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
+                summary,
+                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
             )
             notification.show()
 
@@ -71,8 +75,8 @@ class Downloader():
 
         def complete(chapter):
             notification.update(
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title),
-                _('Download completed')
+                _('Download completed'),
+                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
             )
             notification.show()
 
