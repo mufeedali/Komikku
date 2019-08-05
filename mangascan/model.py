@@ -36,10 +36,10 @@ def create_db_connection():
     return con
 
 
-def create_table(conn, create_table_sql):
+def create_table(conn, sql):
     try:
         c = conn.cursor()
-        c.execute(create_table_sql)
+        c.execute(sql)
     except Exception as e:
         print(e)
 
@@ -99,14 +99,18 @@ def init_db():
         db_conn.close()
 
 
-def update_row(table, id, data):
-    db_conn = create_db_connection()
-    with db_conn:
-        db_conn.execute(
-            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data.keys()])),
-            tuple(data.values()) + (id,)
-        )
-    db_conn.close()
+def insert_row(db_conn, table, data):
+    return db_conn.execute(
+        'INSERT INTO {0} ({1}) VALUES ({2})'.format(table, ', '.join(data.keys()), ', '.join(['?'] * len(data))),
+        tuple(data.values())
+    )
+
+
+def update_row(db_conn, table, id, data):
+    db_conn.execute(
+        'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data.keys()])),
+        tuple(data.values()) + (id,)
+    )
 
 
 class Manga(object):
@@ -199,10 +203,7 @@ class Manga(object):
 
         db_conn = create_db_connection()
         with db_conn:
-            cursor = db_conn.execute(
-                'INSERT INTO mangas (slug, server_id, name, author, genres, synopsis, status, last_read) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.server_id, self.name, self.author, self.genres, self.synopsis, self.status, self.last_read)
-            )
+            cursor = insert_row(db_conn, 'mangas', data)
             self.id = cursor.lastrowid
         db_conn.close()
 
@@ -217,13 +218,16 @@ class Manga(object):
         self._save_cover(cover_path_or_url)
 
     def _save_cover(self, path_or_url):
+        if path_or_url is None:
+            return
+
         # Save cover image file
-        cover_fs_path = os.path.join(self.path, 'cover.jpg')
-        if not os.path.exists(cover_fs_path):
-            cover_data = self.server.get_manga_cover_image(path_or_url)
-            if cover_data is not None:
-                with open(cover_fs_path, 'wb') as fp:
-                    fp.write(cover_data)
+        cover_data = self.server.get_manga_cover_image(path_or_url)
+        if cover_data is not None:
+            cover_fs_path = os.path.join(self.path, 'cover.jpg')
+
+            with open(cover_fs_path, 'wb') as fp:
+                fp.write(cover_data)
 
     def update(self, data=None):
         """
@@ -234,44 +238,57 @@ class Manga(object):
 
         If data is None, fetches and saves data available in manga's HTML page on server
         """
-        if data is None:
-            data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
+        db_conn = create_db_connection()
+        with db_conn:
             if data is None:
-                return False
+                data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
+                if data is None:
+                    return False
 
-            chapters_data = data.pop('chapters')
+                # Update cover
+                self._save_cover(data.pop('cover'))
 
-            # Update chapters
-            db_conn = create_db_connection()
+                # Update chapters
+                chapters_data = data.pop('chapters')
+                updated = False
 
-            updated = False
-            for rank, chapter_data in enumerate(chapters_data):
-                row = db_conn.execute(
-                    'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
-                ).fetchone()
-                if row:
-                    # Update chapter
-                    chapter = Chapter(row=row)
-                    chapter_data['rank'] = rank
-                    chapter.update(chapter_data)
-                else:
-                    # Add new chapter
-                    Chapter.new(chapter_data, rank, self.id)
-                    updated = True
+                for rank, chapter_data in enumerate(chapters_data):
+                    row = db_conn.execute(
+                        'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
+                    ).fetchone()
+                    if row:
+                        # Update chapter
+                        update_row(db_conn, 'chapters', row['id'], chapter_data)
+                    else:
+                        # Add new chapter
+                        chapter_data.update(dict(
+                            manga_id=self.id,
+                            rank=rank,
+                            downloaded=0,
+                            read=0,
+                        ))
+                        insert_row(db_conn, 'chapters', chapter_data)
+                        updated = True
 
-            if updated:
-                data['last_update'] = datetime.datetime.now()
+                if updated:
+                    data['last_update'] = datetime.datetime.now()
 
-            # TODO: Delete chapters that no longer exist
+                # Delete chapters that no longer exist
+                chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
+                rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
+                for row in rows:
+                    if row['slug'] not in chapters_slugs:
+                        db_conn.execute('DELETE FROM chapters WHERE id = ?', (row['id'],))
 
-            self.chapters_ = None
+                self.chapters_ = None
 
-            db_conn.close()
+            # Update
+            for key in data.keys():
+                setattr(self, key, data[key])
 
-        for key in data.keys():
-            setattr(self, key, data[key])
+            update_row(db_conn, 'mangas', self.id, data)
 
-        update_row('mangas', self.id, data)
+        db_conn.close()
 
         return True
 
@@ -368,11 +385,9 @@ class Chapter(object):
 
         db_conn = create_db_connection()
         with db_conn:
-            cursor = db_conn.execute(
-                'INSERT INTO chapters (slug, manga_id, title, date, rank, downloaded, read) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (self.slug, self.manga_id, self.title, self.date, rank, 0, 0)
-            )
+            cursor = insert_row(db_conn, 'chapters', data)
             self.id = cursor.lastrowid
+
         db_conn.close()
 
     def update(self, data=None):
@@ -395,7 +410,11 @@ class Chapter(object):
         for key in data.keys():
             setattr(self, key, data[key])
 
-        update_row('chapters', self.id, data)
+        db_conn = create_db_connection()
+        with db_conn:
+            update_row(db_conn, 'chapters', self.id, data)
+
+        db_conn.close()
 
         return True
 
@@ -447,9 +466,9 @@ class Download(object):
 
         db_conn = create_db_connection()
         with db_conn:
-            cursor = db_conn.execute(
-                'INSERT INTO downloads (chapter_id, status, percent, date) VALUES (?, ?, ?, ?)', (c.chapter_id, c.status, c.percent, c.date))
+            cursor = insert_row(db_conn, 'downloads', data)
             c.id = cursor.lastrowid
+
         db_conn.close()
 
         return c
@@ -488,6 +507,10 @@ class Download(object):
         :return: True on success False otherwise
         """
 
-        update_row('downloads', self.id, data)
+        db_conn = create_db_connection()
+        with db_conn:
+            update_row(db_conn, 'downloads', self.id, data)
+
+        db_conn.close()
 
         return True
