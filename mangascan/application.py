@@ -1,3 +1,4 @@
+from gettext import gettext as _
 import gi
 import logging
 import sys
@@ -33,8 +34,8 @@ class Application(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
 
-        GLib.set_application_name('Manga Scan')
-        GLib.set_prgname('Manga Scan')
+        GLib.set_application_name(_('Manga Scan'))
+        GLib.set_prgname(self.application_id)
 
         Handy.init()
         Notify.init('Manga Scan')
