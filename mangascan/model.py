@@ -100,10 +100,12 @@ def init_db():
 
 
 def insert_row(db_conn, table, data):
-    return db_conn.execute(
+    cursor = db_conn.execute(
         'INSERT INTO {0} ({1}) VALUES ({2})'.format(table, ', '.join(data.keys()), ', '.join(['?'] * len(data))),
         tuple(data.values())
     )
+
+    return cursor.lastrowid
 
 
 def update_row(db_conn, table, id, data):
@@ -139,7 +141,36 @@ class Manga(object):
     @classmethod
     def new(cls, data, server=None):
         m = cls(server=server)
-        m._save(data.copy())
+
+        data = data.copy()
+        chapters = data.pop('chapters')
+        cover_path_or_url = data.pop('cover')
+
+        # Fill data with internal data or later scraped values
+        data.update(dict(
+            last_read=datetime.datetime.now(),
+            sort_order=None,
+            reading_direction=None,
+            last_update=None,
+        ))
+
+        for key in data.keys():
+            setattr(m, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            m.id = insert_row(db_conn, 'mangas', data)
+        db_conn.close()
+
+        m.chapters_ = []
+        for rank, chapter_data in enumerate(chapters):
+            chapter = Chapter.new(chapter_data, rank, m.id)
+            m.chapters_ = [chapter, ] + m.chapters_
+
+        if not os.path.exists(m.path):
+            os.makedirs(m.path)
+
+        m._save_cover(cover_path_or_url)
 
         return m
 
@@ -184,38 +215,6 @@ class Manga(object):
                 shutil.rmtree(self.path)
 
         db_conn.close()
-
-    def _save(self, data):
-        cover_path_or_url = data.pop('cover')
-
-        # Fill data with internal data or later scraped values
-        data.update(dict(
-            last_read=datetime.datetime.now(),
-            sort_order=None,
-            reading_direction=None,
-            last_update=None,
-        ))
-
-        chapters = data.pop('chapters')
-
-        for key in data.keys():
-            setattr(self, key, data[key])
-
-        db_conn = create_db_connection()
-        with db_conn:
-            cursor = insert_row(db_conn, 'mangas', data)
-            self.id = cursor.lastrowid
-        db_conn.close()
-
-        self.chapters_ = []
-        for rank, chapter_data in enumerate(chapters):
-            chapter = Chapter.new(chapter_data, rank, self.id)
-            self.chapters_ = [chapter, ] + self.chapters_
-
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
-
-        self._save_cover(cover_path_or_url)
 
     def _save_cover(self, path_or_url):
         if path_or_url is None:
@@ -320,7 +319,26 @@ class Chapter(object):
     @classmethod
     def new(cls, data, rank, manga_id):
         c = cls()
-        c._save(data.copy(), rank, manga_id)
+
+        # Fill data with internal usage data or not yet scraped values
+        data = data.copy()
+        data.update(dict(
+            manga_id=manga_id,
+            pages=None,  # later scraped value
+            rank=rank,
+            downloaded=0,
+            read=0,
+            last_page_read_index=None,
+        ))
+
+        for key in data.keys():
+            setattr(c, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            c.id = insert_row(db_conn, 'chapters', data)
+
+        db_conn.close()
 
         return c
 
@@ -368,27 +386,6 @@ class Chapter(object):
             read=0,
             last_page_read_index=None,
         ))
-
-    def _save(self, data, rank, manga_id):
-        # Fill data with internal data or not yet scraped values
-        data.update(dict(
-            manga_id=manga_id,
-            pages=None,  # later scraped value
-            rank=rank,
-            downloaded=0,
-            read=0,
-            last_page_read_index=None,
-        ))
-
-        for key in data.keys():
-            setattr(self, key, data[key])
-
-        db_conn = create_db_connection()
-        with db_conn:
-            cursor = insert_row(db_conn, 'chapters', data)
-            self.id = cursor.lastrowid
-
-        db_conn.close()
 
     def update(self, data=None):
         """
@@ -466,8 +463,7 @@ class Download(object):
 
         db_conn = create_db_connection()
         with db_conn:
-            cursor = insert_row(db_conn, 'downloads', data)
-            c.id = cursor.lastrowid
+            c.id = insert_row(db_conn, 'downloads', data)
 
         db_conn.close()
 

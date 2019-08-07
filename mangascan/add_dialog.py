@@ -182,9 +182,6 @@ class AddDialog():
 
             return False
 
-        if row.manga_data is None:
-            return
-
         self.show_spinner()
 
         thread = threading.Thread(target=run)
