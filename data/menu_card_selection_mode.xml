@@ -8,8 +8,8 @@
         <attribute name="action">app.card.download-selected-chapters</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Delete</attribute>
-        <attribute name="action">app.card.delete-selected-chapters</attribute>
+        <attribute name="label" translatable="yes">Reset</attribute>
+        <attribute name="action">app.card.reset-selected-chapters</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Mark as read</attribute>
