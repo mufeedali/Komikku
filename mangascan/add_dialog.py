@@ -260,9 +260,11 @@ class AddDialog():
 
     def show_page(self, name):
         if name == 'search':
-            self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
             if self.page == 'servers':
+                self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
                 self.clear_search()
+            else:
+                self.custom_title_search_page_searchentry.grab_focus_without_selecting()
         elif name == 'manga':
             self.custom_title_manga_page_label.set_text(self.manga_data['name'])
 
