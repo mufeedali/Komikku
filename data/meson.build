@@ -23,16 +23,16 @@ install_data(
 )
 
 desktop_conf = configuration_data()
-application_id = 'com.gitlab.valos.MangaScan'
+application_id = 'info.febvre.MangaScan'
 if get_option('profile') == 'development'
-  application_id = 'com.gitlab.valos.MangaScanDevel'
+  application_id = 'info.febvre.MangaScanDevel'
 endif
 desktop_conf.set('ICON', application_id)
 desktop = i18n.merge_file(
   'desktop',
   input: configure_file(
-    input: files('com.gitlab.valos.MangaScan.desktop.in.in'),
-    output: 'com.gitlab.valos.MangaScan.desktop.in',
+    input: files('info.febvre.MangaScan.desktop.in.in'),
+    output: 'info.febvre.MangaScan.desktop.in',
     configuration: desktop_conf
   ),
   output: '@0@.desktop'.format(application_id),
@@ -53,16 +53,16 @@ if desktop_file_validate.found()
 endif
 
 appdata_conf = configuration_data()
-application_id = 'com.gitlab.valos.MangaScan'
+application_id = 'info.febvre.MangaScan'
 if get_option('profile') == 'development'
-  application_id = 'com.gitlab.valos.MangaScanDevel'
+  application_id = 'info.febvre.MangaScanDevel'
 endif
 appdata_conf.set('APPID', application_id)
 appdata = i18n.merge_file(
   'appdata',
   input: configure_file(
-    input: files('com.gitlab.valos.MangaScan.appdata.xml.in.in'),
-    output: 'com.gitlab.valos.MangaScan.appdata.xml.in',
+    input: files('info.febvre.MangaScan.appdata.xml.in.in'),
+    output: 'info.febvre.MangaScan.appdata.xml.in',
     configuration: appdata_conf
   ),
   output: application_id + '.appdata.xml',

@@ -19,7 +19,7 @@ from mangascan.main_window import MainWindow
 class Application(Gtk.Application):
     connected = False
     development_mode = False
-    application_id = 'com.gitlab.valos.MangaScan'
+    application_id = 'info.febvre.MangaScan'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_OPEN)

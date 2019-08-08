@@ -1,6 +1,6 @@
 from gi.repository import GLib, Gio
 
-setting = Gio.Settings.new('com.gitlab.valos.MangaScan')
+setting = Gio.Settings.new('info.febvre.MangaScan')
 
 dark_theme = 'dark-theme'
 fullscreen = 'fullscreen'

@@ -19,8 +19,8 @@ class Card():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card.xml')
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_card_selection_mode.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/menu_card.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/menu_card_selection_mode.xml')
 
         self.stack = self.builder.get_object('card_stack')
 
@@ -283,7 +283,7 @@ class Card():
         if self.manga.cover_fs_path is not None:
             pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 174, -1, True)
         else:
-            pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 174, -1, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/missing_file.png', 174, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
         self.builder.get_object('author_value_label').set_text(self.manga.author or '-')

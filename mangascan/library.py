@@ -25,7 +25,7 @@ class Library():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_library_selection_mode.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/menu_library_selection_mode.xml')
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
@@ -123,7 +123,7 @@ class Library():
 
             # Draw logo
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/com/gitlab/valos/MangaScan/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
+                '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
             Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 2, 2)
             ctx.paint()
 
@@ -257,7 +257,7 @@ class Library():
             if manga.cover_fs_path is not None:
                 overlay._pixbuf = Pixbuf.new_from_file(manga.cover_fs_path)
             else:
-                overlay._pixbuf = Pixbuf.new_from_resource('/com/gitlab/valos/MangaScan/images/missing_file.png')
+                overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/MangaScan/images/missing_file.png')
 
         pixbuf = overlay._pixbuf.scale_simple(width, height, InterpType.BILINEAR)
         image = overlay.get_children()[0]

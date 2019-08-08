@@ -35,8 +35,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.logging_manager = self.application.get_logger()
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/main_window.ui')
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/main_window.ui')
+        self.builder.add_from_resource('/info/febvre/MangaScan/menu.xml')
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
@@ -98,7 +98,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Fisrt start grid
         self.first_start_grid = self.builder.get_object('first_start_grid')
-        pix = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/logo.png', 256, 256, True)
+        pix = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/logo.png', 256, 256, True)
         self.builder.get_object('app_logo').set_from_pixbuf(pix)
 
         self.library = Library(self)
@@ -113,7 +113,7 @@ class MainWindow(Gtk.ApplicationWindow):
         screen = Gdk.Screen.get_default()
 
         css_provider = Gtk.CssProvider()
-        css_provider_resource = Gio.File.new_for_uri('resource:///com/gitlab/valos/MangaScan/css/style.css')
+        css_provider_resource = Gio.File.new_for_uri('resource:///info/febvre/MangaScan/css/style.css')
         css_provider.load_from_file(css_provider_resource)
 
         context = Gtk.StyleContext()
@@ -135,7 +135,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_about_menu_clicked(self, action, param):
         builder = Gtk.Builder()
-        builder.add_from_resource('/com/gitlab/valos/MangaScan/about_dialog.ui')
+        builder.add_from_resource('/info/febvre/MangaScan/about_dialog.ui')
 
         about_dialog = builder.get_object('about_dialog')
         about_dialog.set_modal(True)
@@ -232,7 +232,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_shortcuts_menu_clicked(self, action, param):
         builder = Gtk.Builder()
-        builder.add_from_resource('/com/gitlab/valos/MangaScan/shortcuts_overview.ui')
+        builder.add_from_resource('/info/febvre/MangaScan/shortcuts_overview.ui')
 
         shortcuts_overview = builder.get_object('shortcuts_overview')
         shortcuts_overview.set_modal(True)

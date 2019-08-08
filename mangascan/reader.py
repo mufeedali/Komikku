@@ -120,7 +120,7 @@ class Reader():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/menu_reader.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/menu_reader.xml')
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
@@ -371,7 +371,7 @@ class Reader():
             if page_path:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
-                self.pixbuf = Pixbuf.new_from_resource('/com/gitlab/valos/MangaScan/images/missing_file.png')
+                self.pixbuf = Pixbuf.new_from_resource('/info/febvre/MangaScan/images/missing_file.png')
 
             self.chapter.update(dict(
                 last_page_read_index=index,

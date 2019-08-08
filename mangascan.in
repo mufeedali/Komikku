@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     if @PROFILE@ == 'Devel':
     	Application.development_mode = True
-    	Application.application_id = 'com.gitlab.valos.MangaScanDevel'
+    	Application.application_id = 'info.febvre.MangaScanDevel'
     else:
     	Application.development_mode = False
 

@@ -24,7 +24,7 @@ class AddDialog():
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/com/gitlab/valos/MangaScan/add_dialog.ui')
+        self.builder.add_from_resource('/info/febvre/MangaScan/add_dialog.ui')
 
         self.dialog = self.builder.get_object('search_dialog')
 
@@ -53,7 +53,7 @@ class AddDialog():
 
             # Server logo
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/com/gitlab/valos/MangaScan/icons/ui/favicons/{0}.ico'.format(server['id']), 16, 16, True)
+                '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(server['id']), 16, 16, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
@@ -65,7 +65,7 @@ class AddDialog():
 
             # Server flag (indicates the language)
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/com/gitlab/valos/MangaScan/icons/ui/flags/{0}.png'.format(server['lang']), 30, 16, True)
+                '/info/febvre/MangaScan/icons/ui/flags/{0}.png'.format(server['lang']), 30, 16, True)
             flag = Gtk.Image(xalign=1)
             flag.set_from_pixbuf(pixbuf)
             box.pack_start(flag, False, True, 0)
@@ -158,7 +158,7 @@ class AddDialog():
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
                 pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
             else:
-                pixbuf = Pixbuf.new_from_resource_at_scale('/com/gitlab/valos/MangaScan/images/missing_file.png', 174, -1, True)
+                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/missing_file.png', 174, -1, True)
 
             self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
             self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')

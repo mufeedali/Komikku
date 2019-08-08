@@ -1,9 +1,9 @@
 ../data/about_dialog.ui.in
 ../data/add_dialog.ui
 ../data/main_window.ui
-../data/com.gitlab.valos.MangaScan.appdata.xml.in.in
-../data/com.gitlab.valos.MangaScan.desktop.in.in
-../data/com.gitlab.valos.MangaScan.gschema.xml
+../data/info.febvre.MangaScan.appdata.xml.in.in
+../data/info.febvre.MangaScan.desktop.in.in
+../data/info.febvre.MangaScan.gschema.xml
 ../data/settings_dialog.ui
 ../data/shortcuts_overview.ui
 ../mangascan/add_dialog.py

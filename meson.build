@@ -4,7 +4,7 @@ project('mangascan', 'c',
 )
 i18n = import('i18n')
 python = import('python3')
-project_id = 'com.gitlab.valos.MangaScan'
+project_id = 'info.febvre.MangaScan'
 contributors = '\n'.join(['Valéry Febvre &lt;vfebvre@easter-eggs.com&gt;'])
 
 message('Looking for dependencies')
@@ -55,9 +55,9 @@ endif
 conf.set('CONTRIBUTORS', contributors)
 conf.set_quoted('PROFILE', profile)
 
-application_id = 'com.gitlab.valos.MangaScan'
+application_id = 'info.febvre.MangaScan'
 if get_option('profile') == 'development'
-  application_id = 'com.gitlab.valos.MangaScanDevel'
+  application_id = 'info.febvre.MangaScanDevel'
 endif
 conf.set('APPID', application_id)
 
