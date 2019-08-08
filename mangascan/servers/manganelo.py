@@ -31,11 +31,9 @@ class Manganelo():
         """
         Returns manga data by scraping manga HTML page content
 
-        Inital data should contain at least manga's slug, name and cover (provided by search)
+        Inital data should contain at least manga's slug (provided by search)
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
-        assert 'name' in initial_data, 'Manga name is missing in initial data'
-        assert 'cover' in initial_data, 'Manga cover URL is missing in initial data'
 
         try:
             r = session.get(self.manga_url.format(initial_data['slug']))
