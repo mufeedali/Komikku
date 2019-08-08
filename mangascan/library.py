@@ -275,11 +275,10 @@ class Library():
         self.window.show_page('library')
 
     def update_selected(self, action, param):
-        def run():
+        def run(mangas):
             self.window.show_notification(_('Start update'))
 
-            for child in self.flowbox.get_selected_children():
-                manga = child.get_children()[0].manga
+            for manga in mangas:
                 if manga.update():
                     GLib.idle_add(complete, manga)
                 else:
@@ -297,7 +296,7 @@ class Library():
             self.window.show_notification(_('No Internet connection'))
             return
 
-        thread = threading.Thread(target=run)
+        thread = threading.Thread(target=run, args=([child.get_children()[0].manga for child in self.flowbox.get_selected_children()],))
         thread.daemon = True
         thread.start()
 
