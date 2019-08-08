@@ -4,6 +4,10 @@
   <menu id="menu-library-selection-mode">
     <section>
       <item>
+        <attribute name="label" translatable="yes">Update</attribute>
+        <attribute name="action">app.library.update-selected</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">Delete</attribute>
         <attribute name="action">app.library.delete-selected</attribute>
       </item>

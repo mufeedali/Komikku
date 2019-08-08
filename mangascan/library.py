@@ -5,9 +5,11 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+import threading
 
 from gi.repository import Gdk
 from gi.repository import Gio
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
@@ -78,6 +80,10 @@ class Library():
         delete_selected_action.connect('activate', self.delete_selected)
         self.window.application.add_action(delete_selected_action)
 
+        update_selected_action = Gio.SimpleAction.new('library.update-selected', None)
+        update_selected_action.connect('activate', self.update_selected)
+        self.window.application.add_action(update_selected_action)
+
     def add_manga(self, manga, position=-1):
         width, height = self.cover_size
 
@@ -137,6 +143,8 @@ class Library():
                 manga.delete()
 
             self.populate()
+
+            self.leave_selection_mode()
 
         self.window.confirm(
             _('Delete?'),
@@ -265,3 +273,32 @@ class Library():
 
         self.flowbox.invalidate_sort()
         self.window.show_page('library')
+
+    def update_selected(self, action, param):
+        def run():
+            self.window.show_notification(_('Start update'))
+
+            for child in self.flowbox.get_selected_children():
+                manga = child.get_children()[0].manga
+                if manga.update():
+                    GLib.idle_add(complete, manga)
+                else:
+                    GLib.idle_add(error, manga)
+
+        def complete(manga):
+            self.window.show_notification(_('{0} successfully updated').format(manga.name))
+            return False
+
+        def error(manga):
+            self.window.show_notification(_('Oops, {0} update failed. Please try again.').format(manga.name))
+            return False
+
+        if not self.window.application.connected:
+            self.window.show_notification(_('No Internet connection'))
+            return
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
+
+        self.leave_selection_mode()
