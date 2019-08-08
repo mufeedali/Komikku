@@ -245,7 +245,8 @@ class Manga(object):
                     return False
 
                 # Update cover
-                self._save_cover(data.pop('cover'))
+                if data.get('cover'):
+                    self._save_cover(data.pop('cover'))
 
                 # Update chapters
                 chapters_data = data.pop('chapters')
