@@ -22,8 +22,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/df/d5/3e3ff673e8f3096921b3f1b79ce04b832e0100b4741573154b72b756a681/pytz-2019.1.tar.gz",
-            "sha256": "d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
+            "url": "https://files.pythonhosted.org/packages/27/c0/fbd352ca76050952a03db776d241959d5a2ee1abddfeb9e2a53fdb489be4/pytz-2019.2.tar.gz",
+            "sha256": "26c0b32e437e54a18161324a2fca3c4b9846b74a8dccddd843113109e1116b32"
         },
         {
             "type": "file",
@@ -92,8 +92,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/30/8b/0366fcb75b18c3d25104093a81e3efdbc40d269d5566aea83513045bdee4/cloudscraper-1.1.36.tar.gz",
-            "sha256": "b969c4897ae5efe5c7c17197a8b223be73bd977cb34bafda01f24070f6d34ef8"
+            "url": "https://files.pythonhosted.org/packages/9b/50/927c6b7e0981ff1cf249853c420d1d95adc7eb351df3f018ad0db8ef8882/cloudscraper-1.1.40.tar.gz",
+            "sha256": "79d04cd3c7d782035b404b5093a0cdbacd219cb883134017f4f7ba703f12a93c"
         }
     ]
 }
