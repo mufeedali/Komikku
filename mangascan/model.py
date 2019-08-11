@@ -74,9 +74,10 @@ def init_db():
         title text NOT NULL,
         pages json,
         date text,
-        rank integer,
-        downloaded integer,
-        read integer,
+        rank integer NOT NULL,
+        downloaded integer NOT NULL,
+        recent integer NOT NULL,
+        read integer NOT NULL,
         last_page_read_index integer,
         UNIQUE (slug, manga_id)
     );"""
@@ -203,6 +204,14 @@ class Manga(object):
     def path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
 
+    @property
+    def recents_chapters(self):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT count() AS recents FROM chapters WHERE manga_id = ? AND recent = 1', (self.id,)).fetchone()
+        db_conn.close()
+
+        return row['recents']
+
     def delete(self):
         db_conn = create_db_connection()
         # Enable integrity constraint
@@ -250,7 +259,7 @@ class Manga(object):
 
                 # Update chapters
                 chapters_data = data.pop('chapters')
-                updated = False
+                updated = 0
 
                 for rank, chapter_data in enumerate(chapters_data):
                     row = db_conn.execute(
@@ -265,12 +274,13 @@ class Manga(object):
                             manga_id=self.id,
                             rank=rank,
                             downloaded=0,
+                            recent=1,
                             read=0,
                         ))
                         insert_row(db_conn, 'chapters', chapter_data)
-                        updated = True
+                        updated += 1
 
-                if updated:
+                if updated > 0:
                     data['last_update'] = datetime.datetime.now()
 
                 # Delete chapters that no longer exist
@@ -328,6 +338,7 @@ class Chapter(object):
             pages=None,  # later scraped value
             rank=rank,
             downloaded=0,
+            recent=0,
             read=0,
             last_page_read_index=None,
         ))

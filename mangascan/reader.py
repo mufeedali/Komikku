@@ -376,6 +376,7 @@ class Reader():
             self.chapter.update(dict(
                 last_page_read_index=index,
                 read=index == len(self.chapter.pages) - 1,
+                recent=0,
             ))
 
             self.size = self.viewport.get_allocation()

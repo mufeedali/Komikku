@@ -23,6 +23,13 @@
     font-size: 10px;
 }
 
+.badge {
+    color: #fff;
+    background-color: #3399ff;
+    padding: 0 .4em;
+    border-radius: .25rem;
+}
+
 /* Main window - reader page - controls */
 .reader-controls-box {
     background: rgba(0, 0, 0, .75);

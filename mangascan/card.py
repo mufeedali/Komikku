@@ -336,6 +336,14 @@ class Card():
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
 
+        # Recent badge
+        if chapter.recent == 1:
+            label = Gtk.Label(xalign=0, yalign=1)
+            label.get_style_context().add_class('card-chapter-sublabel')
+            label.get_style_context().add_class('badge')
+            label.set_text(_('New'))
+            hbox.pack_start(label, False, True, 0)
+
         # Date + Downloaded state
         label = Gtk.Label(xalign=0, yalign=1)
         label.get_style_context().add_class('card-chapter-sublabel')

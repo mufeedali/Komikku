@@ -107,30 +107,13 @@ class Library():
         overlay.add_overlay(label)
 
         # Server logo (top left corner)
-        def draw(da, ctx):
-            size = 40
-
-            ctx.save()
-
-            # Draw triangle
-            ctx.set_source_rgba(0, 0, 0, .5)
-            ctx.new_path()
-            ctx.move_to(0, 0)
-            ctx.rel_line_to(0, size)
-            ctx.rel_line_to(size, -size)
-            ctx.close_path()
-            ctx.fill()
-
-            # Draw logo
-            pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
-            Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 2, 2)
-            ctx.paint()
-
-            ctx.restore()
-
         drawingarea = Gtk.DrawingArea()
-        drawingarea.connect('draw', draw)
+        drawingarea.connect('draw', self.draw_cover_server_logo, manga)
+        overlay.add_overlay(drawingarea)
+
+        # Number of recents chapters (top right corner)
+        drawingarea = Gtk.DrawingArea()
+        drawingarea.connect('draw', self.draw_cover_recents_chapters, manga)
         overlay.add_overlay(drawingarea)
 
         overlay.show_all()
@@ -151,6 +134,57 @@ class Library():
             _('Are you sure you want to delete selected mangas?'),
             confirm_callback
         )
+
+    def draw_cover_recents_chapters(self, da, ctx, manga):
+        nb_recents_chapters = manga.recents_chapters
+        if nb_recents_chapters == 0:
+            return
+
+        ctx.save()
+
+        ctx.select_font_face('sans-serif')
+        ctx.set_font_size(13)
+
+        text = str(nb_recents_chapters)
+        text_extents = ctx.text_extents(text)
+        cover_width, cover_height = self.cover_size
+        width = text_extents.width + 2 * 3 + 1
+        height = text_extents.height + 2 * 3
+        right = top = 5
+
+        # Draw rectangle
+        ctx.set_source_rgba(.2, .6, 1, 1)
+        ctx.rectangle(cover_width - width - right, top, width, height)
+        ctx.fill()
+
+        # Draw number
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.move_to(cover_width - width - 2, height + 2)
+        ctx.show_text(text)
+
+        ctx.restore()
+
+    def draw_cover_server_logo(self, da, ctx, manga):
+        size = 40
+
+        ctx.save()
+
+        # Draw triangle
+        ctx.set_source_rgba(0, 0, 0, .5)
+        ctx.new_path()
+        ctx.move_to(0, 0)
+        ctx.rel_line_to(0, size)
+        ctx.rel_line_to(size, -size)
+        ctx.close_path()
+        ctx.fill()
+
+        # Draw logo
+        pixbuf = Pixbuf.new_from_resource_at_scale(
+            '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
+        Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 2, 2)
+        ctx.paint()
+
+        ctx.restore()
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
