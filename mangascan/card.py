@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gettext import gettext as _
 import threading
 
@@ -286,19 +292,20 @@ class Card():
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/missing_file.png', 174, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-        self.builder.get_object('author_value_label').set_text(self.manga.author or '-')
-        self.builder.get_object('genres_value_label').set_text(', '.join(self.manga.genres) if self.manga.genres else '-')
-        self.builder.get_object('status_value_label').set_text(
-            _(self.manga.STATUSES[self.manga.status]) if self.manga.status else '-')
+        self.builder.get_object('author_value_label').set_markup('<span size="small">{0}</span>'.format(self.manga.author or 'u'))
+        self.builder.get_object('genres_value_label').set_markup(
+            '<span size="small">{0}</span>'.format(', '.join(self.manga.genres)) if self.manga.genres else '-')
+        self.builder.get_object('status_value_label').set_markup(
+            '<span size="small">{0}</span>'.format(_(self.manga.STATUSES[self.manga.status])) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_markup(
-            '<a href="{0}">{1}</a> ({2} chapters)'.format(
+            '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
                 self.manga.server.manga_url.format(self.manga.slug),
                 self.manga.server.name,
                 len(self.manga.chapters)
             )
         )
-        self.builder.get_object('last_update_value_label').set_text(
-            self.manga.last_update.strftime('%m/%d/%Y') if self.manga.last_update else '-')
+        self.builder.get_object('last_update_value_label').set_markup(
+            '<span size="small">{0}</span>'.format(self.manga.last_update.strftime('%m/%d/%Y')) if self.manga.last_update else '-')
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
 
