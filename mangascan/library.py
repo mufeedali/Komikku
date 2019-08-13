@@ -75,6 +75,10 @@ class Library():
         return width, height
 
     def add_actions(self):
+        update_action = Gio.SimpleAction.new('library.update', None)
+        update_action.connect('activate', self.update_all)
+        self.window.application.add_action(update_action)
+
         # Menu actions in selection mode
         delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
         delete_selected_action.connect('activate', self.delete_selected)

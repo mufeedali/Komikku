@@ -4,6 +4,10 @@
   <menu id="menu">
     <section>
       <item>
+        <attribute name="label" translatable="yes">Update library</attribute>
+        <attribute name="action">app.library.update</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">Preferences</attribute>
         <attribute name="action">app.settings</attribute>
       </item>
