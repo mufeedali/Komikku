@@ -174,7 +174,7 @@ class Reader():
 
     def init(self, chapter, index=None):
         def run():
-            if self.chapter.update():
+            if self.chapter.update_full():
                 GLib.idle_add(complete, index)
             else:
                 GLib.idle_add(error)

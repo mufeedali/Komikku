@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 import datetime
 from gettext import gettext as _
 import importlib
@@ -201,17 +207,16 @@ class Manga(object):
             return None
 
     @property
-    def path(self):
-        return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
-
-    @property
-    def recents_chapters(self):
+    def nb_recent_chapters(self):
         db_conn = create_db_connection()
         row = db_conn.execute('SELECT count() AS recents FROM chapters WHERE manga_id = ? AND recent = 1', (self.id,)).fetchone()
         db_conn.close()
 
         return row['recents']
 
+    @property
+    def path(self):
+        return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
     def delete(self):
         db_conn = create_db_connection()
         # Enable integrity constraint
@@ -237,60 +242,78 @@ class Manga(object):
             with open(cover_fs_path, 'wb') as fp:
                 fp.write(cover_data)
 
-    def update(self, data=None):
+    def update(self, data):
+        """
+        Updates specific fields
+
+        :param dict data: fields to update
+        :return: True on success False otherwise
+        """
+        # Update
+        for key in data.keys():
+            setattr(self, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            update_row(db_conn, 'mangas', self.id, data)
+
+        db_conn.close()
+
+        return True
+
+    def update_full(self):
         """
         Updates manga
 
-        :param data: dictionary of fields to update
-        :return: True on success False otherwise
+        Fetches and saves data available in manga's HTML page on server
 
-        If data is None, fetches and saves data available in manga's HTML page on server
+        :return: True on success False otherwise, number of recent chapters
+        :rtype: tuple
         """
         db_conn = create_db_connection()
         with db_conn:
+            data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
             if data is None:
-                data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
-                if data is None:
-                    return False
+                return False, 0
 
-                # Update cover
-                if data.get('cover'):
-                    self._save_cover(data.pop('cover'))
+            # Update cover
+            if data.get('cover'):
+                self._save_cover(data.pop('cover'))
 
-                # Update chapters
-                chapters_data = data.pop('chapters')
-                updated = 0
+            # Update chapters
+            chapters_data = data.pop('chapters')
+            nb_recent_chapters = 0
 
-                for rank, chapter_data in enumerate(chapters_data):
-                    row = db_conn.execute(
-                        'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
-                    ).fetchone()
-                    if row:
-                        # Update chapter
-                        update_row(db_conn, 'chapters', row['id'], chapter_data)
-                    else:
-                        # Add new chapter
-                        chapter_data.update(dict(
-                            manga_id=self.id,
-                            rank=rank,
-                            downloaded=0,
-                            recent=1,
-                            read=0,
-                        ))
-                        insert_row(db_conn, 'chapters', chapter_data)
-                        updated += 1
+            for rank, chapter_data in enumerate(chapters_data):
+                row = db_conn.execute(
+                    'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
+                ).fetchone()
+                if row:
+                    # Update chapter
+                    update_row(db_conn, 'chapters', row['id'], chapter_data)
+                else:
+                    # Add new chapter
+                    chapter_data.update(dict(
+                        manga_id=self.id,
+                        rank=rank,
+                        downloaded=0,
+                        recent=1,
+                        read=0,
+                    ))
+                    insert_row(db_conn, 'chapters', chapter_data)
+                    nb_recent_chapters += 1
 
-                if updated > 0:
-                    data['last_update'] = datetime.datetime.now()
+            if nb_recent_chapters > 0:
+                data['last_update'] = datetime.datetime.now()
 
-                # Delete chapters that no longer exist
-                chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
-                rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
-                for row in rows:
-                    if row['slug'] not in chapters_slugs:
-                        db_conn.execute('DELETE FROM chapters WHERE id = ?', (row['id'],))
+            # Delete chapters that no longer exist
+            chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
+            rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
+            for row in rows:
+                if row['slug'] not in chapters_slugs:
+                    db_conn.execute('DELETE FROM chapters WHERE id = ?', (row['id'],))
 
-                self.chapters_ = None
+            self.chapters_ = None
 
             # Update
             for key in data.keys():
@@ -300,7 +323,7 @@ class Manga(object):
 
         db_conn.close()
 
-        return True
+        return True, nb_recent_chapters
 
 
 class Chapter(object):
@@ -399,22 +422,38 @@ class Chapter(object):
             last_page_read_index=None,
         ))
 
-    def update(self, data=None):
+    def update(self, data):
+        """
+        Updates specific fields
+
+        :param dict data: fields to update
+        :return: True on success False otherwise
+        """
+        for key in data.keys():
+            setattr(self, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            update_row(db_conn, 'chapters', self.id, data)
+
+        db_conn.close()
+
+        return True
+
+    def update_full(self):
         """
         Updates chapter
 
-        :param data: dictionary of fields to update
+        Fetches and saves data available in chapter's HTML page on server
+
         :return: True on success False otherwise
-
-        If data is None, fetches and saves data available in chapter's HTML page on server
         """
-        if data is None:
-            if self.pages:
-                return True
+        if self.pages:
+            return True
 
-            data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
-            if data is None:
-                return False
+        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
+        if data is None:
+            return False
 
         for key in data.keys():
             setattr(self, key, data[key])

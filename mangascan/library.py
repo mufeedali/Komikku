@@ -113,7 +113,7 @@ class Library():
 
         # Number of recents chapters (top right corner)
         drawingarea = Gtk.DrawingArea()
-        drawingarea.connect('draw', self.draw_cover_recents_chapters, manga)
+        drawingarea.connect('draw', self.draw_cover_recent_chapters, manga)
         overlay.add_overlay(drawingarea)
 
         overlay.show_all()
@@ -135,9 +135,9 @@ class Library():
             confirm_callback
         )
 
-    def draw_cover_recents_chapters(self, da, ctx, manga):
-        nb_recents_chapters = manga.recents_chapters
-        if nb_recents_chapters == 0:
+    def draw_cover_recent_chapters(self, da, ctx, manga):
+        nb_recent_chapters = manga.nb_recent_chapters
+        if nb_recent_chapters == 0:
             return
 
         ctx.save()
@@ -145,11 +145,11 @@ class Library():
         ctx.select_font_face('sans-serif')
         ctx.set_font_size(13)
 
-        text = str(nb_recents_chapters)
+        text = str(nb_recent_chapters)
         text_extents = ctx.text_extents(text)
         cover_width, cover_height = self.cover_size
         width = text_extents.width + 2 * 3 + 1
-        height = text_extents.height + 2 * 3
+        height = text_extents.height + 2 * 5
         right = top = 5
 
         # Draw rectangle
@@ -159,7 +159,7 @@ class Library():
 
         # Draw number
         ctx.set_source_rgb(1, 1, 1)
-        ctx.move_to(cover_width - width - 2, height + 2)
+        ctx.move_to(cover_width - width - 2, height)
         ctx.show_text(text)
 
         ctx.restore()
@@ -308,30 +308,43 @@ class Library():
         self.flowbox.invalidate_sort()
         self.window.show_page('library')
 
-    def update_selected(self, action, param):
-        def run(mangas):
+    def update(self, mangas):
+        if not self.window.application.connected:
+            self.window.show_notification(_('No Internet connection'))
+            return
+
+        def run():
             self.window.show_notification(_('Start update'))
 
             for manga in mangas:
-                if manga.update():
-                    GLib.idle_add(complete, manga)
+                status, nb_recent_chapters = manga.update_full()
+                if status is True:
+                    GLib.idle_add(complete, manga, nb_recent_chapters)
                 else:
                     GLib.idle_add(error, manga)
 
-        def complete(manga):
-            self.window.show_notification(_('{0} successfully updated').format(manga.name))
+        def complete(manga, nb_recent_chapters):
+            if nb_recent_chapters > 0:
+                self.window.show_notification(_('{0}\n{1} new chapters have been found').format(manga.name, nb_recent_chapters))
+                self.flowbox.queue_draw()
             return False
 
         def error(manga):
-            self.window.show_notification(_('Oops, {0} update failed. Please try again.').format(manga.name))
+            self.window.show_notification(_('{0 }\nOops update has failed. Please try again.').format(manga.name))
             return False
 
         if not self.window.application.connected:
             self.window.show_notification(_('No Internet connection'))
             return
 
-        thread = threading.Thread(target=run, args=([child.get_children()[0].manga for child in self.flowbox.get_selected_children()],))
+        thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
 
         self.leave_selection_mode()
+
+    def update_all(self, action, param):
+        self.update([child.get_children()[0].manga for child in self.flowbox.get_children()])
+
+    def update_selected(self, action, param):
+        self.update([child.get_children()[0].manga for child in self.flowbox.get_selected_children()])

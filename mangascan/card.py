@@ -241,17 +241,19 @@ class Card():
         def run(manga):
             self.window.show_notification(_('Start update'))
 
-            if manga.update():
-                GLib.idle_add(complete, manga)
+            status, nb_recent_chapters = manga.update_full()
+            if status is True:
+                GLib.idle_add(complete, manga, nb_recent_chapters)
             else:
                 GLib.idle_add(error)
 
-        def complete(manga):
+        def complete(manga, nb_recent_chapters):
             # Update card only if manga has not changed
             if self.manga.id == manga.id:
                 self.init(manga)
 
-            self.window.show_notification(_('Successfully updated'))
+            if nb_recent_chapters:
+                self.window.show_notification(_('{0}\n{1} new chapters have been found').format(manga.name, nb_recent_chapters))
 
             return False
 
