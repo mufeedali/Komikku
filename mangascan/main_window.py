@@ -247,7 +247,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.builder.get_object('notification_label').set_text(message)
         self.builder.get_object('notification_revealer').set_reveal_child(True)
 
-        revealer_timer = Timer(3.0, GLib.idle_add, args=[self.hide_notification])
+        revealer_timer = Timer(5.0, GLib.idle_add, args=[self.hide_notification])
         revealer_timer.start()
 
     def show_page(self, name, transition=True):
