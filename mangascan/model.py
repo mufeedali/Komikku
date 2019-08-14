@@ -217,6 +217,7 @@ class Manga(object):
     @property
     def path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
+
     def delete(self):
         db_conn = create_db_connection()
         # Enable integrity constraint
@@ -455,16 +456,7 @@ class Chapter(object):
         if data is None:
             return False
 
-        for key in data.keys():
-            setattr(self, key, data[key])
-
-        db_conn = create_db_connection()
-        with db_conn:
-            update_row(db_conn, 'chapters', self.id, data)
-
-        db_conn.close()
-
-        return True
+        return self.update(data)
 
 
 class Download(object):
