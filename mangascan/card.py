@@ -16,6 +16,7 @@ from mangascan.downloader import Downloader
 from mangascan.model import create_db_connection
 from mangascan.model import Download
 from mangascan.model import Manga
+from mangascan.utils import folder_size
 
 
 class Card():
@@ -310,6 +311,9 @@ class Card():
             '<span size="small">{0}</span>'.format(self.manga.last_update.strftime('%m/%d/%Y')) if self.manga.last_update else '-')
 
         self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
+
+        self.builder.get_object('more_label').set_markup(
+            '<i>{0}</i>'.format(_('Disk space used: {0}').format(folder_size(self.manga.path))))
 
     def populate_chapter(self, row):
         for child in row.get_children():
