@@ -70,7 +70,7 @@ class Scanvf():
                 data['author'] = value
             elif label.startswith('Statu'):
                 # possible values: ongoing, complete
-                data['status'] = 'ongoing' if value == 'en cours' else 'complete'
+                data['status'] = 'ongoing' if value.lower() == 'en cours' else 'complete'
             elif label.startswith('synopsis'):
                 data['synopsis'] = value
 
