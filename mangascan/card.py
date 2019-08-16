@@ -29,6 +29,8 @@ class Card():
         self.builder.add_from_resource('/info/febvre/MangaScan/menu_card.xml')
         self.builder.add_from_resource('/info/febvre/MangaScan/menu_card_selection_mode.xml')
 
+        self.title_label = self.builder.get_object('card_page_title_label')
+
         self.stack = self.builder.get_object('card_stack')
 
         # Chapters listbox
@@ -407,7 +409,7 @@ class Card():
         if self.window.stack.props.visible_child_name == 'card':
             return
 
-        self.window.headerbar.set_title(self.manga.name)
+        self.title_label.set_text(self.manga.name)
 
         self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 

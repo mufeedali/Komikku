@@ -34,17 +34,17 @@ class Application(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
 
-        GLib.set_application_name(_('Manga Scan'))
+        GLib.set_application_name(_('MangaScan'))
         GLib.set_prgname(self.application_id)
 
         Handy.init()
-        Notify.init('Manga Scan')
+        Notify.init('MangaScan')
 
         Gio.NetworkMonitor.get_default().connect('network-changed', self.on_network_status_changed)
 
     def do_activate(self):
         if not self.window:
-            self.window = MainWindow(application=self, title='Manga Scan', icon_name=self.application_id)
+            self.window = MainWindow(application=self, title='MangaScan', icon_name=self.application_id)
 
             self.add_accelerators()
             self.add_actions()

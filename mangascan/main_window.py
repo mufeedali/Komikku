@@ -24,7 +24,7 @@ from mangascan.settings_dialog import SettingsDialog
 
 class MainWindow(Gtk.ApplicationWindow):
     mobile_width = False
-    page = 'library'
+    page = None
 
     _prev_size = None
 
@@ -40,6 +40,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
+        self.title_stack = self.builder.get_object('title_stack')
 
         self.assemble_window()
 
@@ -94,8 +95,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.set_titlebar(self.titlebar)
 
-        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu'))
-
         # Fisrt start grid
         self.first_start_grid = self.builder.get_object('first_start_grid')
         pix = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/logo.png', 256, 256, True)
@@ -119,13 +118,13 @@ class MainWindow(Gtk.ApplicationWindow):
         context = Gtk.StyleContext()
         context.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
         if Gio.Application.get_default().development_mode is True:
-            context.add_class('devel')
+            self.get_style_context().add_class('devel')
 
         # Apply theme
         gtk_settings = Gtk.Settings.get_default()
         gtk_settings.set_property('gtk-application-prefer-dark-theme', mangascan.config_manager.get_dark_theme())
 
-        self.show_all()
+        self.library.show()
 
     def change_layout(self):
         pass
@@ -201,7 +200,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
-                self.library.show()
+                self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
             self.card.init()
 
@@ -256,11 +255,14 @@ class MainWindow(Gtk.ApplicationWindow):
             transition_type = self.stack.get_transition_type()
             # Set transition type to NONE
             self.stack.set_transition_type(Gtk.StackTransitionType.NONE)
+            self.title_stack.set_transition_type(Gtk.StackTransitionType.NONE)
 
         self.stack.set_visible_child_name(name)
+        self.title_stack.set_visible_child_name(name)
 
         if not transition:
             # Restore transition type
             self.stack.set_transition_type(transition_type)
+            self.title_stack.set_transition_type(transition_type)
 
         self.page = name

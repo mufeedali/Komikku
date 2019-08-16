@@ -29,7 +29,6 @@ class AddDialog():
         self.dialog = self.builder.get_object('search_dialog')
 
         # Header bar
-        self.headerbar = self.builder.get_object('headerbar')
         self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
         self.custom_title_stack = self.builder.get_object('custom_title_stack')
 

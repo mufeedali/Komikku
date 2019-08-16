@@ -96,7 +96,7 @@ class Controls():
 
     def show(self):
         self.is_visible = True
-        self.box.show()
+        self.box.show_all()
 
     def toggle_fullscreen(self, *args):
         is_fullscreen = self.reader.window.get_window().get_state() & Gdk.WindowState.FULLSCREEN == Gdk.WindowState.FULLSCREEN
@@ -121,6 +121,8 @@ class Reader():
         self.window = window
         self.builder = window.builder
         self.builder.add_from_resource('/info/febvre/MangaScan/menu_reader.xml')
+
+        self.title_label = self.builder.get_object('reader_page_title_label')
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
@@ -203,6 +205,7 @@ class Reader():
             self.show()
 
         self.chapter = chapter
+        self.title_label.set_text(chapter.title)
 
         self.show_spinner()
 

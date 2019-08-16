@@ -27,11 +27,22 @@ class Library():
         self.builder = window.builder
         self.builder.add_from_resource('/info/febvre/MangaScan/menu_library_selection_mode.xml')
 
+        # Search
+        self.title_stack = self.builder.get_object('library_page_title_stack')
+        self.search_entry = self.builder.get_object('library_page_search_searchentry')
+        self.search_entry.connect('changed', self.search)
+        self.search_button = self.builder.get_object('library_page_search_button')
+        self.search_button.connect('clicked', self.toggle_search_entry)
+
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
+
+        def filter(child):
+            manga = Manga(child.get_children()[0].manga.id)
+            return self.search_entry.get_text().lower() in manga.name.lower()
 
         def sort(child1, child2):
             """
@@ -50,6 +61,7 @@ class Library():
             else:
                 return 0
 
+        self.flowbox.set_filter_func(filter)
         self.flowbox.set_sort_func(sort)
 
         self.populate()
@@ -288,6 +300,9 @@ class Library():
 
         db_conn.close()
 
+    def search(self, search_entry):
+        self.flowbox.invalidate_filter()
+
     def set_manga_cover_image(self, overlay, width, height):
         overlay.set_size_request(width, height)
 
@@ -302,16 +317,25 @@ class Library():
         image = overlay.get_children()[0]
         image.set_from_pixbuf(pixbuf)
 
-    def show(self):
-        self.window.headerbar.set_title('Manga Scan')
-
+    def show(self, invalidate_sort=False):
         self.builder.get_object('left_button_image').set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
         self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu'))
         self.builder.get_object('menubutton_image').set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
 
-        self.flowbox.invalidate_sort()
+        if invalidate_sort:
+            self.flowbox.invalidate_sort()
+
         self.window.show_page('library')
+
+    def toggle_search_entry(self, button):
+        if button.get_active():
+            self.title_stack.set_visible_child_name('searchentry')
+            self.search_entry.grab_focus()
+        else:
+            self.title_stack.set_visible_child_name('title')
+            self.search_entry.set_text('')
+            self.search_entry.grab_remove()
 
     def update(self, mangas):
         if not self.window.application.connected:
