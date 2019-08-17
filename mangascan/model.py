@@ -47,7 +47,7 @@ def create_table(conn, sql):
         c = conn.cursor()
         c.execute(sql)
     except Exception as e:
-        print(e)
+        print('SQLite-error:', e)
 
 
 def init_db():
@@ -107,12 +107,15 @@ def init_db():
 
 
 def insert_row(db_conn, table, data):
-    cursor = db_conn.execute(
-        'INSERT INTO {0} ({1}) VALUES ({2})'.format(table, ', '.join(data.keys()), ', '.join(['?'] * len(data))),
-        tuple(data.values())
-    )
-
-    return cursor.lastrowid
+    try:
+        cursor = db_conn.execute(
+            'INSERT INTO {0} ({1}) VALUES ({2})'.format(table, ', '.join(data.keys()), ', '.join(['?'] * len(data))),
+            tuple(data.values())
+        )
+        return cursor.lastrowid
+    except Exception as e:
+        print('SQLite-error:', e, table, data)
+        return None
 
 
 def update_row(db_conn, table, id, data):
@@ -172,7 +175,8 @@ class Manga(object):
         m.chapters_ = []
         for rank, chapter_data in enumerate(chapters):
             chapter = Chapter.new(chapter_data, rank, m.id)
-            m.chapters_ = [chapter, ] + m.chapters_
+            if chapter is not None:
+                m.chapters_ = [chapter, ] + m.chapters_
 
         if not os.path.exists(m.path):
             os.makedirs(m.path)
@@ -376,7 +380,7 @@ class Chapter(object):
 
         db_conn.close()
 
-        return c
+        return c if c.id is not None else None
 
     def get_page(self, page_index):
         page_path = self.get_page_path(page_index)
