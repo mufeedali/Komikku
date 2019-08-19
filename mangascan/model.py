@@ -407,10 +407,14 @@ class Chapter(object):
             return None
 
     def get_page_path(self, page_index):
-        # self.pages[page_index]['image'] can be an image name or an image path
-        imagename = self.pages[page_index]['image'].split('/')[-1] if self.pages[page_index]['image'] else None
+        if self.pages[page_index]['image'] is not None:
+            # self.pages[page_index]['image'] can be an image name or an image url (path + eventually a query)
 
-        if imagename is not None:
+            # Extract filename
+            imagename = self.pages[page_index]['image'].split('/')[-1]
+            # Remove query
+            imagename = imagename.split('?')[0]
+
             path = os.path.join(self.path, imagename)
 
             return path if os.path.exists(path) else None
