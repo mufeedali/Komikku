@@ -297,9 +297,10 @@ class Card():
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/missing_file.png', 174, -1, True)
         self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-        self.builder.get_object('author_value_label').set_markup('<span size="small">{0}</span>'.format(self.manga.author or 'u'))
+        self.builder.get_object('author_value_label').set_markup(
+            '<span size="small">{0}</span>'.format(', '.join(self.manga.authors) if self.manga.authors else '-'))
         self.builder.get_object('genres_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(self.manga.genres)) if self.manga.genres else '-')
+            '<span size="small">{0}</span>'.format(', '.join(self.manga.genres) if self.manga.genres else '-'))
         self.builder.get_object('status_value_label').set_markup(
             '<span size="small">{0}</span>'.format(_(self.manga.STATUSES[self.manga.status])) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_markup(

@@ -1,6 +1,9 @@
 from importlib import resources
 from operator import itemgetter
 
+user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
+user_agent_mobile = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
+
 
 def get_servers_list():
     servers_list = []

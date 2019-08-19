@@ -160,7 +160,8 @@ class AddDialog():
                 pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/missing_file.png', 174, -1, True)
 
             self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-            self.builder.get_object('author_value_label').set_text(self.manga_data['author'] or '-')
+            self.builder.get_object('author_value_label').set_text(
+                ', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-')
             self.builder.get_object('genres_value_label').set_text(
                 ', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-')
             self.builder.get_object('status_value_label').set_text(

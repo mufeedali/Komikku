@@ -57,14 +57,14 @@ def init_db():
     sql_create_mangas_table = """CREATE TABLE IF NOT EXISTS mangas (
         id integer PRIMARY KEY,
         slug text NOT NULL,
+        url text, -- only used in case slug can't be used to forge the url
         server_id text NOT NULL,
         name text NOT NULL,
-        author text,
+        authors json,
         genres json,
         synopsis text,
         status text,
         sort_order text,
-        filters json,
         reading_direction text,
         background_color text,
         scaling text,
@@ -75,8 +75,9 @@ def init_db():
 
     sql_create_chapters_table = """CREATE TABLE IF NOT EXISTS chapters (
         id integer PRIMARY KEY,
-        slug text NOT NULL,
         manga_id integer REFERENCES mangas(id) ON DELETE CASCADE,
+        slug text NOT NULL,
+        url text, -- only used in case slug can't be used to forge the url
         title text NOT NULL,
         pages json,
         date text,
@@ -277,7 +278,7 @@ class Manga(object):
         """
         db_conn = create_db_connection()
         with db_conn:
-            data = self.server.get_manga_data(dict(slug=self.slug, name=self.name))
+            data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
             if data is None:
                 return False, 0
 
@@ -456,7 +457,7 @@ class Chapter(object):
         if self.pages:
             return True
 
-        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug)
+        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug, self.url)
         if data is None:
             return False
 

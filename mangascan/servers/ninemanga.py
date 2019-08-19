@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
+
+from mangascan.servers import user_agent
 
 server_id = 'ninemanga'
 server_name = 'Nine Manga'
@@ -13,7 +19,7 @@ server_lang = 'en'
 sessions = dict()
 headers = OrderedDict(
     [
-        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'),
+        ('User-Agent', user_agent),
         ('Accept-Language', 'en-US,en;q=0.5'),
     ]
 )
@@ -43,7 +49,7 @@ class Ninemanga():
         """
         Returns manga data by scraping manga HTML page content
 
-        Inital data should contain at least manga's slug (provided by search)
+        Initial data should contain at least manga's slug (provided by search)
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
@@ -61,7 +67,7 @@ class Ninemanga():
 
         data = initial_data.copy()
         data.update(dict(
-            author=None,
+            authors=[],
             genres=[],
             status=None,
             synopsis=None,
@@ -75,8 +81,7 @@ class Ninemanga():
             label = element.b.text
 
             if label.startswith('Author'):
-                value = element.a.text.strip()
-                data['author'] = value
+                data['author'] = [element.a.text.strip(), ]
             elif label.startswith('Genre'):
                 for a_element in element.find_all('a'):
                     data['genres'].append(a_element.text)
@@ -107,7 +112,7 @@ class Ninemanga():
 
         return data
 
-    def get_manga_chapter_data(self, manga_slug, chapter_slug):
+    def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):
         """
         Returns manga chapter data by scraping chapter HTML page content
 

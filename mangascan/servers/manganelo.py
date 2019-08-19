@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
+
+from mangascan.servers import user_agent
 
 server_id = 'manganelo'
 server_name = 'MangaNelo'
@@ -26,12 +34,13 @@ class Manganelo():
 
         if session is None:
             session = requests.Session()
+            session.headers.update({'user-agent': user_agent})
 
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
 
-        Inital data should contain at least manga's slug (provided by search)
+        Initial data should contain at least manga's slug (provided by search)
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
@@ -49,7 +58,7 @@ class Manganelo():
 
         data = initial_data.copy()
         data.update(dict(
-            author=None,
+            authors=[],
             genres=[],
             status=None,
             synopsis=None,
@@ -68,7 +77,7 @@ class Manganelo():
             value = text[1].strip()
 
             if label.startswith('Author'):
-                data['author'] = ', '.join([t.strip() for t in value.split(',') if t])
+                data['authors'] = [t.strip() for t in value.split(',') if t]
             elif label.startswith('Genres'):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
@@ -97,7 +106,7 @@ class Manganelo():
 
         return data
 
-    def get_manga_chapter_data(self, manga_slug, chapter_slug):
+    def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):
         """
         Returns manga chapter data by scraping chapter HTML page content
 
