@@ -80,8 +80,9 @@ class Hatigarmscans():
 
             value = element.text.strip()
 
-            if label.startswith('Author'):
-                data['authors'] = [t.strip() for t in value.split(',')]
+            if label.startswith('Author') or label.startswith('Artist'):
+                for t in value.split(','):
+                    data['authors'].append(t.strip())
             elif label.startswith('Categories'):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
@@ -169,6 +170,12 @@ class Hatigarmscans():
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
+
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(slug)
 
     def search(self, term):
         try:

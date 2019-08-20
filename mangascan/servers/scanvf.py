@@ -164,6 +164,12 @@ class Scanvf():
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(slug)
+
     def search(self, term):
         scraper.get(self.base_url)
 

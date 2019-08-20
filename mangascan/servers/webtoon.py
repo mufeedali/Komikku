@@ -160,6 +160,8 @@ class Webtoon():
             if li_element.get('data-episode-no') is None:
                 continue
 
+            # Small difference here compared to other servers
+            # the slug can't be used to forge chapter URL, we must store the full url
             url_split = urlsplit(li_element.a.get('href'))
             data.append(dict(
                 slug=url_split.path.split('/')[-2],
@@ -199,6 +201,12 @@ class Webtoon():
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(url)
+
     def search(self, term):
         try:
             r = session.get(self.search_url, params=dict(keyword=term), headers={'user-agent': user_agent})
@@ -213,6 +221,8 @@ class Webtoon():
             results = []
             cards = soup.find_all('a', class_=['card_item', 'challenge_item'])
             for card in cards:
+                # Small difference here compared to other servers
+                # the slug can't be used to forge manga URL, we must store the full url
                 results.append(dict(
                     slug=card.get('href').split('=')[-1],
                     url=card.get('href'),

@@ -305,7 +305,7 @@ class Card():
             '<span size="small">{0}</span>'.format(_(self.manga.STATUSES[self.manga.status])) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_markup(
             '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
-                self.manga.server.manga_url.format(self.manga.slug),
+                self.manga.server.get_manga_url(self.manga.slug, self.manga.url),
                 self.manga.server.name,
                 len(self.manga.chapters)
             )

@@ -179,6 +179,12 @@ class Ninemanga():
 
         return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(slug)
+
     def search(self, term):
         try:
             r = sessions[self.id].get(self.search_url, params=dict(term=term))
