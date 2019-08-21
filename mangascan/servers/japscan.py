@@ -7,7 +7,9 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
+import re
 from requests.exceptions import ConnectionError
+import unicodedata
 
 server_id = 'japscan'
 server_name = 'JapScan'
@@ -61,10 +63,17 @@ class Japscan():
             status=None,
             chapters=[],
             server_id=self.id,
+            synopsis=None,
         ))
 
-        # Details
         card_element = soup.find_all('div', class_='card')[0]
+
+        # Main name: japscan handles several names for mangas (main + alternatives)
+        # Name provided by search can be one of the alternatives
+        # First word (Manga, Manhwa, ...) must be removed from name
+        data['name'] = ' '.join(card_element.find('h1').text.strip().split()[1:])
+
+        # Details
         if not card_element.find_all('div', class_='d-flex'):
             # mobile version
             elements = card_element.find_all('div', class_='row')[0].find_all('p')
@@ -77,8 +86,11 @@ class Japscan():
             element.span.extract()
             value = element.text.strip()
 
-            if label.startswith('Auteur'):
-                data['authors'] = [value, ]
+            if label.startswith('Auteur') or label.startswith('Artiste'):
+                for t in value.split(','):
+                    t = t.strip()
+                    if t not in data['authors']:
+                        data['authors'].append(t)
             elif label.startswith('Genre'):
                 data['genres'] = [genre.strip() for genre in value.split(',')]
             elif label.startswith('Statut'):
@@ -86,7 +98,9 @@ class Japscan():
                 data['status'] = 'ongoing' if value == 'En Cours' else 'complete'
 
         # Synopsis
-        data['synopsis'] = card_element.find('p', class_='list-group-item-primary').text.strip()
+        synopsis_element = card_element.find('p', class_='list-group-item-primary')
+        if synopsis_element:
+            data['synopsis'] = synopsis_element.text.strip()
 
         # Chapters
         elements = soup.find('div', id='chapters_list').find_all('div', class_='chapters_list')
