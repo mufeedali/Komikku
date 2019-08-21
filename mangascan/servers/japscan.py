@@ -86,7 +86,7 @@ class Japscan():
             element.span.extract()
             value = element.text.strip()
 
-            if label.startswith('Auteur') or label.startswith('Artiste'):
+            if label.startswith(('Auteur', 'Artiste')):
                 for t in value.split(','):
                     t = t.strip()
                     if t not in data['authors']:
@@ -146,7 +146,7 @@ class Japscan():
         scripts = soup.find('head').find_all('script')
         for script in scripts:
             src = script.get('src')
-            if src and src.startswith('/js/iYFbYi_'):
+            if src and src.startswith('/js/iYFbYi_U'):
                 data['scrambled'] = 1
                 break
 
