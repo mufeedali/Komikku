@@ -163,11 +163,12 @@ class Japscan():
         """
         Returns chapter page scan (image) content
         """
-        # This server use a specific manga slug for url images
+        # This server use a specific manga slug for images URLs
         manga_slug = unicodedata.normalize('NFKD', manga_name)
-        manga_slug = manga_slug.encode('ascii', 'ignore')
-        manga_slug = re.sub(r'[\(\)]+', '', manga_slug.decode())  # remove parentheses
-        manga_slug = re.sub(r'[^a-zA-Z0-9\-]+', '-', manga_slug)  # replace spaces by dashes
+        manga_slug = manga_slug.encode('ascii', 'ignore').decode()
+        manga_slug = re.sub(r'[^a-zA-Z0-9\- ]+', '', manga_slug)  # remove not alphanum characters
+        manga_slug = manga_slug.replace(' - ',  ' ')
+        manga_slug = manga_slug.replace(' ',  '-')
 
         chapter_slug = chapter_slug.capitalize()
 

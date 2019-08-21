@@ -35,6 +35,7 @@ def get_servers_list():
     return servers_list
 
 
+# https://github.com/Harkame/JapScanDownloader
 def unscramble_image(scrambled_image, image_full_path):
     input_image = Image.open(scrambled_image)
     temp = Image.new("RGB", input_image.size)
