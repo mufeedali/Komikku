@@ -82,7 +82,9 @@ class Hatigarmscans():
 
             if label.startswith('Author') or label.startswith('Artist'):
                 for t in value.split(','):
-                    data['authors'].append(t.strip())
+                    t = t.strip()
+                    if t not in data['authors']:
+                        data['authors'].append(t)
             elif label.startswith('Categories'):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
