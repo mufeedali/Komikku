@@ -388,7 +388,8 @@ class Chapter(object):
         if page_path:
             return page_path
 
-        imagename, data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.slug, self.pages[page_index])
+        imagename, data = self.manga.server.get_manga_chapter_page_image(
+            self.manga.slug, self.manga.name, self.slug, self.pages[page_index])
 
         if imagename and data:
             if not os.path.exists(self.path):

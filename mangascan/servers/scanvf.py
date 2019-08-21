@@ -129,7 +129,7 @@ class Scanvf():
 
         return data
 
-    def get_manga_chapter_page_image(self, manga_slug, chapter_slug, page):
+    def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """

@@ -136,12 +136,16 @@ class Japscan():
 
         return data
 
-    def get_manga_chapter_page_image(self, manga_slug, chapter_slug, page):
+    def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """
-        # This server use a specific manga slug for url images (capitalized kebab-case)
-        manga_slug = '-'.join(w.capitalize() if w not in ('s',) else w for w in manga_slug.split('-'))
+        # This server use a specific manga slug for url images
+        manga_slug = unicodedata.normalize('NFKD', manga_name)
+        manga_slug = manga_slug.encode('ascii', 'ignore')
+        manga_slug = re.sub(r'[\(\)]+', '', manga_slug.decode())  # remove parentheses
+        manga_slug = re.sub(r'[^a-zA-Z0-9\-]+', '-', manga_slug)  # replace spaces by dashes
+
         chapter_slug = chapter_slug.capitalize()
 
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
