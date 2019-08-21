@@ -80,12 +80,12 @@ class Ninemanga():
         for element in elements:
             label = element.b.text
 
-            if label.startswith('Author'):
-                data['author'] = [element.a.text.strip(), ]
-            elif label.startswith('Genre'):
+            if label.startswith(('Author', 'Auteur', 'Autor')):
+                data['authors'] = [element.a.text.strip(), ]
+            elif label.startswith(('Genre', 'Genre', 'Género', 'Genere', 'Gênero')):
                 for a_element in element.find_all('a'):
                     data['genres'].append(a_element.text)
-            elif label.startswith('Status'):
+            elif label.startswith(('Status', 'Statut', 'Estado', 'Stato')):
                 status_element = element.find_all('a')[0]
                 # Allowed values: ongoing, complete, None
                 value = status_element.text.strip().lower()
