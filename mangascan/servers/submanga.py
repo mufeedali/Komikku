@@ -5,17 +5,15 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
+import cloudscraper
 import magic
-import requests
 from requests.exceptions import ConnectionError
-
-from mangascan.servers import user_agent
 
 server_id = 'submanga'
 server_name = 'Submanga'
 server_lang = 'es'
 
-session = None
+scraper = None
 
 
 class Submanga():
@@ -31,11 +29,10 @@ class Submanga():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        global session
+        global scraper
 
-        if session is None:
-            session = requests.Session()
-            session.headers.update({'user-agent': user_agent})
+        if scraper is None:
+            scraper = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -46,7 +43,7 @@ class Submanga():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = session.get(self.manga_url.format(initial_data['slug']))
+            r = scraper.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -69,38 +66,40 @@ class Submanga():
         ))
 
         # Details
-        elements = soup.find_all('span', class_='list-group-item')
+        elements = soup.find('dl', class_='dl-horizontal').findChildren(recursive=False)
         for element in elements:
-            label = element.b.text
-            element.b.extract()
+            if element.name not in ('dt', 'dd'):
+                continue
+
+            if element.name == 'dt':
+                label = element.text
+                continue
+
             value = element.text.strip()
 
-            if label.startswith('Autor'):
-                data['authors'] = [value, ]
+            if label.startswith(('Autor', 'Artist')):
+                for t in value.split(','):
+                    t = t.strip()
+                    if t not in data['authors']:
+                        data['authors'].append(t)
             elif label.startswith('Categorías'):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Estado'):
                 # possible values: ongoing, complete, None
                 data['status'] = value.lower()
-            elif label.startswith('Resumen'):
-                data['synopsis'] = value
+
+        data['synopsis'] = soup.find('div', class_='well').p.text.strip()
 
         # Chapters
-        elements = soup.find('div', class_='capitulos-list').find('table').find_all('tr')
+        elements = soup.find('ul', class_='chapters').find_all('li')
         for element in reversed(elements):
-            tds = element.find_all('td')
-
-            td_link = tds[0]
-            slug = td_link.a.get('href').split('/')[-1]
-
-            td_date = tds[1]
-            td_date.i.extract()
-            td_date.span.extract()
+            link_element = element.h5.a
+            date_element = element.find(class_="action").div
 
             data['chapters'].append(dict(
-                slug=slug,
-                date=td_date.text.strip(),
-                title=td_link.a.text.strip(),
+                slug=link_element.get('href').split('/')[-1],
+                date=date_element.text.strip(),
+                title=link_element.text.strip(),
             ))
 
         return data
@@ -114,7 +113,7 @@ class Submanga():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = session.get(url)
+            r = scraper.get(url)
         except ConnectionError:
             return None
 
@@ -145,7 +144,7 @@ class Submanga():
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
 
         try:
-            r = session.get(url)
+            r = scraper.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -158,7 +157,7 @@ class Submanga():
         Returns manga cover (image) content
         """
         try:
-            r = session.get(self.cover_url.format(cover_path))
+            r = scraper.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -173,8 +172,10 @@ class Submanga():
         return self.manga_url.format(slug)
 
     def search(self, term):
+        scraper.get(self.base_url)
+
         try:
-            r = session.get(self.search_url, params=dict(query=term))
+            r = scraper.get(self.search_url, params=dict(query=term))
         except ConnectionError:
             return None
 
