@@ -13,6 +13,8 @@ from pathlib import Path
 import sqlite3
 import shutil
 
+from mangascan.servers import unscramble_image
+
 
 user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
@@ -80,6 +82,7 @@ def init_db():
         url text, -- only used in case slug can't be used to forge the url
         title text NOT NULL,
         pages json,
+        scrambled integer,
         date text,
         rank integer NOT NULL,
         downloaded integer NOT NULL,
@@ -364,7 +367,8 @@ class Chapter(object):
         data = data.copy()
         data.update(dict(
             manga_id=manga_id,
-            pages=None,  # later scraped value
+            pages=None,   # later scraped value
+            scrambled=0,  # later scraped value
             rank=rank,
             downloaded=0,
             recent=0,
@@ -396,8 +400,15 @@ class Chapter(object):
                 os.mkdir(self.path)
 
             page_path = os.path.join(self.path, imagename)
-            with open(page_path, 'wb') as fp:
-                fp.write(data)
+
+            if self.scrambled:
+                with open(page_path + '_scrambled', 'wb') as fp:
+                    fp.write(data)
+
+                unscramble_image(page_path + '_scrambled', page_path)
+            else:
+                with open(page_path, 'wb') as fp:
+                    fp.write(data)
 
             if self.pages[page_index]['image'] is None:
                 self.pages[page_index]['image'] = imagename

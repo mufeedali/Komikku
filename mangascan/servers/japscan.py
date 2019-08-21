@@ -107,7 +107,7 @@ class Japscan():
         """
         Returns manga chapter data by scraping chapter HTML page content
 
-        Currently, only pages are expected.
+        Currently, only pages and scrambled are expected.
         """
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
@@ -121,13 +121,22 @@ class Japscan():
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-
-        pages_options = soup.find('select', id='pages').find_all('option')
-
         data = dict(
             pages=[],
+            scrambled=0,
         )
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        # Scrambled ?
+        scripts = soup.find('head').find_all('script')
+        for script in scripts:
+            src = script.get('src')
+            if src and src.startswith('/js/iYFbYi_'):
+                data['scrambled'] = 1
+                break
+
+        pages_options = soup.find('select', id='pages').find_all('option')
         for option in pages_options:
             data['pages'].append(dict(
                 slug=None,  # not necessary, we know image url already
