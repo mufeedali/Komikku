@@ -1,80 +1,42 @@
-project('mangascan', 'c',
-  version: '0.0.0',
-  meson_version: '>= 0.48.0'
+project('mangascan',
+    version: '0.0.0',
+    meson_version: '>= 0.49.1',
+    license: 'GPL3'
 )
-i18n = import('i18n')
+
+description = 'Online / Offline manga reader'
+prettyname = 'MangaScan'
+prettylicense = 'GPL-3.0+'
+
+authornickname = 'valos'
+authorfullname = 'Valéry Febvre'
+authoremail = 'vfebvre@easter-eggs.com'
+
+# app_id built as: domainext.domainname.prettyname
+domainname = 'febvre'
+domainext = 'info'
+
+gitrepo = 'https://gitlab.com/' + authornickname + '/' + prettyname
+website = gitrepo
+
+# NOTE: if you contributed, feel free to add your name and email address here
+contributors = '\n'.join([
+    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt;'
+])
+
 python = import('python3')
-project_id = 'info.febvre.MangaScan'
-contributors = '\n'.join(['Valéry Febvre &lt;vfebvre@easter-eggs.com&gt;'])
 
-message('Looking for dependencies')
-python_bin = python.find_python()
-if not python_bin.found()
-    error('No valid python3 binary found')
-else
-    message('Found python3 binary')
-endif
-dependency('glib-2.0')
-dependency('gobject-introspection-1.0', version: '>=1.35.9')
-dependency('gtk+-3.0', version :'>=3.20')
-dependency('libhandy-0.0', version :'>=0.0.3')
+prefix = get_option('prefix') # should be /usr
+profile = get_option('profile') # should be default or development
+bindir = get_option('bindir') # should be /bin
+datadir = get_option('datadir') # should be /usr/share
+pkgdatadir = join_paths(prefix, datadir, meson.project_name())
+pythondir = join_paths(prefix, python.sysconfig_path('purelib'))
+localedir = join_paths(prefix, get_option('localedir'))
 
-env = environment()
-
-python_dir = join_paths(get_option('prefix'), python.sysconfig_path('purelib'))
-LIBEXEC_DIR = join_paths(get_option('prefix'), get_option('libexecdir'))
-EXTENSION_DIR = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name())
-DATA_DIR = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
-message(DATA_DIR)
-bindir = join_paths(get_option('prefix'), get_option('bindir'))
-
-# Profiles
-if get_option('profile') == 'development'
-    profile = 'Devel'
-    name_suffix = ' (Development)'
-else
-    profile = ''
-    name_suffix = ''
-endif
-
-
-conf = configuration_data()
-conf.set('PACKAGE_URL', 'https://gitlab.com/valos/MangaScan')
-conf.set('DATA_DIR', DATA_DIR)
-conf.set('EXTENSION_DIR', EXTENSION_DIR)
-conf.set('LOCALE_DIR', join_paths(get_option('prefix'), get_option('datadir'), 'locale'))
-conf.set('PYTHON_DIR', python_dir)
-conf.set('PYTHON_EXEC_DIR', join_paths(get_option('prefix'), python.sysconfig_path('stdlib')))
-conf.set('PYTHON', python_bin.path())
-conf.set('libexecdir', LIBEXEC_DIR)
-if get_option('profile') == 'development'
-    conf.set('VERSION', ''.join([run_command(['git', 'describe', '--long', '--tags']).stdout(), get_option('profile')]))
-else
-    conf.set('VERSION', meson.project_version())
-endif
-conf.set('CONTRIBUTORS', contributors)
-conf.set_quoted('PROFILE', profile)
-
-application_id = 'info.febvre.MangaScan'
-if get_option('profile') == 'development'
-  application_id = 'info.febvre.MangaScanDevel'
-endif
-conf.set('APPID', application_id)
-
+install_subdir(meson.project_name(), install_dir: pythondir)
 subdir('data')
+subdir('bin')
 subdir('po')
-
-install_subdir(
-  'mangascan',
-  install_dir: python_dir
-)
-
-message('Preparing init file')
-configure_file(
-  input: 'mangascan.in',
-  output: 'mangascan',
-  configuration: conf,
-  install_dir: bindir
-)
 
 meson.add_install_script('meson_post_install.py')

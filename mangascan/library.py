@@ -25,7 +25,7 @@ class Library():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/MangaScan/menu_library_selection_mode.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/menu_library_selection_mode.xml')
 
         # Search
         self.title_stack = self.builder.get_object('library_page_title_stack')

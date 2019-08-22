@@ -24,7 +24,7 @@ class AddDialog():
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/MangaScan/add_dialog.ui')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/add_dialog.ui')
 
         self.dialog = self.builder.get_object('search_dialog')
 

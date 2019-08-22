@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-    <enum id="info.febvre.MangaScan.ReadingDirection">
+    <enum id="@appid@.ReadingDirection">
         <value nick="right-to-left" value="0" />
         <value nick="left-to-right" value="1" />
     </enum>
-    <enum id="info.febvre.MangaScan.Scaling">
+    <enum id="@appid@.Scaling">
         <value nick="screen" value="0" />
         <value nick="width" value="1" />
         <value nick="height" value="2" />
     </enum>
-    <schema path="/info/febvre/MangaScan/" id="info.febvre.MangaScan" gettext-domain="mangascan">
+    <schema path="/@apppath@/" id="@appid@" gettext-domain="@projectname@">
         <key type="b" name="dark-theme">
             <default>false</default>
             <summary>Use dark GTK+ theme</summary>
             <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
         </key>
-        <key enum="info.febvre.MangaScan.ReadingDirection" name="reading-direction">
+        <key enum="@appid@.ReadingDirection" name="reading-direction">
             <default>"right-to-left"</default>
             <summary>Reading direction</summary>
             <description></description>
         </key>
-        <key enum="info.febvre.MangaScan.Scaling" name="scaling">
+        <key enum="@appid@.Scaling" name="scaling">
             <default>"width"</default>
             <summary>Type of scaling</summary>
             <description>Image adjustment</description>
@@ -38,7 +38,7 @@
         <key type="b" name="development-backup-mode">
             <default>false</default>
             <summary>Backup the database</summary>
-            <description>If an error occurs while saving the database, a backup can be found at ~/.cache/mangascan/backups</description>
+            <description>If an error occurs while saving the database, a backup can be found at ~/.cache/@projectname@/backups</description>
         </key>
     </schema>
 </schemalist>

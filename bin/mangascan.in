@@ -5,16 +5,19 @@ import os
 import locale
 import gettext
 
-sys.path.insert(1, '@PYTHON_EXEC_DIR@')
-sys.path.insert(1, '@PYTHON_DIR@')
+
+sys.path.insert(1, '@pythondir@')
+
+localedir = '@localedir@'
+builddir = os.environ.get('MESON_BUILD_ROOT')
+if builddir:
+    os.environ['GSETTINGS_SCHEMA_DIR'] = os.path.join(builddir, 'testdir/share/glib-2.0/schemas/')
+    sys.dont_write_bytecode = True
+    sys.path.insert(1, os.environ['MESON_SOURCE_ROOT'])
 
 from gi.repository import Gio
 
-localedir = '@LOCALE_DIR@'
-pkgdatadir = '@DATA_DIR@'
-extensiondir = '@EXTENSION_DIR@'
-
-resource = Gio.resource_load(os.path.join(pkgdatadir, 'mangascan.gresource'))
+resource = Gio.resource_load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
 Gio.Resource._register(resource)
 
 from mangascan.application import Application
@@ -50,5 +53,9 @@ if __name__ == "__main__":
 
     app = Application()
 
-    exit_status = app.run(sys.argv)
-    sys.exit(exit_status)
+    try:
+        status = app.run(sys.argv)
+    except SystemExit as e:
+        status = e.code
+
+    sys.exit(status)

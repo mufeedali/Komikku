@@ -120,7 +120,7 @@ class Reader():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/MangaScan/menu_reader.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/menu_reader.xml')
 
         self.title_label = self.builder.get_object('reader_page_title_label')
 

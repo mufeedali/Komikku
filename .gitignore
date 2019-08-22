@@ -3,6 +3,6 @@
 data/#*#
 po/*.mo
 untracked
-_build
+_build/
 .buildconfig
-flatpak/.flatpak-builder/
+flatpak/*Devel*

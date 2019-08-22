@@ -1,28 +1,31 @@
-datadir = join_paths('share', 'icons')
-icondir = join_paths('hicolor', 'scalable', 'apps')
+message('Install icons')
+
+# Scalable
+icondir = join_paths(datadir, 'icons/hicolor/scalable/apps')
 if get_option('profile') == 'development'
 install_data (
-    join_paths(icondir, 'info.febvre.MangaScan.svg'),
-    install_dir: join_paths(datadir, icondir),
+    'info.febvre.MangaScan.svg',
+    install_dir: icondir,
     rename: 'info.febvre.MangaScanDevel.svg'
 )
 else
 install_data (
-    join_paths(icondir, 'info.febvre.MangaScan.svg'),
-    install_dir: join_paths(datadir, icondir)
+    'info.febvre.MangaScan.svg',
+    install_dir: icondir
 )
 endif
 
-icondir = join_paths('hicolor', 'symbolic', 'apps')
+# Symbolic
+icondir = join_paths(datadir, 'icons/hicolor/symbolic/apps')
 if get_option('profile') == 'development'
 install_data (
-    join_paths(icondir, 'info.febvre.MangaScan-symbolic.svg'),
-    install_dir: join_paths(datadir, icondir),
+    'info.febvre.MangaScan-symbolic.svg',
+    install_dir: icondir,
     rename: 'info.febvre.MangaScanDevel-symbolic.svg'
 )
 else
 install_data (
-    join_paths(icondir, 'info.febvre.MangaScan-symbolic.svg'),
-    install_dir: join_paths(datadir, icondir)
+    'info.febvre.MangaScan-symbolic.svg',
+    install_dir: icondir
 )
 endif

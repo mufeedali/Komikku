@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Manga Scan
+Name=@prettyname@
 Comment=An online / offline manga reader
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-Icon=@ICON@
-Exec=mangascan
+Exec=@bindir@/@projectname@ %U
+Icon=@appid@
 Terminal=false
 Type=Application
 Categories=GTK;GNOME;Graphics;

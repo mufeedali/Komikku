@@ -1,5 +1,5 @@
 {
-    "app-id" : "info.febvre.MangaScanDevel",
+    "app-id" : "info.febvre.MangaScan",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "3.32",
     "sdk" : "org.gnome.Sdk",
@@ -47,6 +47,7 @@
             "name" : "mangascan",
             "buildsystem" : "meson",
             "builddir" : true,
+            "config-opts": ["--buildtype=release"],
             "config-opts" : [
                 "-Dprofile=default"
             ],

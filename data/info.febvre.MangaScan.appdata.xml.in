@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+    <id>info.febvre.MangaScan</id>
+    <name>MangaScan</name>
+    <developer_name>Valéry Febvre</developer_name>
+    <summary>An online / offline manga reader for Gnome</summary>
+    <launchable type="desktop-id">info.febvre.MangaScan.desktop</launchable>
+    <project_license>GPL-3.0</project_license>
+    <metadata_license>CC0-1.0</metadata_license>
+    <description>
+        <p>An online / offline manga reader for Gnome developed with the aim of being used with the Librem 5 phone</p>
+    </description>
+    <url type="homepage">https://gitlab.com/valos/MangaScan</url>
+    <url type="bugtracker">https://gitlab.com/valos/MangaScan/issues</url>
+    <releases>
+        <release version="0.0.0" date="2019-03-14">
+            <description>
+                <p>First release</p>
+            </description>
+        </release>
+    </releases>
+    <updatecontact>vfebvre@easter-eggs.com</updatecontact>
+    <content_rating type="oars-1.1" />
+</component>

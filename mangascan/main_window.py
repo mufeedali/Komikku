@@ -35,8 +35,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.logging_manager = self.application.get_logger()
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/MangaScan/main_window.ui')
-        self.builder.add_from_resource('/info/febvre/MangaScan/menu.xml')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/main_window.ui')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/menu.xml')
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
@@ -231,7 +231,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_shortcuts_menu_clicked(self, action, param):
         builder = Gtk.Builder()
-        builder.add_from_resource('/info/febvre/MangaScan/shortcuts_overview.ui')
+        builder.add_from_resource('/info/febvre/MangaScan/ui/shortcuts_overview.ui')
 
         shortcuts_overview = builder.get_object('shortcuts_overview')
         shortcuts_overview.set_modal(True)

@@ -13,7 +13,7 @@ class SettingsDialog():
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/MangaScan/settings_dialog.ui')
+        self.builder.add_from_resource('/info/febvre/MangaScan/ui/settings_dialog.ui')
 
     def open(self, action, param):
         settings_dialog = self.builder.get_object('settings_dialog')
