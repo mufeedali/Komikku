@@ -8,16 +8,14 @@ else
 endif
 
 conf = configuration_data()
-conf.set('VERSION', meson.project_version())
+
 conf.set_quoted('PROFILE', profile)
-conf.set('pkgdatadir', pkgdatadir)
 conf.set('PYTHON', python.find_python().path())
+conf.set('pkgdatadir', pkgdatadir)
 conf.set('pythondir', join_paths(prefix, pythondir))
 conf.set('localedir', join_paths(prefix, localedir))
 conf.set('projectname', meson.project_name())
-conf.set('authorfullname', authorfullname)
-conf.set('authoremail', authoremail)
-conf.set('appid', '.'.join([domainext, domainname, prettyname]))
+conf.set('appid', app_id)
 
 configure_file(
   input: meson.project_name() + '.in',

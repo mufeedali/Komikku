@@ -11,7 +11,7 @@ sys.path.insert(1, '@pythondir@')
 localedir = '@localedir@'
 builddir = os.environ.get('MESON_BUILD_ROOT')
 if builddir:
-    os.environ['GSETTINGS_SCHEMA_DIR'] = os.path.join(builddir, 'testdir/share/glib-2.0/schemas/')
+    os.environ['GSETTINGS_SCHEMA_DIR'] = os.path.join(localedir, '../glib-2.0/schemas/')
     sys.dont_write_bytecode = True
     sys.path.insert(1, os.environ['MESON_SOURCE_ROOT'])
 
@@ -38,14 +38,14 @@ def install_excepthook():
 if __name__ == "__main__":
     install_excepthook()
 
-    locale.bindtextdomain('mangascan', localedir)
-    locale.textdomain('mangascan')
-    gettext.bindtextdomain('mangascan', localedir)
-    gettext.textdomain('mangascan')
+    locale.bindtextdomain('@projectname@', localedir)
+    locale.textdomain('@projectname@')
+    gettext.bindtextdomain('@projectname@', localedir)
+    gettext.textdomain('@projectname@')
 
     if @PROFILE@ == 'Devel':
     	Application.development_mode = True
-    	Application.application_id = 'info.febvre.MangaScanDevel'
+    	Application.application_id = '@appid@Devel'
     else:
     	Application.development_mode = False
 
