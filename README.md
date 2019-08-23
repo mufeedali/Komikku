@@ -1,6 +1,6 @@
-# *Manga Scan* - a manga reader
+# *MangaScan* - a manga reader
 
-*Manga Scan* is a [GNOME](https://www.gnome.org) online / offline manga reader, developed with the aim of being used with the *Librem 5* phone.
+*MangaScan* is a [GNOME](https://www.gnome.org) online / offline manga reader, developed with the aim of being used with the *Librem 5* phone.
 
 ## License
 
@@ -14,45 +14,65 @@ MangaScan is licensed under the GPLv3+.
 
 ## Building from source
 
-#### Option 1: with GNOME Builder
+### Option 1: Test or building a Flatpak with GNOME Builder
 
-Open GNOME Builder, click the "Clone..." button, paste the repository url.
+Open GNOME Builder, click the **Clone...** button, paste the repository url.
 
-Clone the project and hit the "Play" button to start building Manga Scan.
+Clone the project and hit the **Play** button to start building Manga Scan or test Flatpaks with **Export Bundle** button.
 
-#### Option 2: with Flatpak Builder
-```
-# Clone Manga Scan repository
-git clone https://gitlab.com/valos/MangaScan.git
+### Option 2: Testing with Meson
+
+Dependencies:
+
+* `git`
+* `ninja`
+* `meson` >= 0.46.0
+* `python` >= 3.5
+* `gtk` >= 3.24.1
+* `libhandy` >= 0.0.10
+* `python-beautifulsoup4`
+* `python-cloudscraper`
+* `python-lxml`
+* `python-pillow`
+* `python-magic`
+* `python-well`
+
+This is the best practice to test MangaScan without installing using meson and ninja.
+
+#### First time
+
+```bash
+git clone https://gitlab.com/valos/MangaScan
 cd MangaScan
-# Add Flathub repository
-flatpak remote-add flathub --if-not-exists https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak remote-add gnome-nightly --if-not-exists https://sdk.gnome.org/gnome-nightly.flatpakrepo
-# Install the required GNOME runtimes
-flatpak install gnome-nightly org.gnome.Platform//master org.gnome.Sdk//master
-# Start building
-flatpak-builder --repo=repo com.gitlab.valos.MangaScan flatpak/com.gitlab.valos.MangaScan.json --force-clean
-# Create the Flatpak
-flatpak build-export repo com.gitlab.valos.MangaScan
-flatpak build-bundle repo com.gitlab.valos.MangaScan.flatpak com.gitlab.valos.MangaScan
-# Install the Flatpak
-flatpak install com.gitlab.valos.MangaScan.flatpak
+mkdir _build
+cd _build
+meson ..
+meson configure -Dprefix=$(pwd)/testdir
+ninja install # This will actually install in _build/testdir
+ninja run
 ```
 
-#### Option 3: with Meson
-##### Prerequisites:
-* python >= 3.6.5
-* gtk >= 3.24.1
-* libhandy >= 0.0.9
-* meson >= 0.46.0
-* git
+#### Later on
 
+```bash
+cd MangaScan/_build
+ninja install # This will actually install in _build/testdir
+ninja run
 ```
-git clone https://gitlab.com/valos/MangaScan.git
+
+### Option 3: Build and install systemwide directly with Meson
+
+**WARNING**: This approach is discouraged, since it will manually copy all the files in your system. **Uninstalling could be difficult and/or dangerous**.
+
+But if you know what you're doing, here you go:
+
+```bash
+git clone https://gitlab.com/valos/MangaScan
 cd MangaScan
-meson . _build --prefix=/usr
-ninja -C _build
-sudo ninja -C _build install
+mkdir _build
+cd _build
+meson ..
+ninja install
 ```
 
 ## Translations
