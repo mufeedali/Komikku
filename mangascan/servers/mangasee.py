@@ -91,8 +91,11 @@ class Mangasee():
                     data['genres'].append(link_element.text.strip())
             elif label.startswith('Status'):
                 # possible values: ongoing, complete, None
-                value = div_element.find('a', class_='PublishStatus').get('status')
-                data['status'] = value.lower()
+                value = div_element.find_all('a')[0].text.strip()
+                if value.startswith('Complete'):
+                    data['status'] = 'complete'
+                elif value.startswith('Ongoing'):
+                    data['status'] = 'ongoing'
             elif label.startswith('Description'):
                 data['synopsis'] = div_element.div.text.strip()
 
