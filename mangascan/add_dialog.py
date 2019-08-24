@@ -5,7 +5,6 @@ import threading
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
-from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
@@ -112,9 +111,7 @@ class AddDialog():
         def complete(manga):
             self.manga = manga
 
-            notification = Notify.Notification.new(_('{0} manga added').format(self.manga.name))
-            notification.set_timeout(Notify.EXPIRES_NEVER)
-            notification.show()
+            self.show_notification(_('{0} manga added').format(self.manga.name))
 
             self.window.library.on_manga_added(self.manga)
 
