@@ -152,7 +152,7 @@ class AddDialog():
             self.manga_data = manga_data
 
             # Populate manga card
-            cover_data = self.server.get_manga_cover_image(self.manga_data['cover'])
+            cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
             if cover_data is not None:
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
                 pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
