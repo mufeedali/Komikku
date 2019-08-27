@@ -82,7 +82,10 @@ class Manganelo():
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
                 # possible values: ongoing, complete, None
-                data['status'] = value.lower()
+                if value.startswith('Completed'):
+                    data['status'] = 'complete'
+                elif value.startswith('Ongoing'):
+                    data['status'] = 'ongoing'
 
         # Synopsis
         div_synopsis = soup.find('div', id='noidungm')
