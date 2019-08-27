@@ -27,6 +27,8 @@ class MainWindow(Gtk.ApplicationWindow):
     mobile_width = False
     page = None
 
+    _is_maximized = False
+    _is_fullscreen = False
     _prev_size = None
 
     def __init__(self, *args, **kwargs):
@@ -106,8 +108,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.reader = Reader(self)
 
         # Window
-        self.connect('delete-event', self.on_application_quit)
         self.connect('check-resize', self.on_resize)
+        self.connect('delete-event', self.on_application_quit)
+        self.connect('window-state-event', self.on_window_state_event)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()
@@ -244,9 +247,14 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.set_transient_for(self)
         shortcuts_overview.present()
 
+    def on_window_state_event(self, widget, event):
+        self._is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
+        self._is_fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) != 0
+
     def save_window_size(self):
-        size = self.get_size()
-        mangascan.config_manager.set_window_size([size.width, size.height])
+        if not self._is_maximized and not self._is_fullscreen:
+            size = self.get_size()
+            mangascan.config_manager.set_window_size([size.width, size.height])
 
     def show_notification(self, message):
         self.builder.get_object('notification_label').set_text(message)
