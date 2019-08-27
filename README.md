@@ -2,6 +2,9 @@
 
 *MangaScan* is a [GNOME](https://www.gnome.org) online / offline manga reader, developed with the aim of being used with the *Librem 5* phone.
 
+Manga Scan is still in **beta**. Some design changes or unexpected errors may lead to data loss. Even if everything is done for them not to happen, sometimes it's unavoidable.
+{: .alert .alert-gitlab-orange}
+
 ## License
 
 MangaScan is licensed under the GPLv3+.
