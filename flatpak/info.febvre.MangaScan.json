@@ -7,8 +7,8 @@
     "finish-args" : [
         "--socket=session-bus",
         "--share=ipc",
-        "--share=network",
         "--socket=x11",
+        "--share=network",
         "--socket=wayland",
         "--device=dri",
         "--filesystem=home",
@@ -38,7 +38,7 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "tag" : "v0.0.10",
+                    "tag" : "v0.0.11",
                     "url" : "https://source.puri.sm/Librem5/libhandy.git"
                 }
             ]
