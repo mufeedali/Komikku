@@ -26,6 +26,7 @@ class AddDialog():
         self.builder.add_from_resource('/info/febvre/MangaScan/ui/add_dialog.ui')
 
         self.dialog = self.builder.get_object('search_dialog')
+        self.dialog.get_children()[0].set_border_width(0)
 
         # Header bar
         self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
