@@ -18,6 +18,7 @@ from mangascan.servers import unscramble_image
 
 user_app_dir_path = os.path.join(str(Path.home()), 'MangaScan')
 db_path = os.path.join(user_app_dir_path, 'mangascan.db')
+db_backup_path = os.path.join(user_app_dir_path, 'mangascan_backup.db')
 
 
 def adapt_json(data):
@@ -32,6 +33,27 @@ sqlite3.register_adapter(dict, adapt_json)
 sqlite3.register_adapter(list, adapt_json)
 sqlite3.register_adapter(tuple, adapt_json)
 sqlite3.register_converter('json', convert_json)
+
+
+def backup_db():
+    if os.path.exists(db_path) and check_db():
+        print('Save a DB backup')
+        shutil.copyfile(db_path, db_backup_path)
+
+
+def check_db():
+    db_conn = create_db_connection()
+
+    if db_conn:
+        res = db_conn.execute('PRAGMA integrity_check').fetchone()  # PRAGMA quick_check
+
+        fk_violations = len(db_conn.execute('PRAGMA foreign_key_check').fetchall())
+
+        db_conn.close()
+
+        return res[0] == 'ok' and fk_violations == 0
+    else:
+        return False
 
 
 def create_db_connection():
@@ -55,6 +77,11 @@ def create_table(conn, sql):
 def init_db():
     if not os.path.exists(user_app_dir_path):
         os.mkdir(user_app_dir_path)
+
+    if os.path.exists(db_path) and os.path.exists(db_backup_path) and not check_db():
+        # Restore backup
+        print('Restore DB from backup')
+        shutil.copyfile(db_backup_path, db_path)
 
     sql_create_mangas_table = """CREATE TABLE IF NOT EXISTS mangas (
         id integer PRIMARY KEY,

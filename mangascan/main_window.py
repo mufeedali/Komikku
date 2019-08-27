@@ -18,6 +18,7 @@ from mangascan.add_dialog import AddDialog
 import mangascan.config_manager
 from mangascan.card import Card
 from mangascan.library import Library
+from mangascan.model import backup_db
 from mangascan.reader import Reader
 from mangascan.settings_dialog import SettingsDialog
 
@@ -167,7 +168,9 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.show_all()
 
     def on_application_quit(self, window, event):
-        self.save_window_size()
+        def before_quit():
+            self.save_window_size()
+            backup_db()
 
         if self.card.downloader.status == 'running':
             def confirm_callback():
@@ -176,6 +179,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 while self.card.downloader.status == 'running':
                     pass
 
+                before_quit()
                 self.application.quit()
 
             self.confirm(
@@ -186,6 +190,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
             return True
         else:
+            before_quit()
+
             return False
 
     def on_left_button_clicked(self, action, param):
