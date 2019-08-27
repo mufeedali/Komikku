@@ -1,6 +1,6 @@
 project('mangascan',
     version: '0.0.0',
-    meson_version: '>= 0.50',
+    meson_version: '>= 0.50.0',
     license: 'GPL3'
 )
 

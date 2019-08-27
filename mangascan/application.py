@@ -22,7 +22,7 @@ class Application(Gtk.Application):
     application_id = 'info.febvre.MangaScan'
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.FLAGS_NONE, **kwargs)
         self.window = None
 
     def add_actions(self):
@@ -40,7 +40,9 @@ class Application(Gtk.Application):
         Handy.init()
         Notify.init('MangaScan')
 
-        Gio.NetworkMonitor.get_default().connect('network-changed', self.on_network_status_changed)
+        nm = Gio.NetworkMonitor.get_default()
+        nm.connect('network-changed', self.on_network_status_changed)  # Seems to work only inside Flatpak sandbox!
+        self.connected = nm.get_network_available()
 
     def do_activate(self):
         if not self.window:

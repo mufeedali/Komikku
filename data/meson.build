@@ -33,11 +33,11 @@ i18n.merge_file(
 # Validating the .desktop file
 desktop_file_validate = find_program('desktop-file-validate', required:false)
 if desktop_file_validate.found()
-  test (
+test (
     'Validate desktop file',
     desktop_file_validate,
     args: join_paths(meson.current_build_dir (), app_id + '.desktop')
-  )
+)
 endif
 
 #
@@ -73,9 +73,9 @@ configure_file(
 # Validating schemas
 compile_schemas = find_program('glib-compile-schemas', required: false)
 if compile_schemas.found()
-  test('Validate schema file', compile_schemas,
-    args: ['--strict', '--dry-run', meson.current_source_dir()]
-  )
+    test('Validate schema file', compile_schemas,
+        args: ['--strict', '--dry-run', meson.current_source_dir()]
+    )
 endif
 
 subdir('ui')
@@ -111,9 +111,9 @@ i18n.merge_file(
 
 appstreamcli = find_program('appstream-util', required: false)
 if appstreamcli.found()
-  test (
-    'Validate appdata file',
-    appstreamcli,
-    args: ['validate-relax', join_paths(meson.current_build_dir (), app_id + '.appdata.xml')]
-  )
+    test (
+        'Validate appdata file',
+        appstreamcli,
+        args: ['validate-relax', join_paths(meson.current_build_dir (), app_id + '.appdata.xml')]
+    )
 endif

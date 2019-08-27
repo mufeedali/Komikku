@@ -1,53 +1,80 @@
 #!@PYTHON@
 
-import sys
-import os
-import locale
-import gettext
+# @prettyname@
+#
+# Copyright (C) 2019 @authorfullname@ <@authoremail@>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
+import gettext
+import locale
 
 sys.path.insert(1, '@pythondir@')
 
-localedir = '@localedir@'
+VERSION = '@VERSION@'
 builddir = os.environ.get('MESON_BUILD_ROOT')
 if builddir:
-    os.environ['GSETTINGS_SCHEMA_DIR'] = os.path.join(localedir, '../glib-2.0/schemas/')
     sys.dont_write_bytecode = True
     sys.path.insert(1, os.environ['MESON_SOURCE_ROOT'])
+    xdg_data_dir = os.path.join(builddir, '@prefix@', '@datadir@')
+    os.putenv('XDG_DATA_DIRS', '%s:%s' % (xdg_data_dir, os.getenv('XDG_DATA_DIRS', '/usr/local/share/:/usr/share/')))
 
-from gi.repository import Gio
-
-resource = Gio.resource_load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
-Gio.Resource._register(resource)
-
-from mangascan.application import Application
-from mangascan.model import init_db
 
 def install_excepthook():
     """ Make sure we exit when an unhandled exception occurs. """
     from gi.repository import Gtk
+
     old_hook = sys.excepthook
 
     def new_hook(etype, evalue, etb):
         old_hook(etype, evalue, etb)
+
         while Gtk.main_level():
             Gtk.main_quit()
+
         sys.exit()
+
     sys.excepthook = new_hook
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
+    import gi
+
+    gi.require_version('Gtk', '3.0')
+
     install_excepthook()
 
-    locale.bindtextdomain('@projectname@', localedir)
     locale.textdomain('@projectname@')
-    gettext.bindtextdomain('@projectname@', localedir)
+    locale.bindtextdomain('@projectname@', '@localedir@')
     gettext.textdomain('@projectname@')
+    gettext.bindtextdomain('@projectname@', '@localedir@')
+
+    from gi.repository import Gio
+
+    from @projectname@.application import Application
+    from @projectname@.model import init_db
+
+    resource = Gio.Resource.load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
+    resource._register()
 
     if @PROFILE@ == 'Devel':
-    	Application.development_mode = True
-    	Application.application_id = '@appid@Devel'
+        Application.development_mode = True
+        Application.application_id = '@appid@Devel'
     else:
-    	Application.development_mode = False
+        Application.development_mode = False
 
     init_db()
 

@@ -10,11 +10,17 @@ endif
 conf = configuration_data()
 
 conf.set_quoted('PROFILE', profile)
+conf.set('VERSION', meson.project_version())
 conf.set('PYTHON', python.find_python().path())
+conf.set('prefix', prefix)
+conf.set('datadir', datadir)
 conf.set('pkgdatadir', pkgdatadir)
 conf.set('pythondir', join_paths(prefix, pythondir))
 conf.set('localedir', join_paths(prefix, localedir))
 conf.set('projectname', meson.project_name())
+conf.set('prettyname', prettyname)
+conf.set('authorfullname', authorfullname)
+conf.set('authoremail', authoremail)
 conf.set('appid', app_id)
 
 configure_file(
