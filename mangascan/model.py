@@ -145,7 +145,7 @@ def insert_row(db_conn, table, data):
         )
         return cursor.lastrowid
     except Exception as e:
-        print('SQLite-error:', e, table, data)
+        print('SQLite-error:', e, data)
         return None
 
 

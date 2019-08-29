@@ -1,10 +1,56 @@
 from importlib import resources
+import io
 from operator import itemgetter
 import os
 from PIL import Image
+import struct
 
 user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
 user_agent_mobile = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
+
+
+# https://github.com/italomaia/mangarock.py/blob/master/mangarock/mri_to_webp.py
+def convert_mri_data_to_webp_buffer(data):
+    size_list = [0] * 4
+    size = len(data)
+    header_size = size + 7
+
+    # little endian byte representation
+    # zeros to the right don't change the value
+    for i, byte in enumerate(struct.pack("<I", header_size)):
+        size_list[i] = byte
+
+    buffer = [
+        82,  # R
+        73,  # I
+        70,  # F
+        70,  # F
+        size_list[0],
+        size_list[1],
+        size_list[2],
+        size_list[3],
+        87,  # W
+        69,  # E
+        66,  # B
+        80,  # P
+        86,  # V
+        80,  # P
+        56,  # 8
+    ]
+
+    for bit in data:
+        buffer.append(101 ^ bit)
+
+    return bytes(buffer)
+
+
+def convert_webp_buffer(webp_buffer, format='JPEG'):
+    image = Image.open(io.BytesIO(webp_buffer))
+
+    buffer = io.BytesIO()
+    image.save(buffer, format)
+
+    return buffer.getvalue()
 
 
 def get_servers_list():
