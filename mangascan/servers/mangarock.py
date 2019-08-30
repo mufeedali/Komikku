@@ -5,6 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 import cloudscraper
+from datetime import datetime
 import json
 import magic
 from requests.exceptions import ConnectionError
@@ -93,7 +94,7 @@ class Mangarock():
         for chapter in res['chapters']:
             data['chapters'].append(dict(
                 slug=chapter['oid'],
-                date=None,
+                date=datetime.fromtimestamp(chapter['updatedAt']).date(),
                 title=chapter['name'],
             ))
 
