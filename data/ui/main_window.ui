@@ -41,7 +41,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">12</property>
-            <property name="label" translatable="yes" comments="The umbrella sentence of the application on the first start screen">Manga Scan</property>
+            <property name="label" translatable="yes" comments="The umbrella sentence of the application on the first start screen">MangaScan</property>
             <attributes>
               <attribute name="weight" value="bold"/>
               <attribute name="size" value="21000"/>
@@ -354,7 +354,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_top">9</property>
-                                <property name="label" translatable="yes">more info</property>
+                                <property name="label">more info</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
@@ -470,7 +470,7 @@
                   <object class="GtkLabel" id="notification_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">app notification message</property>
+                    <property name="label">app notification message</property>
                     <property name="justify">center</property>
                     <property name="wrap">True</property>
                   </object>
@@ -612,7 +612,7 @@
               <object class="GtkLabel" id="card_page_title_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Manga title</property>
+                <property name="label">Manga title</property>
                 <property name="ellipsize">end</property>
                 <property name="single_line_mode">True</property>
                 <attributes>
@@ -628,7 +628,7 @@
               <object class="GtkLabel" id="reader_page_title_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Chapter title</property>
+                <property name="label">Chapter title</property>
                 <property name="ellipsize">end</property>
                 <property name="single_line_mode">True</property>
                 <attributes>

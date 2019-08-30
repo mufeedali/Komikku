@@ -359,7 +359,7 @@ class Library():
             return False
 
         def error(manga):
-            self.window.show_notification(_('{0 }\nOops update has failed. Please try again.').format(manga.name))
+            self.window.show_notification(_('{0 }\nOops, update has failed. Please try again.').format(manga.name))
             return False
 
         if not self.window.application.connected:

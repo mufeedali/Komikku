@@ -214,14 +214,14 @@
                                     <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="title" translatable="yes">Reading Direction</property>
+                                    <property name="title" translatable="yes">Reading direction</property>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="HdyComboRow" id="settings_scaling_row">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="subtitle" translatable="yes">Type of scaling to adjust image</property>
+                                    <property name="subtitle" translatable="yes">Type of scaling to adapt image</property>
                                     <property name="title" translatable="yes">Scaling</property>
                                   </object>
                                 </child>
@@ -251,7 +251,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">end</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Full screen</property>
+                                                <property name="label" translatable="yes">Fullscreen</property>
                                                 <property name="ellipsize">end</property>
                                               </object>
                                               <packing>
@@ -268,7 +268,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">start</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Automatically enter full screen mode</property>
+                                                <property name="label" translatable="yes">Automatically enter fullscreen mode</property>
                                                 <property name="ellipsize">end</property>
                                                 <attributes>
                                                   <attribute name="size" value="9500"/>

@@ -453,7 +453,7 @@
                           <object class="GtkLabel" id="notification_label">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">app notification message</property>
+                            <property name="label">app notification message</property>
                             <property name="justify">center</property>
                             <property name="wrap">True</property>
                           </object>
