@@ -70,14 +70,9 @@ if __name__ == '__main__':
     resource = Gio.Resource.load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
     resource._register()
 
-    if @PROFILE@ == 'Devel':
-        Application.development_mode = True
-        Application.application_id = '@appid@Devel'
-    else:
-        Application.development_mode = False
-
     init_db()
 
+    Application.development_mode = @PROFILE@ == 'development'
     app = Application()
 
     try:

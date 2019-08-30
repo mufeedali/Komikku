@@ -1,12 +1,4 @@
 # Profiles
-if get_option('profile') == 'development'
-    profile = 'Devel'
-    name_suffix = ' (Development)'
-else
-    profile = ''
-    name_suffix = ''
-endif
-
 conf = configuration_data()
 
 conf.set_quoted('PROFILE', profile)

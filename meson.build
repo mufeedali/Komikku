@@ -1,6 +1,6 @@
 project('mangascan',
     version: '0.0.0',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.49.0',
     license: 'GPL3'
 )
 
@@ -34,11 +34,7 @@ pkgdatadir = join_paths(prefix, datadir, meson.project_name())
 pythondir = join_paths(prefix, python.sysconfig_path('purelib'))
 localedir = join_paths(prefix, get_option('localedir'))
 
-if profile == 'development'
-    app_id = '.'.join([domainext, domainname, prettyname + 'Devel'])
-else
-    app_id = '.'.join([domainext, domainname, prettyname])
-endif
+app_id = '.'.join([domainext, domainname, prettyname])
 app_id_aspath = '/'.join([domainext, domainname, prettyname])
 
 install_subdir(meson.project_name(), install_dir: pythondir)
