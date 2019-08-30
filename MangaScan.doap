@@ -6,14 +6,17 @@
 
   <name xml:lang="en">MangaScan</name>
   <shortdesc xml:lang="en">An online/offline manga reader</shortdesc>
-  <description>An online/offline manga reader</description>
+  <description xml:lang="en">An online/offline manga reader</description>
+  <homepage rdf:resource="https://gitlab.com/valos/MangaScan" />
   <bug-database rdf:resource="https://gitlab.com/valos/MangaScan/issues" />
   <category rdf:resource="http://api.gnome.org/doap-extensions#apps" />
   <programming-language>Python</programming-language>
+  <license rdf:resource="https://www.gnu.org/licenses/gpl-3.0.html" />
 
   <maintainer>
     <foaf:Person>
       <foaf:name>Valéry Febvre</foaf:name>
+      <foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com" />
     </foaf:Person>
   </maintainer>
 </Project>

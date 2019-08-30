@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop">
+<component type="desktop-application">
     <id>info.febvre.MangaScan</id>
     <name>MangaScan</name>
     <developer_name>Valéry Febvre</developer_name>
@@ -19,6 +19,6 @@
             </description>
         </release>
     </releases>
-    <updatecontact>vfebvre@easter-eggs.com</updatecontact>
+    <update_contact>vfebvre@easter-eggs.com</update_contact>
     <content_rating type="oars-1.1" />
 </component>
