@@ -1,26 +1,20 @@
 data/info.febvre.MangaScan.appdata.xml.in
 data/info.febvre.MangaScan.desktop.in
 data/ui/add_dialog.ui
-data/ui/add_dialog.ui data/ui/main_window.ui
 data/ui/main_window.ui
 data/ui/menu_card.xml
-data/ui/menu_card.xml data/ui/menu_library_selection_mode.xml
+data/ui/menu_library_selection_mode.xml
 data/ui/menu_reader.xml
 data/ui/menu.xml
 data/ui/settings_dialog.ui
-data/ui/settings_dialog.ui data/ui/menu_reader.xml
 data/ui/shortcuts_overview.ui
 mangascan/add_dialog.py
 mangascan/application.py
 mangascan/card.py
-mangascan/card.py mangascan/card.py mangascan/reader.py
-mangascan/card.py mangascan/library.py
+mangascan/card.py mangascan/reader.py
 mangascan/downloader.py
-mangascan/downloader.py mangascan/downloader.py
 mangascan/library.py
-mangascan/library.py mangascan/library.py
 mangascan/main_window.py
-mangascan/main_window.py mangascan/card.py
 mangascan/model.py
 mangascan/reader.py
 mangascan/settings_dialog.py
