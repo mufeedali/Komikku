@@ -35,7 +35,10 @@ class Downloader():
                 download = Download.next()
 
                 if download:
-                    chapter = Chapter(id=download.chapter_id)
+                    chapter = Chapter.get(id=download.chapter_id)
+                    if chapter is None:
+                        download.delete()
+                        continue
 
                     download.update(dict(status='downloading'))
                     GLib.idle_add(start, chapter)

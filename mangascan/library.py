@@ -41,7 +41,7 @@ class Library():
         self.gesture.connect('pressed', self.enter_selection_mode)
 
         def filter(child):
-            manga = Manga(child.get_children()[0].manga.id)
+            manga = Manga.get(child.get_children()[0].manga.id)
             return self.search_entry.get_text().lower() in manga.name.lower()
 
         def sort(child1, child2):
@@ -51,8 +51,8 @@ class Library():
             - zero if they are equal
             - a positive integer if the second one should come before the firstone
             """
-            manga1 = Manga(child1.get_children()[0].manga.id)
-            manga2 = Manga(child2.get_children()[0].manga.id)
+            manga1 = Manga.get(child1.get_children()[0].manga.id)
+            manga2 = Manga.get(child2.get_children()[0].manga.id)
 
             if manga1.last_read > manga2.last_read:
                 return -1
@@ -296,7 +296,7 @@ class Library():
 
         # Populate flowbox with mangas
         for row in mangas_rows:
-            self.add_manga(Manga(row['id']))
+            self.add_manga(Manga.get(row['id']))
 
         db_conn.close()
 

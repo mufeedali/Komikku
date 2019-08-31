@@ -181,9 +181,9 @@ class Card():
 
         # Create a fresh instance of manga
         if manga:
-            self.manga = Manga(manga.id)
+            self.manga = Manga.get(manga.id)
         else:
-            self.manga = Manga(self.manga.id)
+            self.manga = Manga.get(self.manga.id)
 
         self.populate()
         self.show(transition)

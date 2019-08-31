@@ -165,19 +165,28 @@ class Manga(object):
         ongoing=_('Ongoing')
     )
 
-    def __init__(self, id=None, server=None):
+    def __init__(self, server=None):
         if server:
             self.server = server
 
-        if id is not None:
-            db_conn = create_db_connection()
-            row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
-            for key in row.keys():
-                setattr(self, key, row[key])
+    @classmethod
+    def get(cls, id, server=None):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
+        db_conn.close()
 
-            if server is None:
-                server_module = importlib.import_module('.' + self.server_id, package="mangascan.servers")
-                self.server = getattr(server_module, self.server_id.capitalize())()
+        if row is None:
+            return None
+
+        m = cls(server)
+        for key in row.keys():
+            setattr(m, key, row[key])
+
+        if m.server is None:
+            server_module = importlib.import_module('.' + m.server_id, package="mangascan.servers")
+            m.server = getattr(server_module, m.server_id.capitalize())()
+
+        return m
 
     @classmethod
     def new(cls, data, server=None):
@@ -365,26 +374,36 @@ class Manga(object):
 class Chapter(object):
     manga_ = None
 
-    def __init__(self, id=None, row=None):
-        if id or row:
-            if id:
-                db_conn = create_db_connection()
-                row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
-                db_conn.close()
-
+    def __init__(self, row=None):
+        if row is not None:
             for key in row.keys():
                 setattr(self, key, row[key])
 
     @property
     def manga(self):
         if self.manga_ is None:
-            self.manga_ = Manga(self.manga_id)
+            self.manga_ = Manga.get(self.manga_id)
 
         return self.manga_
 
     @property
     def path(self):
         return os.path.join(self.manga.path, self.slug)
+
+    @classmethod
+    def get(cls, id):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
+        db_conn.close()
+
+        if row is None:
+            return None
+
+        c = cls()
+        for key in row.keys():
+            setattr(c, key, row[key])
+
+        return c
 
     @classmethod
     def new(cls, data, rank, manga_id):
@@ -513,9 +532,6 @@ class Download(object):
         downloading=_('Downloading'),
         error=_('Error'),
     )
-
-    def __init__(self):
-        pass
 
     @classmethod
     def get_by_chapter_id(cls, chapter_id):
