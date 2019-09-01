@@ -379,17 +379,6 @@ class Chapter(object):
             for key in row.keys():
                 setattr(self, key, row[key])
 
-    @property
-    def manga(self):
-        if self.manga_ is None:
-            self.manga_ = Manga.get(self.manga_id)
-
-        return self.manga_
-
-    @property
-    def path(self):
-        return os.path.join(self.manga.path, self.slug)
-
     @classmethod
     def get(cls, id):
         db_conn = create_db_connection()
@@ -432,6 +421,17 @@ class Chapter(object):
         db_conn.close()
 
         return c if c.id is not None else None
+
+    @property
+    def manga(self):
+        if self.manga_ is None:
+            self.manga_ = Manga.get(self.manga_id)
+
+        return self.manga_
+
+    @property
+    def path(self):
+        return os.path.join(self.manga.path, self.slug)
 
     def get_page(self, page_index):
         page_path = self.get_page_path(page_index)

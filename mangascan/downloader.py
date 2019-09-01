@@ -24,7 +24,6 @@ class Downloader():
 
     def __init__(self, change_cb):
         self.change_cb = change_cb
-        self.kill_event = threading.Event()
 
     def add(self, chapter_id):
         Download.new(chapter_id)
