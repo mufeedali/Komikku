@@ -241,36 +241,8 @@ class Card():
         self.set_sort_order()
 
     def on_update_menu_clicked(self, action, param):
-        def run(manga):
-            self.window.show_notification(_('Start update'))
-
-            status, nb_recent_chapters = manga.update_full()
-            if status is True:
-                GLib.idle_add(complete, manga, nb_recent_chapters)
-            else:
-                GLib.idle_add(error)
-
-        def complete(manga, nb_recent_chapters):
-            # Update card only if manga has not changed
-            if self.manga.id == manga.id:
-                self.init(manga)
-
-            if nb_recent_chapters:
-                self.window.show_notification(_('{0}\n{1} new chapters have been found').format(manga.name, nb_recent_chapters))
-
-            return False
-
-        def error():
-            self.window.show_notification(_('Oops, update failed. Please try again.'))
-            return False
-
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
-
-        thread = threading.Thread(target=run, args=(self.manga,))
-        thread.daemon = True
-        thread.start()
+        self.window.updater.add(self.manga)
+        self.window.updater.start()
 
     def populate(self):
         # Chapters

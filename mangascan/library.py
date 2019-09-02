@@ -338,37 +338,8 @@ class Library():
             self.search_entry.grab_remove()
 
     def update(self, mangas):
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
-
-        def run():
-            self.window.show_notification(_('Start update'))
-
-            for manga in mangas:
-                status, nb_recent_chapters = manga.update_full()
-                if status is True:
-                    GLib.idle_add(complete, manga, nb_recent_chapters)
-                else:
-                    GLib.idle_add(error, manga)
-
-        def complete(manga, nb_recent_chapters):
-            if nb_recent_chapters > 0:
-                self.window.show_notification(_('{0}\n{1} new chapters have been found').format(manga.name, nb_recent_chapters))
-                self.flowbox.queue_draw()
-            return False
-
-        def error(manga):
-            self.window.show_notification(_('{0 }\nOops, update has failed. Please try again.').format(manga.name))
-            return False
-
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
-
-        thread = threading.Thread(target=run)
-        thread.daemon = True
-        thread.start()
+        self.window.updater.add(mangas)
+        self.window.updater.start()
 
         self.leave_selection_mode()
 

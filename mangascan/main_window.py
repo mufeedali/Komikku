@@ -21,6 +21,7 @@ from mangascan.library import Library
 from mangascan.model import backup_db
 from mangascan.reader import Reader
 from mangascan.settings_dialog import SettingsDialog
+from mangascan.updater import Updater
 
 
 class MainWindow(Gtk.ApplicationWindow):
@@ -35,7 +36,9 @@ class MainWindow(Gtk.ApplicationWindow):
         super().__init__(*args, **kwargs)
 
         self.application = kwargs['application']
+
         self.logging_manager = self.application.get_logger()
+        self.updater = Updater(self)
 
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/MangaScan/ui/main_window.ui')
