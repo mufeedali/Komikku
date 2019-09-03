@@ -5,6 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+import time
 
 from gi.repository import Gio
 from gi.repository import GLib
@@ -112,7 +113,7 @@ class Card():
             return
 
         # Add chapter in download queue
-        self.window.downloader.add(self.action_row.chapter.id)
+        self.window.downloader.add(self.action_row.chapter)
 
         # Update chapter
         self.populate_chapter_row(self.action_row)
@@ -126,7 +127,7 @@ class Card():
 
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
-            self.window.downloader.add(row.chapter.id)
+            self.window.downloader.add(row.chapter)
 
             # Update chapter
             self.populate_chapter_row(row)
@@ -186,18 +187,31 @@ class Card():
 
     def on_delete_menu_clicked(self, action, param):
         def confirm_callback():
+            # Stop Downloader & Updater
+            self.window.downloader.stop()
+            self.window.updater.stop()
+
+            while self.window.downloader.status == 'running' or self.window.updater.status == 'running':
+                time.sleep(0.1)
+                continue
+
+            # Safely delete manga in DB
+            self.manga.delete()
+
+            # Restart Downloader & Updater
+            self.window.downloader.start()
+            self.window.updater.start()
+
+            # Finally, update and show library
             db_conn = create_db_connection()
             nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
             db_conn.close()
 
-            if nb_mangas == 1:
-                self.manga.delete()
-
+            if nb_mangas == 0:
                 # Library is now empty
                 self.window.library.populate()
             else:
                 self.window.library.on_manga_deleted(self.manga)
-                self.manga.delete()
 
             self.window.library.show()
 

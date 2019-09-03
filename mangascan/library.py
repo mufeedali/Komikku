@@ -5,11 +5,10 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
-import threading
+import time
 
 from gi.repository import Gdk
 from gi.repository import Gio
-from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
@@ -138,10 +137,24 @@ class Library():
 
     def delete_selected(self, action, param):
         def confirm_callback():
+            # Stop Downloader & Updater
+            self.window.downloader.stop()
+            self.window.updater.stop()
+
+            while self.window.downloader.status == 'running' or self.window.updater.status == 'running':
+                time.sleep(0.1)
+                continue
+
+            # Safely delete mangas in DB
             for child in self.flowbox.get_selected_children():
                 manga = child.get_children()[0].manga
                 manga.delete()
 
+            # Restart Downloader & Updater
+            self.window.downloader.start()
+            self.window.updater.start()
+
+            # Finally, update library
             self.populate()
 
             self.leave_selection_mode()

@@ -26,8 +26,8 @@ class Downloader():
         self.window = window
         self.start()
 
-    def add(self, chapter_id):
-        Download.new(chapter_id)
+    def add(self, chapter):
+        Download.new(chapter.id)
 
     def start(self):
         def run():

@@ -198,6 +198,7 @@ class Manga(object):
 
         # Fill data with internal data or later scraped values
         data.update(dict(
+            url=None,
             last_read=datetime.datetime.now(),
             sort_order=None,
             reading_direction=None,

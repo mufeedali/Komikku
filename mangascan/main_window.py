@@ -5,6 +5,8 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+import time
+
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
@@ -165,7 +167,8 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.add_buttons('Yes', Gtk.ResponseType.YES, 'Cancel', Gtk.ResponseType.CANCEL)
         dialog.set_default_response(Gtk.ResponseType.YES)
 
-        label = Gtk.Label(message)
+        label = Gtk.Label()
+        label.set_text(message)
         label.set_line_wrap(True)
         label.set_vexpand(True)
         label.set_property('margin', 16)
@@ -187,7 +190,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 self.updater.stop()
 
                 while self.downloader.status == 'running' or self.updater.status == 'running':
-                    pass
+                    time.sleep(0.1)
+                    continue
 
                 before_quit()
                 self.application.quit()

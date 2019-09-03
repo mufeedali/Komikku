@@ -9,6 +9,8 @@ from gi.repository import GLib
 from gettext import gettext as _
 import threading
 
+from mangascan.model import Manga
+
 queue = []
 
 
@@ -27,10 +29,10 @@ class Updater():
 
         if type(mangas) == list:
             for manga in mangas:
-                if manga not in queue:
-                    queue.append(manga)
-        else:
-            queue.append(mangas)
+                if manga.id not in queue:
+                    queue.append(manga.id)
+        elif mangas.id not in queue:
+            queue.append(mangas.id)
 
     def start(self):
         def run():
@@ -43,7 +45,9 @@ class Updater():
                     self.status = 'interrupted'
                     break
 
-                manga = queue.pop(0)
+                manga = Manga.get(queue.pop(0))
+                if manga is None:
+                    continue
 
                 status, nb_recent_chapters = manga.update_full()
                 if status is True:
@@ -84,6 +88,12 @@ class Updater():
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
+
+    def remove(self, manga):
+        global queue
+
+        if manga.id in queue:
+            queue.remove(manga.id)
 
     def stop(self):
         if self.status == 'running':
