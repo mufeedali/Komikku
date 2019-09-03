@@ -22,8 +22,9 @@ class Downloader():
     status = None
     stop_flag = False
 
-    def __init__(self, change_cb):
-        self.change_cb = change_cb
+    def __init__(self, window):
+        self.window = window
+        self.start()
 
     def add(self, chapter_id):
         Download.new(chapter_id)
@@ -88,17 +89,17 @@ class Downloader():
             )
             notification.show()
 
-            self.change_cb(chapter)
+            self.window.card.update_chapter_row(chapter)
 
             return False
 
         def error(chapter):
-            self.change_cb(chapter)
+            self.window.card.update_chapter_row(chapter)
 
             return False
 
         def start(chapter):
-            self.change_cb(chapter)
+            self.window.card.update_chapter_row(chapter)
 
             return False
 

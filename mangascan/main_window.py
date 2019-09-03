@@ -17,6 +17,7 @@ from threading import Timer
 from mangascan.add_dialog import AddDialog
 import mangascan.config_manager
 from mangascan.card import Card
+from mangascan.downloader import Downloader
 from mangascan.library import Library
 from mangascan.model import backup_db
 from mangascan.reader import Reader
@@ -38,6 +39,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.application = kwargs['application']
 
         self.logging_manager = self.application.get_logger()
+        self.downloader = Downloader(self)
         self.updater = Updater(self)
 
         self.builder = Gtk.Builder()
@@ -106,6 +108,7 @@ class MainWindow(Gtk.ApplicationWindow):
         pix = Pixbuf.new_from_resource_at_scale('/info/febvre/MangaScan/images/logo.png', 256, 256, True)
         self.builder.get_object('app_logo').set_from_pixbuf(pix)
 
+        # Init pages
         self.library = Library(self)
         self.card = Card(self)
         self.reader = Reader(self)
@@ -178,19 +181,28 @@ class MainWindow(Gtk.ApplicationWindow):
             self.save_window_size()
             backup_db()
 
-        if self.card.downloader.status == 'running':
+        if self.downloader.status == 'running' or self.updater.status == 'running':
             def confirm_callback():
-                self.card.downloader.stop()
+                self.downloader.stop()
+                self.updater.stop()
 
-                while self.card.downloader.status == 'running':
+                while self.downloader.status == 'running' or self.updater.status == 'running':
                     pass
 
                 before_quit()
                 self.application.quit()
 
+            message = [
+                _('Are you sure you want to quit?'),
+            ]
+            if self.downloader.status == 'running':
+                message.append(_('Some chapters are currently being downloaded.'))
+            if self.updater.status == 'running':
+                message.append(_('Some mangas are currently being updated.'))
+
             self.confirm(
                 _('Quit?'),
-                _('Are you sure you want to quit?\nSome chapters are currently being downloaded.'),
+                '\n'.join(message),
                 confirm_callback
             )
 
@@ -214,7 +226,8 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
-            self.card.init()
+            self.card.update_chapter_row(self.reader.chapter)
+            self.card.show()
 
     def on_resize(self, window):
         size = self.get_size()

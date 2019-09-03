@@ -5,14 +5,12 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
-import threading
 
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 
-from mangascan.downloader import Downloader
 from mangascan.model import create_db_connection
 from mangascan.model import Download
 from mangascan.model import Manga
@@ -35,7 +33,7 @@ class Card():
 
         # Chapters listbox
         self.listbox = self.builder.get_object('chapters_listbox')
-        self.listbox.connect('row-activated', self.on_chapter_clicked)
+        self.listbox.connect('row-activated', self.on_chapter_row_clicked)
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
@@ -55,29 +53,6 @@ class Card():
                 return 0
 
         self.listbox.set_sort_func(sort)
-
-        # Downloader change callback
-        def downloader_change_cb(chapter):
-            if self.window.stack.props.visible_child_name != 'card':
-                return
-
-            if self.manga is None or self.manga.id != chapter.manga_id:
-                return
-
-            row = None
-            for child in self.listbox.get_children():
-                if child.chapter.id == chapter.id:
-                    row = child
-                    break
-
-            if row is None:
-                return
-
-            row.chapter = chapter
-            self.populate_chapter(row)
-
-        self.downloader = Downloader(downloader_change_cb)
-        self.downloader.start()
 
     @property
     def sort_order(self):
@@ -137,13 +112,12 @@ class Card():
             return
 
         # Add chapter in download queue
-        self.downloader.add(self.action_row.chapter.id)
-        self.downloader.add(self.action_row.chapter.id)
+        self.window.downloader.add(self.action_row.chapter.id)
 
         # Update chapter
-        self.populate_chapter(self.action_row)
+        self.populate_chapter_row(self.action_row)
 
-        self.downloader.start()
+        self.window.downloader.start()
 
     def download_selected_chapters(self, action, param):
         if not self.window.application.connected:
@@ -152,12 +126,12 @@ class Card():
 
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
-            self.downloader.add(row.chapter.id)
+            self.window.downloader.add(row.chapter.id)
 
             # Update chapter
-            self.populate_chapter(row)
+            self.populate_chapter_row(row)
 
-        self.downloader.start()
+        self.window.downloader.start()
 
         self.leave_selection_mode()
 
@@ -186,6 +160,7 @@ class Card():
             self.manga = Manga.get(self.manga.id)
 
         self.populate()
+
         self.show(transition)
 
     def leave_selection_mode(self):
@@ -199,7 +174,7 @@ class Card():
 
         self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-card'))
 
-    def on_chapter_clicked(self, listbox, row):
+    def on_chapter_row_clicked(self, listbox, row):
         if self.selection_mode:
             if row._selected:
                 self.listbox.unselect_row(row)
@@ -255,7 +230,7 @@ class Card():
             row.chapter = chapter
             row._selected = False
 
-            self.populate_chapter(row)
+            self.populate_chapter_row(row)
 
             self.listbox.add(row)
 
@@ -290,7 +265,7 @@ class Card():
         self.builder.get_object('more_label').set_markup(
             '<i>{0}</i>'.format(_('Disk space used: {0}').format(folder_size(self.manga.path))))
 
-    def populate_chapter(self, row):
+    def populate_chapter_row(self, row):
         for child in row.get_children():
             child.destroy()
 
@@ -361,7 +336,7 @@ class Card():
 
         chapter.reset()
 
-        self.populate_chapter(self.action_row)
+        self.populate_chapter_row(self.action_row)
 
     def reset_selected_chapters(self, action, param):
         for row in self.listbox.get_selected_rows():
@@ -369,7 +344,7 @@ class Card():
 
             chapter.reset()
 
-            self.populate_chapter(row)
+            self.populate_chapter_row(row)
 
         self.leave_selection_mode()
 
@@ -379,9 +354,6 @@ class Card():
             self.listbox.invalidate_sort()
 
     def show(self, transition=True):
-        if self.window.stack.props.visible_child_name == 'card':
-            return
-
         self.title_label.set_text(self.manga.name)
 
         self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
@@ -421,7 +393,7 @@ class Card():
                 last_page_read_index=len(chapter.pages) - 1 if read else None,
             ))
 
-            self.populate_chapter(row)
+            self.populate_chapter_row(row)
 
         self.leave_selection_mode()
 
@@ -433,4 +405,19 @@ class Card():
             last_page_read_index=len(chapter.pages) - 1 if read else None,
         ))
 
-        self.populate_chapter(self.action_row)
+        self.populate_chapter_row(self.action_row)
+
+    def update_chapter_row(self, chapter):
+        """
+        Update a specific chapter row
+        - used when download status change (in Downloader)
+        - used when we come back from reader to update last page read
+        """
+        if self.window.page not in ('card', 'reader') or self.manga.id != chapter.manga_id:
+            return
+
+        for row in self.listbox.get_children():
+            if row.chapter.id == chapter.id:
+                row.chapter = chapter
+                self.populate_chapter_row(row)
+                break
