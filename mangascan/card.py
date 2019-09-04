@@ -73,6 +73,10 @@ class Card():
         self.sort_order_action.connect('change-state', self.on_sort_order_changed)
         self.window.application.add_action(self.sort_order_action)
 
+        open_in_browser_action = Gio.SimpleAction.new('card.open-in-browser', None)
+        open_in_browser_action.connect('activate', self.on_open_in_browser_menu_clicked)
+        self.window.application.add_action(open_in_browser_action)
+
         # Menu actions in selection mode
         download_selected_chapters_action = Gio.SimpleAction.new('card.download-selected-chapters', None)
         download_selected_chapters_action.connect('activate', self.download_selected_chapters)
@@ -221,6 +225,9 @@ class Card():
             confirm_callback
         )
 
+    def on_open_in_browser_menu_clicked(self, action, param):
+        Gtk.show_uri_on_window(None, self.manga.server.get_manga_url(self.manga.slug, self.manga.url), time.time())
+
     def on_sort_order_changed(self, action, variant):
         value = variant.get_string()
         if value == self.manga.sort_order:
@@ -265,12 +272,8 @@ class Card():
         self.builder.get_object('status_value_label').set_markup(
             '<span size="small">{0}</span>'.format(_(self.manga.STATUSES[self.manga.status])) if self.manga.status else '-')
         self.builder.get_object('server_value_label').set_markup(
-            '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
-                self.manga.server.get_manga_url(self.manga.slug, self.manga.url),
-                self.manga.server.name,
-                len(self.manga.chapters)
-            )
-        )
+            '<span size="small">{0} ({1} chapters)</span>'.format(self.manga.server.name, len(self.manga.chapters)))
+
         self.builder.get_object('last_update_value_label').set_markup(
             '<span size="small">{0}</span>'.format(self.manga.last_update.strftime('%m/%d/%Y')) if self.manga.last_update else '-')
 

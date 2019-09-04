@@ -12,6 +12,7 @@
         <attribute name="action">app.card.update</attribute>
       </item>
     </section>
+
     <section>
       <submenu>
         <attribute name="label" translatable="yes">Order of chapters</attribute>
@@ -30,6 +31,13 @@
           </item>
         </section>
       </submenu>
+    </section>
+
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Open in browser</attribute>
+        <attribute name="action">app.card.open-in-browser</attribute>
+      </item>
     </section>
   </menu>
 </interface>
