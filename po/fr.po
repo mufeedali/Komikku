@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-05 00:54+0200\n"
+"POT-Creation-Date: 2019-09-05 01:44+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -29,7 +29,7 @@ msgid "Quit?"
 msgstr "Quitter ?"
 
 #: ../mangascan/main_window.py:226 ../mangascan/updater.py:79
-#: ../mangascan/card.py:112 ../mangascan/card.py:125 ../mangascan/reader.py:394
+#: ../mangascan/card.py:116 ../mangascan/card.py:129 ../mangascan/reader.py:394
 msgid "No Internet connection"
 msgstr "Pas de connexion Internet"
 
@@ -54,40 +54,40 @@ msgstr ""
 "{0}\n"
 "Oups, la mise à jour a échouée. Veuillez réessayer."
 
-#: ../mangascan/card.py:219 ../mangascan/library.py:163
+#: ../mangascan/card.py:223 ../mangascan/library.py:163
 msgid "Delete?"
 msgstr "Supprimer ?"
 
-#: ../mangascan/card.py:220
+#: ../mangascan/card.py:224
 msgid "Are you sure you want to delete this manga?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
 
-#: ../mangascan/card.py:280
+#: ../mangascan/card.py:283
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
 
-#: ../mangascan/card.py:321
+#: ../mangascan/card.py:324
 msgid "New"
 msgstr "Nouveau"
 
-#: ../mangascan/card.py:329
+#: ../mangascan/card.py:332
 msgid "DOWNLOADED"
 msgstr "TÉLÉCHARGER"
 
-#: ../mangascan/card.py:390
+#: ../mangascan/card.py:393
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../mangascan/card.py:392
+#: ../mangascan/card.py:395
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../mangascan/card.py:394
+#: ../mangascan/card.py:397
 msgid "Mark as read"
 msgstr "Marquer comme lu"
 
-#: ../mangascan/card.py:396
+#: ../mangascan/card.py:399
 msgid "Mark as unread"
 msgstr "Marquer comme non lu"
 
@@ -336,17 +336,21 @@ msgstr "Supprimer"
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: ../data/ui/menu_card.xml:17
+#: ../data/ui/menu_card.xml:18
 msgid "Order of chapters"
 msgstr "Ordre des chapitres"
 
-#: ../data/ui/menu_card.xml:22
+#: ../data/ui/menu_card.xml:23
 msgid "By chapter number (9-0)"
 msgstr "Par numéro de chapitre (9-0)"
 
-#: ../data/ui/menu_card.xml:27
+#: ../data/ui/menu_card.xml:28
 msgid "By chapter number (0-9)"
 msgstr "Par numéro de chapitre (0-9)"
+
+#: ../data/ui/menu_card.xml:38
+msgid "Open in browser"
+msgstr "Ouvrir dans le navigateur"
 
 #: ../data/info.febvre.MangaScan.desktop.in:3
 msgid "@prettyname@"
