@@ -226,6 +226,14 @@
                                   </object>
                                 </child>
                                 <child>
+                                  <object class="HdyComboRow" id="settings_background_color_row">
+                                    <property name="width_request">100</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="title" translatable="yes">Background color</property>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkListBoxRow">
                                     <property name="width_request">100</property>
                                     <property name="height_request">50</property>

@@ -2,12 +2,31 @@ from gi.repository import GLib, Gio
 
 setting = Gio.Settings.new('info.febvre.MangaScan')
 
+background_color = 'background-color'
 dark_theme = 'dark-theme'
 fullscreen = 'fullscreen'
 reading_direction = 'reading-direction'
 scaling = 'scaling'
 window_size = 'window-size'
 development_backup_mode = 'development-backup-mode'
+
+
+def get_background_color(nick=True):
+    value = setting.get_enum(background_color)
+    if not nick:
+        return value
+
+    if value == 0:
+        return 'white'
+    elif value == 1:
+        return 'black'
+
+
+def set_background_color(value):
+    if value == 'white':
+        setting.set_enum(background_color, 0)
+    elif value == 'black':
+        setting.set_enum(background_color, 1)
 
 
 def get_dark_theme():

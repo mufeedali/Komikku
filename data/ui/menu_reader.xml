@@ -43,6 +43,24 @@
           </item>
         </section>
       </submenu>
+
+      <submenu>
+        <attribute name="label" translatable="yes">Background color</attribute>
+        <section>
+          <attribute name="id">background-color-section</attribute>
+
+          <item>
+            <attribute name="label" translatable="yes">White</attribute>
+            <attribute name="action">app.reader.background-color</attribute>
+            <attribute name="target">white</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Black</attribute>
+            <attribute name="action">app.reader.background-color</attribute>
+            <attribute name="target">black</attribute>
+          </item>
+        </section>
+      </submenu>
     </section>
   </menu>
 </interface>

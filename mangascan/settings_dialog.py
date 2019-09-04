@@ -59,10 +59,28 @@ class SettingsDialog():
         row.set_selected_index(mangascan.config_manager.get_scaling(nick=False))
         row.connect('notify::selected-index', self.on_scaling_changed)
 
+        # Background color
+        liststore = Gio.ListStore.new(Handy.ValueObject)
+        liststore.insert(0, Handy.ValueObject.new(_('White')))
+        liststore.insert(1, Handy.ValueObject.new(_('Black')))
+
+        row = self.builder.get_object('settings_background_color_row')
+        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        row.set_selected_index(mangascan.config_manager.get_background_color(nick=False))
+        row.connect('notify::selected-index', self.on_background_color_changed)
+
         # Full screen
         settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
         settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
         settings_fullscreen_switch.set_active(mangascan.config_manager.get_fullscreen())
+
+    def on_background_color_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            mangascan.config_manager.set_background_color('white')
+        elif index == 1:
+            mangascan.config_manager.set_background_color('black')
 
     def on_fullscreen_changed(self, switch_button, gparam):
         if switch_button.get_active():

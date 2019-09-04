@@ -141,6 +141,10 @@ class Reader():
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
 
     @property
+    def background_color(self):
+        return self.chapter.manga.background_color or mangascan.config_manager.get_background_color()
+
+    @property
     def reading_direction(self):
         return self.chapter.manga.reading_direction or mangascan.config_manager.get_reading_direction()
 
@@ -162,12 +166,18 @@ class Reader():
             'reader.scaling', GLib.VariantType.new('s'), GLib.Variant('s', 'screen'))
         self.scaling_action.connect('change-state', self.on_scaling_changed)
 
+        # Background color
+        self.background_color_action = Gio.SimpleAction.new_stateful(
+            'reader.background-color', GLib.VariantType.new('s'), GLib.Variant('s', 'white'))
+        self.background_color_action.connect('change-state', self.on_background_color_changed)
+
         # Fullscreen
         self.fullscreen_action = Gio.SimpleAction.new('reader.fullscreen', None)
         self.fullscreen_action.connect('activate', self.controls.toggle_fullscreen)
 
         self.window.application.add_action(self.reading_direction_action)
         self.window.application.add_action(self.scaling_action)
+        self.window.application.add_action(self.background_color_action)
         self.window.application.add_action(self.fullscreen_action)
 
     def hide_spinner(self):
@@ -212,10 +222,19 @@ class Reader():
         # Init settings
         self.set_reading_direction()
         self.set_scaling()
+        self.set_background_color()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
+
+    def on_background_color_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.chapter.manga.background_color:
+            return
+
+        self.chapter.manga.update(dict(background_color=value))
+        self.set_background_color()
 
     def on_button_press(self, widget, event):
         if event.button == 1:
@@ -425,6 +444,13 @@ class Reader():
             )
 
         self.image.set_from_pixbuf(pixbuf)
+
+    def set_background_color(self):
+        self.background_color_action.set_state(GLib.Variant('s', self.background_color))
+        if self.background_color == 'white':
+            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        else:
+            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
 
     def set_reading_direction(self):
         self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))

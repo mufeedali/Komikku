@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
+    <enum id="@appid@.BackgroundColor">
+        <value nick="white" value="0" />
+        <value nick="black" value="1" />
+    </enum>
     <enum id="@appid@.ReadingDirection">
         <value nick="right-to-left" value="0" />
         <value nick="left-to-right" value="1" />
@@ -15,10 +19,15 @@
             <summary>Use dark GTK+ theme</summary>
             <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
         </key>
+        <key enum="@appid@.BackgroundColor" name="background-color">
+            <default>"white"</default>
+            <summary>Background color</summary>
+            <description>Background color of reader</description>
+        </key>
         <key enum="@appid@.ReadingDirection" name="reading-direction">
             <default>"right-to-left"</default>
             <summary>Reading direction</summary>
-            <description></description>
+            <description>Reading direction in reader</description>
         </key>
         <key enum="@appid@.Scaling" name="scaling">
             <default>"width"</default>
@@ -27,8 +36,8 @@
         </key>
         <key type="b" name="fullscreen">
             <default>false</default>
-            <summary>Full screen</summary>
-            <description>Automatically enter full screen mode</description>
+            <summary>Fullscreen</summary>
+            <description>Automatically enter fullscreen mode in reader</description>
         </key>
         <key type="ai" name="window-size">
             <default>[360, 648]</default>
