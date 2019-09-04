@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-30 16:07+0200\n"
+"POT-Creation-Date: 2019-09-05 00:54+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -12,37 +12,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.3\n"
 
-#: ../mangascan/main_window.py:189
+#: ../mangascan/main_window.py:200
+msgid "Are you sure you want to quit?"
+msgstr "Êtes-vous sûr de vouloir quitter ?"
+
+#: ../mangascan/main_window.py:203
+msgid "Some chapters are currently being downloaded."
+msgstr "Certains chapitres sont en cours de téléchargement."
+
+#: ../mangascan/main_window.py:205
+msgid "Some mangas are currently being updated."
+msgstr "Certains mangas sont en cours de mise à jour."
+
+#: ../mangascan/main_window.py:208
 msgid "Quit?"
 msgstr "Quitter ?"
 
-#: ../mangascan/main_window.py:190
-msgid ""
-"Are you sure you want to quit?\n"
-"Some chapters are currently being downloaded."
-msgstr ""
-"Êtes-vous sûr de vouloir quitter ?\n"
-"Certains chapitres sont en cours de téléchargement."
-
-#: ../mangascan/main_window.py:207 ../mangascan/card.py:136
-#: ../mangascan/card.py:150 ../mangascan/card.py:268 ../mangascan/reader.py:375
-#: ../mangascan/library.py:342 ../mangascan/library.py:366
+#: ../mangascan/main_window.py:226 ../mangascan/updater.py:79
+#: ../mangascan/card.py:112 ../mangascan/card.py:125 ../mangascan/reader.py:394
 msgid "No Internet connection"
 msgstr "Pas de connexion Internet"
 
-#: ../mangascan/card.py:230 ../mangascan/library.py:150
-msgid "Delete?"
-msgstr "Supprimer ?"
-
-#: ../mangascan/card.py:231
-msgid "Are you sure you want to delete this manga?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
-
-#: ../mangascan/card.py:245 ../mangascan/library.py:346
+#: ../mangascan/updater.py:41
 msgid "Start update"
 msgstr "Démarrage de la mise à jour"
 
-#: ../mangascan/card.py:259 ../mangascan/library.py:357
+#: ../mangascan/updater.py:62
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -51,38 +46,48 @@ msgstr ""
 "{0}\n"
 "{1} nouveaux chapitres ont été trouvés"
 
-#: ../mangascan/card.py:264
-msgid "Oops, update failed. Please try again."
+#: ../mangascan/updater.py:75
+msgid ""
+"{0 }\n"
+"Oops, update has failed. Please try again."
 msgstr ""
 "{0}\n"
-"Oups, la mise à jour a échoué. Veuillez réessayer."
+"Oups, la mise à jour a échouée. Veuillez réessayer."
 
-#: ../mangascan/card.py:319
+#: ../mangascan/card.py:219 ../mangascan/library.py:163
+msgid "Delete?"
+msgstr "Supprimer ?"
+
+#: ../mangascan/card.py:220
+msgid "Are you sure you want to delete this manga?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
+
+#: ../mangascan/card.py:280
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
 
-#: ../mangascan/card.py:360
+#: ../mangascan/card.py:321
 msgid "New"
 msgstr "Nouveau"
 
-#: ../mangascan/card.py:368
+#: ../mangascan/card.py:329
 msgid "DOWNLOADED"
 msgstr "TÉLÉCHARGER"
 
-#: ../mangascan/card.py:432
+#: ../mangascan/card.py:390
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../mangascan/card.py:434
+#: ../mangascan/card.py:392
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../mangascan/card.py:436
+#: ../mangascan/card.py:394
 msgid "Mark as read"
 msgstr "Marquer comme lu"
 
-#: ../mangascan/card.py:438
+#: ../mangascan/card.py:396
 msgid "Mark as unread"
 msgstr "Marquer comme non lu"
 
@@ -104,27 +109,19 @@ msgstr "Aucun résultat"
 msgid "Search in {0}..."
 msgstr "Rechercher dans {0}..."
 
-#: ../mangascan/reader.py:206
+#: ../mangascan/reader.py:216
 msgid "Oops, failed to retrieve chapter info. Please try again."
 msgstr ""
 "Oups, impossible de récupérer les informations du chapitre. Veuillez "
 "réessayer."
 
-#: ../mangascan/reader.py:402
+#: ../mangascan/reader.py:421
 msgid "Oops, failed to retrieve page. Please try again."
 msgstr "Oups, impossible de récupérer la page. Veuillez réessayer."
 
-#: ../mangascan/library.py:151
+#: ../mangascan/library.py:164
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
-
-#: ../mangascan/library.py:362
-msgid ""
-"{0 }\n"
-"Oops, update has failed. Please try again."
-msgstr ""
-"{0}\n"
-"Oups, la mise à jour a échouée. Veuillez réessayer."
 
 #: ../mangascan/application.py:37
 msgid "MangaScan"
@@ -150,6 +147,14 @@ msgstr "Ajuster à la largeur"
 msgid "Adapt to height"
 msgstr "Ajuster à la hauteur"
 
+#: ../mangascan/settings_dialog.py:64
+msgid "White"
+msgstr "Blanc"
+
+#: ../mangascan/settings_dialog.py:65
+msgid "Black"
+msgstr "Noir"
+
 #: ../mangascan/model.py:164
 msgid "Complete"
 msgstr "Terminé"
@@ -158,37 +163,37 @@ msgstr "Terminé"
 msgid "Ongoing"
 msgstr "En cours"
 
-#: ../mangascan/model.py:512
+#: ../mangascan/model.py:532
 msgid "Pending"
 msgstr "En attente"
 
-#: ../mangascan/model.py:513
+#: ../mangascan/model.py:533
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../mangascan/model.py:514
+#: ../mangascan/model.py:534
 msgid "Error"
 msgstr "Erreur"
 
-#: ../mangascan/downloader.py:70
+#: ../mangascan/downloader.py:73
 #, python-brace-format
 msgid "Download page {0} / {1}"
 msgstr "Télécharger le page {0} / {1}"
 
-#: ../mangascan/downloader.py:72
+#: ../mangascan/downloader.py:75
 msgid "error"
 msgstr "erreur"
 
-#: ../mangascan/downloader.py:76 ../mangascan/downloader.py:85
+#: ../mangascan/downloader.py:79 ../mangascan/downloader.py:88
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
 msgstr "[{0}] Chapitre {1}"
 
-#: ../mangascan/downloader.py:84
+#: ../mangascan/downloader.py:87
 msgid "Download completed"
 msgstr "Téléchargement terminé"
 
-#: ../mangascan/downloader.py:110
+#: ../mangascan/downloader.py:113
 msgid "Start chapters download"
 msgstr "Démarrage du téléchargement des chapitres"
 
@@ -290,11 +295,15 @@ msgstr "Type de mise à l'échelle pour adapter l'image"
 msgid "Scaling"
 msgstr "Mise à l'échelle"
 
-#: ../data/ui/settings_dialog.ui:254
+#: ../data/ui/settings_dialog.ui:233 ../data/ui/menu_reader.xml:48
+msgid "Background color"
+msgstr "Couleur de fond"
+
+#: ../data/ui/settings_dialog.ui:262
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: ../data/ui/settings_dialog.ui:271
+#: ../data/ui/settings_dialog.ui:279
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrer automatiquement en mode plein écran"
 
@@ -370,6 +379,18 @@ msgstr ""
 #: ../data/info.febvre.MangaScan.appdata.xml.in:18
 msgid "First release"
 msgstr "Première sortie"
+
+#~ msgid ""
+#~ "Are you sure you want to quit?\n"
+#~ "Some chapters are currently being downloaded."
+#~ msgstr ""
+#~ "Êtes-vous sûr de vouloir quitter ?\n"
+#~ "Certains chapitres sont en cours de téléchargement."
+
+#~ msgid "Oops, update failed. Please try again."
+#~ msgstr ""
+#~ "{0}\n"
+#~ "Oups, la mise à jour a échoué. Veuillez réessayer."
 
 #~ msgid "Full screen"
 #~ msgstr "Plein écran"

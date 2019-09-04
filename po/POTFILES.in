@@ -18,3 +18,4 @@ mangascan/main_window.py
 mangascan/model.py
 mangascan/reader.py
 mangascan/settings_dialog.py
+mangascan/updater.py
