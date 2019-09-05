@@ -301,7 +301,7 @@ class Reader():
         else:
             adjust_scroll_handler_id = hadj.connect('changed', adjust_scroll, self.zoom['orig_hadj_value'], self.zoom['orig_vadj_value'])
 
-            self.set_page_image_from_pixbuf()
+            self.set_image()
 
             self.zoom['active'] = False
 
@@ -318,7 +318,7 @@ class Reader():
             return
 
         self.size = self.window.get_size()
-        self.set_page_image_from_pixbuf()
+        self.set_image()
 
     def on_scaling_changed(self, action, variant):
         value = variant.get_string()
@@ -327,6 +327,7 @@ class Reader():
 
         self.chapter.manga.update(dict(scaling=value))
         self.set_scaling()
+        self.set_image()
 
     def on_single_click(self, event):
         self.button_press_timeout_id = None
@@ -402,7 +403,7 @@ class Reader():
             ))
 
             self.size = self.viewport.get_allocation()
-            self.set_page_image_from_pixbuf()
+            self.set_image()
 
             self.image.show()
 
@@ -424,7 +425,14 @@ class Reader():
         thread.daemon = True
         thread.start()
 
-    def set_page_image_from_pixbuf(self):
+    def set_background_color(self):
+        self.background_color_action.set_state(GLib.Variant('s', self.background_color))
+        if self.background_color == 'white':
+            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        else:
+            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
+
+    def set_image(self):
         width = self.pixbuf.get_width()
         height = self.pixbuf.get_height()
 
@@ -445,23 +453,12 @@ class Reader():
 
         self.image.set_from_pixbuf(pixbuf)
 
-    def set_background_color(self):
-        self.background_color_action.set_state(GLib.Variant('s', self.background_color))
-        if self.background_color == 'white':
-            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        else:
-            self.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
-
     def set_reading_direction(self):
         self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))
         self.controls.set_scale_direction(self.reading_direction == 'right-to-left')
 
     def set_scaling(self):
         self.scaling_action.set_state(GLib.Variant('s', self.scaling))
-
-    def show_spinner(self):
-        self.spinner_box.get_children()[0].start()
-        self.spinner_box.show()
 
     def show(self):
         self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-reader'))
@@ -473,3 +470,7 @@ class Reader():
         self.controls.init_fullscreen()
 
         self.window.show_page('reader')
+
+    def show_spinner(self):
+        self.spinner_box.get_children()[0].start()
+        self.spinner_box.show()
