@@ -26,16 +26,10 @@
                 <property name="accelerator">&lt;Primary&gt;P</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkShortcutsGroup">
-            <property name="visible">True</property>
-            <property name="title" translatable="yes" context="Shortcut window description">Reader</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="Shortcut window description">Fullscreen</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Toggle Fullscreen mode</property>
                 <property name="accelerator">F11</property>
               </object>
             </child>

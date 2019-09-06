@@ -60,8 +60,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def add_accelerators(self):
         self.application.set_accels_for_action('app.settings', ['<Control>p'])
         self.application.set_accels_for_action('app.add', ['<Control>plus'])
-
-        self.reader.add_accelerators()
+        self.application.set_accels_for_action('app.fullscreen', ['F11'])
 
     def add_actions(self):
         add_action = Gio.SimpleAction.new('add', None)
@@ -76,10 +75,14 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
         shortcuts_action.connect('activate', self.on_shortcuts_menu_clicked)
 
+        fullscreen_action = Gio.SimpleAction.new('fullscreen', None)
+        fullscreen_action.connect('activate', self.toggle_fullscreen)
+
         self.application.add_action(add_action)
         self.application.add_action(settings_action)
         self.application.add_action(about_action)
         self.application.add_action(shortcuts_action)
+        self.application.add_action(fullscreen_action)
 
         self.library.add_actions()
         self.card.add_actions()
@@ -141,18 +144,6 @@ class MainWindow(Gtk.ApplicationWindow):
     def change_layout(self):
         pass
 
-    def hide_notification(self):
-        self.builder.get_object('notification_revealer').set_reveal_child(False)
-
-    def on_about_menu_clicked(self, action, param):
-        builder = Gtk.Builder()
-        builder.add_from_resource('/info/febvre/MangaScan/about_dialog.ui')
-
-        about_dialog = builder.get_object('about_dialog')
-        about_dialog.set_modal(True)
-        about_dialog.set_transient_for(self)
-        about_dialog.present()
-
     def confirm(self, title, message, callback):
         def on_response(dialog, response_id):
             if response_id == Gtk.ResponseType.YES:
@@ -178,6 +169,18 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.get_content_area().add(label)
 
         dialog.show_all()
+
+    def hide_notification(self):
+        self.builder.get_object('notification_revealer').set_reveal_child(False)
+
+    def on_about_menu_clicked(self, action, param):
+        builder = Gtk.Builder()
+        builder.add_from_resource('/info/febvre/MangaScan/about_dialog.ui')
+
+        about_dialog = builder.get_object('about_dialog')
+        about_dialog.set_modal(True)
+        about_dialog.set_transient_for(self)
+        about_dialog.present()
 
     def on_application_quit(self, window, event):
         def before_quit():
@@ -230,6 +233,7 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
+            self.set_unfullscreen()
             self.card.update_chapter_row(self.reader.chapter)
             self.card.show()
 
@@ -276,6 +280,16 @@ class MainWindow(Gtk.ApplicationWindow):
             size = self.get_size()
             mangascan.config_manager.set_window_size([size.width, size.height])
 
+    def set_fullscreen(self):
+        if not self._is_fullscreen:
+            self.reader.controls.on_fullscreen()
+            self.fullscreen()
+
+    def set_unfullscreen(self):
+        if self._is_fullscreen:
+            self.reader.controls.on_unfullscreen()
+            self.unfullscreen()
+
     def show_notification(self, message):
         self.builder.get_object('notification_label').set_text(message)
         self.builder.get_object('notification_revealer').set_reveal_child(True)
@@ -300,3 +314,9 @@ class MainWindow(Gtk.ApplicationWindow):
             self.title_stack.set_transition_type(transition_type)
 
         self.page = name
+
+    def toggle_fullscreen(self, *args):
+        if self._is_fullscreen:
+            self.set_unfullscreen()
+        else:
+            self.set_fullscreen()

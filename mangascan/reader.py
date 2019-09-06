@@ -12,7 +12,6 @@ from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
-from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
@@ -24,7 +23,6 @@ from mangascan.model import Chapter
 class Controls():
     is_visible = False
     reader = None
-    chapter = None
 
     FULLSCREEN_ICON_NAME = 'view-fullscreen-symbolic'
     UNFULLSCREEN_ICON_NAME = 'view-restore-symbolic'
@@ -32,41 +30,50 @@ class Controls():
     def __init__(self, reader):
         self.reader = reader
 
-        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.box.get_style_context().add_class('reader-controls-box')
-        self.box.set_valign(Gtk.Align.END)
+        #
+        # Top box
+        #
+        self.top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.top_box.set_valign(Gtk.Align.START)
 
-        # Chapter's title
-        self.label = Gtk.Label()
-        self.label.get_style_context().add_class('reader-controls-title-label')
-        self.label.set_halign(Gtk.Align.START)
-        self.label.set_ellipsize(Pango.EllipsizeMode.END)
-        self.box.pack_start(self.label, True, True, 4)
+        # Headerbar
+        self.headerbar = Gtk.HeaderBar()
 
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        # Back button
+        self.back_button = Gtk.Button.new_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
+        self.back_button.connect('clicked', self.reader.window.on_left_button_clicked, None)
+        self.headerbar.pack_start(self.back_button)
 
-        # Chapter's pages slider: current / nb
-        self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
-        self.scale.get_style_context().add_class('reader-controls-pages-scale')
-        self.scale.set_value_pos(Gtk.PositionType.RIGHT)
-
-        def format(scale, value):
-            return '{0}/{1}'.format(int(value), len(self.chapter.pages))
-
-        self.scale.connect('format-value', format)
-        self.scale.connect('value-changed', self.on_scale_value_changed)
-        hbox.pack_start(self.scale, True, True, 0)
-
-        # Fullscreen toggle button
+        # Fullscreen mode toggle button
         self.fullscreen_button = Gtk.ToggleButton()
         self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
         self.fullscreen_button.set_active(False)
-        self.fullscreen_button.connect('clicked', self.toggle_fullscreen)
-        hbox.pack_start(self.fullscreen_button, False, True, 0)
+        self.fullscreen_button.connect('clicked', self.reader.window.toggle_fullscreen)
+        self.headerbar.pack_end(self.fullscreen_button)
 
-        self.box.pack_start(hbox, True, True, 0)
+        self.top_box.pack_start(self.headerbar, True, True, 0)
+        self.reader.overlay.add_overlay(self.top_box)
 
-        self.reader.overlay.add_overlay(self.box)
+        #
+        # Bottom box
+        #
+        self.bottom_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.bottom_box.get_style_context().add_class('reader-controls-box')
+        self.bottom_box.set_valign(Gtk.Align.END)
+        self.bottom_box.set_margin_left(12)
+        self.bottom_box.set_margin_right(12)
+
+        # Number of pages
+        self.nb_pages_label = Gtk.Label()
+        self.nb_pages_label.set_halign(Gtk.Align.START)
+        self.bottom_box.pack_start(self.nb_pages_label, False, True, 4)
+
+        # Chapter's pages slider: current / nb
+        self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
+        self.scale.connect('value-changed', self.on_scale_value_changed)
+
+        self.bottom_box.pack_start(self.scale, True, True, 0)
+        self.reader.overlay.add_overlay(self.bottom_box)
 
     def goto_page(self, index):
         if self.scale.get_value() == index:
@@ -76,37 +83,47 @@ class Controls():
 
     def hide(self):
         self.is_visible = False
-        self.box.hide()
+        self.top_box.hide()
+        self.bottom_box.hide()
 
-    def init(self, chapter):
-        self.chapter = chapter
+    def init(self):
+        chapter = self.reader.chapter
 
-        self.scale.set_range(1, len(self.chapter.pages))
-        self.label.set_text(self.chapter.title)
+        self.headerbar.set_title(chapter.manga.name)
+        self.headerbar.set_subtitle(chapter.title)
+
+        self.scale.set_range(1, len(chapter.pages))
+        self.nb_pages_label.set_text(str(len(chapter.pages)))
 
     def init_fullscreen(self):
         if mangascan.config_manager.get_fullscreen():
             self.fullscreen_button.set_active(True)
 
+    def on_fullscreen(self):
+        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+        if self.is_visible:
+            self.top_box.show_all()
+
     def on_scale_value_changed(self, scale):
         self.reader.render_page(int(scale.get_value()) - 1)
 
+    def on_unfullscreen(self):
+        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
+        if self.is_visible:
+            self.top_box.hide()
+
     def set_scale_direction(self, inverted):
         self.scale.set_inverted(inverted)
+        self.scale.set_value_pos(Gtk.PositionType.RIGHT if inverted else Gtk.PositionType.LEFT)
+        self.bottom_box.set_child_packing(self.nb_pages_label, False, True, 4, Gtk.PackType.START if inverted else Gtk.PackType.END)
 
     def show(self):
         self.is_visible = True
-        self.box.show_all()
 
-    def toggle_fullscreen(self, *args):
-        is_fullscreen = self.reader.window.get_window().get_state() & Gdk.WindowState.FULLSCREEN == Gdk.WindowState.FULLSCREEN
+        if self.reader.window._is_fullscreen:
+            self.top_box.show_all()
 
-        if is_fullscreen:
-            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-            self.reader.window.unfullscreen()
-        else:
-            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-            self.reader.window.fullscreen()
+        self.bottom_box.show_all()
 
 
 class Reader():
@@ -152,9 +169,6 @@ class Reader():
     def scaling(self):
         return self.chapter.manga.scaling or mangascan.config_manager.get_scaling()
 
-    def add_accelerators(self):
-        self.window.application.set_accels_for_action('app.reader.fullscreen', ['F11'])
-
     def add_actions(self):
         # Reading direction
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
@@ -171,14 +185,9 @@ class Reader():
             'reader.background-color', GLib.VariantType.new('s'), GLib.Variant('s', 'white'))
         self.background_color_action.connect('change-state', self.on_background_color_changed)
 
-        # Fullscreen
-        self.fullscreen_action = Gio.SimpleAction.new('reader.fullscreen', None)
-        self.fullscreen_action.connect('activate', self.controls.toggle_fullscreen)
-
         self.window.application.add_action(self.reading_direction_action)
         self.window.application.add_action(self.scaling_action)
         self.window.application.add_action(self.background_color_action)
-        self.window.application.add_action(self.fullscreen_action)
 
     def hide_spinner(self):
         self.spinner_box.hide()
@@ -202,7 +211,7 @@ class Reader():
                 index = len(self.chapter.pages) - 1
 
             self.hide_spinner()
-            self.controls.init(self.chapter)
+            self.controls.init()
             self.controls.goto_page(index + 1)
 
         def error():
