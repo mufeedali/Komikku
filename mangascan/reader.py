@@ -44,6 +44,12 @@ class Controls():
         self.back_button.connect('clicked', self.reader.window.on_left_button_clicked, None)
         self.headerbar.pack_start(self.back_button)
 
+        # Menu button
+        self.menu_button = Gtk.MenuButton.new()
+        self.menu_button.get_children()[0].set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.menu_button.set_menu_model(self.reader.builder.get_object('menu-reader'))
+        self.headerbar.pack_end(self.menu_button)
+
         # Fullscreen mode toggle button
         self.fullscreen_button = Gtk.ToggleButton()
         self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
