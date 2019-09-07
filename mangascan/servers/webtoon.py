@@ -156,7 +156,7 @@ class Webtoon():
         lis_elements = soup.find('ul', id='_episodeList').find_all('li', recursive=False)
 
         data = []
-        for li_element in lis_elements:
+        for li_element in reversed(lis_elements):
             if li_element.get('data-episode-no') is None:
                 continue
 
