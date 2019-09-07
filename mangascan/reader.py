@@ -47,10 +47,10 @@ class Controls():
         self.menu_button.set_menu_model(self.reader.builder.get_object('menu-reader'))
         self.headerbar.pack_end(self.menu_button)
 
-        # Fullscreen mode toggle button
-        self.fullscreen_button = Gtk.Button.new_from_icon_name('view-restore-symbolic', Gtk.IconSize.BUTTON)
-        self.fullscreen_button.connect('clicked', self.reader.window.toggle_fullscreen)
-        self.headerbar.pack_end(self.fullscreen_button)
+        # Unfullscreen button
+        self.unfullscreen_button = Gtk.Button.new_from_icon_name('view-restore-symbolic', Gtk.IconSize.BUTTON)
+        self.unfullscreen_button.connect('clicked', self.reader.window.toggle_fullscreen)
+        self.headerbar.pack_end(self.unfullscreen_button)
 
         self.top_box.pack_start(self.headerbar, True, True, 0)
         self.reader.overlay.add_overlay(self.top_box)
@@ -98,7 +98,7 @@ class Controls():
 
     def init_fullscreen(self):
         if mangascan.config_manager.get_fullscreen():
-            self.fullscreen_button.set_active(True)
+            self.unfullscreen_button.emit('clicked')
 
     def on_fullscreen(self):
         if self.is_visible:
