@@ -24,14 +24,11 @@ class Controls():
     is_visible = False
     reader = None
 
-    FULLSCREEN_ICON_NAME = 'view-fullscreen-symbolic'
-    UNFULLSCREEN_ICON_NAME = 'view-restore-symbolic'
-
     def __init__(self, reader):
         self.reader = reader
 
         #
-        # Top box
+        # Top box (visible in fullscreen mode only)
         #
         self.top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.top_box.set_valign(Gtk.Align.START)
@@ -51,9 +48,7 @@ class Controls():
         self.headerbar.pack_end(self.menu_button)
 
         # Fullscreen mode toggle button
-        self.fullscreen_button = Gtk.ToggleButton()
-        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
-        self.fullscreen_button.set_active(False)
+        self.fullscreen_button = Gtk.Button.new_from_icon_name('view-restore-symbolic', Gtk.IconSize.BUTTON)
         self.fullscreen_button.connect('clicked', self.reader.window.toggle_fullscreen)
         self.headerbar.pack_end(self.fullscreen_button)
 
@@ -106,7 +101,6 @@ class Controls():
             self.fullscreen_button.set_active(True)
 
     def on_fullscreen(self):
-        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.UNFULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
         if self.is_visible:
             self.top_box.show_all()
 
@@ -114,7 +108,6 @@ class Controls():
         self.reader.render_page(int(scale.get_value()) - 1)
 
     def on_unfullscreen(self):
-        self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name(self.FULLSCREEN_ICON_NAME, Gtk.IconSize.BUTTON))
         if self.is_visible:
             self.top_box.hide()
 
