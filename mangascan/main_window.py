@@ -234,7 +234,11 @@ class MainWindow(Gtk.ApplicationWindow):
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
             self.set_unfullscreen()
-            self.card.update_chapter_row(self.reader.chapter)
+
+            # In card page, update all previously chapters consulted (last page read may have changed)
+            for chapter in self.reader.chapters_consulted:
+                self.card.update_chapter_row(chapter)
+
             self.card.show()
 
     def on_resize(self, window):

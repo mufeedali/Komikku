@@ -96,10 +96,6 @@ class Controls():
         self.scale.set_range(1, len(chapter.pages))
         self.nb_pages_label.set_text(str(len(chapter.pages)))
 
-    def init_fullscreen(self):
-        if mangascan.config_manager.get_fullscreen():
-            self.unfullscreen_button.emit('clicked')
-
     def on_fullscreen(self):
         if self.is_visible:
             self.top_box.show_all()
@@ -128,6 +124,7 @@ class Controls():
 class Reader():
     button_press_timeout_id = None
     chapter = None
+    chapters_consulted = []
     default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
     pixbuf = None
     size = None
@@ -220,9 +217,13 @@ class Reader():
 
         if index is None:
             # We come from library
+            # Reset list of chapters consulted
+            self.chapters_consulted = []
             self.show()
 
         self.chapter = chapter
+        self.chapters_consulted.append(chapter)
+
         self.title_label.set_text(chapter.title)
 
         self.show_spinner()
@@ -475,7 +476,9 @@ class Reader():
         self.image.clear()
         self.pixbuf = None
         self.controls.hide()
-        self.controls.init_fullscreen()
+
+        if mangascan.config_manager.get_fullscreen():
+            self.window.set_fullscreen()
 
         self.window.show_page('reader')
 
