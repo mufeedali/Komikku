@@ -103,7 +103,7 @@ class Downloader():
 
             return False
 
-        if self.status == 'running':
+        if self.status == 'running' or not Download.next():
             return
 
         self.status = 'running'
