@@ -518,6 +518,7 @@
       <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="show_close_button">True</property>
         <child>
           <object class="GtkButton" id="left_button">
             <property name="visible">True</property>
@@ -550,15 +551,50 @@
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
                     <child>
-                      <object class="GtkLabel" id="library_page_title_label">
+                      <object class="GtkBox" id="library_page_title_subtitle_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">MangaScan</property>
-                        <property name="ellipsize">end</property>
-                        <property name="single_line_mode">True</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="valign">center</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="library_page_title_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="label" translatable="yes">MangaScan</property>
+                            <property name="ellipsize">end</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                            <style>
+                              <class name="title"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="library_page_subtitle_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="label" translatable="yes">Library</property>
+                            <property name="ellipsize">end</property>
+                            <property name="single_line_mode">True</property>
+                            <style>
+                              <class name="subtitle"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="name">title</property>
@@ -612,12 +648,17 @@
               <object class="GtkLabel" id="card_page_title_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
                 <property name="label">Manga title</property>
                 <property name="ellipsize">end</property>
                 <property name="single_line_mode">True</property>
                 <attributes>
                   <attribute name="weight" value="bold"/>
                 </attributes>
+                <style>
+                  <class name="title"/>
+                </style>
               </object>
               <packing>
                 <property name="name">card</property>
@@ -625,15 +666,52 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="reader_page_title_label">
+              <object class="GtkBox" id="reader_page_title_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label">Chapter title</property>
-                <property name="ellipsize">end</property>
-                <property name="single_line_mode">True</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                </attributes>
+                <property name="valign">center</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="reader_page_title_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label">Manga title</property>
+                    <property name="ellipsize">end</property>
+                    <property name="single_line_mode">True</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="reader_page_subtitle_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">Chapter title</property>
+                    <property name="ellipsize">end</property>
+                    <property name="single_line_mode">True</property>
+                    <style>
+                      <class name="subtitle"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="name">reader</property>

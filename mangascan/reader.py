@@ -90,8 +90,12 @@ class Controls():
     def init(self):
         chapter = self.reader.chapter
 
+        # Set title & subtitle
         self.headerbar.set_title(chapter.manga.name)
-        self.headerbar.set_subtitle(chapter.title)
+        subtitle = chapter.title
+        if chapter.manga.name in subtitle:
+            subtitle = subtitle.replace(chapter.manga.name, '').strip()
+        self.headerbar.set_subtitle(subtitle)
 
         self.scale.set_range(1, len(chapter.pages))
         self.nb_pages_label.set_text(str(len(chapter.pages)))
@@ -136,6 +140,7 @@ class Reader():
         self.builder.add_from_resource('/info/febvre/MangaScan/ui/menu_reader.xml')
 
         self.title_label = self.builder.get_object('reader_page_title_label')
+        self.subtitle_label = self.builder.get_object('reader_page_subtitle_label')
 
         self.viewport = self.builder.get_object('reader_page_viewport')
         self.scrolledwindow = self.viewport.get_parent()
@@ -224,7 +229,12 @@ class Reader():
         self.chapter = chapter
         self.chapters_consulted.append(chapter)
 
-        self.title_label.set_text(chapter.title)
+        # Set title & subtitle
+        self.title_label.set_text(chapter.manga.name)
+        subtitle = chapter.title
+        if chapter.manga.name in subtitle:
+            subtitle = subtitle.replace(chapter.manga.name, '').strip()
+        self.subtitle_label.set_text(subtitle)
 
         self.show_spinner()
 
