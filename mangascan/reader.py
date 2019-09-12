@@ -453,17 +453,20 @@ class Reader():
         width = self.pixbuf.get_width()
         height = self.pixbuf.get_height()
 
-        if self.scaling == 'width' or (self.scaling == 'screen' and self.size.width <= self.size.height):
+        adapt_to_width_height = height / (width / self.size.width)
+        adapt_to_height_width = width / (height / self.size.height)
+
+        if self.scaling == 'width' or (self.scaling == 'screen' and adapt_to_width_height <= self.size.height):
             # Adapt image to width
             pixbuf = self.pixbuf.scale_simple(
                 self.size.width,
-                height / (width / self.size.width),
+                adapt_to_width_height,
                 InterpType.BILINEAR
             )
-        elif self.scaling == 'height' or (self.scaling == 'screen' and self.size.width > self.size.height):
-            # Adjust image to height
+        elif self.scaling == 'height' or (self.scaling == 'screen' and adapt_to_height_width <= self.size.width):
+            # Adapt image to height
             pixbuf = self.pixbuf.scale_simple(
-                width / (height / self.size.height),
+                adapt_to_height_width,
                 self.size.height,
                 InterpType.BILINEAR
             )
