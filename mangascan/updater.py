@@ -4,20 +4,19 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-from gi.repository import GLib
-
 from gettext import gettext as _
 import threading
 
-from mangascan.model import Manga
+from gi.repository import GLib
 
-queue = []
+from mangascan.model import Manga
 
 
 class Updater():
     """
     Mangas updater
     """
+    queue = []
     status = None
     stop_flag = False
 
@@ -25,27 +24,23 @@ class Updater():
         self.window = window
 
     def add(self, mangas):
-        global queue
-
-        if type(mangas) == list:
+        if isinstance(mangas, list):
             for manga in mangas:
-                if manga.id not in queue:
-                    queue.append(manga.id)
-        elif mangas.id not in queue:
-            queue.append(mangas.id)
+                if manga.id not in self.queue:
+                    self.queue.append(manga.id)
+        elif mangas.id not in self.queue:
+            self.queue.append(mangas.id)
 
     def start(self):
         def run():
-            global queue
-
             self.window.show_notification(_('Start update'))
 
-            while len(queue):
+            while self.queue:
                 if self.stop_flag is True:
                     self.status = 'interrupted'
                     break
 
-                manga = Manga.get(queue.pop(0))
+                manga = Manga.get(self.queue.pop(0))
                 if manga is None:
                     continue
 
@@ -90,10 +85,8 @@ class Updater():
         thread.start()
 
     def remove(self, manga):
-        global queue
-
-        if manga.id in queue:
-            queue.remove(manga.id)
+        if manga.id in self.queue:
+            self.queue.remove(manga.id)
 
     def stop(self):
         if self.status == 'running':

@@ -10,18 +10,17 @@ import requests
 from requests.exceptions import ConnectionError
 from urllib.parse import urlsplit
 
-from mangascan.servers import user_agent
-from mangascan.servers import user_agent_mobile
+from mangascan.servers import Server
+from mangascan.servers import USER_AGENT
+from mangascan.servers import USER_AGENT_MOBILE
 
 
 server_id = 'webtoon'
 server_name = 'WEBTOON'
 server_lang = 'en'
 
-session = None
 
-
-class Webtoon():
+class Webtoon(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -33,10 +32,8 @@ class Webtoon():
     chapter_url = base_url + '{0}'
 
     def __init__(self):
-        global session
-
-        if session is None:
-            session = requests.Session()
+        if self.session is None:
+            self.session = requests.Session()
 
     def get_manga_data(self, initial_data):
         """
@@ -47,7 +44,7 @@ class Webtoon():
         assert 'url' in initial_data, 'Manga url is missing in initial data'
 
         try:
-            r = session.get(self.manga_url.format(initial_data['url']), headers={'user-agent': user_agent})
+            r = self.session.get(self.manga_url.format(initial_data['url']), headers={'user-agent': USER_AGENT})
         except ConnectionError:
             return None
 
@@ -110,7 +107,7 @@ class Webtoon():
         url = self.chapter_url.format(chapter_url)
 
         try:
-            r = session.get(url, headers={'user-agent': user_agent})
+            r = self.session.get(url, headers={'user-agent': USER_AGENT})
         except ConnectionError:
             return None
 
@@ -142,7 +139,7 @@ class Webtoon():
 
         try:
             # Use a Mobile user agent
-            r = session.get(url, headers={'user-agent': user_agent_mobile})
+            r = self.session.get(url, headers={'user-agent': USER_AGENT_MOBILE})
         except ConnectionError:
             return []
 
@@ -177,7 +174,7 @@ class Webtoon():
         Returns chapter page scan (image) content
         """
         try:
-            r = session.get(page['image'], headers={'referer': self.base_url, 'user-agent': user_agent})
+            r = self.session.get(page['image'], headers={'referer': self.base_url, 'user-agent': USER_AGENT})
         except ConnectionError:
             return (None, None)
 
@@ -185,15 +182,15 @@ class Webtoon():
 
         if r.status_code == 200 and mime_type.startswith('image'):
             return (page['image'].split('/')[-1].split('?')[0], r.content)
-        else:
-            return (None, None)
+
+        return (None, None)
 
     def get_manga_cover_image(self, cover_url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = session.get(cover_url, headers={'referer': self.base_url, 'user-agent': user_agent})
+            r = self.session.get(cover_url, headers={'referer': self.base_url, 'user-agent': USER_AGENT})
         except ConnectionError:
             return None
 
@@ -209,27 +206,27 @@ class Webtoon():
 
     def search(self, term):
         try:
-            r = session.get(self.search_url, params=dict(keyword=term), headers={'user-agent': user_agent})
+            r = self.session.get(self.search_url, params=dict(keyword=term), headers={'user-agent': USER_AGENT})
         except ConnectionError:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        if r.status_code == 200 or mime_type == 'text/html':
-            soup = BeautifulSoup(r.text, 'html.parser')
-
-            results = []
-            cards = soup.find_all('a', class_=['card_item', 'challenge_item'])
-            for card in cards:
-                # Small difference here compared to other servers
-                # the slug can't be used to forge manga URL, we must store the full url
-                results.append(dict(
-                    slug=card.get('href').split('=')[-1],
-                    url=card.get('href'),
-                    name=card.find('p', class_='subj').text,
-                    cover=card.img.get('src'),
-                ))
-
-            return results
-        else:
+        if r.status_code != 200 or mime_type != 'text/html':
             return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        cards = soup.find_all('a', class_=['card_item', 'challenge_item'])
+        for card in cards:
+            # Small difference here compared to other servers
+            # the slug can't be used to forge manga URL, we must store the full url
+            results.append(dict(
+                slug=card.get('href').split('=')[-1],
+                url=card.get('href'),
+                name=card.find('p', class_='subj').text,
+                cover=card.img.get('src'),
+            ))
+
+        return results

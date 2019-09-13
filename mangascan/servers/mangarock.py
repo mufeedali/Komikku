@@ -12,20 +12,20 @@ from requests.exceptions import ConnectionError
 
 from mangascan.servers import convert_mri_data_to_webp_buffer
 from mangascan.servers import convert_webp_buffer
-from mangascan.servers import user_agent
+from mangascan.servers import Server
+from mangascan.servers import USER_AGENT
 
 server_id = 'mangarock'
 server_name = 'Manga Rock'
 server_lang = 'en'
 
-scraper = None
 headers = {
-    'User-Agent': user_agent,
+    'User-Agent': USER_AGENT,
     'Origin': 'https://mangarock.com',
 }
 
 
-class Mangarock():
+class Mangarock(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -39,11 +39,9 @@ class Mangarock():
     manga_url = base_url + '/manga/{0}'
 
     def __init__(self):
-        global scraper
-
-        if scraper is None:
-            scraper = cloudscraper.create_scraper()
-            scraper.headers.update(headers)
+        if self.session is None:
+            self.session = cloudscraper.create_scraper()
+            self.session.headers.update(headers)
 
     def get_manga_data(self, initial_data):
         """
@@ -54,7 +52,7 @@ class Mangarock():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = scraper.get(self.api_manga_url.format(initial_data['slug']))
+            r = self.session.get(self.api_manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -109,7 +107,7 @@ class Mangarock():
         url = self.api_chapter_url.format(chapter_slug)
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -138,7 +136,7 @@ class Mangarock():
         """
         image_url = page['image']
         try:
-            r = scraper.get(image_url)
+            r = self.session.get(image_url)
         except ConnectionError:
             return (None, None)
 
@@ -148,20 +146,22 @@ class Mangarock():
         image_name = image_url.split('/')[-1]
         buffer = r.content
         mime_type = magic.from_buffer(r.content[:128], mime=True)
+
         if mime_type == 'application/octet-stream':
             buffer = convert_mri_data_to_webp_buffer(buffer)
             return (image_name, convert_webp_buffer(buffer))
-        elif mime_type.startswith('image'):
+
+        if mime_type.startswith('image'):
             return (image_name, buffer)
-        else:
-            return (None, None)
+
+        return (None, None)
 
     def get_manga_cover_image(self, cover_path):
         """
         Returns manga cover (image) content
         """
         try:
-            r = scraper.get(cover_path)
+            r = self.session.get(cover_path)
         except ConnectionError:
             return None
 
@@ -170,13 +170,13 @@ class Mangarock():
 
         buffer = r.content
         mime_type = magic.from_buffer(buffer[:128], mime=True)
-        if mime_type.startswith('image'):
-            if mime_type == 'image/webp':
-                buffer = convert_webp_buffer(buffer)
-
-            return buffer
-        else:
+        if not mime_type.startswith('image'):
             return None
+
+        if mime_type == 'image/webp':
+            buffer = convert_webp_buffer(buffer)
+
+        return buffer
 
     def get_manga_url(self, slug, url):
         """
@@ -186,30 +186,30 @@ class Mangarock():
 
     def search(self, term):
         try:
-            r = scraper.post(self.api_search_url, json={'type': 'series', 'keywords': term})
+            r = self.session.post(self.api_search_url, json={'type': 'series', 'keywords': term})
         except ConnectionError:
             return None
 
-        if r.status_code == 200:
-            try:
-                res = r.json()
-            except json.decoder.JSONDecodeError:
-                return None
-
-            if res['code'] != 0:
-                return None
-
-            # Returned data for each manga:
-            # oid: slug of the manga
-            results = []
-            for oid in res['data']:
-                data = self.get_manga_data(dict(slug=oid))
-                if data:
-                    results.append(dict(
-                        name=data['name'],
-                        slug=data['slug'],
-                    ))
-
-            return results
-        else:
+        if r.status_code != 200:
             return None
+
+        try:
+            res = r.json()
+        except json.decoder.JSONDecodeError:
+            return None
+
+        if res['code'] != 0:
+            return None
+
+        # Returned data for each manga:
+        # oid: slug of the manga
+        results = []
+        for oid in res['data']:
+            data = self.get_manga_data(dict(slug=oid))
+            if data:
+                results.append(dict(
+                    name=data['name'],
+                    slug=data['slug'],
+                ))
+
+        return results

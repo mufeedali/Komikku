@@ -5,6 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+from threading import Timer
 import time
 
 from gi.repository import Gdk
@@ -13,8 +14,6 @@ from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Handy
-
-from threading import Timer
 
 from mangascan.add_dialog import AddDialog
 import mangascan.config_manager
@@ -214,10 +213,9 @@ class MainWindow(Gtk.ApplicationWindow):
             )
 
             return True
-        else:
-            before_quit()
 
-            return False
+        before_quit()
+        return False
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':

@@ -48,10 +48,11 @@ class Card():
             """
             if child1.chapter.rank > child2.chapter.rank:
                 return -1 if self.sort_order == 'desc' else 1
-            elif child1.chapter.rank < child2.chapter.rank:
+
+            if child1.chapter.rank < child2.chapter.rank:
                 return 1 if self.sort_order == 'desc' else -1
-            else:
-                return 0
+
+            return 0
 
         self.listbox.set_sort_func(sort)
 
@@ -160,9 +161,9 @@ class Card():
 
         # Create a fresh instance of manga
         if manga:
-            self.manga = Manga.get(manga.id)
+            self.manga = Manga.get(manga.id, manga.server)
         else:
-            self.manga = Manga.get(self.manga.id)
+            self.manga = Manga.get(self.manga.id, self.manga.server)
 
         self.populate()
 

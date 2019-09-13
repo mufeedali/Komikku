@@ -9,16 +9,15 @@ import magic
 import requests
 from requests.exceptions import ConnectionError
 
-from mangascan.servers import user_agent
+from mangascan.servers import Server
+from mangascan.servers import USER_AGENT
 
 server_id = 'manganelo'
 server_name = 'MangaNelo'
 server_lang = 'en'
 
-session = None
 
-
-class Manganelo():
+class Manganelo(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -30,11 +29,9 @@ class Manganelo():
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
 
     def __init__(self):
-        global session
-
-        if session is None:
-            session = requests.Session()
-            session.headers.update({'user-agent': user_agent})
+        if self.session is None:
+            self.session = requests.Session()
+            self.session.headers.update({'user-agent': USER_AGENT})
 
     def get_manga_data(self, initial_data):
         """
@@ -45,7 +42,7 @@ class Manganelo():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = session.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -118,7 +115,7 @@ class Manganelo():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = session.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -147,7 +144,7 @@ class Manganelo():
         Returns chapter page scan (image) content
         """
         try:
-            r = session.get(page['image'])
+            r = self.session.get(page['image'])
         except ConnectionError:
             return (None, None)
 
@@ -160,7 +157,7 @@ class Manganelo():
         Returns manga cover (image) content
         """
         try:
-            r = session.get(cover_url)
+            r = self.session.get(cover_url)
         except ConnectionError:
             return None
 
@@ -176,7 +173,7 @@ class Manganelo():
 
     def search(self, term):
         try:
-            r = session.post(self.search_url, data=dict(searchword=term))
+            r = self.session.post(self.search_url, data=dict(searchword=term))
         except ConnectionError:
             return None
 

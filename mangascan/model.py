@@ -52,8 +52,8 @@ def check_db():
         db_conn.close()
 
         return res[0] == 'ok' and fk_violations == 0
-    else:
-        return False
+
+    return False
 
 
 def create_db_connection():
@@ -151,23 +151,23 @@ def insert_row(db_conn, table, data):
 
 def update_row(db_conn, table, id, data):
     db_conn.execute(
-        'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data.keys()])),
+        'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
         tuple(data.values()) + (id,)
     )
 
 
-class Manga(object):
-    chapters_ = None
-    server = None
+class Manga:
+    _chapters = None
+    _server = None
 
     STATUSES = dict(
         complete=_('Complete'),
-        ongoing=_('Ongoing')
+        ongoing=_('Ongoing'),
     )
 
     def __init__(self, server=None):
         if server:
-            self.server = server
+            self._server = server
 
     @classmethod
     def get(cls, id, server=None):
@@ -178,19 +178,15 @@ class Manga(object):
         if row is None:
             return None
 
-        m = cls(server)
+        manga = cls(server=server)
         for key in row.keys():
-            setattr(m, key, row[key])
+            setattr(manga, key, row[key])
 
-        if m.server is None:
-            server_module = importlib.import_module('.' + m.server_id, package="mangascan.servers")
-            m.server = getattr(server_module, m.server_id.capitalize())()
-
-        return m
+        return manga
 
     @classmethod
     def new(cls, data, server=None):
-        m = cls(server=server)
+        manga = cls(server=server)
 
         data = data.copy()
         chapters = data.pop('chapters')
@@ -205,51 +201,51 @@ class Manga(object):
             last_update=None,
         ))
 
-        for key in data.keys():
-            setattr(m, key, data[key])
+        for key in data:
+            setattr(manga, key, data[key])
 
         db_conn = create_db_connection()
         with db_conn:
-            m.id = insert_row(db_conn, 'mangas', data)
+            manga.id = insert_row(db_conn, 'mangas', data)
         db_conn.close()
 
-        m.chapters_ = []
+        manga._chapters = []
         for rank, chapter_data in enumerate(chapters):
-            chapter = Chapter.new(chapter_data, rank, m.id)
+            chapter = Chapter.new(chapter_data, rank, manga.id)
             if chapter is not None:
-                m.chapters_ = [chapter, ] + m.chapters_
+                manga._chapters = [chapter, ] + manga._chapters
 
-        if not os.path.exists(m.path):
-            os.makedirs(m.path)
+        if not os.path.exists(manga.path):
+            os.makedirs(manga.path)
 
-        m._save_cover(cover_path_or_url)
+        manga._save_cover(cover_path_or_url)
 
-        return m
+        return manga
 
     @property
     def chapters(self):
-        if self.chapters_ is None:
+        if self._chapters is None:
             db_conn = create_db_connection()
             if self.sort_order == 'asc':
                 rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank ASC', (self.id,))
             else:
                 rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,))
 
-            self.chapters_ = []
+            self._chapters = []
             for row in rows:
-                self.chapters_.append(Chapter(row=row))
+                self._chapters.append(Chapter(row=row))
 
             db_conn.close()
 
-        return self.chapters_
+        return self._chapters
 
     @property
     def cover_fs_path(self):
         path = os.path.join(self.path, 'cover.jpg')
         if os.path.exists(path):
             return path
-        else:
-            return None
+
+        return None
 
     @property
     def nb_recent_chapters(self):
@@ -262,6 +258,14 @@ class Manga(object):
     @property
     def path(self):
         return os.path.join(str(Path.home()), 'MangaScan', self.server_id, self.name)
+
+    @property
+    def server(self):
+        if self._server is None:
+            server_module = importlib.import_module('.' + self.server_id, package='mangascan.servers')
+            self._server = getattr(server_module, self.server_id.capitalize())()
+
+        return self._server
 
     def delete(self):
         db_conn = create_db_connection()
@@ -296,7 +300,7 @@ class Manga(object):
         :return: True on success False otherwise
         """
         # Update
-        for key in data.keys():
+        for key in data:
             setattr(self, key, data[key])
 
         db_conn = create_db_connection()
@@ -359,10 +363,10 @@ class Manga(object):
                 if row['slug'] not in chapters_slugs:
                     db_conn.execute('DELETE FROM chapters WHERE id = ?', (row['id'],))
 
-            self.chapters_ = None
+            self._chapters = None
 
             # Update
-            for key in data.keys():
+            for key in data:
                 setattr(self, key, data[key])
 
             update_row(db_conn, 'mangas', self.id, data)
@@ -372,8 +376,8 @@ class Manga(object):
         return True, nb_recent_chapters
 
 
-class Chapter(object):
-    manga_ = None
+class Chapter:
+    _manga = None
 
     def __init__(self, row=None):
         if row is not None:
@@ -412,7 +416,7 @@ class Chapter(object):
             last_page_read_index=None,
         ))
 
-        for key in data.keys():
+        for key in data:
             setattr(c, key, data[key])
 
         db_conn = create_db_connection()
@@ -425,10 +429,10 @@ class Chapter(object):
 
     @property
     def manga(self):
-        if self.manga_ is None:
-            self.manga_ = Manga.get(self.manga_id)
+        if self._manga is None:
+            self._manga = Manga.get(self.manga_id)
 
-        return self.manga_
+        return self._manga
 
     @property
     def path(self):
@@ -462,8 +466,8 @@ class Chapter(object):
                 self.update(dict(pages=self.pages))
 
             return page_path
-        else:
-            return None
+
+        return None
 
     def get_page_path(self, page_index):
         if self.pages[page_index]['image'] is not None:
@@ -477,8 +481,8 @@ class Chapter(object):
             path = os.path.join(self.path, imagename)
 
             return path if os.path.exists(path) else None
-        else:
-            return None
+
+        return None
 
     def reset(self):
         if os.path.exists(self.path):
@@ -498,7 +502,7 @@ class Chapter(object):
         :param dict data: fields to update
         :return: True on success False otherwise
         """
-        for key in data.keys():
+        for key in data:
             setattr(self, key, data[key])
 
         db_conn = create_db_connection()
@@ -527,7 +531,7 @@ class Chapter(object):
         return self.update(data)
 
 
-class Download(object):
+class Download:
     STATUSES = dict(
         pending=_('Pending'),
         downloading=_('Downloading'),
@@ -547,8 +551,8 @@ class Download(object):
                 setattr(c, key, row[key])
 
             return c
-        else:
-            return None
+
+        return None
 
     @classmethod
     def new(cls, chapter_id):
@@ -566,7 +570,7 @@ class Download(object):
             date=datetime.datetime.now(),
         )
 
-        for key in data.keys():
+        for key in data:
             setattr(c, key, data[key])
 
         db_conn = create_db_connection()
@@ -595,13 +599,12 @@ class Download(object):
 
         if row:
             c = cls()
-
             for key in row.keys():
                 setattr(c, key, row[key])
 
             return c
-        else:
-            return None
+
+        return None
 
     def update(self, data):
         """

@@ -5,8 +5,24 @@ import os
 from PIL import Image
 import struct
 
-user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
-user_agent_mobile = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
+SESSIONS = dict()
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
+USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
+
+
+class Server:
+    id = NotImplemented
+    name = NotImplemented
+    lang = NotImplemented
+
+    @property
+    def session(self):
+        return SESSIONS.get(self.id)
+
+    @session.setter
+    def session(self, value):
+        SESSIONS[self.id] = value
 
 
 # https://github.com/italomaia/mangarock.py/blob/master/mangarock/mri_to_webp.py

@@ -9,16 +9,15 @@ import magic
 import requests
 from requests.exceptions import ConnectionError
 
-from mangascan.servers import user_agent
+from mangascan.servers import Server
+from mangascan.servers import USER_AGENT
 
 server_id = 'hatigarmscans'
 server_name = 'Hatigarm Scans'
 server_lang = 'en'
 
-session = None
 
-
-class Hatigarmscans():
+class Hatigarmscans(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -31,11 +30,9 @@ class Hatigarmscans():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        global session
-
-        if session is None:
-            session = requests.Session()
-            session.headers.update({'user-agent': user_agent})
+        if self.session is None:
+            self.session = requests.Session()
+            self.session.headers.update({'user-agent': USER_AGENT})
 
     def get_manga_data(self, initial_data):
         """
@@ -46,7 +43,7 @@ class Hatigarmscans():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = session.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -121,7 +118,7 @@ class Hatigarmscans():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = session.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -152,7 +149,7 @@ class Hatigarmscans():
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
 
         try:
-            r = session.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -165,7 +162,7 @@ class Hatigarmscans():
         Returns manga cover (image) content
         """
         try:
-            r = session.get(self.cover_url.format(cover_path))
+            r = self.session.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -181,7 +178,7 @@ class Hatigarmscans():
 
     def search(self, term):
         try:
-            r = session.get(self.search_url, params=dict(query=term))
+            r = self.session.get(self.search_url, params=dict(query=term))
         except ConnectionError:
             return None
 

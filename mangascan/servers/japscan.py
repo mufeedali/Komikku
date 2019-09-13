@@ -11,14 +11,14 @@ import re
 from requests.exceptions import ConnectionError
 import unicodedata
 
+from mangascan.servers import Server
+
 server_id = 'japscan'
 server_name = 'JapScan'
 server_lang = 'fr'
 
-scraper = None
 
-
-class Japscan():
+class Japscan(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -31,10 +31,8 @@ class Japscan():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        global scraper
-
-        if scraper is None:
-            scraper = cloudscraper.create_scraper()
+        if self.session is None:
+            self.session = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -45,7 +43,7 @@ class Japscan():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = scraper.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -126,7 +124,7 @@ class Japscan():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -167,8 +165,8 @@ class Japscan():
         manga_slug = unicodedata.normalize('NFKD', manga_name)
         manga_slug = manga_slug.encode('ascii', 'ignore').decode()
         manga_slug = re.sub(r'[^a-zA-Z0-9\- ]+', '', manga_slug)  # remove not alphanum characters
-        manga_slug = manga_slug.replace(' - ',  ' ')
-        manga_slug = manga_slug.replace(' ',  '-')
+        manga_slug = manga_slug.replace(' - ', ' ')
+        manga_slug = manga_slug.replace(' ', '-')
 
         chapter_slug = chapter_slug.capitalize()
 
@@ -176,7 +174,7 @@ class Japscan():
         imagename = url.split('/')[-1]
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -189,7 +187,7 @@ class Japscan():
         Returns manga cover (image) content
         """
         try:
-            r = scraper.get(self.cover_url.format(cover_path))
+            r = self.session.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -205,9 +203,9 @@ class Japscan():
 
     def search(self, term):
         try:
-            scraper.get(self.base_url)
+            self.session.get(self.base_url)
 
-            r = scraper.post(self.search_url, data=dict(search=term))
+            r = self.session.post(self.search_url, data=dict(search=term))
         except ConnectionError:
             return None
 

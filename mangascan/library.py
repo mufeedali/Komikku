@@ -39,11 +39,11 @@ class Library():
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
 
-        def filter(child):
+        def _filter(child):
             manga = Manga.get(child.get_children()[0].manga.id)
             return self.search_entry.get_text().lower() in manga.name.lower()
 
-        def sort(child1, child2):
+        def _sort(child1, child2):
             """
             This function gets two children and has to return:
             - a negative integer if the firstone should come before the second one
@@ -55,15 +55,16 @@ class Library():
 
             if manga1.last_read > manga2.last_read:
                 return -1
-            elif manga1.last_read < manga2.last_read:
-                return 1
-            else:
-                return 0
 
-        self.flowbox.set_filter_func(filter)
-        self.flowbox.set_sort_func(sort)
+            if manga1.last_read < manga2.last_read:
+                return 1
+
+            return 0
 
         self.populate()
+
+        self.flowbox.set_filter_func(_filter)
+        self.flowbox.set_sort_func(_sort)
 
     @property
     def cover_size(self):

@@ -9,14 +9,14 @@ import cloudscraper
 import magic
 from requests.exceptions import ConnectionError
 
+from mangascan.servers import Server
+
 server_id = 'scanvf'
 server_name = 'Scanvf'
 server_lang = 'fr'
 
-scraper = None
 
-
-class Scanvf():
+class Scanvf(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -30,10 +30,8 @@ class Scanvf():
     cover_url = base_url + '/{0}'
 
     def __init__(self):
-        global scraper
-
-        if scraper is None:
-            scraper = cloudscraper.create_scraper()
+        if self.session is None:
+            self.session = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -44,7 +42,7 @@ class Scanvf():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = scraper.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -105,7 +103,7 @@ class Scanvf():
         url = self.chapter_url.format(chapter_slug)
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -137,7 +135,7 @@ class Scanvf():
         url = self.page_url.format(chapter_slug, page['slug'])
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -146,7 +144,7 @@ class Scanvf():
         imagename = url.split('/')[-1]
 
         # Get scan image
-        r = scraper.get(self.image_url.format(path))
+        r = self.session.get(self.image_url.format(path))
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -156,7 +154,7 @@ class Scanvf():
         Returns manga cover (image) content
         """
         try:
-            r = scraper.get(self.cover_url.format(cover_path))
+            r = self.session.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -171,26 +169,26 @@ class Scanvf():
         return self.manga_url.format(slug)
 
     def search(self, term):
-        scraper.get(self.base_url)
+        self.session.get(self.base_url)
 
         try:
-            r = scraper.get(self.search_url, params=dict(key=term, send='Recherche'))
+            r = self.session.get(self.search_url, params=dict(key=term, send='Recherche'))
         except ConnectionError:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        if r.status_code == 200 and mime_type == 'text/html':
-            soup = BeautifulSoup(r.text, 'lxml')
-
-            results = []
-            a_elements = soup.find('div', class_='col-lg-8').find_all('a')
-            for a_element in a_elements:
-                results.append(dict(
-                    slug=a_element.get('href'),
-                    name=a_element.text,
-                ))
-
-            return results
-        else:
+        if r.status_code != 200 or mime_type != 'text/html':
             return None
+
+        soup = BeautifulSoup(r.text, 'lxml')
+
+        results = []
+        a_elements = soup.find('div', class_='col-lg-8').find_all('a')
+        for a_element in a_elements:
+            results.append(dict(
+                slug=a_element.get('href'),
+                name=a_element.text,
+            ))
+
+        return results

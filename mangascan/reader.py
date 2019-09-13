@@ -352,13 +352,13 @@ class Reader():
         if event.x < self.size.width / 3:
             # 1st third of the page
             if self.zoom['active']:
-                return
+                return False
 
             index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
         elif event.x > 2 * self.size.width / 3:
             # Last third of the page
             if self.zoom['active']:
-                return
+                return False
 
             index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
         else:
@@ -368,7 +368,7 @@ class Reader():
             else:
                 self.controls.show()
 
-            return
+            return False
 
         if index >= 0 and index < len(self.chapter.pages):
             self.controls.goto_page(index + 1)

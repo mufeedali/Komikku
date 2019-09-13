@@ -18,7 +18,7 @@ def get_background_color(nick=True):
 
     if value == 0:
         return 'white'
-    elif value == 1:
+    if value == 1:
         return 'black'
 
 
@@ -52,7 +52,7 @@ def get_reading_direction(nick=True):
 
     if value == 0:
         return 'right-to-left'
-    elif value == 1:
+    if value == 1:
         return 'left-to-right'
 
 
@@ -70,9 +70,9 @@ def get_scaling(nick=True):
 
     if value == 0:
         return 'screen'
-    elif value == 1:
+    if value == 1:
         return 'width'
-    elif value == 2:
+    if value == 2:
         return 'height'
 
 
@@ -89,8 +89,8 @@ def get_window_size():
     return setting.get_value(window_size)
 
 
-def set_window_size(list):
-    g_variant = GLib.Variant('ai', list)
+def set_window_size(size):
+    g_variant = GLib.Variant('ai', size)
     setting.set_value(window_size, g_variant)
 
 

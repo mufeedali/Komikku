@@ -9,14 +9,14 @@ import cloudscraper
 import magic
 from requests.exceptions import ConnectionError
 
+from mangascan.servers import Server
+
 server_id = 'submanga'
 server_name = 'Submanga'
 server_lang = 'es'
 
-scraper = None
 
-
-class Submanga():
+class Submanga(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -29,10 +29,8 @@ class Submanga():
     cover_url = base_url + '{0}'
 
     def __init__(self):
-        global scraper
-
-        if scraper is None:
-            scraper = cloudscraper.create_scraper()
+        if self.session is None:
+            self.session = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -43,7 +41,7 @@ class Submanga():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = scraper.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -113,7 +111,7 @@ class Submanga():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -144,7 +142,7 @@ class Submanga():
         url = self.image_url.format(manga_slug, chapter_slug, page['image'])
 
         try:
-            r = scraper.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -157,7 +155,7 @@ class Submanga():
         Returns manga cover (image) content
         """
         try:
-            r = scraper.get(self.cover_url.format(cover_path))
+            r = self.session.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -172,10 +170,10 @@ class Submanga():
         return self.manga_url.format(slug)
 
     def search(self, term):
-        scraper.get(self.base_url)
+        self.session.get(self.base_url)
 
         try:
-            r = scraper.get(self.search_url, params=dict(query=term))
+            r = self.session.get(self.search_url, params=dict(query=term))
         except ConnectionError:
             return None
 

@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-from gi.repository import GLib
-from gi.repository import Notify
-
 from gettext import gettext as _
 import threading
 import time
+
+from gi.repository import GLib
+from gi.repository import Notify
 
 from mangascan.model import Chapter
 from mangascan.model import Download

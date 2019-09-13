@@ -9,16 +9,15 @@ import magic
 import requests
 from requests.exceptions import ConnectionError
 
-from mangascan.servers import user_agent
+from mangascan.servers import Server
+from mangascan.servers import USER_AGENT
 
 server_id = 'mangasee'
 server_name = 'MangaSee'
 server_lang = 'en'
 
-session = None
 
-
-class Mangasee():
+class Mangasee(Server):
     id = server_id
     name = server_name
     lang = server_lang
@@ -31,11 +30,9 @@ class Mangasee():
     cover_url = 'https://static.mangaboss.net/cover/{0}'
 
     def __init__(self):
-        global session
-
-        if session is None:
-            session = requests.Session()
-            session.headers.update({'user-agent': user_agent})
+        if self.session is None:
+            self.session = requests.Session()
+            self.session.headers.update({'user-agent': USER_AGENT})
 
     def get_manga_data(self, initial_data):
         """
@@ -46,7 +43,7 @@ class Mangasee():
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         try:
-            r = session.get(self.manga_url.format(initial_data['slug']))
+            r = self.session.get(self.manga_url.format(initial_data['slug']))
         except ConnectionError:
             return None
 
@@ -119,7 +116,7 @@ class Mangasee():
         url = self.chapter_url.format(manga_slug, chapter_slug)
 
         try:
-            r = session.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -149,7 +146,7 @@ class Mangasee():
         """
         url = self.page_url.format(manga_slug, chapter_slug, page['slug'])
         try:
-            r = session.get(url)
+            r = self.session.get(url)
         except ConnectionError:
             return (None, None)
 
@@ -157,7 +154,7 @@ class Mangasee():
 
         image_url = soup.find('img', class_='CurImage').get('src')
         try:
-            r = session.get(image_url)
+            r = self.session.get(image_url)
         except ConnectionError:
             return (None, None)
 
@@ -170,7 +167,7 @@ class Mangasee():
         Returns manga cover (image) content
         """
         try:
-            r = session.get(self.cover_url.format(cover_path))
+            r = self.session.get(self.cover_url.format(cover_path))
         except ConnectionError:
             return None
 
@@ -186,22 +183,22 @@ class Mangasee():
 
     def search(self, term):
         try:
-            r = session.post(self.search_url, data=dict(keyword=term, page=1))
+            r = self.session.post(self.search_url, data=dict(keyword=term, page=1))
         except ConnectionError:
             return None
 
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.content, 'html.parser')
-
-            results = []
-            for element in soup.find_all('div', class_='requested'):
-                link_element = element.find('a', class_='resultLink')
-
-                results.append(dict(
-                    slug=link_element.get('href').split('/')[-1],
-                    name=link_element.text.strip(),
-                ))
-
-            return results
-        else:
+        if r.status_code != 200:
             return None
+
+        soup = BeautifulSoup(r.content, 'html.parser')
+
+        results = []
+        for element in soup.find_all('div', class_='requested'):
+            link_element = element.find('a', class_='resultLink')
+
+            results.append(dict(
+                slug=link_element.get('href').split('/')[-1],
+                name=link_element.text.strip(),
+            ))
+
+        return results
