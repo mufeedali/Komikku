@@ -117,7 +117,7 @@ class Controls():
     def show(self):
         self.is_visible = True
 
-        if self.reader.window._is_fullscreen:
+        if self.reader.window.is_fullscreen:
             self.top_box.show_all()
 
         self.bottom_box.show_all()
@@ -155,6 +155,7 @@ class Reader():
         self.controls = Controls(self)
 
         self.scrolledwindow.connect('button-press-event', self.on_button_press)
+        self.scrolledwindow.connect('key-press-event', self.on_key_press)
 
     @property
     def background_color(self):
@@ -322,6 +323,22 @@ class Reader():
 
             self.zoom['active'] = False
 
+    def on_key_press(self, widget, event):
+        if self.controls.is_visible:
+            # No need to handle keyboard navigation when controls are visible
+            # Slider (Gtk.Scale) already provides it
+            return
+
+        if event.state != 0 or event.keyval not in (Gdk.KEY_Left, Gdk.KEY_Right):
+            return
+
+        if event.keyval == Gdk.KEY_Left:
+            index = self.page_index + 1 if self.reading_direction == 'right-to-left' else self.page_index - 1
+        else:
+            index = self.page_index - 1 if self.reading_direction == 'right-to-left' else self.page_index + 1
+
+        self.switch_page(index)
+
     def on_reading_direction_changed(self, action, variant):
         value = variant.get_string()
         if value == self.chapter.manga.reading_direction:
@@ -370,26 +387,7 @@ class Reader():
 
             return False
 
-        if index >= 0 and index < len(self.chapter.pages):
-            self.controls.goto_page(index + 1)
-        elif index == -1:
-            # Get previous chapter
-            db_conn = create_db_connection()
-            row = db_conn.execute(
-                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
-            db_conn.close()
-
-            if row:
-                self.init(Chapter(row=row), 'last')
-        elif index == len(self.chapter.pages):
-            # Get next chapter
-            db_conn = create_db_connection()
-            row = db_conn.execute(
-                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
-            db_conn.close()
-
-            if row:
-                self.init(Chapter(row=row), 'first')
+        self.switch_page(index)
 
         return False
 
@@ -498,3 +496,27 @@ class Reader():
     def show_spinner(self):
         self.spinner_box.get_children()[0].start()
         self.spinner_box.show()
+
+    def switch_page(self, index):
+        if index >= 0 and index < len(self.chapter.pages):
+            self.controls.goto_page(index + 1)
+
+        elif index == -1:
+            # Get previous chapter
+            db_conn = create_db_connection()
+            row = db_conn.execute(
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
+            db_conn.close()
+
+            if row:
+                self.init(Chapter(row=row), 'last')
+
+        elif index == len(self.chapter.pages):
+            # Get next chapter
+            db_conn = create_db_connection()
+            row = db_conn.execute(
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
+            db_conn.close()
+
+            if row:
+                self.init(Chapter(row=row), 'first')

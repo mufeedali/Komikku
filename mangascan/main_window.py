@@ -30,8 +30,8 @@ class MainWindow(Gtk.ApplicationWindow):
     mobile_width = False
     page = None
 
-    _is_maximized = False
-    _is_fullscreen = False
+    is_maximized = False
+    is_fullscreen = False
     _prev_size = None
 
     def __init__(self, *args, **kwargs):
@@ -276,21 +276,21 @@ class MainWindow(Gtk.ApplicationWindow):
         shortcuts_overview.present()
 
     def on_window_state_event(self, widget, event):
-        self._is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
-        self._is_fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) != 0
+        self.is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
+        self.is_fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) != 0
 
     def save_window_size(self):
-        if not self._is_maximized and not self._is_fullscreen:
+        if not self.is_maximized and not self.is_fullscreen:
             size = self.get_size()
             mangascan.config_manager.set_window_size([size.width, size.height])
 
     def set_fullscreen(self):
-        if not self._is_fullscreen:
+        if not self.is_fullscreen:
             self.reader.controls.on_fullscreen()
             self.fullscreen()
 
     def set_unfullscreen(self):
-        if self._is_fullscreen:
+        if self.is_fullscreen:
             self.reader.controls.on_unfullscreen()
             self.unfullscreen()
 
@@ -320,7 +320,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.page = name
 
     def toggle_fullscreen(self, *args):
-        if self._is_fullscreen:
+        if self.is_fullscreen:
             self.set_unfullscreen()
         else:
             self.set_fullscreen()
