@@ -105,6 +105,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.left_button = self.builder.get_object('left_button')
         self.left_button.connect('clicked', self.on_left_button_clicked, None)
 
+        self.builder.get_object('fullscreen_button').connect('clicked', self.toggle_fullscreen, None)
+
         self.set_titlebar(self.titlebar)
 
         # Fisrt start grid

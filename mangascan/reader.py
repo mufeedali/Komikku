@@ -481,8 +481,10 @@ class Reader():
         self.scaling_action.set_state(GLib.Variant('s', self.scaling))
 
     def show(self):
-        self.builder.get_object('menubutton').set_menu_model(self.builder.get_object('menu-reader'))
-        self.builder.get_object('menubutton_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.builder.get_object('fullscreen_button').show()
+
+        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-reader'))
+        self.builder.get_object('menu_button_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
         self.image.clear()
         self.pixbuf = None
