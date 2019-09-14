@@ -147,6 +147,13 @@ class Reader():
         self.image = Gtk.Image()
         self.viewport.add(self.image)
 
+        # Page number indicator
+        self.page_number_indicator_label = Gtk.Label()
+        self.page_number_indicator_label.get_style_context().add_class('reader-page-number-indicator-label')
+        self.page_number_indicator_label.set_valign(Gtk.Align.END)
+        self.overlay.add_overlay(self.page_number_indicator_label)
+        self.page_number_indicator_label.show()
+
         # Spinner
         self.spinner_box = self.builder.get_object('spinner_box')
         self.overlay.add_overlay(self.spinner_box)
@@ -381,8 +388,10 @@ class Reader():
         else:
             # Center part of the page
             if self.controls.is_visible:
+                self.page_number_indicator_label.show()
                 self.controls.hide()
             else:
+                self.page_number_indicator_label.hide()
                 self.controls.show()
 
             return False
@@ -418,9 +427,11 @@ class Reader():
             ))
 
             self.size = self.viewport.get_allocation()
-            self.set_image()
 
+            self.set_image()
             self.image.show()
+
+            self.page_number_indicator_label.set_text('{0}/{1}'.format(index + 1, len(self.chapter.pages)))
 
             self.hide_spinner()
 
