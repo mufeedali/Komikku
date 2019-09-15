@@ -27,7 +27,7 @@ class Hatigarmscans(Server):
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
-    cover_url = base_url + '{0}'
+    cover_url = base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
         if self.session is None:
@@ -62,8 +62,11 @@ class Hatigarmscans(Server):
             synopsis=None,
             chapters=[],
             server_id=self.id,
-            cover='/uploads/manga/{0}/cover/cover_250x350.jpg'.format(data['slug']),
+            cover=None,
         ))
+
+        data['name'] = soup.find('h2', class_='widget-title').text.strip()
+        data['cover'] = self.cover_url.format(data['slug'])
 
         # Details
         elements = soup.find('dl', class_='dl-horizontal').findChildren(recursive=False)
@@ -89,6 +92,9 @@ class Hatigarmscans(Server):
                 data['status'] = value.lower()
 
         data['synopsis'] = soup.find('div', class_='well').p.text.strip()
+        alert_element = soup.find('div', class_='alert-danger')
+        if alert_element:
+            data['synopsis'] += '\n\n' + alert_element.text.strip()
 
         # Chapters
         elements = soup.find('ul', class_='chapters').find_all('li', recursive=False)
@@ -157,12 +163,12 @@ class Hatigarmscans(Server):
 
         return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url_or_path):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(url_or_path)
         except ConnectionError:
             return None
 
