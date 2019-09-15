@@ -90,6 +90,7 @@ def init_db():
         server_id text NOT NULL,
         name text NOT NULL,
         authors json,
+        scanlators json,
         genres json,
         synopsis text,
         status text,

@@ -159,12 +159,14 @@ class AddDialog():
 
             self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-            self.builder.get_object('author_value_label').set_markup(
+            self.builder.get_object('authors_value_label').set_markup(
                 '<span size="small">{0}</span>'.format(', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-'))
             self.builder.get_object('genres_value_label').set_markup(
                 '<span size="small">{0}</span>'.format(', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-'))
             self.builder.get_object('status_value_label').set_markup(
                 '<span size="small">{0}</span>'.format(_(Manga.STATUSES[self.manga_data['status']])) if self.manga_data['status'] else '-')
+            self.builder.get_object('scanlators_value_label').set_markup(
+                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['scanlators']) if self.manga_data['scanlators'] else '-'))
             self.builder.get_object('server_value_label').set_markup(
                 '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),

@@ -57,6 +57,7 @@ class Mangakawaii(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
+            scanlators=[],
             genres=[],
             status=None,
             synopsis=None,
@@ -80,6 +81,9 @@ class Mangakawaii(Server):
                     t = t.strip()
                     if t not in data['authors']:
                         data['authors'].append(t)
+            elif label.startswith('Scantrad'):
+                a_element = element.find_all('a')[0]
+                data['scanlators'] = [a_element.text.replace('[', '').replace(']', '').strip(), ]
             elif label.startswith('Genres'):
                 a_elements = element.find_all('a')
                 data['genres'] = [a_element.text.strip() for a_element in a_elements]
@@ -154,13 +158,12 @@ class Mangakawaii(Server):
 
         return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    # TODO: add slug param to use self.cover_url directly
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url_or_path):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(cover_path)
+            r = self.session.get(url_or_path)
         except ConnectionError:
             return None
 
