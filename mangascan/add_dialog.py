@@ -52,7 +52,7 @@ class AddDialog():
 
             # Server logo
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(server['id']), 16, 16, True)
+                '/info/febvre/MangaScan/icons/ui/favicons/{0}.ico'.format(server['id']), 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
