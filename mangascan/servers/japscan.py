@@ -57,6 +57,7 @@ class Japscan(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
+            scanlators=[],
             genres=[],
             status=None,
             chapters=[],

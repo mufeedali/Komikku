@@ -57,6 +57,7 @@ class Mangasee(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
+            scanlators=[],
             genres=[],
             status=None,
             synopsis=None,
