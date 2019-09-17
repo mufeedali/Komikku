@@ -73,8 +73,8 @@ class Mangarock(Server):
             status=None,
             synopsis=None,
             chapters=[],
-            cover=None,
             server_id=self.id,
+            cover=None,
         ))
 
         # Name & cover
@@ -93,8 +93,8 @@ class Mangarock(Server):
         for chapter in res['chapters']:
             data['chapters'].append(dict(
                 slug=chapter['oid'],
-                date=datetime.fromtimestamp(chapter['updatedAt']).date(),
                 title=chapter['name'],
+                date=datetime.fromtimestamp(chapter['updatedAt']).date(),
             ))
 
         return data

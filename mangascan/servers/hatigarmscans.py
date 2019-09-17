@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
@@ -110,7 +111,7 @@ class Hatigarmscans(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=date.text.strip(),
+                date=dateparser.parse(date.text.strip()).date(),
                 title=title
             ))
 

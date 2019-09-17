@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
@@ -163,9 +164,9 @@ class Webtoon(Server):
             url_split = urlsplit(li_element.a.get('href'))
             data.append(dict(
                 slug=url_split.path.split('/')[-2],
-                url='{0}?{1}'.format(url_split.path, url_split.query),
-                date=li_element.find('p', class_='date').text.strip(),
                 title=li_element.find('p', class_='sub_title').find('span', class_='ellipsis').text.strip(),
+                date=dateparser.parse(li_element.find('p', class_='date').text.strip()).date(),
+                url='{0}?{1}'.format(url_split.path, url_split.query),
             ))
 
         return data

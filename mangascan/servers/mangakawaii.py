@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
@@ -104,8 +105,8 @@ class Mangakawaii(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=date,
-                title=title
+                title=title,
+                date=dateparser.parse(date, 'DD.MM.YYYY', settings={'DATE_ORDER': 'DMY'}).date(),
             ))
 
         return data

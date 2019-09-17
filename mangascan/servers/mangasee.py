@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
@@ -62,8 +63,8 @@ class Mangasee(Server):
             status=None,
             synopsis=None,
             chapters=[],
-            cover=None,
             server_id=self.id,
+            cover=None,
         ))
 
         # Name & cover
@@ -102,8 +103,8 @@ class Mangasee(Server):
         for link_element in reversed(elements):
             data['chapters'].append(dict(
                 slug=link_element.get('chapter'),
-                date=link_element.time.text.strip(),
                 title=link_element.span.text.strip(),
+                date=dateparser.parse(link_element.time.text.strip(), settings={'DATE_ORDER': 'MDY'}).date(),
             ))
 
         return data

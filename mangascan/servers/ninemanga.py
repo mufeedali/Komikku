@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
@@ -105,7 +106,7 @@ class Ninemanga(Server):
             data['chapters'].append(dict(
                 slug=slug,
                 title=element.a.text.strip(),
-                date=element.span.text.strip(),
+                date=dateparser.parse(element.span.text.strip()).date(),
             ))
 
         return data

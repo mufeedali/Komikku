@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
@@ -110,8 +111,8 @@ class Japscan(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=element.span.text.strip(),
                 title=element.a.text.strip(),
+                date=dateparser.parse(element.span.text.strip()).date(),
             ))
 
         return data

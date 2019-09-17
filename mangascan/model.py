@@ -111,7 +111,7 @@ def init_db():
         title text NOT NULL,
         pages json,
         scrambled integer,
-        date text,
+        date date,
         rank integer NOT NULL,
         downloaded integer NOT NULL,
         recent integer NOT NULL,

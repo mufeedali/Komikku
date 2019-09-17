@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
@@ -97,12 +98,12 @@ class Manganelo(Server):
 
             slug = spans_info[0].a.get('href').split('/')[-1]
             title = spans_info[0].a.text.strip()
-            date = spans_info[2].get('title')
+            date = spans_info[2].get('title').strip()
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=date,
                 title=title,
+                date=dateparser.parse(date).date(),
             ))
 
         return data

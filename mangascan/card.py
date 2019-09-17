@@ -330,7 +330,7 @@ class Card():
         # Date + Downloaded state
         label = Gtk.Label(xalign=0, yalign=1)
         label.get_style_context().add_class('card-chapter-sublabel')
-        text = chapter.date or ''
+        text = chapter.date.strftime(_('%m/%d/%Y')) if chapter.date else ''
         if chapter.downloaded:
             text = '{0} - {1}'.format(text, _('DOWNLOADED'))
         else:
