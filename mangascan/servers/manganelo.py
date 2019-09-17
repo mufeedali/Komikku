@@ -187,6 +187,9 @@ class Manganelo(Server):
                 results = r.json()
 
                 for result in results:
+                    result.pop('author')
+                    result.pop('lastchapter')
+
                     result['slug'] = result.pop('nameunsigned')
                     result['name'] = BeautifulSoup(result['name'], 'html.parser').text
                     result['cover'] = result.pop('image')
