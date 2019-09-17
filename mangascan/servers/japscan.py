@@ -23,11 +23,11 @@ class Japscan(Server):
     name = server_name
     lang = server_lang
 
-    base_url = 'https://www.japscan.to'
+    base_url = 'https://www.japscan.co'
     search_url = base_url + '/search/'
     manga_url = base_url + '/manga/{0}/'
     chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
-    image_url = 'https://c.japscan.to/lel/{0}/{1}/{2}'
+    image_url = 'https://c.japscan.co/lel/{0}/{1}/{2}'
     cover_url = base_url + '{0}'
 
     def __init__(self):
