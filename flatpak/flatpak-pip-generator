@@ -55,7 +55,7 @@ def get_package_name(filename: str) -> str:
         return "-".join(segments[:len(segments) - 4])
     else:
         raise Exception(
-            'Downloaded filename: {} does not end with gz or whl'.format(filename)
+            'Downloaded filename: {} does not end with gz, zip or whl'.format(filename)
         )
 
 def get_file_hash(filename: str) -> str:
