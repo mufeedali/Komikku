@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import dateparser
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
@@ -26,7 +27,7 @@ class Submanga(Server):
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
-    cover_url = base_url + '{0}'
+    cover_url = base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
         if self.session is None:
@@ -50,7 +51,7 @@ class Submanga(Server):
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
-        soup = BeautifulSoup(r.text, 'html.parser')
+        soup = BeautifulSoup(r.text, 'lxml')
 
         data = initial_data.copy()
         data.update(dict(
@@ -61,44 +62,48 @@ class Submanga(Server):
             synopsis=None,
             chapters=[],
             server_id=self.id,
-            cover='/uploads/manga/{0}/cover/cover_250x350.jpg'.format(data['slug']),
+            cover=None,
         ))
 
+        data['name'] = soup.find_all('h3')[0].text.strip()
+        data['cover'] = self.cover_url.format(data['slug'])
+
         # Details
-        elements = soup.find('dl', class_='dl-horizontal').findChildren(recursive=False)
+        elements = soup.find('div', class_='list-group').find_all('span', class_='list-group-item')
         for element in elements:
-            if element.name not in ('dt', 'dd'):
-                continue
-
-            if element.name == 'dt':
-                label = element.text
-                continue
-
-            value = element.text.strip()
+            label = element.b.text.strip()
 
             if label.startswith(('Autor', 'Artist')):
-                for t in value.split(','):
-                    t = t.strip()
-                    if t not in data['authors']:
-                        data['authors'].append(t)
+                for a_element in element.find_all('a'):
+                    value = a_element.text.strip()
+                    if value not in data['authors']:
+                        data['authors'].append(value)
             elif label.startswith('Categorías'):
-                data['genres'] = [t.strip() for t in value.split(',')]
+                for a_element in element.find_all('a'):
+                    value = a_element.text.strip()
+                    if value not in data['authors']:
+                        data['genres'].append(value)
             elif label.startswith('Estado'):
+                value = element.span.text.strip()
                 # possible values: ongoing, complete, None
-                data['status'] = value.lower()
-
-        data['synopsis'] = soup.find('div', class_='well').p.text.strip()
+                data['status'] = element.span.text.strip().lower()
+            elif label.startswith('Resumen'):
+                element.b.extract()
+                data['synopsis'] = element.text.strip()
 
         # Chapters
-        elements = soup.find('ul', class_='chapters').find_all('li')
+        elements = soup.find('div', class_='capitulos-list').find_all('tr')
         for element in reversed(elements):
-            link_element = element.h5.a
-            date_element = element.find(class_="action").div
+            td_elements = element.find_all('td')
+            a_element = td_elements[0].find('a')
+            date_element = td_elements[1]
+            date_element.i.extract()
+            date_element.span.extract()
 
             data['chapters'].append(dict(
-                slug=link_element.get('href').split('/')[-1],
-                date=date_element.text.strip(),
-                title=link_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1],
+                title=a_element.text.strip(),
+                date=dateparser.parse(date_element.text.strip()).date(),
             ))
 
         return data
@@ -151,12 +156,12 @@ class Submanga(Server):
 
         return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, path_or_url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(path_or_url)
         except ConnectionError:
             return None
 
