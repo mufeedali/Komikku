@@ -156,12 +156,12 @@ class Submanga(Server):
 
         return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, path_or_url):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(path_or_url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 

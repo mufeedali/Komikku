@@ -72,6 +72,8 @@ class Japscan(Server):
         # Name provided by search can be one of the alternatives
         # First word (Manga, Manhwa, ...) must be removed from name
         data['name'] = ' '.join(card_element.find('h1').text.strip().split()[1:])
+        if data.get('cover') is None:
+            data['cover'] = self.cover_url.format(card_element.find('img').get('src'))
 
         # Details
         if not card_element.find_all('div', class_='d-flex'):
@@ -184,12 +186,12 @@ class Japscan(Server):
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -226,7 +228,7 @@ class Japscan(Server):
                 for result in results:
                     # Extract slug from url
                     result['slug'] = result.pop('url').split('/')[2]
-                    result['cover'] = result.pop('image')
+                    result['cover'] = self.cover_url.format(result.pop('image'))
 
                 return results
             except Exception:

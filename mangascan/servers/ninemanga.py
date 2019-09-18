@@ -36,7 +36,6 @@ class Ninemanga(Server):
     manga_url = base_url + '/manga/{0}.html'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
-    cover_url = 'https://ta1.taadd.com{0}'
 
     def __init__(self):
         if self.session is None:
@@ -72,7 +71,12 @@ class Ninemanga(Server):
             synopsis=None,
             chapters=[],
             server_id=self.id,
+            cover=None,
         ))
+
+        # Last word (Manga, Manhwa, ...) must be removed from name
+        data['name'] = ' '.join(soup.find('div', class_='ttline').h1.text.strip().split()[:-1])
+        data['cover'] = soup.find('a', class_='bookface').img.get('src')
 
         # Details
         elements = soup.find('ul', class_='message').find_all('li')
@@ -165,12 +169,12 @@ class Ninemanga(Server):
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
@@ -205,7 +209,6 @@ class Ninemanga(Server):
                     results.append(dict(
                         slug=item[2],
                         name=item[1],
-                        cover=item[0],
                     ))
 
                 return results

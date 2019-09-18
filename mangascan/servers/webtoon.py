@@ -65,6 +65,7 @@ class Webtoon(Server):
             synopsis=None,
             chapters=[],
             server_id=self.id,
+            cover=None,
         ))
 
         # Details
@@ -187,12 +188,12 @@ class Webtoon(Server):
 
         return (None, None)
 
-    def get_manga_cover_image(self, cover_url):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(cover_url, headers={'referer': self.base_url, 'user-agent': USER_AGENT})
+            r = self.session.get(url, headers={'referer': self.base_url, 'user-agent': USER_AGENT})
         except ConnectionError:
             return None
 
@@ -228,7 +229,6 @@ class Webtoon(Server):
                 slug=card.get('href').split('=')[-1],
                 url=card.get('href'),
                 name=card.find('p', class_='subj').text,
-                cover=card.img.get('src'),
             ))
 
         return results

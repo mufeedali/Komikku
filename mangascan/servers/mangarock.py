@@ -157,12 +157,12 @@ class Mangarock(Server):
 
         return (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(cover_path)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 

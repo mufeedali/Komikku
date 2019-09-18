@@ -27,7 +27,7 @@ class Scanvf(Server):
     chapter_url = base_url + '/{0}'
     page_url = base_url + '/{0}/{1}'
     image_url = base_url + '/{0}'
-    cover_url = base_url + '/{0}'
+    cover_url = base_url + '/photos/{}.png'
 
     def __init__(self):
         if self.session is None:
@@ -62,8 +62,10 @@ class Scanvf(Server):
             synopsis=None,
             chapters=[],
             server_id=self.id,
-            cover='photos/{}.png'.format(data['slug'].replace('mangas-', '')),
+            cover=None,
         ))
+
+        data['cover'] = self.cover_url.format(data['slug'].replace('mangas-', ''))
 
         # Details
         elements = soup.find_all('div', class_='col-md-9')[0].find_all('p')
@@ -150,12 +152,12 @@ class Scanvf(Server):
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(url)
         except ConnectionError:
             return None
 

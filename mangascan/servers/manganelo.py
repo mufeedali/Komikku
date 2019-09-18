@@ -65,6 +65,11 @@ class Manganelo(Server):
             server_id=self.id,
         ))
 
+        # Name & cover
+        data['name'] = soup.find('ul', class_='manga-info-text').find('h1').text.strip()
+        if data.get('cover') is None:
+            data['cover'] = soup.find('div', class_='manga-info-pic').img.get('src')
+
         # Details
         elements = soup.find('ul', class_='manga-info-text').find_all('li')
         for element in elements:
@@ -154,12 +159,12 @@ class Manganelo(Server):
 
         return (page['image'].split('/')[-1], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_url):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(cover_url)
+            r = self.session.get(url)
         except ConnectionError:
             return None
 

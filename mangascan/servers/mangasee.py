@@ -28,7 +28,6 @@ class Mangasee(Server):
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/read-online/{0}-chapter-{1}-page-1.html'
     page_url = base_url + '/read-online/{0}-chapter-{1}-page-{2}.html'
-    cover_url = 'https://static.mangaboss.net/cover/{0}'
 
     def __init__(self):
         if self.session is None:
@@ -69,7 +68,7 @@ class Mangasee(Server):
 
         # Name & cover
         data['name'] = soup.find('h1', class_='SeriesName').text.strip()
-        data['cover'] = soup.find('div', class_='leftImage').img.get('src').split('/')[-1]
+        data['cover'] = soup.find('div', class_='leftImage').img.get('src')
 
         # Details & Synopsis
         elements = soup.find('span', class_='details').find_all('div', class_='row')
@@ -164,12 +163,12 @@ class Mangasee(Server):
 
         return (image_url.split('/')[-1], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, cover_path):
+    def get_manga_cover_image(self, url):
         """
         Returns manga cover (image) content
         """
         try:
-            r = self.session.get(self.cover_url.format(cover_path))
+            r = self.session.get(url)
         except ConnectionError:
             return None
 
