@@ -412,7 +412,7 @@ class Card():
 
             chapter.update(dict(
                 read=read,
-                last_page_read_index=len(chapter.pages) - 1 if read else None,
+                last_page_read_index=len(chapter.pages) - 1 if read and chapter.pages else None,
             ))
 
             self.populate_chapter_row(row)
@@ -424,7 +424,7 @@ class Card():
 
         chapter.update(dict(
             read=read,
-            last_page_read_index=len(chapter.pages) - 1 if read else None,
+            last_page_read_index=len(chapter.pages) - 1 if read and chapter.pages else None,
         ))
 
         self.populate_chapter_row(self.action_row)
