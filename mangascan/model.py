@@ -595,7 +595,7 @@ class Download:
     @classmethod
     def next(cls):
         db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM downloads ORDER BY date DESC').fetchone()
+        row = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchone()
         db_conn.close()
 
         if row:
