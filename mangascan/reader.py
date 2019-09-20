@@ -63,13 +63,13 @@ class Controls():
         self.bottom_box.set_valign(Gtk.Align.END)
 
         # Number of pages
-        self.nb_pages_label = Gtk.Label()
-        self.nb_pages_label.set_halign(Gtk.Align.START)
-        self.bottom_box.pack_start(self.nb_pages_label, False, True, 4)
+        self.pages_count_label = Gtk.Label()
+        self.pages_count_label.set_halign(Gtk.Align.START)
+        self.bottom_box.pack_start(self.pages_count_label, False, True, 4)
 
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
-        self.scale.connect('value-changed', self.on_scale_value_changed)
+        self.scale_handler_id = self.scale.connect('value-changed', self.on_scale_value_changed)
 
         self.bottom_box.pack_start(self.scale, True, True, 0)
         self.reader.overlay.add_overlay(self.bottom_box)
@@ -95,8 +95,11 @@ class Controls():
             subtitle = subtitle.replace(chapter.manga.name, '').strip()
         self.headerbar.set_subtitle(subtitle)
 
-        self.scale.set_range(1, len(chapter.pages))
-        self.nb_pages_label.set_text(str(len(chapter.pages)))
+        # Set slider range
+        with self.scale.handler_block(self.scale_handler_id):
+            self.scale.set_range(1, len(chapter.pages))
+
+        self.pages_count_label.set_text(str(len(chapter.pages)))
 
     def on_fullscreen(self):
         if self.is_visible:
@@ -112,7 +115,7 @@ class Controls():
     def set_scale_direction(self, inverted):
         self.scale.set_inverted(inverted)
         self.scale.set_value_pos(Gtk.PositionType.RIGHT if inverted else Gtk.PositionType.LEFT)
-        self.bottom_box.set_child_packing(self.nb_pages_label, False, True, 4, Gtk.PackType.START if inverted else Gtk.PackType.END)
+        self.bottom_box.set_child_packing(self.pages_count_label, False, True, 4, Gtk.PackType.START if inverted else Gtk.PackType.END)
 
     def show(self):
         self.is_visible = True
@@ -145,6 +148,7 @@ class Reader():
         self.overlay = self.scrolledwindow.get_parent()
 
         self.image = Gtk.Image()
+        self.image.show()
         self.viewport.add(self.image)
 
         # Page number indicator
@@ -226,16 +230,25 @@ class Reader():
             self.window.show_notification(_('Oops, failed to retrieve chapter info. Please try again.'))
             return False
 
+        self.chapter = chapter
+
         if index is None:
             # We come from library
+            self.page_number_indicator_label.set_text('')
+
             # Reset list of chapters consulted
             self.chapters_consulted = []
+
+            # Init settings
+            self.set_reading_direction()
+            self.set_scaling()
+            self.set_background_color()
+
             self.show()
 
-        self.chapter = chapter
         self.chapters_consulted.append(chapter)
 
-        # Set title & subtitle
+        # Set title & subtitle (headerbar)
         self.title_label.set_text(chapter.manga.name)
         subtitle = chapter.title
         if chapter.manga.name in subtitle:
@@ -243,11 +256,6 @@ class Reader():
         self.subtitle_label.set_text(subtitle)
 
         self.show_spinner()
-
-        # Init settings
-        self.set_reading_direction()
-        self.set_scaling()
-        self.set_background_color()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
