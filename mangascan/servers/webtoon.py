@@ -164,7 +164,7 @@ class Webtoon(Server):
             # the slug can't be used to forge chapter URL, we must store the full url
             url_split = urlsplit(li_element.a.get('href'))
             data.append(dict(
-                slug=url_split.path.split('/')[-2],
+                slug=url_split.query,
                 title=li_element.find('p', class_='sub_title').find('span', class_='ellipsis').text.strip(),
                 date=dateparser.parse(li_element.find('p', class_='date').text.strip()).date(),
                 url='{0}?{1}'.format(url_split.path, url_split.query),

@@ -123,9 +123,9 @@ def init_db():
     sql_create_downloads_table = """CREATE TABLE IF NOT EXISTS downloads (
         id integer PRIMARY KEY,
         chapter_id integer REFERENCES chapters(id) ON DELETE CASCADE,
-        status text,
-        percent float,
-        date timestamp,
+        status text NOT NULL,
+        percent float NOT NULL,
+        date timestamp NOT NULL,
         UNIQUE (chapter_id)
     );"""
 
@@ -195,7 +195,6 @@ class Manga:
 
         # Fill data with internal data or later scraped values
         data.update(dict(
-            url=None,
             last_read=datetime.datetime.now(),
             sort_order=None,
             reading_direction=None,
