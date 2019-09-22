@@ -415,7 +415,7 @@ class Reader():
                 for i in range(1, 4):
                     index += direction
                     if index >= 0 and index < len(chapter.pages):
-                        chapter.get_page(index, 'predownloader')
+                        chapter.get_page(index)
                     else:
                         chapter = chapter.manga.get_next_chapter(chapter, direction)
                         if chapter is None:
@@ -424,7 +424,7 @@ class Reader():
                         chapter.update_full()
 
                         index = 0 if direction == 1 else len(chapter.pages) - 1
-                        chapter.get_page(index, 'predownloader')
+                        chapter.get_page(index)
 
         thread = threading.Thread(target=run)
         thread.daemon = True
