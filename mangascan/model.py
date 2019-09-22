@@ -294,8 +294,22 @@ class Manga:
 
         db_conn.close()
 
+    def get_next_chapter(self, chapter, direction=1):
+        """
+        :param chapter: reference chapter
+        :param direction: -1 for preceding chapter, 1 for following chapter
+        """
+        assert direction == 1 or direction == -1, 'Invalid direction value'
 
+        db_conn = create_db_connection()
+        row = db_conn.execute(
+            'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.id, chapter.rank + direction)).fetchone()
+        db_conn.close()
 
+        if not row:
+            return None
+
+        return Chapter(row=row)
 
     def update(self, data):
         """

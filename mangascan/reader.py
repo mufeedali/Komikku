@@ -16,8 +16,6 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 import mangascan.config_manager
-from mangascan.model import create_db_connection
-from mangascan.model import Chapter
 
 
 class Controls():
@@ -408,15 +406,36 @@ class Reader():
 
         return False
 
+    def pre_download_adjacent_pages(self, start_chapter, start_page_index):
+        def run():
+            for direction in (1, -1):
+                chapter = start_chapter
+                index = start_page_index
+
+                for i in range(1, 4):
+                    index += direction
+                    if index >= 0 and index < len(chapter.pages):
+                        chapter.get_page(index, 'predownloader')
+                    else:
+                        chapter = chapter.manga.get_next_chapter(chapter, direction)
+                        if chapter is None:
+                            break
+
+                        chapter.update_full()
+
+                        index = 0 if direction == 1 else len(chapter.pages) - 1
+                        chapter.get_page(index, 'predownloader')
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
+
     def render_page(self, index):
         def run():
             page_path = self.chapter.get_page_path(index)
             if page_path is None:
                 if self.window.application.connected:
                     page_path = self.chapter.get_page(index)
-                    if page_path is None:
-                        GLib.idle_add(error)
-                        return
                 else:
                     self.window.show_notification(_('No Internet connection'))
 
@@ -424,30 +443,25 @@ class Reader():
 
         def complete(page_path):
             if page_path:
+                self.chapter.update(dict(
+                    last_page_read_index=index,
+                    read=index == len(self.chapter.pages) - 1,
+                    recent=0,
+                ))
+
                 self.pixbuf = Pixbuf.new_from_file(page_path)
             else:
                 self.pixbuf = Pixbuf.new_from_resource('/info/febvre/MangaScan/images/missing_file.png')
 
-            self.chapter.update(dict(
-                last_page_read_index=index,
-                read=index == len(self.chapter.pages) - 1,
-                recent=0,
-            ))
-
             self.size = self.viewport.get_allocation()
 
-            self.set_image()
-            self.image.show()
-
             self.page_number_indicator_label.set_text('{0}/{1}'.format(index + 1, len(self.chapter.pages)))
+            self.set_image()
 
             self.hide_spinner()
 
-            return False
+            self.pre_download_adjacent_pages(self.chapter, index)
 
-        def error():
-            self.hide_spinner()
-            self.window.show_notification(_('Oops, failed to retrieve page. Please try again.'))
             return False
 
         self.zoom['active'] = False
@@ -518,24 +532,10 @@ class Reader():
 
     def switch_page(self, index):
         if index >= 0 and index < len(self.chapter.pages):
+            # Same chapter
             self.controls.goto_page(index + 1)
-
-        elif index == -1:
-            # Get previous chapter
-            db_conn = create_db_connection()
-            row = db_conn.execute(
-                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank - 1)).fetchone()
-            db_conn.close()
-
-            if row:
-                self.init(Chapter(row=row), 'last')
-
-        elif index == len(self.chapter.pages):
-            # Get next chapter
-            db_conn = create_db_connection()
-            row = db_conn.execute(
-                'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.chapter.manga_id, self.chapter.rank + 1)).fetchone()
-            db_conn.close()
-
-            if row:
-                self.init(Chapter(row=row), 'first')
+        else:
+            # Chapter change: next or prev
+            next_chapter = self.chapter.manga.get_next_chapter(self.chapter, 1 if index == len(self.chapter.pages) else -1)
+            if next_chapter:
+                self.init(next_chapter, 'first' if index >= len(self.chapter.pages) else 'last')
