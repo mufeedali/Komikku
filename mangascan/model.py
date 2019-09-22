@@ -210,10 +210,12 @@ class Manga:
         db_conn.close()
 
         manga._chapters = []
-        for rank, chapter_data in enumerate(chapters):
+        rank = 0
+        for chapter_data in chapters:
             chapter = Chapter.new(chapter_data, rank, manga.id)
             if chapter is not None:
                 manga._chapters = [chapter, ] + manga._chapters
+                rank += 1
 
         if not os.path.exists(manga.path):
             os.makedirs(manga.path)
@@ -267,6 +269,18 @@ class Manga:
 
         return self._server
 
+    def _save_cover(self, path_or_url):
+        if path_or_url is None:
+            return
+
+        # Save cover image file
+        cover_data = self.server.get_manga_cover_image(path_or_url)
+        if cover_data is not None:
+            cover_fs_path = os.path.join(self.path, 'cover.jpg')
+
+            with open(cover_fs_path, 'wb') as fp:
+                fp.write(cover_data)
+
     def delete(self):
         db_conn = create_db_connection()
         # Enable integrity constraint
@@ -280,17 +294,8 @@ class Manga:
 
         db_conn.close()
 
-    def _save_cover(self, path_or_url):
-        if path_or_url is None:
-            return
 
-        # Save cover image file
-        cover_data = self.server.get_manga_cover_image(path_or_url)
-        if cover_data is not None:
-            cover_fs_path = os.path.join(self.path, 'cover.jpg')
 
-            with open(cover_fs_path, 'wb') as fp:
-                fp.write(cover_data)
 
     def update(self, data):
         """
@@ -334,13 +339,16 @@ class Manga:
             chapters_data = data.pop('chapters')
             nb_recent_chapters = 0
 
-            for rank, chapter_data in enumerate(chapters_data):
+            rank = 0
+            for chapter_data in chapters_data:
                 row = db_conn.execute(
                     'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
                 ).fetchone()
                 if row:
                     # Update chapter
+                    chapter_data['rank'] = rank
                     update_row(db_conn, 'chapters', row['id'], chapter_data)
+                    rank += 1
                 else:
                     # Add new chapter
                     chapter_data.update(dict(
@@ -350,8 +358,10 @@ class Manga:
                         recent=1,
                         read=0,
                     ))
-                    insert_row(db_conn, 'chapters', chapter_data)
-                    nb_recent_chapters += 1
+                    id = insert_row(db_conn, 'chapters', chapter_data)
+                    if id is not None:
+                        nb_recent_chapters += 1
+                        rank += 1
 
             if nb_recent_chapters > 0:
                 data['last_update'] = datetime.datetime.now()
