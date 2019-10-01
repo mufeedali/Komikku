@@ -37,6 +37,7 @@ class Downloader():
                 if download:
                     chapter = Chapter.get(id=download.chapter_id)
                     if chapter is None:
+                        # Missing chapter: chapter has disappeared from server and has been deleted after a manga update
                         download.delete()
                         continue
 
