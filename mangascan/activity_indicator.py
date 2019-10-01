@@ -13,15 +13,11 @@ class ActivityIndicator(Gtk.Box):
 
         self.spinner = Gtk.Spinner()
         self.spinner.set_size_request(50, 50)
-        self.spinner.show()
 
         self.pack_start(self.spinner, True, False, 0)
 
-        self.connect('show', self.on_show)
-        self.connect('hide', self.on_show)
-
-    def on_hide(self, box):
+    def stop(self):
         self.spinner.stop()
 
-    def on_show(self, box):
+    def start(self):
         self.spinner.start()

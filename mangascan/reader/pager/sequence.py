@@ -29,6 +29,7 @@ class Sequence(Gtk.Box):
 
         # Add a fake page used during loading phase only
         page = Page(self.reader, self.chapter.id, 0)
+        page.activity_indicator.start()
         self.pack_pages([page, ])
 
     def load(self, page_index, on_complete_callback):
@@ -46,19 +47,14 @@ class Sequence(Gtk.Box):
 
             self.pack_pages(pages)
 
-            self.reader.activity_indicator.hide()
-
             on_complete_callback(page_index)
 
             return False
 
         def error():
-            self.reader.activity_indicator.hide()
             self.window.show_notification(_('Oops, failed to retrieve chapter info. Please try again.'))
 
             return False
-
-        self.reader.activity_indicator.show()
 
         thread = threading.Thread(target=run, args=[page_index, ])
         thread.daemon = True

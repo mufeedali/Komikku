@@ -38,6 +38,8 @@ class AddDialog():
 
         self.activity_indicator = ActivityIndicator()
         self.overlay.add_overlay(self.activity_indicator)
+        self.overlay.set_overlay_pass_through(self.activity_indicator, True)
+        self.activity_indicator.show_all()
 
         # Servers page
         listbox = self.builder.get_object('servers_page_listbox')
@@ -115,11 +117,11 @@ class AddDialog():
             self.add_button.set_sensitive(True)
             self.add_button.hide()
             self.read_button.show()
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
 
             return False
 
-        self.activity_indicator.show()
+        self.activity_indicator.start()
         self.add_button.set_sensitive(False)
 
         thread = threading.Thread(target=run)
@@ -173,18 +175,18 @@ class AddDialog():
 
             self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
 
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
             self.show_page('manga')
 
             return False
 
         def error():
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
             self.show_notification("Oops, failed to retrieve manga's information.")
 
             return False
 
-        self.activity_indicator.show()
+        self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -207,7 +209,7 @@ class AddDialog():
                 GLib.idle_add(error, result)
 
         def complete(result):
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
 
             for item in result:
                 row = Gtk.ListBoxRow()
@@ -228,7 +230,7 @@ class AddDialog():
             return False
 
         def error(result):
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
             self.search_lock = False
 
             if result is None:
@@ -238,7 +240,7 @@ class AddDialog():
 
         self.search_lock = True
         self.clear_results()
-        self.activity_indicator.show()
+        self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
         thread.daemon = True

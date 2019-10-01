@@ -10,7 +10,6 @@ from gi.repository import GLib
 from gi.repository import Gtk
 
 import mangascan.config_manager
-from mangascan.activity_indicator import ActivityIndicator
 from mangascan.reader.controls import Controls
 from mangascan.reader.pager import Pager
 
@@ -34,10 +33,6 @@ class Reader:
         # Pager
         self.pager = Pager(self)
         self.overlay.add_overlay(self.pager)
-
-        # Activity indicator
-        self.activity_indicator = ActivityIndicator()
-        self.overlay.add_overlay(self.activity_indicator)
 
         # Controls
         self.controls = Controls(self)

@@ -31,6 +31,7 @@ class Page(Gtk.Overlay):
 
         self.scrolledwindow = Gtk.ScrolledWindow()
         self.scrolledwindow.get_hadjustment().connect('changed', self.adjust_scroll)
+        self.add_overlay(self.scrolledwindow)
 
         viewport = Gtk.Viewport()
         self.image = Gtk.Image()
@@ -42,12 +43,10 @@ class Page(Gtk.Overlay):
         self.page_number_label = Gtk.Label()
         self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
         self.page_number_label.set_valign(Gtk.Align.END)
+        self.add_overlay(self.page_number_label)
 
         # Activity indicator
         self.activity_indicator = ActivityIndicator()
-
-        self.add_overlay(self.scrolledwindow)
-        self.add_overlay(self.page_number_label)
         self.add_overlay(self.activity_indicator)
 
         self.show_all()
@@ -94,7 +93,7 @@ class Page(Gtk.Overlay):
 
             self.set_image()
 
-            self.activity_indicator.hide()
+            self.activity_indicator.stop()
 
             self.chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
@@ -109,7 +108,7 @@ class Page(Gtk.Overlay):
         if self.pixbuf is not None:
             return
 
-        self.activity_indicator.show()
+        self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
