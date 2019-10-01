@@ -21,6 +21,8 @@ class Pager(Gtk.ScrolledWindow):
 
     def __init__(self, reader):
         Gtk.ScrolledWindow.__init__(self)
+        self.get_hscrollbar().hide()
+        self.get_vscrollbar().hide()
 
         self.reader = reader
         self.window = reader.window
@@ -49,14 +51,41 @@ class Pager(Gtk.ScrolledWindow):
     def current_page(self):
         return self.sequences[self.current_chapter_id].pages[self.current_page_index]
 
-    def adjust_scroll(self):
-        """ Updates horizontal scrollbar value """
+    def adjust_scroll(self, animate=True, duration=350):
+        """ Scroll to current page """
 
-        hadj = self.get_hadjustment()
-        hadj.set_page_size(self.reader.size.width)
-        hadj.set_value(self.compute_page_position() * self.reader.size.width)
+        def ease_out_cubic(t):
+            t = t - 1
+            return t * t * t + 1
 
-        return False
+        def move(scrolledwindow, clock):
+            now = clock.get_frame_time()
+            if now < end_time and adj.get_value() != end:
+                t = (now - start_time) / (end_time - start_time)
+                t = ease_out_cubic(t)
+
+                adj.set_value(start + t * (end - start))
+
+                return True
+            else:
+                adj.set_value(end)
+
+                return False
+
+        adj = self.get_hadjustment()
+        adj.set_page_size(self.reader.size.width)
+
+        if animate:
+            clock = self.get_frame_clock()
+            if clock:
+                start = adj.get_value()
+                end = self.compute_page_position() * self.reader.size.width
+                start_time = clock.get_frame_time()
+                end_time = start_time + 1000 * duration
+
+                self.add_tick_callback(move)
+        else:
+            adj.set_value(self.compute_page_position() * self.reader.size.width)
 
     def block_nav(self):
         """ Blocks keyboard and mouse/touch page navigation """
@@ -121,9 +150,8 @@ class Pager(Gtk.ScrolledWindow):
             hadj.disconnect(handler_id)
 
             self.adjust_scroll()
-            sequence.load(page_index, self.on_chapter_loaded)
 
-        self.clean()
+            sequence.load(page_index, self.on_chapter_loaded)
 
         handler_id = self.get_hadjustment().connect('changed', adjust_scroll_and_load)
 
@@ -152,7 +180,7 @@ class Pager(Gtk.ScrolledWindow):
             page_index = len(self.current_chapter.pages) - 1
 
         self.reader.controls.init()
-        self.switch_page(page_index)
+        self.switch_page(page_index, animate=False)
 
     def on_double_click(self, event):
         # Zoom/unzoom
@@ -294,12 +322,10 @@ class Pager(Gtk.ScrolledWindow):
 
     def switch_chapter(self, chapter, page_index=None):
         self.current_chapter_id = chapter.id
+        self.reader.update_title(chapter)
 
         if chapter.id not in self.sequences:
             self.block_nav()
-
-            self.reader.update_title(chapter)
-
             self.load_chapter(chapter, page_index)
         else:
             if page_index is None:
@@ -311,12 +337,14 @@ class Pager(Gtk.ScrolledWindow):
 
             self.switch_page(page_index)
 
-    def switch_page(self, index):
+    def switch_page(self, index, animate=True):
         if index >= 0 and index < len(self.sequences[self.current_chapter_id].pages):
             # Same chapter
             self.current_page_index = index
 
-            self.adjust_scroll()
+            # self.clean()
+
+            self.adjust_scroll(animate)
 
             self.reader.controls.set_scale_value(index + 1, block_event=True)
             self.sequences[self.current_chapter_id].pages[index].load()
