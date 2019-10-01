@@ -8,6 +8,7 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
+from mangascan.activity_indicator import ActivityIndicator
 from mangascan.model import create_db_connection
 from mangascan.model import Manga
 from mangascan.servers import get_servers_list
@@ -35,9 +36,8 @@ class AddDialog():
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
 
-        self.spinner_box = self.builder.get_object('spinner_box')
-        self.overlay.add_overlay(self.spinner_box)
-        self.hide_spinner()
+        self.activity_indicator = ActivityIndicator()
+        self.overlay.add_overlay(self.activity_indicator)
 
         # Servers page
         listbox = self.builder.get_object('servers_page_listbox')
@@ -100,10 +100,6 @@ class AddDialog():
     def hide_notification(self):
         self.builder.get_object('notification_revealer').set_reveal_child(False)
 
-    def hide_spinner(self):
-        self.spinner_box.hide()
-        self.spinner_box.get_children()[0].stop()
-
     def on_add_button_clicked(self, button):
         def run():
             manga = Manga.new(self.manga_data, self.server)
@@ -119,11 +115,11 @@ class AddDialog():
             self.add_button.set_sensitive(True)
             self.add_button.hide()
             self.read_button.show()
-            self.hide_spinner()
+            self.activity_indicator.hide()
 
             return False
 
-        self.show_spinner()
+        self.activity_indicator.show()
         self.add_button.set_sensitive(False)
 
         thread = threading.Thread(target=run)
@@ -177,18 +173,18 @@ class AddDialog():
 
             self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
 
-            self.hide_spinner()
+            self.activity_indicator.hide()
             self.show_page('manga')
 
             return False
 
         def error():
-            self.hide_spinner()
+            self.activity_indicator.hide()
             self.show_notification("Oops, failed to retrieve manga's information.")
 
             return False
 
-        self.show_spinner()
+        self.activity_indicator.show()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -211,7 +207,7 @@ class AddDialog():
                 GLib.idle_add(error, result)
 
         def complete(result):
-            self.hide_spinner()
+            self.activity_indicator.hide()
 
             for item in result:
                 row = Gtk.ListBoxRow()
@@ -232,7 +228,7 @@ class AddDialog():
             return False
 
         def error(result):
-            self.hide_spinner()
+            self.activity_indicator.hide()
             self.search_lock = False
 
             if result is None:
@@ -242,7 +238,7 @@ class AddDialog():
 
         self.search_lock = True
         self.clear_results()
-        self.show_spinner()
+        self.activity_indicator.show()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
@@ -294,7 +290,3 @@ class AddDialog():
         self.custom_title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)
         self.page = name
-
-    def show_spinner(self):
-        self.spinner_box.get_children()[0].start()
-        self.spinner_box.show()

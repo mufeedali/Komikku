@@ -299,7 +299,7 @@ class Manga:
         :param chapter: reference chapter
         :param direction: -1 for preceding chapter, 1 for following chapter
         """
-        assert direction == 1 or direction == -1, 'Invalid direction value'
+        assert direction in (-1, 1), 'Invalid direction value'
 
         db_conn = create_db_connection()
         row = db_conn.execute(

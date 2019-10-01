@@ -1,6 +1,7 @@
 # <img height="32" src="data/icons/info.febvre.MangaScan.svg" /> MangaScan
 
 [![pipeline status](https://gitlab.com/valos/MangaScan/badges/master/pipeline.svg)](https://gitlab.com/valos/MangaScan/commits/master)
+[![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 An online / offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
