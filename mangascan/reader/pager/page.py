@@ -39,15 +39,15 @@ class Page(Gtk.Overlay):
         viewport.add(self.image)
         self.scrolledwindow.add(viewport)
 
+        # Activity indicator
+        self.activity_indicator = ActivityIndicator()
+        self.add_overlay(self.activity_indicator)
+
         # Page number indicator
         self.page_number_label = Gtk.Label()
         self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
         self.page_number_label.set_valign(Gtk.Align.END)
         self.add_overlay(self.page_number_label)
-
-        # Activity indicator
-        self.activity_indicator = ActivityIndicator()
-        self.add_overlay(self.activity_indicator)
 
         self.show_all()
 
