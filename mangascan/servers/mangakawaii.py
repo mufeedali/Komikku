@@ -4,14 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import cloudscraper
 import dateparser
 from bs4 import BeautifulSoup
 import magic
-import requests
 from requests.exceptions import ConnectionError
 
 from mangascan.servers import Server
-from mangascan.servers import USER_AGENT
 
 server_id = 'mangakawaii'
 server_name = 'Mangakawaii'
@@ -26,14 +25,13 @@ class Mangakawaii(Server):
     base_url = 'https://www.mangakawaii.to'
     search_url = base_url + '/recherche'
     manga_url = base_url + '/manga/{0}'
-    chapter_url = base_url + '/manga/{0}/{1}'
+    chapter_url = base_url + '/manga/{0}/{1}/1'
     image_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/chapters/{1}/{2}'
     cover_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
         if self.session is None:
-            self.session = requests.Session()
-            self.session.headers.update({'user-agent': USER_AGENT})
+            self.session = cloudscraper.create_scraper()
 
     def get_manga_data(self, initial_data):
         """
@@ -66,7 +64,7 @@ class Mangakawaii(Server):
             server_id=self.id,
         ))
 
-        data['name'] = soup.find('h1', class_='manga-bg__title').text.strip()
+        data['name'] = soup.find('h1', class_='manga__title').text.strip()
         if data.get('cover') is None:
             data['cover'] = self.cover_url.format(data['slug'])
 
@@ -179,6 +177,8 @@ class Mangakawaii(Server):
 
     def search(self, term):
         try:
+            self.session.get(self.base_url)
+
             r = self.session.get(self.search_url, params=dict(query=term))
         except ConnectionError:
             return None
