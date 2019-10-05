@@ -17,11 +17,12 @@ from mangascan.activity_indicator import ActivityIndicator
 
 
 class Page(Gtk.Overlay):
-    def __init__(self, reader, chapter_id, index):
+    def __init__(self, sequence, chapter_id, index):
         Gtk.Overlay.__init__(self)
 
-        self.reader = reader
-        self.window = reader.window
+        self.sequence = sequence
+        self.reader = sequence.reader
+        self.window = sequence.window
 
         self.chapter_id = chapter_id
         self.index = index
@@ -54,10 +55,6 @@ class Page(Gtk.Overlay):
     @property
     def chapter(self):
         return self.sequence.chapter
-
-    @property
-    def sequence(self):
-        return self.reader.pager.sequences[self.chapter_id]
 
     def adjust_scroll(self, hadj):
         """ Update page horizontal scrollbar value """
