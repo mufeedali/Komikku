@@ -45,6 +45,7 @@ Dependencies:
 * `libhandy` >= 0.0.10
 * `python-beautifulsoup4`
 * `python-cloudscraper`
+* `python-dateparser`
 * `python-lxml`
 * `python-pillow`
 * `python-magic`
@@ -93,6 +94,3 @@ Helping to translate MangaScan or add support to a new language is very welcome.
 
 ## Disclaimer
 The developer of this application does not have any affiliation with the content providers available.
-
-## Authors
-</> with &hearts; by Valéry Febvre
