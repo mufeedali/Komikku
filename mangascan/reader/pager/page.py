@@ -63,6 +63,10 @@ class Page(Gtk.Overlay):
 
         hadj.set_value(hadj.get_upper() if self.reader.reading_direction == 'right-to-left' else 0)
 
+    def clean(self):
+        self.pixbuf = None
+        self.image.clear()
+
     def load(self):
         def run():
             page_path = self.chapter.get_page_path(self.index)
