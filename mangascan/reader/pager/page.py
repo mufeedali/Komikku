@@ -57,14 +57,6 @@ class Page(Gtk.Overlay):
 
         self.show_all()
 
-    @property
-    def loaded(self):
-        return self.status == 'loaded'
-
-    @property
-    def loading(self):
-        return self.status == 'loading'
-
     def adjust_scroll(self, hadj):
         """ Update page horizontal scrollbar value according to reading direction """
         if self.reader.pager.zoom['active']:
@@ -86,7 +78,7 @@ class Page(Gtk.Overlay):
                         GLib.idle_add(complete, None)
                         return
                 else:
-                    self.window.show_notification(_('No Internet connection 1'))
+                    self.window.show_notification(_('No Internet connection'))
                     GLib.idle_add(complete, None)
                     return
 
@@ -108,7 +100,7 @@ class Page(Gtk.Overlay):
                                 GLib.idle_add(complete, None)
                                 return
                         else:
-                            self.window.show_notification(_('No Internet connection 2'))
+                            self.window.show_notification(_('No Internet connection'))
                             GLib.idle_add(complete, None)
                             return
 
@@ -128,14 +120,15 @@ class Page(Gtk.Overlay):
                 if self.window.application.connected:
                     page_path = self.chapter.get_page(self.index)
                 else:
-                    self.window.show_notification(_('No Internet connection 3'))
+                    self.window.show_notification(_('No Internet connection'))
 
             GLib.idle_add(complete, page_path)
 
         def complete(page_path):
-            if page_path:
+            if self.chapter.pages is not None:
                 self.page_number_label.set_text('{0}/{1}'.format(self.index + 1, len(self.chapter.pages)))
 
+            if page_path:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
                 self.status = 'loaded'
             else:
@@ -167,13 +160,13 @@ class Page(Gtk.Overlay):
         thread.start()
 
     def rescale(self):
-        if self.loaded:
+        if self.status in ('error', 'loaded'):
             self.set_image()
 
     def resize(self):
         self.set_size_request(self.reader.size.width, -1)
 
-        if self.loaded:
+        if self.status in ('error', 'loaded'):
             self.set_image()
 
     def set_image(self):

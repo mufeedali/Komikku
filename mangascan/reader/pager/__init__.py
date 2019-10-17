@@ -148,16 +148,17 @@ class Pager(Gtk.ScrolledWindow):
                 GLib.idle_add(self.on_double_click, event.copy())
 
     def on_current_page_loaded(self, page, chapter_changed):
-        if not page.loaded:
+        if page.status not in ('error', 'loaded'):
             return True
 
-        page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
+        if page.status == 'loaded':
+            page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
-        page.chapter.update(dict(
-            last_page_read_index=page.index,
-            read=page.index == len(page.chapter.pages) - 1,
-            recent=0,
-        ))
+            page.chapter.update(dict(
+                last_page_read_index=page.index,
+                read=page.index == len(page.chapter.pages) - 1,
+                recent=0,
+            ))
 
         if page == self.current_page:
             if chapter_changed:
@@ -230,8 +231,8 @@ class Pager(Gtk.ScrolledWindow):
     def on_first_page_loaded(self, page):
         self.on_current_page_loaded(page, True)
 
-        for page in self.pages:
-            page.load()
+        self.pages[0].load()
+        self.pages[2].load()
 
     def on_key_press(self, widget, event):
         if self.reader.controls.is_visible:
@@ -296,6 +297,9 @@ class Pager(Gtk.ScrolledWindow):
             page = self.pages[0]
         elif position == 'right':
             page = self.pages[2]
+
+        if page.chapter.pages is None:
+            return
 
         if page.chapter is None:
             if page.index < 0:

@@ -188,7 +188,10 @@ class Card():
             else:
                 row._selected = True
         else:
-            self.window.reader.init(row.chapter)
+            if not self.window.application.connected and row.chapter.pages is None:
+                self.window.show_notification(_('No Internet connection'))
+            else:
+                self.window.reader.init(row.chapter)
 
     def on_delete_menu_clicked(self, action, param):
         def confirm_callback():
