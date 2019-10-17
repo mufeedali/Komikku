@@ -67,7 +67,7 @@ class Controls:
         self.bottom_box.hide()
 
     def init(self):
-        chapter = self.reader.pager.current_chapter
+        chapter = self.reader.pager.current_page.chapter
 
         # Set title & subtitle
         self.headerbar.set_title(chapter.manga.name)
@@ -87,7 +87,7 @@ class Controls:
             self.top_box.show_all()
 
     def on_scale_value_changed(self, scale):
-        self.reader.pager.switch_page(int(scale.get_value()) - 1)
+        self.reader.pager.goto_page(int(scale.get_value()) - 1)
 
     def on_unfullscreen(self):
         if self.is_visible:

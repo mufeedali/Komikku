@@ -16,7 +16,7 @@ from mangascan.reader.pager import Pager
 
 class Reader:
     manga = None
-    chapters_consulted = []
+    chapters_consulted = None
     size = None
 
     def __init__(self, window):
@@ -32,7 +32,7 @@ class Reader:
 
         # Pager
         self.pager = Pager(self)
-        self.overlay.add_overlay(self.pager)
+        self.overlay.add(self.pager)
 
         # Controls
         self.controls = Controls(self)
@@ -82,11 +82,9 @@ class Reader:
         self.set_scaling()
         self.set_background_color()
 
-        self.pager.clear()
-
         self.show()
 
-        self.pager.switch_chapter(chapter)
+        self.pager.init(chapter)
 
     def on_background_color_changed(self, action, variant):
         value = variant.get_string()

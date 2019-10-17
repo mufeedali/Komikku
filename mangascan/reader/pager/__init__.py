@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import datetime
 from gettext import gettext as _
 
 from gi.repository import Gdk
@@ -11,10 +12,13 @@ from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 
-from mangascan.reader.pager.sequence import Sequence
+from mangascan.reader.pager.page import Page
 
 
 class Pager(Gtk.ScrolledWindow):
+    pages = []
+    current_page = None
+
     button_press_timeout_id = None
     default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
     scroll_lock = False
@@ -27,10 +31,6 @@ class Pager(Gtk.ScrolledWindow):
 
         self.reader = reader
         self.window = reader.window
-
-        self.sequences = dict()
-        self.current_chapter_id = None
-        self.current_page_index = None
 
         self.viewport = Gtk.Viewport()
         self.add(self.viewport)
@@ -45,15 +45,11 @@ class Pager(Gtk.ScrolledWindow):
         self.show_all()
 
     @property
-    def current_chapter(self):
-        return self.sequences[self.current_chapter_id].chapter
+    def pages(self):
+        return self.box.get_children()
 
-    @property
-    def current_page(self):
-        return self.sequences[self.current_chapter_id].pages[self.current_page_index]
-
-    def adjust_scroll(self, animate=True, duration=350):
-        """ Scroll to current page """
+    def adjust_scroll(self, position=1, animate=True, duration=350):
+        """ Scroll to a page """
 
         def ease_out_cubic(t):
             t = t - 1
@@ -76,7 +72,7 @@ class Pager(Gtk.ScrolledWindow):
 
         adj = self.get_hadjustment()
         start = adj.get_value()
-        end = self.compute_page_position() * self.reader.size.width
+        end = position * self.reader.size.width
 
         if start - end == 0:
             return
@@ -92,84 +88,50 @@ class Pager(Gtk.ScrolledWindow):
         else:
             adj.set_value(end)
 
-    def block_nav(self):
-        """ Blocks keyboard and mouse/touch page navigation """
-
-        self.handler_block(self.key_press_handler_id)
-        self.handler_block(self.btn_press_handler_id)
-
-    def clean(self):
-        """ Clean all pages that are not neightbors of current page """
-
-        pages = []
-        current_page_position = None
-
-        for sequence in self.box.get_children():
-            for page in sequence.get_children():
-                if page.pixbuf is not None or (sequence.chapter.id == self.current_chapter_id and page.index == self.current_page_index):
-                    pages.append(page)
-                    if sequence.chapter.id == self.current_chapter_id and page.index == self.current_page_index:
-                        current_page_position = len(pages) - 1
-
-        if current_page_position is None:
-            return
-
-        for page in pages[:(current_page_position - 1)] + pages[(current_page_position + 2):]:
-            page.clean()
-
     def clear(self):
-        self.sequences = dict()
-        self.current_chapter_id = None
-        self.current_page_index = None
+        self.current_page = None
 
-        for sequence in self.box.get_children():
-            self.box.remove(sequence)
+        for page in self.pages:
+            self.box.remove(page)
 
-    def compute_page_position(self):
-        """ Computes current page's position in scrolledwindow """
+    def goto_page(self, page_index):
+        if self.pages[0].index == page_index and self.pages[0].chapter == self.current_page.chapter:
+            self.switchto_page('left')
+        elif self.pages[2].index == page_index and self.pages[2].chapter == self.current_page.chapter:
+            self.switchto_page('right')
+        else:
+            self.init(self.current_page.chapter, page_index)
 
-        position = 0
-        for sequence in self.box.get_children():
-            if sequence.chapter.id == self.current_chapter_id:
-                if self.current_page_index is not None:
-                    if self.reader.reading_direction == 'right-to-left':
-                        position += len(sequence.pages) - 1 - self.current_page_index
-                    else:
-                        position += self.current_page_index
-                break
-            else:
-                position += len(sequence.pages)
+    def init(self, chapter, page_index=None):
+        if page_index is None:
+            page_index = chapter.last_page_read_index or 0
 
-        return position
+        direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 
-    def load_chapter(self, chapter, page_index):
-        sequence = Sequence(self.reader, chapter)
-        self.current_page_index = 0
-        self.current_chapter_id = chapter.id
-        self.sequences[chapter.id] = sequence
+        self.clear()
 
-        self.box.pack_start(sequence, True, True, 0)
-        if page_index:
-            if self.reader.reading_direction == 'right-to-left':
-                if page_index == 'first':
-                    self.box.reorder_child(sequence, 0)
-                    self.get_hadjustment().set_value(self.reader.size.width)
-            else:
-                if page_index == 'last':
-                    self.box.reorder_child(sequence, 0)
-                    self.get_hadjustment().set_value(self.reader.size.width)
+        # Left page
+        left_page = Page(self, chapter, page_index + direction)
+        self.box.pack_start(left_page, True, True, 0)
 
-        self.adjust_scroll()
+        # Center page
+        center_page = Page(self, chapter, page_index)
+        self.box.pack_start(center_page, True, True, 0)
 
-        def load_sequence():
-            if self.scroll_lock:
-                return True
+        # Right page
+        right_page = Page(self, chapter, page_index - direction)
+        self.box.pack_start(right_page, True, True, 0)
 
-            sequence.load(page_index, self.on_load_chapter_completed, self.unblock_nav)
+        # Force immediate rendering
+        self.queue_draw()
+        while Gtk.events_pending():
+            Gtk.main_iteration()
 
-            return False
+        self.adjust_scroll(animate=False)
 
-        GLib.idle_add(load_sequence)
+        self.current_page = center_page
+        center_page.connect('load-completed', self.on_first_page_loaded)
+        center_page.load()
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
@@ -185,19 +147,26 @@ class Pager(Gtk.ScrolledWindow):
 
                 GLib.idle_add(self.on_double_click, event.copy())
 
-    def on_load_chapter_completed(self, page_index):
-        self.unblock_nav()
+    def on_current_page_loaded(self, page, chapter_changed):
+        if not page.loaded:
+            return True
 
-        if page_index is None:
-            page_index = self.current_chapter.last_page_read_index or 0
-        elif page_index == 'first':
-            page_index = 0
-        elif page_index == 'last':
-            page_index = len(self.current_chapter.pages) - 1
+        page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
-        self.reader.controls.init()
+        page.chapter.update(dict(
+            last_page_read_index=page.index,
+            read=page.index == len(page.chapter.pages) - 1,
+            recent=0,
+        ))
 
-        self.switch_page(page_index, animate=False)
+        if page == self.current_page:
+            if chapter_changed:
+                self.reader.update_title(page.chapter)
+                self.reader.controls.init()
+
+            self.reader.controls.set_scale_value(page.index + 1, block_event=True)
+
+        return False
 
     def on_double_click(self, event):
         # Zoom/unzoom
@@ -258,11 +227,13 @@ class Pager(Gtk.ScrolledWindow):
 
             self.zoom['active'] = False
 
-    def on_key_press(self, widget, event):
-        if self.current_page_index is None:
-            # Init is certainly not over yet.
-            return
+    def on_first_page_loaded(self, page):
+        self.on_current_page_loaded(page, True)
 
+        for page in self.pages:
+            page.load()
+
+    def on_key_press(self, widget, event):
         if self.reader.controls.is_visible:
             # No need to handle keyboard navigation when controls are visible
             # Slider (Gtk.Scale) already provides it
@@ -271,12 +242,7 @@ class Pager(Gtk.ScrolledWindow):
         if event.state != 0 or event.keyval not in (Gdk.KEY_Left, Gdk.KEY_Right):
             return
 
-        if event.keyval == Gdk.KEY_Left:
-            index = self.current_page_index + 1 if self.reader.reading_direction == 'right-to-left' else self.current_page_index - 1
-        else:
-            index = self.current_page_index - 1 if self.reader.reading_direction == 'right-to-left' else self.current_page_index + 1
-
-        self.switch_page(index)
+        self.switchto_page('left' if event.keyval == Gdk.KEY_Left else 'right')
 
     def on_single_click(self, event):
         self.button_press_timeout_id = None
@@ -286,13 +252,13 @@ class Pager(Gtk.ScrolledWindow):
             if self.zoom['active']:
                 return False
 
-            index = self.current_page_index + 1 if self.reader.reading_direction == 'right-to-left' else self.current_page_index - 1
+            self.switchto_page('left')
         elif event.x > 2 * self.reader.size.width / 3:
             # Last third of the page
             if self.zoom['active']:
                 return False
 
-            index = self.current_page_index - 1 if self.reader.reading_direction == 'right-to-left' else self.current_page_index + 1
+            self.switchto_page('right')
         else:
             # Center part of the page: toggle controls
             if self.reader.controls.is_visible:
@@ -302,103 +268,87 @@ class Pager(Gtk.ScrolledWindow):
                 self.current_page.page_number_label.hide()
                 self.reader.controls.show()
 
-            return False
-
-        self.switch_page(index)
-
         return False
 
     def rescale_pages(self):
-        for chapter_id, sequence in self.sequences.items():
-            sequence.rescale_pages()
+        for page in self.pages:
+            page.rescale()
 
     def resize_pages(self):
-        for chapter_id, sequence in self.sequences.items():
-            sequence.resize_pages()
+        for page in self.pages:
+            page.resize()
 
         self.adjust_scroll(animate=False)
 
     def reverse_pages(self):
-        sequences = self.box.get_children()
-        length = len(sequences)
+        pages = self.box.get_children()
 
-        right_index = length
-        for left_index in range(length // 2):
-            right_index = right_index - 1
-
-            self.box.reorder_child(sequences[left_index], right_index)
-            self.box.reorder_child(sequences[right_index], left_index)
-
-            sequences[left_index].reverse_pages()
-            sequences[right_index].reverse_pages()
-
-        if length // 2 != length / 2:
-            sequences[length // 2].reverse_pages()
+        self.box.reorder_child(pages[0], 2)
+        self.box.reorder_child(pages[2], 0)
 
         self.adjust_scroll(animate=False)
 
-    def switch_chapter(self, chapter, page_index=None):
-        # Update headerbar with chapter title
-        self.reader.update_title(chapter)
+    def switchto_page(self, position):
+        if self.scroll_lock:
+            return
 
-        if chapter.id not in self.sequences:
-            # Chapter has not been loaded yet
-            self.block_nav()
+        if position == 'left':
+            page = self.pages[0]
+        elif position == 'right':
+            page = self.pages[2]
 
-            self.load_chapter(chapter, page_index)
-        else:
-            self.current_chapter_id = chapter.id
-            self.reader.controls.init()
+        if page.chapter is None:
+            if page.index < 0:
+                message = _('There is no previous chapter.')
+            else:
+                message = _('It was the last chapter')
+            self.window.show_notification(message, interval=2)
+            return
 
-            if page_index is None:
-                page_index = chapter.last_page_read_index or 0
-            elif page_index == 'first':
-                page_index = 0
-            elif page_index == 'last':
-                page_index = len(chapter.pages) - 1
+        chapter_changed = self.current_page.chapter != page.chapter
+        self.current_page = page
 
-            self.switch_page(page_index)
+        if position == 'left':
+            self.adjust_scroll(0)
 
-    def switch_page(self, index, animate=True):
-        if index >= 0 and index < len(self.sequences[self.current_chapter_id].pages):
-            self.current_page_index = index
-
-            self.adjust_scroll(animate)
-
-            self.reader.controls.set_scale_value(index + 1, block_event=True)
-
-            def load_page():
+            def add_page(current_page):
                 if self.scroll_lock:
                     return True
 
-                self.sequences[self.current_chapter_id].pages[index].load()
+                self.box.remove(self.pages[2])
+
+                direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
+
+                new_page = Page(self, current_page.chapter, current_page.index + direction)
+                new_page.load()
+                self.box.pack_start(new_page, True, True, 0)
+                self.box.reorder_child(new_page, 0)
+
+                self.adjust_scroll(animate=False)
 
                 return False
 
-            GLib.idle_add(load_page)
-            self.clean()
-        else:
-            # Chapter change: next or prev
-            if index < 0:
-                index = 'last'
-                direction = -1
-            else:
-                index = 'first'
-                direction = 1
+            GLib.idle_add(add_page, self.current_page)
 
-            next_chapter = self.reader.manga.get_next_chapter(self.current_chapter, direction)
+        elif position == 'right':
+            self.adjust_scroll(2)
 
-            if next_chapter is not None:
-                self.switch_chapter(next_chapter, index)
-            else:
-                if index == 'first':
-                    message = _('It was the last chapter')
-                else:
-                    message = _('There is no previous chapter.')
-                self.window.show_notification(message, interval=2)
+            def add_page(current_page):
+                if self.scroll_lock:
+                    return True
 
-    def unblock_nav(self):
-        """ Unblocks keyboard and mouse/touch page navigation """
+                self.box.remove(self.pages[0])
 
-        self.handler_unblock(self.key_press_handler_id)
-        self.handler_unblock(self.btn_press_handler_id)
+                direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
+
+                new_page = Page(self, current_page.chapter, current_page.index + direction)
+                new_page.load()
+                self.box.pack_start(new_page, True, True, 0)
+
+                self.adjust_scroll(animate=False)
+
+                return False
+
+            GLib.idle_add(add_page, self.current_page)
+
+        GLib.idle_add(self.on_current_page_loaded, self.current_page, chapter_changed)
