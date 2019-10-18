@@ -48,12 +48,14 @@ class Page(Gtk.Overlay):
         # Activity indicator
         self.activity_indicator = ActivityIndicator()
         self.add_overlay(self.activity_indicator)
+        self.set_overlay_pass_through(self.activity_indicator, True)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
         self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
         self.page_number_label.set_valign(Gtk.Align.END)
         self.add_overlay(self.page_number_label)
+        self.set_overlay_pass_through(self.page_number_label, True)
 
         self.show_all()
 
