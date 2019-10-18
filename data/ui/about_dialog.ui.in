@@ -10,7 +10,7 @@
     <property name="copyright">© 2019 @authorfullname@</property>
     <property name="comments" translatable="yes">An online / offline manga reader</property>
     <property name="website">@PACKAGE_URL@</property>
-    <property name="website_label" translatable="yes">Learn more about MangaScan</property>
+    <property name="website_label" translatable="yes">Learn more about Komikku</property>
     <property name="authors">@CONTRIBUTORS@</property>
     <property name="translator_credits" translatable="yes" comments="Add your name to the translator credits list">@authorfullname@ &lt;@authoremail@&gt;</property>
     <!--property name="artists"></property-->

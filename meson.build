@@ -1,11 +1,11 @@
-project('mangascan',
+project('komikku',
     version: '0.0.0',
     meson_version: '>= 0.49.0',
     license: 'GPL3'
 )
 
 description = 'An online / offline manga reader'
-prettyname = 'MangaScan'
+prettyname = 'Komikku'
 prettylicense = 'GPL-3.0+'
 
 authornickname = 'valos'

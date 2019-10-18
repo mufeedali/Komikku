@@ -41,7 +41,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">12</property>
-            <property name="label" translatable="yes" comments="The umbrella sentence of the application on the first start screen">MangaScan</property>
+            <property name="label" translatable="yes" comments="The umbrella sentence of the application on the first start screen">Komikku</property>
             <attributes>
               <attribute name="weight" value="bold"/>
               <attribute name="size" value="21000"/>
@@ -548,7 +548,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">center</property>
-                            <property name="label" translatable="yes">MangaScan</property>
+                            <property name="label" translatable="yes">Komikku</property>
                             <property name="ellipsize">end</property>
                             <property name="single_line_mode">True</property>
                             <attributes>
@@ -686,7 +686,7 @@
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="label" translatable="yes">Chapter title</property>
+                    <property name="label">Chapter title</property>
                     <property name="ellipsize">end</property>
                     <property name="single_line_mode">True</property>
                     <style>

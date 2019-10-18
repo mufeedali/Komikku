@@ -1,15 +1,15 @@
-# <img height="32" src="data/icons/info.febvre.MangaScan.svg" /> MangaScan
+# <img height="32" src="data/icons/info.febvre.Komikku.svg" /> Komikku
 
-[![pipeline status](https://gitlab.com/valos/MangaScan/badges/master/pipeline.svg)](https://gitlab.com/valos/MangaScan/commits/master)
+[![pipeline status](https://gitlab.com/valos/Komikku/badges/master/pipeline.svg)](https://gitlab.com/valos/Komikku/commits/master)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 An online / offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
-**PLEASE NOTE**: *MangaScan* is still in **beta**. Some design changes or unexpected errors may lead to data loss. Even if everything is done for them not to happen, sometimes it's unavoidable.
+**PLEASE NOTE**: *Komikku* is still in **beta**. Some design changes or unexpected errors may lead to data loss. Even if everything is done for them not to happen, sometimes it's unavoidable.
 
 ## License
 
-MangaScan is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html).
+Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html).
 
 ## Features
 
@@ -51,13 +51,13 @@ Dependencies:
 * `python-magic`
 * `python-well`
 
-This is the best practice to test MangaScan without installing using meson and ninja.
+This is the best practice to test Komikku without installing using meson and ninja.
 
 #### First time
 
 ```bash
-git clone https://gitlab.com/valos/MangaScan
-cd MangaScan
+git clone https://gitlab.com/valos/Komikku
+cd Komikku
 mkdir _build
 cd _build
 meson ..
@@ -69,7 +69,7 @@ ninja run
 #### Later on
 
 ```bash
-cd MangaScan/_build
+cd Komikku/_build
 ninja install # This will actually install in _build/testdir
 ninja run
 ```
@@ -81,8 +81,8 @@ ninja run
 But if you know what you're doing, here you go:
 
 ```bash
-git clone https://gitlab.com/valos/MangaScan
-cd MangaScan
+git clone https://gitlab.com/valos/Komikku
+cd Komikku
 mkdir _build
 cd _build
 meson ..
@@ -90,7 +90,7 @@ ninja install
 ```
 
 ## Translations
-Helping to translate MangaScan or add support to a new language is very welcome.
+Helping to translate Komikku or add support to a new language is very welcome.
 
 ## Disclaimer
 The developer of this application does not have any affiliation with the content providers available.
