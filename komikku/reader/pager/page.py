@@ -125,7 +125,7 @@ class Page(Gtk.Overlay):
             GLib.idle_add(complete, page_path)
 
         def complete(page_path):
-            if self.chapter.pages is not None:
+            if self.chapter is not None and self.chapter.pages is not None:
                 self.page_number_label.set_text('{0}/{1}'.format(self.index + 1, len(self.chapter.pages)))
 
             if page_path:
