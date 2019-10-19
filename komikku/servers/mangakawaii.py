@@ -149,7 +149,7 @@ class Mangakawaii(Server):
 
         try:
             r = self.session.get(url)
-        except (ConnectionError, AttributeError) as e:
+        except (ConnectionError, AttributeError):
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
