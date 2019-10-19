@@ -193,12 +193,12 @@ class Pager(Gtk.ScrolledWindow):
             self.zoom['orig_hadj_value'] = hadj.get_value()
             self.zoom['orig_vadj_value'] = vadj.get_value()
 
-            # Adjust image to 100% of original size (arbitrary experimental choice)
-            factor = 1
+            # Adjust image's width to 2x window's width
+            factor = 2
             orig_width = image.get_pixbuf().get_width()
             orig_height = image.get_pixbuf().get_height()
-            zoom_width = pixbuf.get_width() * factor
-            zoom_height = pixbuf.get_height() * factor
+            zoom_width = self.reader.size.width * factor
+            zoom_height = orig_height * (zoom_width / orig_width)
             ratio = zoom_width / orig_width
 
             if orig_width <= self.reader.size.width:
