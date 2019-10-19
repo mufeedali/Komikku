@@ -92,7 +92,8 @@ class Pager(Gtk.ScrolledWindow):
         self.current_page = None
 
         for page in self.pages:
-            self.box.remove(page)
+            page.clean()
+            page.destroy()
 
     def goto_page(self, page_index):
         if self.pages[0].index == page_index and self.pages[0].chapter == self.current_page.chapter:
@@ -319,7 +320,9 @@ class Pager(Gtk.ScrolledWindow):
                 if self.scroll_lock:
                     return True
 
-                self.box.remove(self.pages[2])
+                # Clean and destroy page (will remove it from box)
+                self.pages[2].clean()
+                self.pages[2].destroy()
 
                 direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 
@@ -341,7 +344,9 @@ class Pager(Gtk.ScrolledWindow):
                 if self.scroll_lock:
                     return True
 
-                self.box.remove(self.pages[0])
+                # Clean and destroy page (will remove it from box)
+                self.pages[0].clean()
+                self.pages[0].destroy()
 
                 direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
 

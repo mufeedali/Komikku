@@ -67,7 +67,7 @@ class Page(Gtk.Overlay):
         hadj.set_value(hadj.get_upper() if self.reader.reading_direction == 'right-to-left' else 0)
 
     def clean(self):
-        self.status = None
+        self.chapter = None
         self.pixbuf = None
         self.image.clear()
 
