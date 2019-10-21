@@ -299,15 +299,17 @@ class Pager(Gtk.ScrolledWindow):
         elif position == 'right':
             page = self.pages[2]
 
-        if page.chapter.pages is None:
-            return
-
         if page.chapter is None:
+            # We reached first or last chapter
             if page.index < 0:
                 message = _('There is no previous chapter.')
             else:
                 message = _('It was the last chapter.')
             self.window.show_notification(message, interval=2)
+            return
+
+        if page.chapter.pages is None:
+            # Page belongs to a chapter whose pages are still unknown.
             return
 
         chapter_changed = self.current_page.chapter != page.chapter
@@ -320,9 +322,9 @@ class Pager(Gtk.ScrolledWindow):
                 if self.scroll_lock:
                     return True
 
-                # Clean and destroy page (will remove it from box)
+                # Clean and destroy 3rd page
                 self.pages[2].clean()
-                self.pages[2].destroy()
+                self.pages[2].destroy()  # will remove it from box
 
                 direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 
@@ -344,17 +346,17 @@ class Pager(Gtk.ScrolledWindow):
                 if self.scroll_lock:
                     return True
 
-                # Clean and destroy page (will remove it from box)
+                # Clean and destroy 1st page
                 self.pages[0].clean()
-                self.pages[0].destroy()
+                self.pages[0].destroy()  # will remove it from box
+
+                self.adjust_scroll(animate=False)
 
                 direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
 
                 new_page = Page(self, current_page.chapter, current_page.index + direction)
                 new_page.load()
                 self.box.pack_start(new_page, True, True, 0)
-
-                self.adjust_scroll(animate=False)
 
                 return False
 
