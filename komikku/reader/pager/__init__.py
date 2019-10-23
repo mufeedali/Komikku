@@ -104,6 +104,8 @@ class Pager(Gtk.ScrolledWindow):
             self.init(self.current_page.chapter, page_index)
 
     def init(self, chapter, page_index=None):
+        self.reader.update_title(chapter)
+
         if page_index is None:
             page_index = chapter.last_page_read_index or 0
 
@@ -147,28 +149,6 @@ class Pager(Gtk.ScrolledWindow):
                     self.button_press_timeout_id = None
 
                 GLib.idle_add(self.on_double_click, event.copy())
-
-    def on_current_page_loaded(self, page, chapter_changed):
-        if page.status not in ('error', 'loaded'):
-            return True
-
-        if page.status == 'loaded':
-            page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
-
-            page.chapter.update(dict(
-                last_page_read_index=page.index,
-                read=page.index == len(page.chapter.pages) - 1,
-                recent=0,
-            ))
-
-        if page == self.current_page:
-            if chapter_changed:
-                self.reader.update_title(page.chapter)
-                self.reader.controls.init()
-
-            self.reader.controls.set_scale_value(page.index + 1, block_event=True)
-
-        return False
 
     def on_double_click(self, event):
         # Zoom/unzoom
@@ -230,7 +210,7 @@ class Pager(Gtk.ScrolledWindow):
             self.zoom['active'] = False
 
     def on_first_page_loaded(self, page):
-        self.on_current_page_loaded(page, True)
+        self.on_page_loaded(page, True)
 
         self.pages[0].load()
         self.pages[2].load()
@@ -245,6 +225,24 @@ class Pager(Gtk.ScrolledWindow):
             return
 
         self.switchto_page('left' if event.keyval == Gdk.KEY_Left else 'right')
+
+    def on_page_loaded(self, page, chapter_changed):
+        if page.status == 'loaded':
+            page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
+
+            page.chapter.update(dict(
+                last_page_read_index=page.index,
+                read=page.index == len(page.chapter.pages) - 1,
+                recent=0,
+            ))
+
+        if page.chapter.pages is not None:
+            if chapter_changed:
+                self.reader.controls.init()
+
+            self.reader.controls.set_scale_value(page.index + 1, block_event=True)
+
+        return False
 
     def on_single_click(self, event):
         self.button_press_timeout_id = None
@@ -309,10 +307,13 @@ class Pager(Gtk.ScrolledWindow):
             return
 
         if page.chapter.pages is None:
-            # Page belongs to a chapter whose pages are still unknown.
+            # Page belongs to a chapter whose pages are still unknown
             return
 
         chapter_changed = self.current_page.chapter != page.chapter
+        if chapter_changed:
+            self.reader.update_title(page.chapter)
+
         self.current_page = page
 
         if position == 'left':

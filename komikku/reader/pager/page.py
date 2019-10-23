@@ -67,7 +67,7 @@ class Page(Gtk.Overlay):
         hadj.set_value(hadj.get_upper() if self.reader.reading_direction == 'right-to-left' else 0)
 
     def clean(self):
-        self.chapter = None
+        self.status = 'cleaned'
         self.pixbuf = None
         self.image.clear()
 
@@ -127,6 +127,10 @@ class Page(Gtk.Overlay):
             GLib.idle_add(complete, page_path)
 
         def complete(page_path):
+            if self.status == 'cleaned' or self.get_parent() is None:
+                # Page has been removed from pager
+                return False
+
             if self.chapter is not None and self.chapter.pages is not None:
                 self.page_number_label.set_text('{0}/{1}'.format(self.index + 1, len(self.chapter.pages)))
 
