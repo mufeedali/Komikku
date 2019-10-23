@@ -363,4 +363,4 @@ class Pager(Gtk.ScrolledWindow):
 
             GLib.idle_add(add_page, self.current_page)
 
-        GLib.idle_add(self.on_current_page_loaded, self.current_page, chapter_changed)
+        GLib.idle_add(self.on_page_loaded, self.current_page, chapter_changed)
