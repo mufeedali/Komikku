@@ -151,10 +151,13 @@ def insert_row(db_conn, table, data):
 
 
 def update_row(db_conn, table, id, data):
-    db_conn.execute(
-        'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
-        tuple(data.values()) + (id,)
-    )
+    try:
+        db_conn.execute(
+            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
+            tuple(data.values()) + (id,)
+        )
+    except Exception as e:
+        print('SQLite-error:', e, data)
 
 
 class Manga:
@@ -302,8 +305,12 @@ class Manga:
         assert direction in (-1, 1), 'Invalid direction value'
 
         db_conn = create_db_connection()
-        row = db_conn.execute(
-            'SELECT * FROM chapters WHERE manga_id = ? AND rank = ?', (self.id, chapter.rank + direction)).fetchone()
+        if direction == 1:
+            row = db_conn.execute(
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank > ? ORDER BY rank ASC', (self.id, chapter.rank)).fetchone()
+        else:
+            row = db_conn.execute(
+                'SELECT * FROM chapters WHERE manga_id = ? AND rank < ? ORDER BY rank DESC', (self.id, chapter.rank)).fetchone()
         db_conn.close()
 
         if not row:
