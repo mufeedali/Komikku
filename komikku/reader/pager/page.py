@@ -149,8 +149,8 @@ class Page(Gtk.Overlay):
             GLib.idle_add(complete)
 
         def complete():
-            if self.error == 'connection-error':
-                self.window.show_notification(_('No Internet connection'))
+            if self.error == 'connection':
+                self.window.show_notification(_('No Internet connection'), 2)
 
             if self.status == 'cleaned' or self.get_parent() is None:
                 # Page has been removed from pager
