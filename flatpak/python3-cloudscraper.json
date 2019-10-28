@@ -27,8 +27,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/d6/cf/ba7e2df852a2fc807d48b3f7bea46f741830be4f047a0712e6de3e95fb6a/cffi-1.13.0.tar.gz",
-            "sha256": "8fe230f612c18af1df6f348d02d682fe2c28ca0a6c3856c99599cdacae7cf226"
+            "url": "https://files.pythonhosted.org/packages/0d/aa/c5ac2f337d9a10ee95d160d47beb8d9400e1b2a46bb94990a0409fe6d133/cffi-1.13.1.tar.gz",
+            "sha256": "558b3afef987cf4b17abd849e7bedf64ee12b28175d564d05b628a0f9355599b"
         },
         {
             "type": "file",
@@ -42,13 +42,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/18/b0/8146a4f8dd402f60744fa380bc73ca47303cccf8b9190fd16a827281eac2/certifi-2019.9.11-py2.py3-none-any.whl",
-            "sha256": "fd7c7c74727ddcf00e9acd26bba8da604ffec95bf1c2144e67aff7a8b50e6cef"
+            "url": "https://files.pythonhosted.org/packages/14/2c/cd551d81dbe15200be1cf41cd03869a46fe7226e7450af7a6545bfc474c9/idna-2.8-py2.py3-none-any.whl",
+            "sha256": "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/14/2c/cd551d81dbe15200be1cf41cd03869a46fe7226e7450af7a6545bfc474c9/idna-2.8-py2.py3-none-any.whl",
-            "sha256": "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
+            "url": "https://files.pythonhosted.org/packages/e0/da/55f51ea951e1b7c63a579c09dd7db825bb730ec1fe9c0180fc77bfb31448/urllib3-1.25.6-py2.py3-none-any.whl",
+            "sha256": "3de946ffbed6e6746608990594d08faac602528ac7015ac28d33cee6a45b7398"
         },
         {
             "type": "file",
@@ -57,8 +57,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/e0/da/55f51ea951e1b7c63a579c09dd7db825bb730ec1fe9c0180fc77bfb31448/urllib3-1.25.6-py2.py3-none-any.whl",
-            "sha256": "3de946ffbed6e6746608990594d08faac602528ac7015ac28d33cee6a45b7398"
+            "url": "https://files.pythonhosted.org/packages/18/b0/8146a4f8dd402f60744fa380bc73ca47303cccf8b9190fd16a827281eac2/certifi-2019.9.11-py2.py3-none-any.whl",
+            "sha256": "fd7c7c74727ddcf00e9acd26bba8da604ffec95bf1c2144e67aff7a8b50e6cef"
         },
         {
             "type": "file",
@@ -77,6 +77,11 @@
         },
         {
             "type": "file",
+            "url": "https://files.pythonhosted.org/packages/01/c8/ceb170d81bd3941cbeb9940fc6cc2ef2ca4288d0ca8929ea4db5905d904d/pyOpenSSL-19.0.0-py2.py3-none-any.whl",
+            "sha256": "c727930ad54b10fc157015014b666f2d8b41f70c0d03e83ab67624fd3dd5d1e6"
+        },
+        {
+            "type": "file",
             "url": "https://files.pythonhosted.org/packages/51/bd/23c926cd341ea6b7dd0b2a00aba99ae0f828be89d72b2190f27c11d4b7fb/requests-2.22.0-py2.py3-none-any.whl",
             "sha256": "9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"
         },
@@ -87,18 +92,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/01/c8/ceb170d81bd3941cbeb9940fc6cc2ef2ca4288d0ca8929ea4db5905d904d/pyOpenSSL-19.0.0-py2.py3-none-any.whl",
-            "sha256": "c727930ad54b10fc157015014b666f2d8b41f70c0d03e83ab67624fd3dd5d1e6"
-        },
-        {
-            "type": "file",
             "url": "https://files.pythonhosted.org/packages/25/2f/b184437870d15cdcc1cc52b73f1f7d6bb9ab2062d93c6a0b205ce8f323d3/Js2Py-0.66.tar.gz",
             "sha256": "bf87cb4432944470f11fed9c1cb8d0312dd505e7b867362f55102f24379ab94f"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/66/be/61412efb1f2a37e744d8b37606ed35a6dd81f4f5391c2ec7fdd2200d0d59/cloudscraper-1.2.4-py2.py3-none-any.whl",
-            "sha256": "fcca151873fd616c0931d0ac36fad0e739f759c1b4227d36859b13847794e6a1"
+            "url": "https://files.pythonhosted.org/packages/85/7f/4239af8d3682f195d8c48e6b47e138073f663dfb55472f7d9dc463935924/cloudscraper-1.2.5-py2.py3-none-any.whl",
+            "sha256": "f64dff985d958837864ff24bd245353efbcee200e5e589efb7bbd84d8238b495"
         }
     ]
 }
