@@ -22,7 +22,7 @@ class Submanga(Server):
     name = server_name
     lang = server_lang
 
-    base_url = 'https://submanga.online'
+    base_url = 'https://submanga.li'
     search_url = base_url + '/search'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}'
@@ -43,7 +43,7 @@ class Submanga(Server):
 
         try:
             r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -118,7 +118,7 @@ class Submanga(Server):
 
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -149,7 +149,7 @@ class Submanga(Server):
 
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -162,7 +162,7 @@ class Submanga(Server):
         """
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -176,11 +176,11 @@ class Submanga(Server):
         return self.manga_url.format(slug)
 
     def search(self, term):
-        self.session.get(self.base_url)
-
         try:
+            self.session.get(self.base_url)
+
             r = self.session.get(self.search_url, params=dict(query=term))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         if r.status_code == 200:
