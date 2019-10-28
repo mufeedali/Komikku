@@ -18,7 +18,7 @@ from komikku.activity_indicator import ActivityIndicator
 
 class Page(Gtk.Overlay):
     __gsignals__ = {
-        'load-completed': (GObject.SIGNAL_RUN_FIRST, None, ()),
+        'render-completed': (GObject.SIGNAL_RUN_FIRST, None, ()),
     }
 
     def __init__(self, pager, chapter, index):
@@ -31,7 +31,9 @@ class Page(Gtk.Overlay):
         self.chapter = chapter
         self.index = index
 
-        self.status = None
+        self.status = None     # rendering, rendered, offlimit, cleaned
+        self.error = None      # connection error or server error
+        self.loadable = False  # loadable from disk or downloadable from server (chapter pages are known)
 
         self.set_size_request(self.window.get_size().width, -1)
 
@@ -59,6 +61,10 @@ class Page(Gtk.Overlay):
 
         self.show_all()
 
+    @property
+    def loaded(self):
+        return self.pixbuf is not None
+
     def adjust_scroll(self, hadj):
         """ Update page horizontal scrollbar value according to reading direction """
         if self.reader.pager.zoom['active']:
@@ -68,20 +74,23 @@ class Page(Gtk.Overlay):
 
     def clean(self):
         self.status = 'cleaned'
+        self.loadable = False
+        self.error = None
         self.pixbuf = None
         self.image.clear()
 
-    def load(self):
+    def render(self):
         def run():
             # First, we ensure that chapter's list of pages is known
             if self.chapter.pages is None:
                 if self.window.application.connected:
                     if not self.chapter.update_full():
-                        GLib.idle_add(complete, None)
+                        on_error('server')
+                        GLib.idle_add(complete)
                         return
                 else:
-                    self.window.show_notification(_('No Internet connection'))
-                    GLib.idle_add(complete, None)
+                    on_error('connection')
+                    GLib.idle_add(complete)
                     return
 
             # If page's index is out of pages numbers, page belongs to previous or next chapter.
@@ -99,11 +108,12 @@ class Page(Gtk.Overlay):
                     if self.chapter.pages is None:
                         if self.window.application.connected:
                             if not self.chapter.update_full():
-                                GLib.idle_add(complete, None)
+                                on_error('server')
+                                GLib.idle_add(complete)
                                 return
                         else:
-                            self.window.show_notification(_('No Internet connection'))
-                            GLib.idle_add(complete, None)
+                            on_error('connection')
+                            GLib.idle_add(complete)
                             return
 
                     if self.index < 0:
@@ -113,46 +123,63 @@ class Page(Gtk.Overlay):
                         # Page is the first page of chapter
                         self.index = 0
 
+                    self.loadable = True
                 else:
-                    GLib.idle_add(complete, None)
+                    # Page does not exist, it's out of limit
+                    # ie before first page of first chapter or after last page of last chapter
+                    self.status = 'offlimit'
+                    GLib.idle_add(complete)
                     return
+            else:
+                self.loadable = True
 
             page_path = self.chapter.get_page_path(self.index)
             if page_path is None:
                 if self.window.application.connected:
                     page_path = self.chapter.get_page(self.index)
+                    if page_path:
+                        self.pixbuf = Pixbuf.new_from_file(page_path)
+                    else:
+                        on_error('server')
                 else:
-                    self.window.show_notification(_('No Internet connection'))
+                    on_error('connection')
+            else:
+                self.pixbuf = Pixbuf.new_from_file(page_path)
 
-            GLib.idle_add(complete, page_path)
+            GLib.idle_add(complete)
 
-        def complete(page_path):
+        def complete():
+            if self.error == 'connection-error':
+                self.window.show_notification(_('No Internet connection'))
+
             if self.status == 'cleaned' or self.get_parent() is None:
                 # Page has been removed from pager
+                # rare case that occurs during a quick navigation
                 return False
 
-            if self.chapter is not None and self.chapter.pages is not None:
+            if self.loadable:
                 self.page_number_label.set_text('{0}/{1}'.format(self.index + 1, len(self.chapter.pages)))
 
-            if page_path:
-                self.pixbuf = Pixbuf.new_from_file(page_path)
-                self.status = 'loaded'
-            else:
-                self.pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
-                self.status = 'error'
-
-            self.set_image()
+            if self.loaded:
+                self.set_image()
+                self.status = 'rendered'
 
             self.activity_indicator.stop()
 
-            self.emit('load-completed')
+            self.emit('render-completed')
 
             return False
 
-        if self.status in ('loaded', 'loading'):
+        def on_error(kind):
+            assert kind in ('connection', 'server'), 'Invalid error kind'
+
+            self.error = kind
+            self.pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+
+        if self.status is not None and self.error is None:
             return
 
-        self.status = 'loading'
+        self.status = 'rendering'
 
         if self.reader.controls.is_visible:
             self.page_number_label.hide()
@@ -166,13 +193,13 @@ class Page(Gtk.Overlay):
         thread.start()
 
     def rescale(self):
-        if self.status in ('error', 'loaded'):
+        if self.status == 'rendered':
             self.set_image()
 
     def resize(self):
         self.set_size_request(self.reader.size.width, -1)
 
-        if self.status in ('error', 'loaded'):
+        if self.status == 'rendered':
             self.set_image()
 
     def set_image(self):

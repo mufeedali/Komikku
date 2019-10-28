@@ -78,12 +78,13 @@ class Pager(Gtk.ScrolledWindow):
             return
 
         if animate:
+            self.scroll_lock = True
+
             clock = self.get_frame_clock()
             if clock:
                 start_time = clock.get_frame_time()
                 end_time = start_time + 1000 * duration
 
-                self.scroll_lock = True
                 self.add_tick_callback(move)
         else:
             adj.set_value(end)
@@ -133,8 +134,8 @@ class Pager(Gtk.ScrolledWindow):
         self.adjust_scroll(animate=False)
 
         self.current_page = center_page
-        center_page.connect('load-completed', self.on_first_page_loaded)
-        center_page.load()
+        center_page.connect('render-completed', self.on_first_page_rendered)
+        center_page.render()
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
@@ -209,11 +210,11 @@ class Pager(Gtk.ScrolledWindow):
 
             self.zoom['active'] = False
 
-    def on_first_page_loaded(self, page):
-        self.on_page_loaded(page, True)
+    def on_first_page_rendered(self, page):
+        GLib.idle_add(self.on_page_switch, page, True)
 
-        self.pages[0].load()
-        self.pages[2].load()
+        self.pages[0].render()
+        self.pages[2].render()
 
     def on_key_press(self, widget, event):
         if self.reader.controls.is_visible:
@@ -226,8 +227,15 @@ class Pager(Gtk.ScrolledWindow):
 
         self.switchto_page('left' if event.keyval == Gdk.KEY_Left else 'right')
 
-    def on_page_loaded(self, page, chapter_changed):
-        if page.status == 'loaded':
+    def on_page_switch(self, page, chapter_changed):
+        # Loop until page is loadable or render is ended
+        if not page.loadable and page.status == 'rendering':
+            return True
+
+        if not page.loadable or page.status == 'cleaned':
+            return False
+
+        if page.error is None:
             page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
 
             page.chapter.update(dict(
@@ -236,11 +244,10 @@ class Pager(Gtk.ScrolledWindow):
                 recent=0,
             ))
 
-        if page.chapter.pages is not None:
-            if chapter_changed:
-                self.reader.controls.init()
+        if chapter_changed:
+            self.reader.controls.init()
 
-            self.reader.controls.set_scale_value(page.index + 1, block_event=True)
+        self.reader.controls.set_scale_value(page.index + 1, block_event=True)
 
         return False
 
@@ -281,10 +288,8 @@ class Pager(Gtk.ScrolledWindow):
         self.adjust_scroll(animate=False)
 
     def reverse_pages(self):
-        pages = self.box.get_children()
-
-        self.box.reorder_child(pages[0], 2)
-        self.box.reorder_child(pages[2], 0)
+        self.box.reorder_child(self.pages[0], 2)
+        self.box.reorder_child(self.pages[2], 0)
 
         self.adjust_scroll(animate=False)
 
@@ -297,7 +302,7 @@ class Pager(Gtk.ScrolledWindow):
         elif position == 'right':
             page = self.pages[2]
 
-        if page.chapter is None:
+        if page.status == 'offlimit':
             # We reached first or last chapter
             if page.index < 0:
                 message = _('There is no previous chapter.')
@@ -306,8 +311,8 @@ class Pager(Gtk.ScrolledWindow):
             self.window.show_notification(message, interval=2)
             return
 
-        if page.chapter.pages is None:
-            # Page belongs to a chapter whose pages are still unknown
+        if not page.loadable:
+            # Page is not ready to be shown
             return
 
         chapter_changed = self.current_page.chapter != page.chapter
@@ -330,11 +335,13 @@ class Pager(Gtk.ScrolledWindow):
                 direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 
                 new_page = Page(self, current_page.chapter, current_page.index + direction)
-                new_page.load()
+                new_page.render()
                 self.box.pack_start(new_page, True, True, 0)
                 self.box.reorder_child(new_page, 0)
 
                 self.adjust_scroll(animate=False)
+
+                GLib.idle_add(self.on_page_switch, current_page, chapter_changed)
 
                 return False
 
@@ -356,11 +363,11 @@ class Pager(Gtk.ScrolledWindow):
                 direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
 
                 new_page = Page(self, current_page.chapter, current_page.index + direction)
-                new_page.load()
+                new_page.render()
                 self.box.pack_start(new_page, True, True, 0)
+
+                GLib.idle_add(self.on_page_switch, current_page, chapter_changed)
 
                 return False
 
             GLib.idle_add(add_page, self.current_page)
-
-        GLib.idle_add(self.on_page_loaded, self.current_page, chapter_changed)
