@@ -5,7 +5,7 @@
 
 An online / offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
-**PLEASE NOTE**: *Komikku* is still in **beta**. Some design changes or unexpected errors may lead to data loss. Even if everything is done for them not to happen, sometimes it's unavoidable.
+**PLEASE NOTE**: *Komikku* is still in **an early stage of development**. Some design changes or unexpected errors may lead to data loss (even if everything is done for them not to happen).
 
 ## License
 
@@ -24,6 +24,14 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 <img src="screenshots/card-info.png" width="160">
 <img src="screenshots/card-chapters.png" width="160">
 <img src="screenshots/reader.png" width="160">
+
+## Install
+
+Setup [flatpak](https://www.flatpak.org/setup/) for your Linux distro. Download the Komikku flatpak from the Gitlab pipeline. Then install the flatpak.
+
+```bash
+flatpak install info.febvre.Komikku.flatpak
+```
 
 ## Building from source
 
