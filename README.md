@@ -28,7 +28,7 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 
 ## Install
 
-Setup [flatpak](https://www.flatpak.org/setup/) for your Linux distro. Download the Komikku flatpak from the [Gitlab pipeline](https://gitlab.com/valos/Komikku/-/jobs/artifacts/master/download?job=flatpak). Then install the flatpak.
+Setup [flatpak](https://www.flatpak.org/setup/) for your Linux distro. Download the last passed Komikku flatpak from the [Gitlab pipeline](https://gitlab.com/valos/Komikku/pipelines). Then install the flatpak.
 
 ```bash
 flatpak install info.febvre.Komikku.flatpak
