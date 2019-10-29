@@ -45,7 +45,7 @@ class Japscan(Server):
 
         try:
             r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -135,7 +135,7 @@ class Japscan(Server):
 
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -185,7 +185,7 @@ class Japscan(Server):
 
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -198,7 +198,7 @@ class Japscan(Server):
         """
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -216,7 +216,7 @@ class Japscan(Server):
             self.session.get(self.base_url)
 
             r = self.session.post(self.search_url, data=dict(search=term))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         if r.status_code == 200:

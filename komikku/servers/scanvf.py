@@ -172,11 +172,11 @@ class Scanvf(Server):
         return self.manga_url.format(slug)
 
     def search(self, term):
-        self.session.get(self.base_url)
-
         try:
+            self.session.get(self.base_url)
+
             r = self.session.get(self.search_url, params=dict(key=term, send='Recherche'))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
