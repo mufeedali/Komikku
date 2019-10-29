@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import cairo
 from gettext import gettext as _
 import time
 
@@ -116,7 +117,7 @@ class Library():
         self.set_manga_cover_image(overlay, width, height)
 
         # Name (bottom)
-        label = Gtk.Label()
+        label = Gtk.Label(xalign=0)
         label.get_style_context().add_class('library-manga-name-label')
         label.set_valign(Gtk.Align.END)
         label.set_ellipsize(Pango.EllipsizeMode.END)
@@ -196,12 +197,15 @@ class Library():
         ctx.restore()
 
     def draw_cover_server_logo(self, da, ctx, manga):
-        size = 40
+        size = 50
 
         ctx.save()
 
         # Draw triangle
-        ctx.set_source_rgba(0, 0, 0, .5)
+        gradient = cairo.LinearGradient(0, 0, size / 2, size / 2)
+        gradient.add_color_stop_rgba(0, 0, 0, 0, 0.75)
+        gradient.add_color_stop_rgba(1, 0, 0, 0, 0)
+        ctx.set_source(gradient)
         ctx.new_path()
         ctx.move_to(0, 0)
         ctx.rel_line_to(0, size)
@@ -211,8 +215,8 @@ class Library():
 
         # Draw logo
         pixbuf = Pixbuf.new_from_resource_at_scale(
-            '/info/febvre/Komikku/icons/ui/favicons/{0}.ico'.format(manga.server_id), 16, 16, True)
-        Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 2, 2)
+            '/info/febvre/Komikku/icons/ui/favicons/{0}.ico'.format(manga.server_id), 20, 20, True)
+        Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 4, 4)
         ctx.paint()
 
         ctx.restore()

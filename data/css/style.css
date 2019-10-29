@@ -1,7 +1,11 @@
 /* Main window - library page - manga cover */
 .library-manga-name-label {
-    background: rgba(0, 0, 0, .5);
+    font-size: 13px;
+    font-weight: bold;
     color: #fff;
+    text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+    padding: 20px 8px 4px 8px;
 }
 
 /* Main window - manga card page - chapters list */
