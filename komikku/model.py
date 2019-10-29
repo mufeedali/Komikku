@@ -396,11 +396,18 @@ class Manga:
 
             self._chapters = None
 
+            # Store old path
+            old_path = self.path
+
             # Update
             for key in data:
                 setattr(self, key, data[key])
 
             update_row(db_conn, 'mangas', self.id, data)
+
+            if old_path != self.path:
+                # Manga name changes, manga folder must be renamed too
+                os.rename(old_path, self.path)
 
         db_conn.close()
 
