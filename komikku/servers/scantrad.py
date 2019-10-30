@@ -173,7 +173,7 @@ class Scantrad(Server):
         for li_element in soup.find('ul', id='projects-list').find_all('li'):
             name = li_element.a.find_all('span')[0].text.strip()
 
-            if name.lower().find(term) >= 0:
+            if name.lower().find(term.lower()) >= 0:
                 results.append(dict(
                     slug=li_element.a.get('href').split('/')[-1],
                     name=li_element.a.find_all('span')[0].text.strip(),
