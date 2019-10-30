@@ -53,7 +53,7 @@ class Mangarock(Server):
 
         try:
             r = self.session.get(self.api_manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         try:
@@ -65,6 +65,7 @@ class Mangarock(Server):
             return None
 
         res = res['data']
+
         data = initial_data.copy()
         data.update(dict(
             authors=[],
@@ -82,9 +83,9 @@ class Mangarock(Server):
         data['cover'] = res['thumbnail']
 
         # Details & Synopsis
-        for author in res['authors']:
+        for author in res['authors'] or []:
             data['authors'].append('{0} ({1})'.format(author['name'], author['role']))
-        for genre in res['rich_categories']:
+        for genre in res['rich_categories'] or []:
             data['genres'].append(genre['name'])
         data['status'] = 'complete' if res['completed'] else 'ongoing'
         data['synopsis'] = res['description']
@@ -109,7 +110,7 @@ class Mangarock(Server):
 
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         try:
@@ -138,7 +139,7 @@ class Mangarock(Server):
         image_url = page['image']
         try:
             r = self.session.get(image_url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return (None, None)
 
         if r.status_code != 200:
@@ -163,7 +164,7 @@ class Mangarock(Server):
         """
         try:
             r = self.session.get(url)
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         if r.status_code != 200:
@@ -188,7 +189,7 @@ class Mangarock(Server):
     def search(self, term):
         try:
             r = self.session.post(self.api_search_url, json={'type': 'series', 'keywords': term})
-        except ConnectionError:
+        except (ConnectionError, RuntimeError):
             return None
 
         if r.status_code != 200:
