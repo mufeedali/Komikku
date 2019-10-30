@@ -20,11 +20,8 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 
 ## Screenshots
 
-<img src="screenshots/main-window.png" width="160">
-<img src="screenshots/add-servers.png" width="160">
-<img src="screenshots/card-info.png" width="160">
-<img src="screenshots/card-chapters.png" width="160">
-<img src="screenshots/reader.png" width="160">
+<img src="screenshots/main-window.png" width="412">
+<img src="screenshots/add-servers.png" width="412">
 
 ## Install
 
