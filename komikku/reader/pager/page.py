@@ -50,14 +50,12 @@ class Page(Gtk.Overlay):
         # Activity indicator
         self.activity_indicator = ActivityIndicator()
         self.add_overlay(self.activity_indicator)
-        self.set_overlay_pass_through(self.activity_indicator, True)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
         self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
         self.page_number_label.set_valign(Gtk.Align.END)
         self.add_overlay(self.page_number_label)
-        self.set_overlay_pass_through(self.page_number_label, True)
 
         self.show_all()
 
@@ -181,16 +179,15 @@ class Page(Gtk.Overlay):
 
         self.status = 'rendering'
 
-        if self.reader.controls.is_visible:
-            self.page_number_label.hide()
-        else:
-            self.page_number_label.show()
-
+        self.toggle_page_number()
         self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
+
+    def refresh(self):
+        self.toggle_page_number()
 
     def rescale(self):
         if self.status == 'rendered':
@@ -225,3 +222,9 @@ class Page(Gtk.Overlay):
             )
 
         self.image.set_from_pixbuf(pixbuf)
+
+    def toggle_page_number(self):
+        if self.reader.controls.is_visible:
+            self.page_number_label.hide()
+        else:
+            self.page_number_label.show()
