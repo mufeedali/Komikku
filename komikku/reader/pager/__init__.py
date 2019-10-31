@@ -48,7 +48,7 @@ class Pager(Gtk.ScrolledWindow):
     def pages(self):
         return self.box.get_children()
 
-    def adjust_scroll(self, position=1, animate=True, duration=350):
+    def adjust_scroll(self, position=1, animate=True, duration=250):
         """ Scroll to a page """
 
         def ease_out_cubic(t):
@@ -335,9 +335,9 @@ class Pager(Gtk.ScrolledWindow):
                 direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 
                 new_page = Page(self, current_page.chapter, current_page.index + direction)
-                new_page.render()
                 self.box.pack_start(new_page, True, True, 0)
                 self.box.reorder_child(new_page, 0)
+                new_page.render()
 
                 self.adjust_scroll(animate=False)
 
@@ -363,8 +363,8 @@ class Pager(Gtk.ScrolledWindow):
                 direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
 
                 new_page = Page(self, current_page.chapter, current_page.index + direction)
-                new_page.render()
                 self.box.pack_start(new_page, True, True, 0)
+                new_page.render()
 
                 GLib.idle_add(self.on_page_switch, current_page, chapter_changed)
 
