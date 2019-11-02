@@ -236,11 +236,25 @@ class Pager(Gtk.ScrolledWindow):
             return False
 
         if page.error is None:
-            page.chapter.manga.update(dict(last_read=datetime.datetime.now()))
+            chapter = page.chapter
 
-            page.chapter.update(dict(
+            # Update manga last read time
+            chapter.manga.update(dict(last_read=datetime.datetime.now()))
+
+            # Mark page as read
+            chapter.pages[page.index]['read'] = True
+            # Check if chapter is read
+            chapter_is_read = True
+            for chapter_page in chapter.pages:
+                if not chapter_page.get('read'):
+                    chapter_is_read = False
+                    break
+
+            # Update chapter
+            chapter.update(dict(
+                pages=chapter.pages,
                 last_page_read_index=page.index,
-                read=page.index == len(page.chapter.pages) - 1,
+                read=chapter_is_read,
                 recent=0,
             ))
 
