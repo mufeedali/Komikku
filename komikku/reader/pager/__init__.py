@@ -261,7 +261,7 @@ class Pager(Gtk.ScrolledWindow):
         if chapter_changed:
             self.reader.controls.init()
 
-        self.reader.controls.set_scale_value(page.index + 1, block_event=True)
+        self.reader.controls.set_scale_value(page.index + 1)
 
         return False
 

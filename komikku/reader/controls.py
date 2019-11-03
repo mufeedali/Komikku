@@ -93,17 +93,12 @@ class Controls:
         if self.is_visible:
             self.top_box.hide()
 
-    def set_scale_value(self, index, block_event=False):
-        if block_event:
-            self.scale.handler_block(self.scale_handler_id)
-
-        if self.scale.get_value() == index:
-            self.scale.emit('value-changed')
-        else:
-            self.scale.set_value(index)
-
-        if block_event:
-            self.scale.handler_unblock(self.scale_handler_id)
+    def set_scale_value(self, index):
+        with self.scale.handler_block(self.scale_handler_id):
+            if self.scale.get_value() == index:
+                self.scale.emit('value-changed')
+            else:
+                self.scale.set_value(index)
 
     def set_scale_direction(self, inverted):
         self.scale.set_inverted(inverted)
