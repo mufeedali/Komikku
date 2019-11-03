@@ -245,7 +245,7 @@ class Pager(Gtk.ScrolledWindow):
             chapter.pages[page.index]['read'] = True
             # Check if chapter is read
             chapter_is_read = True
-            for chapter_page in chapter.pages:
+            for chapter_page in reversed(chapter.pages):
                 if not chapter_page.get('read'):
                     chapter_is_read = False
                     break
