@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
-from urllib.parse import urlsplit
 
 from komikku.servers import Server
 from komikku.servers import USER_AGENT

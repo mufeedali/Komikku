@@ -165,8 +165,9 @@ class Manga:
     _server = None
 
     STATUSES = dict(
-        complete=_('Complete'),
+        complete=_('Completed'),
         ongoing=_('Ongoing'),
+        suspended=_('Suspended'),
     )
 
     def __init__(self, server=None):

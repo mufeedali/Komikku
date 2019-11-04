@@ -24,6 +24,8 @@
 
         <file compressed="true">icons/ui/favicons/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/favicons/japscan.ico</file>
+        <file compressed="true">icons/ui/favicons/mangaeden.ico</file>
+        <file compressed="true" alias="icons/ui/favicons/mangaeden_it.ico">icons/ui/favicons/mangaeden.ico</file>
         <file compressed="true">icons/ui/favicons/mangakawaii.ico</file>
         <file compressed="true">icons/ui/favicons/manganelo.ico</file>
         <file compressed="true">icons/ui/favicons/mangarock.ico</file>
