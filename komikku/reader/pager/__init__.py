@@ -108,7 +108,12 @@ class Pager(Gtk.ScrolledWindow):
         self.reader.update_title(chapter)
 
         if page_index is None:
-            page_index = chapter.last_page_read_index or 0
+            if chapter.read:
+                page_index = 0
+            elif chapter.last_page_read_index is not None:
+                page_index = chapter.last_page_read_index
+            else:
+                page_index = 0
 
         direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
 

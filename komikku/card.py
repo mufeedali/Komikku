@@ -344,11 +344,12 @@ class Card():
         hbox.pack_start(label, True, True, 0)
 
         # Counter: nb read / nb pages
-        label = Gtk.Label(xalign=0, yalign=1)
-        label.get_style_context().add_class('card-chapter-sublabel')
-        if chapter.pages is not None and chapter.last_page_read_index is not None:
-            label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
-        hbox.pack_start(label, False, True, 0)
+        if not chapter.read:
+            label = Gtk.Label(xalign=0, yalign=1)
+            label.get_style_context().add_class('card-chapter-sublabel')
+            if chapter.pages is not None and chapter.last_page_read_index is not None:
+                label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
+            hbox.pack_start(label, False, True, 0)
 
         box.pack_start(hbox, True, True, 0)
 
