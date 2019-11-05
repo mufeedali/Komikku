@@ -254,6 +254,14 @@ class Manga:
         return None
 
     @property
+    def nb_downloaded_chapters(self):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT count() AS downloaded FROM chapters WHERE manga_id = ? AND downloaded = 1', (self.id,)).fetchone()
+        db_conn.close()
+
+        return row['downloaded']
+
+    @property
     def nb_recent_chapters(self):
         db_conn = create_db_connection()
         row = db_conn.execute('SELECT count() AS recents FROM chapters WHERE manga_id = ? AND recent = 1', (self.id,)).fetchone()

@@ -129,9 +129,9 @@ class Library():
         drawingarea.connect('draw', self.draw_cover_server_logo, manga)
         overlay.add_overlay(drawingarea)
 
-        # Number of recents chapters (top right corner)
+        # Badges: number of recents chapters and number of downloaded chapters (top right corner)
         drawingarea = Gtk.DrawingArea()
-        drawingarea.connect('draw', self.draw_cover_recent_chapters, manga)
+        drawingarea.connect('draw', self.draw_cover_badges, manga)
         overlay.add_overlay(drawingarea)
 
         overlay.show_all()
@@ -167,9 +167,15 @@ class Library():
             confirm_callback
         )
 
-    def draw_cover_recent_chapters(self, da, ctx, manga):
+    def draw_cover_badges(self, da, ctx, manga):
         nb_recent_chapters = manga.nb_recent_chapters
-        if nb_recent_chapters == 0:
+        nb_downloaded_chapters = manga.nb_downloaded_chapters
+        cover_width, cover_height = self.cover_size
+
+        x = cover_width
+        spacing = 5  # with top and right borders, between badges
+
+        if nb_recent_chapters == 0 and nb_downloaded_chapters == 0:
             return
 
         ctx.save()
@@ -177,22 +183,41 @@ class Library():
         ctx.select_font_face('sans-serif')
         ctx.set_font_size(13)
 
-        text = str(nb_recent_chapters)
-        text_extents = ctx.text_extents(text)
-        cover_width, cover_height = self.cover_size
-        width = text_extents.width + 2 * 3 + 1
-        height = text_extents.height + 2 * 5
-        right = top = 5
+        # Numbers of recents chapters
+        if nb_recent_chapters > 0:
+            text = str(nb_recent_chapters)
+            text_extents = ctx.text_extents(text)
+            width = text_extents.x_advance + 2 * 3 + 1
+            height = text_extents.height + 2 * 5
 
-        # Draw rectangle
-        ctx.set_source_rgba(.2, .6, 1, 1)
-        ctx.rectangle(cover_width - width - right, top, width, height)
-        ctx.fill()
+            # Draw rectangle
+            x = x - spacing - width
+            ctx.set_source_rgb(0.2, 0.6, 1)  # #3399FF
+            ctx.rectangle(x, spacing, width, height)
+            ctx.fill()
 
-        # Draw number
-        ctx.set_source_rgb(1, 1, 1)
-        ctx.move_to(cover_width - width - 2, height)
-        ctx.show_text(text)
+            # Draw number
+            ctx.set_source_rgb(1, 1, 1)
+            ctx.move_to(x + 3, height)
+            ctx.show_text(text)
+
+        # Numbers of downloaded chapters
+        if nb_downloaded_chapters > 0:
+            text = str(nb_downloaded_chapters)
+            text_extents = ctx.text_extents(text)
+            width = text_extents.x_advance + 2 * 3 + 1
+            height = text_extents.height + 2 * 5
+
+            # Draw rectangle
+            x = x - spacing - width
+            ctx.set_source_rgb(1, 0.266, 0.2)  # #FF4433
+            ctx.rectangle(x, spacing, width, height)
+            ctx.fill()
+
+            # Draw number
+            ctx.set_source_rgb(1, 1, 1)
+            ctx.move_to(x + 3, height)
+            ctx.show_text(text)
 
         ctx.restore()
 
