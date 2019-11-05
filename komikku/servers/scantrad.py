@@ -23,11 +23,12 @@ class Scantrad(Server):
     name = server_name
     lang = server_lang
 
-    base_url = 'https://www.scantrad.fr'
+    base_url = 'https://www.scantrad.net'
     search_url = base_url + '/mangas'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/mangas/{0}/{1}'
-    page_url = base_url + '/mangas/{0}/{1}?{2}'
+    cover_url = base_url + '/{0}'
+    image_url = base_url + '/{0}'
 
     def __init__(self):
         if self.session is None:
@@ -57,7 +58,7 @@ class Scantrad(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
-            scanlators=[],
+            scanlators=['Scantrad France',],
             genres=[],
             status=None,
             synopsis=None,
@@ -66,18 +67,30 @@ class Scantrad(Server):
             cover=None,
         ))
 
-        data['name'] = soup.find('h1').text.strip()
-        data['synopsis'] = soup.find('div', class_='synopsis').text.strip()
+        div_info = soup.find('div', class_='mf-info')
+        data['name'] = div_info.find('div', class_='titre').text.strip()
+        data['cover'] = div_info.find('div', class_='poster').img.get('src')
+
+        data['synopsis'] = div_info.find('div', class_='synopsis').text.strip()
+        status = div_info.find_all('div', class_='sub-i')[1].span.text.strip().lower()
+        if status == 'en cours':
+            data['status'] = 'ongoing'
+        elif status == 'terminé':
+            data['status'] = 'complete'
 
         # Chapters
-        for li_element in soup.find('ul', id='project-chapters-list').find_all('li'):
-            title_element = li_element.find('div', class_='name-chapter')
-            number_element = title_element.span.extract()
+        for div_element in soup.find('div', id='chap-top').find_all('div', class_='chapitre'):
+            btns_elements = div_element.find('div', class_='ch-right').find_all('a')
+            if len(btns_elements) < 2:
+                continue
 
             data['chapters'].append(dict(
-                slug=li_element.find('div', class_='buttons').find_all('a')[0].get('href').split('/')[-1],
-                date=dateparser.parse(li_element.find('span', class_='chapter-date').text).date(),
-                title='{0} {1}'.format(number_element.text.strip(), title_element.text.strip()),
+                slug=btns_elements[0].get('href').split('/')[-1],
+                date=dateparser.parse(div_element.find('div', class_='chl-date').text).date(),
+                title='{0} {1}'.format(
+                    div_element.find('span', class_='chl-num').text.strip(),
+                    div_element.find('span', class_='chl-titre').text.strip()
+                ),
             ))
 
         return data
@@ -102,15 +115,19 @@ class Scantrad(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        pages_options_elements = soup.find('div', class_='controls').find_all('select')[2].find_all('option')
+        imgs_elements = soup.find('div', class_='main_img').find_all('img')
 
         data = dict(
             pages=[],
         )
-        for option_element in pages_options_elements:
+        for img_element in imgs_elements:
+            url = img_element.get('data-src')
+            if not url.startswith('lel'):
+                continue
+
             data['pages'].append(dict(
-                slug=option_element.get('value').split('?')[-1],
-                image=None,
+                slug=None,
+                image=url,
             ))
 
         return data
@@ -120,26 +137,12 @@ class Scantrad(Server):
         Returns chapter page scan (image) content
         """
         try:
-            r = self.session.get(self.page_url.format(manga_slug, chapter_slug, page['slug']))
+            r = self.session.get(self.image_url.format(page['image']))
         except ConnectionError:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
-
-        if r.status_code != 200 or mime_type != 'text/html':
-            return (None, None)
-
-        soup = BeautifulSoup(r.text, 'html.parser')
-
-        image_url = soup.find('div', class_='image').find('a').img.get('src')
-        image_name = image_url.split('/')[-1]
-
-        try:
-            r = self.session.get(image_url)
-        except (ConnectionError, RuntimeError):
-            return (None, None)
-
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        image_name = page['image'].split('/')[-1]
 
         return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
@@ -147,7 +150,14 @@ class Scantrad(Server):
         """
         Returns manga cover (image) content
         """
-        return None
+        try:
+            r = self.session.get(self.cover_url.format(url))
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def get_manga_url(self, slug, url):
         """
@@ -169,13 +179,13 @@ class Scantrad(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        for li_element in soup.find('ul', id='projects-list').find_all('li'):
-            name = li_element.a.find_all('span')[0].text.strip()
+        for a_element in soup.find('div', class_='h-left').find_all('a'):
+            name = a_element.find('div', class_='hmi-titre').text.strip()
 
             if name.lower().find(term.lower()) >= 0:
                 results.append(dict(
-                    slug=li_element.a.get('href').split('/')[-1],
-                    name=li_element.a.find_all('span')[0].text.strip(),
+                    slug=a_element.get('href').split('/')[-1],
+                    name=name,
                 ))
 
         return results
