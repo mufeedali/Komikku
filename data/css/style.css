@@ -1,6 +1,6 @@
 /* Main window - library page - manga cover */
 .library-manga-name-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     color: #fff;
     text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
@@ -42,7 +42,7 @@
 
 .reader-page-number-indicator-label {
     color: #fff;
-    font-weight: bold;
+    letter-spacing: 1px;
     /* bordered text */
     text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
     margin-bottom: 8px;

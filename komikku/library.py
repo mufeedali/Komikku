@@ -120,7 +120,7 @@ class Library():
         label = Gtk.Label(xalign=0)
         label.get_style_context().add_class('library-manga-name-label')
         label.set_valign(Gtk.Align.END)
-        label.set_ellipsize(Pango.EllipsizeMode.END)
+        label.set_line_wrap(True)
         label.set_text(manga.name)
         overlay.add_overlay(label)
 
@@ -179,8 +179,6 @@ class Library():
             return
 
         ctx.save()
-
-        ctx.select_font_face('sans-serif')
         ctx.set_font_size(13)
 
         # Numbers of recents chapters
