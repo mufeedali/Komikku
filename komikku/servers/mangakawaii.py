@@ -106,7 +106,7 @@ class Mangakawaii(Server):
             data['chapters'].append(dict(
                 slug=slug,
                 title=title,
-                date=dateparser.parse(date, 'DD.MM.YYYY', settings={'DATE_ORDER': 'DMY'}).date(),
+                date=dateparser.parse(date, date_formats=['DD.MM.YYYY'], settings={'DATE_ORDER': 'DMY'}).date(),
             ))
 
         return data
