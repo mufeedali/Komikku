@@ -90,8 +90,9 @@ class Hatigarmscans(Server):
             elif label.startswith('Categories'):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
-                # possible values: ongoing, complete, None
-                data['status'] = value.lower()
+                status = value.lower()
+                if status in ('ongoing', 'complete'):
+                    data['status'] = status
 
         data['synopsis'] = soup.find('div', class_='well').p.text.strip()
         alert_element = soup.find('div', class_='alert-danger')

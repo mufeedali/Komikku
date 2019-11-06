@@ -87,9 +87,11 @@ class Scanonepiece(Server):
             elif label.startswith('Catégories'):
                 data['genres'] = [a_element.text.strip() for a_element in element.find_all('a')]
             elif label.startswith('Statut'):
-                value = element.text.strip()
-                # possible values: ongoing, complete, None
-                data['status'] = 'ongoing' if value.lower() == 'en cours' else 'complete'
+                value = element.text.strip().lower()
+                if value == 'en cours':
+                    data['status'] = 'ongoing'
+                elif value == 'terminé':
+                    data['status'] = 'complete'
 
         data['synopsis'] = soup.find('div', class_='well').p.text.strip()
         alert_element = soup.find('div', class_='alert-danger')

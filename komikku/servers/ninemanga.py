@@ -89,9 +89,8 @@ class Ninemanga(Server):
                 for a_element in element.find_all('a'):
                     data['genres'].append(a_element.text)
             elif label.startswith(('Status', 'Statut', 'Estado', 'Stato')):
-                status_element = element.find_all('a')[0]
-                # Allowed values: ongoing, complete, None
-                value = status_element.text.strip().lower()
+                value = element.find_all('a')[0].text.strip().lower()
+
                 if value in ('ongoing', 'en cours', 'laufende', 'en curso', 'in corso', 'em tradução'):
                     data['status'] = 'ongoing'
                 elif value in ('complete', 'complété', 'abgeschlossen', 'completado', 'completato', 'completo'):

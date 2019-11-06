@@ -85,9 +85,12 @@ class Mangarock(Server):
         # Details & Synopsis
         for author in res['authors'] or []:
             data['authors'].append('{0} ({1})'.format(author['name'], author['role']))
+
         for genre in res['rich_categories'] or []:
             data['genres'].append(genre['name'])
+
         data['status'] = 'complete' if res['completed'] else 'ongoing'
+
         data['synopsis'] = res['description']
 
         # Chapters

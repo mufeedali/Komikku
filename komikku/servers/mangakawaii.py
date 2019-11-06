@@ -86,8 +86,11 @@ class Mangakawaii(Server):
                 a_elements = element.find_all('a')
                 data['genres'] = [a_element.text.strip() for a_element in a_elements]
             elif label.startswith('Statut'):
-                # possible values: ongoing, complete, None
-                data['status'] = 'ongoing' if element.span.text.lower() == 'en cours' else 'complete'
+                status = element.span.text.strip().lower()
+                if status == 'en cours':
+                    data['status'] = 'ongoing'
+                elif status == 'terminé':
+                    data['status'] = 'complete'
 
         # Synopsis
         data['synopsis'] = soup.find('div', class_='info-desc__content').text.strip()

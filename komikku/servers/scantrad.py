@@ -71,12 +71,13 @@ class Scantrad(Server):
         data['name'] = div_info.find('div', class_='titre').text.strip()
         data['cover'] = div_info.find('div', class_='poster').img.get('src')
 
-        data['synopsis'] = div_info.find('div', class_='synopsis').text.strip()
         status = div_info.find_all('div', class_='sub-i')[1].span.text.strip().lower()
         if status == 'en cours':
             data['status'] = 'ongoing'
         elif status == 'terminé':
             data['status'] = 'complete'
+
+        data['synopsis'] = div_info.find('div', class_='synopsis').text.strip()
 
         # Chapters
         for div_element in soup.find('div', id='chap-top').find_all('div', class_='chapitre'):

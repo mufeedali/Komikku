@@ -11,6 +11,7 @@ from requests.exceptions import ConnectionError
 
 from komikku.servers import Server
 
+# Seems to be abandoned
 server_id = 'scanvf'
 server_name = 'Scanvf'
 server_lang = 'fr'

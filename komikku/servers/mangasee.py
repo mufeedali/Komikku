@@ -88,7 +88,6 @@ class Mangasee(Server):
                 for link_element in links_elements:
                     data['genres'].append(link_element.text.strip())
             elif label.startswith('Status'):
-                # possible values: ongoing, complete, None
                 value = div_element.find_all('a')[0].text.strip()
                 if value.startswith('Complete'):
                     data['status'] = 'complete'

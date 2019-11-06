@@ -65,7 +65,10 @@ class Submanga(Server):
             cover=None,
         ))
 
-        data['name'] = soup.find_all('h3')[0].text.strip()
+        name_element = soup.find_all('h3')[0]
+        name_element.i.decompose()
+        name_element.small.decompose()
+        data['name'] = name_element.text.strip()
         data['cover'] = self.cover_url.format(data['slug'])
 
         # Details
@@ -84,9 +87,9 @@ class Submanga(Server):
                     if value not in data['authors']:
                         data['genres'].append(value)
             elif label.startswith('Estado'):
-                value = element.span.text.strip()
-                # possible values: ongoing, complete, None
-                data['status'] = element.span.text.strip().lower()
+                value = element.span.text.strip().lower()
+                if value in ('complete', 'ongoing'):
+                    data['status'] = value
             elif label.startswith('Resumen'):
                 element.b.extract()
                 data['synopsis'] = element.text.strip()

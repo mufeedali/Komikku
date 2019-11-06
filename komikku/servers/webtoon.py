@@ -90,9 +90,12 @@ class Webtoon(Server):
             # Original
             data['cover'] = detail_element.get('style').split(' ')[1][4:-1].split('?')[0] + '?type=q90'
 
-            status_element = detail_element.find('p', class_='day_info')
-            status_element.span.extract()
-            data['status'] = 'complete' if status_element.text.lower() == 'completed' else 'ongoing'
+            # Status
+            value = detail_element.find('p', class_='day_info').text.strip()
+            if value.find('COMPLETED') >= 0:
+                data['status'] = 'complete'
+            elif value.find('UP') >= 0:
+                data['status'] = 'ongoing'
 
         data['synopsis'] = detail_element.find('p', class_='summary').text.strip()
 

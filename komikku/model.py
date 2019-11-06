@@ -165,7 +165,7 @@ class Manga:
     _server = None
 
     STATUSES = dict(
-        complete=_('Completed'),
+        complete=_('Complete'),
         ongoing=_('Ongoing'),
         suspended=_('Suspended'),
     )
