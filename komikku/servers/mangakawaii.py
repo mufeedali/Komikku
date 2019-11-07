@@ -193,12 +193,16 @@ class Mangakawaii(Server):
                 # Returned data for each manga:
                 # value: name of the manga
                 # data: slug of the manga
-                results = r.json()['suggestions']
+                # imageUrl: cover of the manga
+                data = r.json()['suggestions']
 
-                for result in results:
-                    result['slug'] = result.pop('data')
-                    result['name'] = result.pop('value')
-                    result['cover'] = result.pop('imageUrl')
+                results = []
+                for item in data:
+                    results.append(dict(
+                        slug=item['data'],
+                        name=item['value'],
+                        cover=item['imageUrl'],
+                    ))
 
                 return results
             except Exception:

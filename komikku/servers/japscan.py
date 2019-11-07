@@ -225,16 +225,18 @@ class Japscan(Server):
                 return []
 
             try:
-                results = r.json(strict=False)
-
                 # Returned data for each manga:
                 # name:  name of the manga
                 # image: path of cover image
                 # url:   path of manga page
-                for result in results:
-                    # Extract slug from url
-                    result['slug'] = result.pop('url').split('/')[2]
-                    result['cover'] = self.cover_url.format(result.pop('image'))
+                data = r.json(strict=False)
+
+                results = []
+                for item in items:
+                    results.append(dict(
+                        slug=item['url'].split('/')[2],
+                        cover=self.cover_url.format(item['image']),
+                    ))
 
                 return results
             except Exception:

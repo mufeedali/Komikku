@@ -194,14 +194,17 @@ class Scanonepiece(Server):
 
         if r.status_code == 200:
             try:
-                results = r.json()['suggestions']
-
                 # Returned data for each manga:
                 # value: name of the manga
                 # data: slug of the manga
-                for result in results:
-                    result['slug'] = result.pop('data')
-                    result['name'] = result.pop('value')
+                data = r.json()['suggestions']
+
+                results = []
+                for item in data:
+                    results.append(dict(
+                        slug=item['data'],
+                        name=item['value'],
+                    ))
 
                 return results
             except Exception:

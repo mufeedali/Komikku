@@ -13,6 +13,7 @@ from requests.exceptions import ConnectionError
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
+# NOTE: https://mangakakalot.com seems to be a clone (same IP)
 server_id = 'manganelo'
 server_name = 'MangaNelo'
 server_lang = 'en'
@@ -190,15 +191,15 @@ class Manganelo(Server):
                 # name: name of the manga (HTML)
                 # nameunsigned: slug of the manga
                 # image: URL of the cover image
-                results = r.json()
+                data = r.json()
 
-                for result in results:
-                    result.pop('author')
-                    result.pop('lastchapter')
-
-                    result['slug'] = result.pop('nameunsigned')
-                    result['name'] = BeautifulSoup(result['name'], 'html.parser').text
-                    result['cover'] = result.pop('image')
+                results = []
+                for item in data:
+                    results.append(dict(
+                        slug=item['nameunsigned'],
+                        name=BeautifulSoup(item['name'], 'html.parser').text,
+                        cover=item['image'],
+                    ))
 
                 return results
             except Exception:
