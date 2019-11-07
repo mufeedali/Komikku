@@ -38,9 +38,16 @@ class Pager(Gtk.ScrolledWindow):
         self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.viewport.add(self.box)
 
-        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+        self.set_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.SMOOTH_SCROLL_MASK
+        )
+
         self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
         self.key_press_handler_id = self.connect('key-press-event', self.on_key_press)
+        self.key_press_handler_id = self.connect('scroll-event', self.on_scroll)
 
         self.show_all()
 
@@ -144,6 +151,9 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
+            # Restore keyboard focus to scrolled window in case it has been lost (needed for keys navigation)
+            self.grab_focus()
+
             if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
                 self.button_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
@@ -269,6 +279,11 @@ class Pager(Gtk.ScrolledWindow):
         self.reader.controls.set_scale_value(page.index + 1)
 
         return False
+
+    def on_scroll(self, widget, event):
+        # Stop GDK_SCROLL_SMOOTH events propagation
+        # mouse and touch pad (2 fingers) scrolling
+        return True
 
     def on_single_click(self, event):
         self.button_press_timeout_id = None
