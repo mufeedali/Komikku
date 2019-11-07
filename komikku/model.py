@@ -135,8 +135,8 @@ def init_db():
         create_table(db_conn, sql_create_chapters_table)
         create_table(db_conn, sql_create_downloads_table)
 
-        print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
         db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+        print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
 
         db_conn.close()
 

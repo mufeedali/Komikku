@@ -337,7 +337,7 @@ class Pager(Gtk.ScrolledWindow):
         chapter_changed = self.current_page.chapter != page.chapter
         if chapter_changed:
             self.reader.update_title(page.chapter)
-            self.window.show_notification(_('New chapter'), 2)
+            self.window.show_notification(page.chapter.title, 2)
 
         self.current_page = page
         self.current_page.refresh()

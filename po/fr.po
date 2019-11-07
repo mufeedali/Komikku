@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-18 13:56+0200\n"
+"POT-Creation-Date: 2019-11-07 10:22+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -12,34 +12,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.4\n"
 
-#: ../komikku/main_window.py:204
+#: ../komikku/main_window.py:205
 msgid "Are you sure you want to quit?"
 msgstr "Êtes-vous sûr de vouloir quitter ?"
 
-#: ../komikku/main_window.py:207
+#: ../komikku/main_window.py:208
 msgid "Some chapters are currently being downloaded."
 msgstr "Certains chapitres sont en cours de téléchargement."
 
-#: ../komikku/main_window.py:209
+#: ../komikku/main_window.py:210
 msgid "Some mangas are currently being updated."
 msgstr "Certains mangas sont en cours de mise à jour."
 
-#: ../komikku/main_window.py:212
+#: ../komikku/main_window.py:213
 msgid "Quit?"
 msgstr "Quitter ?"
 
-#: ../komikku/main_window.py:229 ../komikku/reader/pager/page.py:81
-#: ../komikku/reader/pager/page.py:103 ../komikku/reader/pager/page.py:123
+#: ../komikku/main_window.py:230 ../komikku/reader/pager/page.py:151
 #: ../komikku/updater.py:74 ../komikku/card.py:117 ../komikku/card.py:130
 #: ../komikku/card.py:192
 msgid "No Internet connection"
 msgstr "Pas de connexion Internet"
 
-#: ../komikku/reader/pager/__init__.py:306
+#: ../komikku/reader/pager/__init__.py:327
 msgid "There is no previous chapter."
 msgstr "Il n'y a pas de chapitre précédent."
 
-#: ../komikku/reader/pager/__init__.py:308
+#: ../komikku/reader/pager/__init__.py:329
 msgid "It was the last chapter."
 msgstr "C'était le dernier chapitre."
 
@@ -90,19 +89,19 @@ msgstr "%d/%m/%Y"
 msgid "DOWNLOADED"
 msgstr "TÉLÉCHARGER"
 
-#: ../komikku/card.py:401
+#: ../komikku/card.py:402
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../komikku/card.py:403
+#: ../komikku/card.py:404
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../komikku/card.py:405
+#: ../komikku/card.py:406
 msgid "Mark as read"
 msgstr "Marquer comme lu"
 
-#: ../komikku/card.py:407
+#: ../komikku/card.py:408
 msgid "Mark as unread"
 msgstr "Marquer comme non lu"
 
@@ -128,7 +127,7 @@ msgstr "Rechercher dans {0}..."
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 
-#: ../komikku/application.py:37
+#: ../komikku/application.py:37 ../komikku/application.py:42
 msgid "Komikku"
 msgstr "Komikku"
 
@@ -160,23 +159,27 @@ msgstr "Blanc"
 msgid "Black"
 msgstr "Noir"
 
-#: ../komikku/model.py:165
+#: ../komikku/model.py:171
 msgid "Complete"
 msgstr "Terminé"
 
-#: ../komikku/model.py:166
+#: ../komikku/model.py:172
 msgid "Ongoing"
 msgstr "En cours"
 
-#: ../komikku/model.py:560
+#: ../komikku/model.py:173
+msgid "Suspended"
+msgstr "Suspendu"
+
+#: ../komikku/model.py:587
 msgid "Pending"
 msgstr "En attente"
 
-#: ../komikku/model.py:561
+#: ../komikku/model.py:588
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../komikku/model.py:562
+#: ../komikku/model.py:589
 msgid "Error"
 msgstr "Erreur"
 
@@ -377,17 +380,27 @@ msgid "Valéry Febvre"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:6
-msgid "An online / offline manga reader for Gnome"
-msgstr "Un lecteur de manga en ligne / hors ligne pour Gnome"
+msgid "An online / offline manga reader for GNOME"
+msgstr "Un lecteur de manga en ligne / hors ligne pour GNOME"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:11
 msgid ""
-"An online / offline manga reader for Gnome developed with the aim of being "
+"An online / offline manga reader for GNOME developed with the aim of being "
 "used with the Librem 5 phone"
 msgstr ""
-"Un lecteur de manga en ligne / hors ligne pour Gnome développé dans le but "
+"Un lecteur de manga en ligne / hors ligne pour GNOME développé dans le but "
 "d'être utilisé avec le Librem 5"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:18
 msgid "First release"
 msgstr "Première sortie"
+
+#~ msgid "An online / offline manga reader for Gnome"
+#~ msgstr "Un lecteur de manga en ligne / hors ligne pour Gnome"
+
+#~ msgid ""
+#~ "An online / offline manga reader for Gnome developed with the aim of "
+#~ "being used with the Librem 5 phone"
+#~ msgstr ""
+#~ "Un lecteur de manga en ligne / hors ligne pour Gnome développé dans le "
+#~ "but d'être utilisé avec le Librem 5"
