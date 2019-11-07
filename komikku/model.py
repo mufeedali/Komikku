@@ -15,10 +15,10 @@ import shutil
 
 from komikku.servers import unscramble_image
 
-
-user_app_dir_path = os.path.join(str(Path.home()), 'Komikku')
-db_path = os.path.join(user_app_dir_path, 'komikku.db')
-db_backup_path = os.path.join(user_app_dir_path, 'komikku_backup.db')
+USER_APP_DIR_PATH = os.path.join(str(Path.home()), 'Komikku')
+DB_PATH = os.path.join(USER_APP_DIR_PATH, 'komikku.db')
+DB_BACKUP_PATH = os.path.join(USER_APP_DIR_PATH, 'komikku_backup.db')
+VERSION = 1
 
 
 def adapt_json(data):
@@ -36,9 +36,9 @@ sqlite3.register_converter('json', convert_json)
 
 
 def backup_db():
-    if os.path.exists(db_path) and check_db():
+    if os.path.exists(DB_PATH) and check_db():
         print('Save a DB backup')
-        shutil.copyfile(db_path, db_backup_path)
+        shutil.copyfile(DB_PATH, DB_BACKUP_PATH)
 
 
 def check_db():
@@ -57,7 +57,7 @@ def check_db():
 
 
 def create_db_connection():
-    con = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    con = sqlite3.connect(DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES)
     if con is None:
         print("Error: Can not create the database connection.")
         return None
@@ -75,13 +75,13 @@ def create_table(conn, sql):
 
 
 def init_db():
-    if not os.path.exists(user_app_dir_path):
-        os.mkdir(user_app_dir_path)
+    if not os.path.exists(USER_APP_DIR_PATH):
+        os.mkdir(USER_APP_DIR_PATH)
 
-    if os.path.exists(db_path) and os.path.exists(db_backup_path) and not check_db():
+    if os.path.exists(DB_PATH) and os.path.exists(DB_BACKUP_PATH) and not check_db():
         # Restore backup
         print('Restore DB from backup')
-        shutil.copyfile(db_backup_path, db_path)
+        shutil.copyfile(DB_BACKUP_PATH, DB_PATH)
 
     sql_create_mangas_table = """CREATE TABLE IF NOT EXISTS mangas (
         id integer PRIMARY KEY,
@@ -134,6 +134,9 @@ def init_db():
         create_table(db_conn, sql_create_mangas_table)
         create_table(db_conn, sql_create_chapters_table)
         create_table(db_conn, sql_create_downloads_table)
+
+        print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
+        db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
 
         db_conn.close()
 
