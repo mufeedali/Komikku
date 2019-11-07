@@ -86,9 +86,9 @@ class Manganelo(Server):
                 data['genres'] = [t.strip() for t in value.split(',')]
             elif label.startswith('Status'):
                 status = value.lower()
-                if value == 'completed':
+                if status == 'completed':
                     data['status'] = 'complete'
-                elif value == 'ongoing':
+                elif status == 'ongoing':
                     data['status'] = 'ongoing'
 
         # Synopsis

@@ -11,7 +11,6 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import Gtk
-from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
