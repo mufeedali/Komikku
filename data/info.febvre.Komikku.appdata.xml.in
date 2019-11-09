@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
     <id>info.febvre.Komikku</id>
-    <name>Komikku</name>
-    <developer_name>Valéry Febvre</developer_name>
-    <summary>An online / offline manga reader for GNOME</summary>
-    <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <project_license>GPL-3.0</project_license>
     <metadata_license>CC0-1.0</metadata_license>
+    <content_rating type="oars-1.1" />
+
+    <name>Komikku</name>
+    <summary>An online / offline manga reader for GNOME</summary>
     <description>
         <p>An online / offline manga reader for GNOME developed with the aim of being used with the Librem 5 phone</p>
     </description>
+
+    <screenshots>
+        <screenshot type="default">
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/main-window.png</image>
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/add-servers.png</image>
+        </screenshot>
+    </screenshots>
+
+    <developer_name>Valéry Febvre</developer_name>
+    <update_contact>vfebvre@easter-eggs.com</update_contact>
+
     <url type="homepage">https://gitlab.com/valos/Komikku</url>
     <url type="bugtracker">https://gitlab.com/valos/Komikku/issues</url>
+
+    <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
-        <release version="0.0.0" date="2019-03-14">
+        <release version="0.1.0" date="2019-11-10">
             <description>
                 <p>First release</p>
             </description>
         </release>
     </releases>
-    <update_contact>vfebvre@easter-eggs.com</update_contact>
-    <content_rating type="oars-1.1" />
 </component>

@@ -38,7 +38,7 @@ class Application(Gtk.Application):
         GLib.set_prgname(self.application_id)
 
         Handy.init()
-        Notify.init('Komikku')
+        Notify.init(_('Komikku'))
 
         nm = Gio.NetworkMonitor.get_default()
         nm.connect('network-changed', self.on_network_status_changed)  # Seems to work only inside Flatpak sandbox!
