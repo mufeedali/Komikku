@@ -13,11 +13,10 @@ from pathlib import Path
 import sqlite3
 import shutil
 
+from gi.repository import GLib
+
 from komikku.servers import unscramble_image
 
-USER_APP_DIR_PATH = os.path.join(str(Path.home()), 'Komikku')
-DB_PATH = os.path.join(USER_APP_DIR_PATH, 'komikku.db')
-DB_BACKUP_PATH = os.path.join(USER_APP_DIR_PATH, 'komikku_backup.db')
 VERSION = 1
 
 
@@ -36,9 +35,10 @@ sqlite3.register_converter('json', convert_json)
 
 
 def backup_db():
-    if os.path.exists(DB_PATH) and check_db():
+    db_path = get_db_path()
+    if os.path.exists(db_path) and check_db():
         print('Save a DB backup')
-        shutil.copyfile(DB_PATH, DB_BACKUP_PATH)
+        shutil.copyfile(db_path, get_db_backup_path())
 
 
 def check_db():
@@ -57,7 +57,7 @@ def check_db():
 
 
 def create_db_connection():
-    con = sqlite3.connect(DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES)
+    con = sqlite3.connect(get_db_path(), detect_types=sqlite3.PARSE_DECLTYPES)
     if con is None:
         print("Error: Can not create the database connection.")
         return None
@@ -74,14 +74,25 @@ def create_table(conn, sql):
         print('SQLite-error:', e)
 
 
-def init_db():
-    if not os.path.exists(USER_APP_DIR_PATH):
-        os.mkdir(USER_APP_DIR_PATH)
+def get_data_dir():
+    return GLib.get_user_data_dir()
 
-    if os.path.exists(DB_PATH) and os.path.exists(DB_BACKUP_PATH) and not check_db():
+
+def get_db_path():
+    return os.path.join(get_data_dir(), 'komikku.db')
+
+
+def get_db_backup_path():
+    return os.path.join(get_data_dir(), 'komikku_backup.db')
+
+
+def init_db():
+    db_path = get_db_path()
+    db_backup_path = get_db_path()
+    if os.path.exists(db_path) and os.path.exists(db_backup_path) and not check_db():
         # Restore backup
         print('Restore DB from backup')
-        shutil.copyfile(DB_BACKUP_PATH, DB_PATH)
+        shutil.copyfile(db_backup_path, db_path)
 
     sql_create_mangas_table = """CREATE TABLE IF NOT EXISTS mangas (
         id integer PRIMARY KEY,
@@ -274,7 +285,7 @@ class Manga:
 
     @property
     def path(self):
-        return os.path.join(str(Path.home()), 'Komikku', self.server_id, self.name)
+        return os.path.join(get_data_dir(), self.server_id, self.name)
 
     @property
     def server(self):
