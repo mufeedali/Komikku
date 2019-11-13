@@ -8,11 +8,11 @@
     <property name="program_name">@prettyname@</property>
     <property name="version">@VERSION@</property>
     <property name="copyright">© 2019 @authorfullname@</property>
-    <property name="comments" translatable="yes">An online / offline manga reader</property>
+    <property name="comments" translatable="yes">An online/offline manga reader</property>
     <property name="website">@PACKAGE_URL@</property>
     <property name="website_label" translatable="yes">Learn more about Komikku</property>
     <property name="authors">@CONTRIBUTORS@</property>
-    <property name="translator_credits" translatable="yes" comments="Add your name to the translator credits list">@authorfullname@ &lt;@authoremail@&gt;</property>
+    <property name="translator_credits">@TRANSLATORS@</property>
     <!--property name="artists"></property-->
     <property name="logo_icon_name">@APPID@</property>
     <property name="license_type">gpl-3-0</property>

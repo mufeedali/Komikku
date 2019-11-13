@@ -4,7 +4,7 @@ project('komikku',
     license: 'GPL3'
 )
 
-description = 'An online / offline manga reader'
+description = 'An online/offline manga reader'
 prettyname = 'Komikku'
 prettylicense = 'GPL-3.0+'
 
@@ -21,7 +21,11 @@ website = gitrepo
 
 # NOTE: if you contributed, feel free to add your name and email address here
 contributors = '\n'.join([
-    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt;'
+    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt;',
+])
+translators = '\n'.join([
+    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt; (French)',
+    'VaGNaroK &lt;indialuz42@gmail.com&gt; (Brazilian Portuguese)',
 ])
 
 python = import('python3')

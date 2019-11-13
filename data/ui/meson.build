@@ -9,6 +9,6 @@ glade_conf.set('DATA_DIR', pkgdatadir)
 glade_conf.set('VERSION', meson.project_version())
 
 glade_conf.set('CONTRIBUTORS', contributors)
+glade_conf.set('TRANSLATORS', translators)
 glade_conf.set('authorfullname', authorfullname)
-glade_conf.set('authoremail', authoremail)
 glade_conf.set('prettyname', prettyname)
