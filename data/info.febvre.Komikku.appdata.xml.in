@@ -15,6 +15,7 @@
         <screenshot type="default">
             <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/main-window.png</image>
             <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/add-servers.png</image>
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/preferences.png</image>
         </screenshot>
     </screenshots>
 
@@ -29,6 +30,17 @@
         <release version="0.1.0" date="2019-11-10">
             <description>
                 <p>First release</p>
+            </description>
+        </release>
+        <release version="0.1.1" date="2019-11-12">
+            <description>
+                <p>Bug fix: Change the location of the data storage</p>
+            </description>
+        </release>
+        <release version="0.1.2" date="2019-11-14">
+            <description>
+                <p>Add the Portuguese (Brazil) translation</p>
+                <p>Add a new server: Central de Mangas (Portuguese)</p>
             </description>
         </release>
     </releases>
