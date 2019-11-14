@@ -235,9 +235,9 @@ class Library():
         ctx.close_path()
         ctx.fill()
 
-        # Draw logo
+        # Draw server logo
         pixbuf = Pixbuf.new_from_resource_at_scale(
-            '/info/febvre/Komikku/icons/ui/favicons/{0}.ico'.format(manga.server_id), 20, 20, True)
+            '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(manga.server_id), 20, 20, True)
         Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 4, 4)
         ctx.paint()
 

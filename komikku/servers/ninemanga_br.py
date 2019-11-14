@@ -2,7 +2,7 @@ from komikku.servers.ninemanga import Ninemanga
 
 server_id = 'ninemanga_br'
 server_name = 'Nine Manga'
-server_lang = 'br'
+server_lang = 'pt'
 
 
 class Ninemanga_br(Ninemanga):

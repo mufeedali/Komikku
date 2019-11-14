@@ -15,34 +15,26 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/menu_library_selection_mode.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu_reader.xml</file>
 
-        <file compressed="true">icons/ui/flags/br.png</file>
-        <file compressed="true">icons/ui/flags/de.png</file>
-        <file compressed="true">icons/ui/flags/en.png</file>
-        <file compressed="true">icons/ui/flags/es.png</file>
-        <file compressed="true">icons/ui/flags/fr.png</file>
-        <file compressed="true">icons/ui/flags/it.png</file>
-        <file compressed="true">icons/ui/flags/pt.png</file>
-
-        <file compressed="true">icons/ui/favicons/centraldemangas.ico</file>
-        <file compressed="true">icons/ui/favicons/hatigarmscans.ico</file>
-        <file compressed="true">icons/ui/favicons/japscan.ico</file>
-        <file compressed="true">icons/ui/favicons/mangaeden.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/mangaeden_it.ico">icons/ui/favicons/mangaeden.ico</file>
-        <file compressed="true">icons/ui/favicons/mangakawaii.ico</file>
-        <file compressed="true">icons/ui/favicons/manganelo.ico</file>
-        <file compressed="true">icons/ui/favicons/mangarock.ico</file>
-        <file compressed="true">icons/ui/favicons/mangasee.ico</file>
-        <file compressed="true">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/ninemanga_br.ico">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/ninemanga_de.ico">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/ninemanga_es.ico">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/ninemanga_fr.ico">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/favicons/ninemanga_it.ico">icons/ui/favicons/ninemanga.ico</file>
-        <file compressed="true">icons/ui/favicons/scanonepiece.ico</file>
-        <file compressed="true">icons/ui/favicons/scantrad.ico</file>
-        <file compressed="true">icons/ui/favicons/scanvf.ico</file>
-        <file compressed="true">icons/ui/favicons/submanga.ico</file>
-        <file compressed="true">icons/ui/favicons/webtoon.ico</file>
+        <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
+        <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
+        <file compressed="true">icons/ui/servers/japscan.ico</file>
+        <file compressed="true">icons/ui/servers/mangaeden.ico</file>
+        <file compressed="true" alias="icons/ui/servers/mangaeden_it.ico">icons/ui/servers/mangaeden.ico</file>
+        <file compressed="true">icons/ui/servers/mangakawaii.ico</file>
+        <file compressed="true">icons/ui/servers/manganelo.ico</file>
+        <file compressed="true">icons/ui/servers/mangarock.ico</file>
+        <file compressed="true">icons/ui/servers/mangasee.ico</file>
+        <file compressed="true">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true" alias="icons/ui/servers/ninemanga_br.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true" alias="icons/ui/servers/ninemanga_de.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true" alias="icons/ui/servers/ninemanga_es.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true" alias="icons/ui/servers/ninemanga_fr.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true" alias="icons/ui/servers/ninemanga_it.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
+        <file compressed="true">icons/ui/servers/scantrad.ico</file>
+        <file compressed="true">icons/ui/servers/scanvf.ico</file>
+        <file compressed="true">icons/ui/servers/submanga.ico</file>
+        <file compressed="true">icons/ui/servers/webtoon.ico</file>
 
         <file compressed="true">images/logo.png</file>
         <file compressed="true">images/missing_file.png</file>

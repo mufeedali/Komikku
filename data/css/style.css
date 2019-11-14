@@ -34,7 +34,7 @@
     border-radius: .25rem;
 }
 
-/* Main window - reader page - controls */
+/* Main window - reader page */
 .reader-controls-bottom-box {
     background: rgba(0, 0, 0, .75);
     color: #fff;
@@ -51,4 +51,8 @@
 /* Add dialog - servers page */
 .add-dialog-server-listboxrow {
     padding: 16px;
+}
+
+.add-dialog-server-language-label {
+    font-size: 11px;
 }

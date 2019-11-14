@@ -7,7 +7,6 @@
 import dateparser
 from collections import OrderedDict
 from bs4 import BeautifulSoup
-import json
 import magic
 import requests
 from requests.exceptions import ConnectionError

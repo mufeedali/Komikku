@@ -12,6 +12,7 @@ from komikku.activity_indicator import ActivityIndicator
 from komikku.model import create_db_connection
 from komikku.model import Manga
 from komikku.servers import get_servers_list
+from komikku.servers import LANGUAGES
 
 
 class AddDialog():
@@ -54,7 +55,7 @@ class AddDialog():
 
             # Server logo
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/Komikku/icons/ui/favicons/{0}.ico'.format(server['id']), 24, 24, True)
+                '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(server['id']), 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
@@ -64,12 +65,11 @@ class AddDialog():
             label.set_text(server['name'])
             box.pack_start(label, True, True, 0)
 
-            # Server flag (indicates the language)
-            pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/Komikku/icons/ui/flags/{0}.png'.format(server['lang']), 30, 16, True)
-            flag = Gtk.Image(xalign=1)
-            flag.set_from_pixbuf(pixbuf)
-            box.pack_start(flag, False, True, 0)
+            # Server language
+            label = Gtk.Label(xalign=0)
+            label.set_text(LANGUAGES[server['lang']])
+            label.get_style_context().add_class('add-dialog-server-language-label')
+            box.pack_start(label, False, True, 0)
 
             listbox.add(row)
 
