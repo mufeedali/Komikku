@@ -21,7 +21,9 @@
         <file compressed="true">icons/ui/flags/es.png</file>
         <file compressed="true">icons/ui/flags/fr.png</file>
         <file compressed="true">icons/ui/flags/it.png</file>
+        <file compressed="true">icons/ui/flags/pt.png</file>
 
+        <file compressed="true">icons/ui/favicons/centraldemangas.ico</file>
         <file compressed="true">icons/ui/favicons/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/favicons/japscan.ico</file>
         <file compressed="true">icons/ui/favicons/mangaeden.ico</file>
