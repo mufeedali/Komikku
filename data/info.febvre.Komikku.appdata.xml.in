@@ -27,9 +27,10 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
-        <release version="0.1.0" date="2019-11-10">
+        <release version="0.1.2" date="2019-11-14">
             <description>
-                <p>First release</p>
+                <p>Add the Portuguese (Brazil) translation</p>
+                <p>Add a new server: Central de Mangas (Portuguese)</p>
             </description>
         </release>
         <release version="0.1.1" date="2019-11-12">
@@ -37,10 +38,9 @@
                 <p>Bug fix: Change the location of the data storage</p>
             </description>
         </release>
-        <release version="0.1.2" date="2019-11-14">
+        <release version="0.1.0" date="2019-11-10">
             <description>
-                <p>Add the Portuguese (Brazil) translation</p>
-                <p>Add a new server: Central de Mangas (Portuguese)</p>
+                <p>First release</p>
             </description>
         </release>
     </releases>
