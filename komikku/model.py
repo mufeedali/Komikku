@@ -225,15 +225,16 @@ class Manga:
         db_conn = create_db_connection()
         with db_conn:
             manga.id = insert_row(db_conn, 'mangas', data)
-        db_conn.close()
 
-        manga._chapters = []
-        rank = 0
-        for chapter_data in chapters:
-            chapter = Chapter.new(chapter_data, rank, manga.id)
-            if chapter is not None:
-                manga._chapters = [chapter, ] + manga._chapters
-                rank += 1
+            manga._chapters = []
+            rank = 0
+            for chapter_data in chapters:
+                chapter = Chapter.new(chapter_data, rank, manga.id, db_conn)
+                if chapter is not None:
+                    manga._chapters = [chapter, ] + manga._chapters
+                    rank += 1
+
+        db_conn.close()
 
         if not os.path.exists(manga.path):
             os.makedirs(manga.path)
@@ -462,7 +463,7 @@ class Chapter:
         return c
 
     @classmethod
-    def new(cls, data, rank, manga_id):
+    def new(cls, data, rank, manga_id, db_conn=None):
         c = cls()
 
         # Fill data with internal usage data or not yet scraped values
@@ -481,11 +482,14 @@ class Chapter:
         for key in data:
             setattr(c, key, data[key])
 
-        db_conn = create_db_connection()
-        with db_conn:
+        if db_conn is not None:
             c.id = insert_row(db_conn, 'chapters', data)
+        else:
+            db_conn = create_db_connection()
+            with db_conn:
+                c.id = insert_row(db_conn, 'chapters', data)
 
-        db_conn.close()
+            db_conn.close()
 
         return c if c.id is not None else None
 
