@@ -25,10 +25,9 @@ class Xkcd(Server):
     lang = server_lang
 
     base_url = 'https://www.xkcd.com'
-    manga_url = base_url + '/archive'
+    manga_url = base_url + '/archive/'
     chapter_url = base_url + '/{0}/info.0.json'
     cover_url = base_url + '/s/0b7742.png'
-    image_url = base_url + '/{0}'
 
     def __init__(self):
         if self.session is None:
