@@ -30,7 +30,7 @@
             <description>Reading direction in reader</description>
         </key>
         <key enum="@appid@.Scaling" name="scaling">
-            <default>"width"</default>
+            <default>"screen"</default>
             <summary>Type of scaling</summary>
             <description>Image adjustment</description>
         </key>
