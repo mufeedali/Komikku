@@ -9,7 +9,6 @@ from gettext import gettext as _
 import importlib
 import json
 import os
-from pathlib import Path
 import sqlite3
 import shutil
 
