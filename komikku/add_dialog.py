@@ -77,7 +77,7 @@ class AddDialog():
 
         # Search page
         self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
-        self.custom_title_search_page_searchentry.connect('activate', self.on_search_entry_activated)
+        self.custom_title_search_page_searchentry.connect('activate', self.search)
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
@@ -196,13 +196,30 @@ class AddDialog():
         self.window.card.init(self.manga, transition=False)
         self.dialog.close()
 
-    def on_search_entry_activated(self, entry):
-        term = entry.get_text().strip()
-        if not term or self.search_lock:
+    def on_server_clicked(self, listbox, row):
+        self.server = locate('komikku.servers.{0}.{1}'.format(row.server_data['id'], row.server_data['class']))()
+        self.show_page('search')
+
+    def open(self, action, param):
+        self.dialog.set_modal(True)
+        self.dialog.set_transient_for(self.window)
+        self.dialog.present()
+
+    def search(self, entry=None):
+        if self.search_lock:
+            return
+
+        term = self.custom_title_search_page_searchentry.get_text().strip()
+        if not term and getattr(self.server, 'get_popular', None) is None:
+            # An empty term is allowed only if server has 'get_popular' method
             return
 
         def run():
-            result = self.server.search(term)
+            if term:
+                result = self.server.search(term)
+            else:
+                result = self.server.get_popular()
+
             if result:
                 GLib.idle_add(complete, result)
             else:
@@ -246,15 +263,6 @@ class AddDialog():
         thread.daemon = True
         thread.start()
 
-    def on_server_clicked(self, listbox, row):
-        self.server = locate('komikku.servers.{0}.{1}'.format(row.server_data['id'], row.server_data['class']))()
-        self.show_page('search')
-
-    def open(self, action, param):
-        self.dialog.set_modal(True)
-        self.dialog.set_transient_for(self.window)
-        self.dialog.present()
-
     def show_notification(self, message):
         self.builder.get_object('notification_label').set_text(message)
         self.builder.get_object('notification_revealer').set_reveal_child(True)
@@ -267,6 +275,7 @@ class AddDialog():
             if self.page == 'servers':
                 self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
                 self.clear_search()
+                self.search()
             else:
                 self.custom_title_search_page_searchentry.grab_focus_without_selecting()
         elif name == 'manga':
