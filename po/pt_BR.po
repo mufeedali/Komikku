@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-13 01:15+0100\n"
+"POT-Creation-Date: 2019-11-18 18:20+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
+"Last-Translator: VaGNaroK <indialuz42@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "Você tem certeza que quer apagar este mangá?"
 #: ../komikku/card.py:289
 #, python-brace-format
 msgid "Disk space used: {0}"
-msgstr "Espalo em disco usado: {0}"
+msgstr "Espaço em disco usado: {0}"
 
 #: ../komikku/card.py:330
 msgid "New"
@@ -96,7 +96,7 @@ msgstr "Resetar"
 
 #: ../komikku/card.py:404
 msgid "Download"
-msgstr "Baixando"
+msgstr "Baixar"
 
 #: ../komikku/card.py:406
 msgid "Mark as read"
@@ -111,15 +111,15 @@ msgstr "Marcar como não lido"
 msgid "{0} manga added"
 msgstr "{0} mangá adicionado"
 
-#: ../komikku/add_dialog.py:237
+#: ../komikku/add_dialog.py:254
 msgid "Oops, search failed. Please try again."
 msgstr "Opa, a busca falhou. Por favor tente novamente."
 
-#: ../komikku/add_dialog.py:239
+#: ../komikku/add_dialog.py:256
 msgid "No results"
 msgstr "Sem resultados"
 
-#: ../komikku/add_dialog.py:268
+#: ../komikku/add_dialog.py:276
 #, python-brace-format
 msgid "Search in {0}..."
 msgstr "Buscar em {0}..."
@@ -160,27 +160,27 @@ msgstr "Branco"
 msgid "Black"
 msgstr "Preto"
 
-#: ../komikku/model.py:182
+#: ../komikku/model.py:183
 msgid "Complete"
 msgstr "Completo"
 
-#: ../komikku/model.py:183
+#: ../komikku/model.py:184
 msgid "Ongoing"
 msgstr "Em andamento"
 
-#: ../komikku/model.py:184
+#: ../komikku/model.py:185
 msgid "Suspended"
 msgstr "Suspenso"
 
-#: ../komikku/model.py:598
+#: ../komikku/model.py:603
 msgid "Pending"
 msgstr "Pendente"
 
-#: ../komikku/model.py:599
+#: ../komikku/model.py:604
 msgid "Downloading"
 msgstr "Baixando"
 
-#: ../komikku/model.py:600
+#: ../komikku/model.py:605
 msgid "Error"
 msgstr "Erro"
 
@@ -263,7 +263,7 @@ msgstr "Adicionar mangá"
 #: ../data/ui/shortcuts_overview.ui:25
 msgctxt "Shortcut window description"
 msgid "Open preferences"
-msgstr "Abrir Prefeências"
+msgstr "Abrir Preferências"
 
 #: ../data/ui/shortcuts_overview.ui:32
 msgctxt "Shortcut window description"
@@ -285,7 +285,7 @@ msgstr "Tema Escuro"
 
 #: ../data/ui/settings_dialog.ui:130
 msgid "Use dark GTK+ theme"
-msgstr "Usar escuro GTK+ tema"
+msgstr "Usar tema escuro GTK+"
 
 #: ../data/ui/settings_dialog.ui:189
 msgid "Reader"
@@ -313,7 +313,7 @@ msgstr "Tela cheia"
 
 #: ../data/ui/settings_dialog.ui:279
 msgid "Automatically enter fullscreen mode"
-msgstr "Entrer automatiquement en mode plein écran"
+msgstr "Entrar automaticamente no modo de tela cheia"
 
 #: ../data/ui/menu_reader.xml:25
 msgid "Type of scaling"
@@ -374,24 +374,40 @@ msgstr ""
 
 #: ../data/info.febvre.Komikku.desktop.in:14
 msgid "manga;reader;viewer;comic;webtoon;scan;offline;"
-msgstr ""
+msgstr "mangá;leitor;visualizador;comic;webtoon;scan;offline;"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:9
 msgid "An online/offline manga reader for GNOME"
-msgstr "Un lecteur de manga en ligne / hors ligne pour GNOME"
+msgstr "Um leitor de mangá online/offline para GNOME"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:11
 msgid ""
 "An online/offline manga reader for GNOME developed with the aim of being "
 "used with the Librem 5 phone"
 msgstr ""
-"Un lecteur de manga en ligne / hors ligne pour GNOME développé dans le but "
-"d'être utilisé avec le Librem 5"
+"Um leitor de mangá online/offline para GNOME desenvolvido com o objetivo "
+"de ser usado com o telefone Librem 5"
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:21
+#: ../data/info.febvre.Komikku.appdata.xml.in:26
 msgid "Valéry Febvre"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:31
+#: ../data/info.febvre.Komikku.appdata.xml.in:36
+msgid "Add a new server: xkcd (English)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:41
+msgid "Add the Portuguese (Brazil) translation"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:42
+msgid "Add a new server: Central de Mangas (Portuguese)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:47
+msgid "Bug fix: Change the location of the data storage"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:52
 msgid "First release"
-msgstr "Première sortie"
+msgstr "Primeiro lançamento"
