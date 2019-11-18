@@ -27,6 +27,11 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.1.3" date="2019-11-18">
+            <description>
+                <p>Add a new server: xkcd (English)</p>
+            </description>
+        </release>
         <release version="0.1.2" date="2019-11-14">
             <description>
                 <p>Add the Portuguese (Brazil) translation</p>
