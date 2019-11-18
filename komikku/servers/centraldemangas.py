@@ -113,7 +113,6 @@ class Centraldemangas(Server):
                         date=dateparser.parse(tds_elements[1].text.strip()).date(),
                     ))
 
-
         return data
 
     def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):

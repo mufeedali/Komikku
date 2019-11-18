@@ -232,7 +232,7 @@ class Japscan(Server):
                 data = r.json(strict=False)
 
                 results = []
-                for item in items:
+                for item in data:
                     results.append(dict(
                         slug=item['url'].split('/')[2],
                         cover=self.cover_url.format(item['image']),

@@ -52,7 +52,7 @@ class Xkcd(Server):
 
         data = initial_data.copy()
         data.update(dict(
-            authors=['Randall Munroe',],
+            authors=['Randall Munroe', ],
             scanlators=[],
             genres=[],
             status='ongoing',

@@ -58,7 +58,7 @@ class Scantrad(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
-            scanlators=['Scantrad France',],
+            scanlators=['Scantrad France', ],
             genres=[],
             status=None,
             synopsis=None,
