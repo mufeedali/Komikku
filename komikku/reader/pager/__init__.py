@@ -232,15 +232,12 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[2].render()
 
     def on_key_press(self, widget, event):
-        if self.reader.controls.is_visible:
-            # No need to handle keyboard navigation when controls are visible
-            # Slider (Gtk.Scale) already provides it
-            return
+        # Note: this code is never reached when controls is visible
+        # Slider (Gtk.Scale) has already consume event
 
-        if event.state != 0 or event.keyval not in (Gdk.KEY_Left, Gdk.KEY_Right):
-            return
-
-        self.switchto_page('left' if event.keyval == Gdk.KEY_Left else 'right')
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+        if (event.state & modifiers) == 0 and event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
+            self.switchto_page('left' if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left) else 'right')
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
