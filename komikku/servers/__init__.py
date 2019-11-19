@@ -1,3 +1,5 @@
+import dateparser
+import datetime
 from importlib import resources
 import io
 from operator import itemgetter
@@ -33,6 +35,18 @@ class Server:
     @session.setter
     def session(self, value):
         SESSIONS[self.id] = value
+
+
+def convert_date_string(date, format=None):
+    if format is not None:
+        try:
+            d = datetime.datetime.strptime(date, format)
+        except Exception:
+            d = dateparser.parse(date)
+    else:
+        d = dateparser.parse(date)
+
+    return d.date()
 
 
 # https://github.com/italomaia/mangarock.py/blob/master/mangarock/mri_to_webp.py

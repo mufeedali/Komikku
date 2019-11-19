@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -102,7 +102,7 @@ class Mangasee(Server):
             data['chapters'].append(dict(
                 slug=link_element.get('chapter'),
                 title=link_element.span.text.strip(),
-                date=dateparser.parse(link_element.time.text.strip(), settings={'DATE_ORDER': 'MDY'}).date(),
+                date=convert_date_string(link_element.time.get('datestring').strip(), format='%Y%m%d'),
             ))
 
         return data

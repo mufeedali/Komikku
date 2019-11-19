@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
@@ -12,6 +11,7 @@ import re
 from requests.exceptions import ConnectionError
 import unicodedata
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 
 server_id = 'japscan'
@@ -120,7 +120,7 @@ class Japscan(Server):
             data['chapters'].append(dict(
                 slug=slug,
                 title=element.a.text.strip(),
-                date=dateparser.parse(element.span.text.strip()).date(),
+                date=convert_date_string(element.span.text.strip(), format='%d %b %Y'),
             ))
 
         return data

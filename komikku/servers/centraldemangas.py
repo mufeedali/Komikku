@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -104,13 +104,13 @@ class Centraldemangas(Server):
                 elif value == 'Completo':
                     data['status'] = 'complete'
             elif label == 'Capítulos':
-                for tr_element in value_element.find_all('div', class_='content')[0].table.tbody.find_all('tr')[1:]:
+                for tr_element in reversed(value_element.find_all('div', class_='content')[0].table.tbody.find_all('tr')[1:]):
                     tds_elements = tr_element.find_all('td')
 
                     data['chapters'].append(dict(
                         slug=tds_elements[0].a.get('href').split('/')[-1],
                         title=tds_elements[0].a.text.strip(),
-                        date=dateparser.parse(tds_elements[1].text.strip()).date(),
+                        date=convert_date_string(tds_elements[1].text.strip(), format='%d/%m/%Y'),
                     ))
 
         return data

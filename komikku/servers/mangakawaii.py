@@ -5,11 +5,11 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 import cloudscraper
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 
 server_id = 'mangakawaii'
@@ -106,7 +106,7 @@ class Mangakawaii(Server):
             data['chapters'].append(dict(
                 slug=slug,
                 title=title,
-                date=dateparser.parse(date, date_formats=['DD.MM.YYYY'], settings={'DATE_ORDER': 'DMY'}).date(),
+                date=convert_date_string(date, format='%d.%m.%Y'),
             ))
 
         return data

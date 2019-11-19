@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -80,14 +80,14 @@ class Scantrad(Server):
         data['synopsis'] = div_info.find('div', class_='synopsis').text.strip()
 
         # Chapters
-        for div_element in soup.find('div', id='chap-top').find_all('div', class_='chapitre'):
+        for div_element in reversed(soup.find('div', id='chap-top').find_all('div', class_='chapitre')):
             btns_elements = div_element.find('div', class_='ch-right').find_all('a')
             if len(btns_elements) < 2:
                 continue
 
             data['chapters'].append(dict(
                 slug=btns_elements[0].get('href').split('/')[-1],
-                date=dateparser.parse(div_element.find('div', class_='chl-date').text).date(),
+                date=convert_date_string(div_element.find('div', class_='chl-date').text),
                 title='{0} {1}'.format(
                     div_element.find('span', class_='chl-num').text.strip(),
                     div_element.find('span', class_='chl-titre').text.strip()

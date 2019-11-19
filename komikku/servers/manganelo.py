@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -104,12 +104,12 @@ class Manganelo(Server):
 
             slug = spans_info[0].a.get('href').split('/')[-1]
             title = spans_info[0].a.text.strip()
-            date = spans_info[2].get('title').strip()
+            date = spans_info[2].text.strip()
 
             data['chapters'].append(dict(
                 slug=slug,
                 title=title,
-                date=dateparser.parse(date).date(),
+                date=convert_date_string(date, format='%b-%d-%y'),
             ))
 
         return data

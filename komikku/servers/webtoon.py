@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 from urllib.parse import urlsplit
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
@@ -163,13 +163,18 @@ class Webtoon(Server):
             if li_element.get('data-episode-no') is None:
                 continue
 
+            date_element = li_element.find('p', class_='date')
+            if date_element.span:
+                date_element.span.decompose()
+
             # Small difference here compared to other servers
             # the slug can't be used to forge chapter URL, we must store the full url
             url_split = urlsplit(li_element.a.get('href'))
+
             data.append(dict(
                 slug=url_split.query,
                 title=li_element.find('p', class_='sub_title').find('span', class_='ellipsis').text.strip(),
-                date=dateparser.parse(li_element.find('p', class_='date').text.strip()).date(),
+                date=convert_date_string(date_element.text.strip(), format='%b %d, %Y'),
                 url='{0}?{1}'.format(url_split.path, url_split.query),
             ))
 

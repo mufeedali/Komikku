@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -112,7 +112,7 @@ class Hatigarmscans(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=dateparser.parse(date.text.strip()).date(),
+                date=convert_date_string(date.text.strip(), format='%d %b. %Y'),
                 title=title
             ))
 

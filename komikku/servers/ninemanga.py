@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -109,7 +109,7 @@ class Ninemanga(Server):
             data['chapters'].append(dict(
                 slug=slug,
                 title=element.a.text.strip(),
-                date=dateparser.parse(element.span.text.strip()).date(),
+                date=convert_date_string(element.span.text.strip(), format='%b %d, %Y'),
             ))
 
         return data

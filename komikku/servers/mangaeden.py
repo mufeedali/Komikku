@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 import json
 from collections import OrderedDict
 from bs4 import BeautifulSoup
@@ -12,6 +11,7 @@ import magic
 import requests
 from requests.exceptions import ConnectionError
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -113,7 +113,7 @@ class Mangaeden(Server):
             data['chapters'].append(dict(
                 slug=tds_elements[0].a.get('href').split('/')[-3],
                 title=tds_elements[0].b.text.strip(),
-                date=dateparser.parse(tds_elements[3].text.strip()).date(),
+                date=convert_date_string(tds_elements[3].text.strip(), format='%b %d, %Y'),
             ))
 
         return data

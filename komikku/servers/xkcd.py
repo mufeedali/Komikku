@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import dateparser
 from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
 import textwrap
 
+from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -68,7 +68,7 @@ class Xkcd(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                date=dateparser.parse(a_element.get('title')).date(),
+                date=convert_date_string(a_element.get('title'), '%Y-%m-%d'),
                 title='{0} - {1}'.format(slug, a_element.text.strip()),
             ))
 
