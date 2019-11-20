@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.1.5" date="2019-11-20">
+            <description>
+                <p>Improve speed of dates parsing</p>
+                <p>Fixed order of manga chapters for Scantrad France and Central de Mangás</p>
+            </description>
+        </release>
         <release version="0.1.4" date="2019-11-19">
             <description>
                 <p>Fix keyboard navigation in reader</p>
