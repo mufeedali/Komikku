@@ -15,6 +15,12 @@ from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
 
+LANGUAGES_CODES = dict(
+    en='en',
+    id='id',
+    th='th',
+    zh_HANT='zh-hant',
+)
 
 server_id = 'webtoon'
 server_name = 'WEBTOON'
@@ -54,10 +60,15 @@ class Webtoon(Server):
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
+        # Get true URL after redirects
+        split_url = urlsplit(r.url)
+        url = '{0}?{1}'.format(split_url.path, split_url.query)
+
         soup = BeautifulSoup(r.text, 'html.parser')
 
         data = initial_data.copy()
         data.update(dict(
+            url=url,
             authors=[],
             scanlators=[],
             genres=[],
@@ -156,10 +167,10 @@ class Webtoon(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        lis_elements = soup.find('ul', id='_episodeList').find_all('li', recursive=False)
+        li_elements = soup.find('ul', id='_episodeList').find_all('li', recursive=False)
 
         data = []
-        for li_element in reversed(lis_elements):
+        for li_element in reversed(li_elements):
             if li_element.get('data-episode-no') is None:
                 continue
 
@@ -217,7 +228,34 @@ class Webtoon(Server):
 
     def search(self, term):
         try:
-            r = self.session.get(self.search_url, params=dict(keyword=term), headers={'user-agent': USER_AGENT})
+            referer_url = '{0}/{1}'.format(self.base_url, LANGUAGES_CODES[self.lang])
+            self.session.get(referer_url)
+        except ConnectionError:
+            return None
+
+        results = None
+
+        webtoon_results = self.search_by_type(term, 'WEBTOON')
+        if webtoon_results is not None:
+            results = webtoon_results
+
+        challenge_results = self.search_by_type(term, 'CHALLENGE')
+        if challenge_results is not None:
+            if results is None:
+                results = challenge_results
+            else:
+                results += challenge_results
+
+        return results
+
+    def search_by_type(self, term, type):
+        assert type in ('CHALLENGE', 'WEBTOON', ), 'Invalid type'
+
+        try:
+            r = self.session.get(
+                self.search_url,
+                params=dict(keyword=term, type=type),
+            )
         except ConnectionError:
             return None
 
@@ -228,15 +266,19 @@ class Webtoon(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
+        if type == 'CHALLENGE':
+            a_elements = soup.find_all('a', class_='challenge_item')
+        elif type == 'WEBTOON':
+            a_elements = soup.find_all('a', class_='card_item')
+
         results = []
-        cards = soup.find_all('a', class_=['card_item', 'challenge_item'])
-        for card in cards:
+        for a_element in a_elements:
             # Small difference here compared to other servers
             # the slug can't be used to forge manga URL, we must store the full url
             results.append(dict(
-                slug=card.get('href').split('=')[-1],
-                url=card.get('href'),
-                name=card.find('p', class_='subj').text,
+                slug=a_element.get('href').split('=')[-1],
+                url=a_element.get('href'),
+                name=a_element.find('p', class_='subj').text.strip(),
             ))
 
         return results

@@ -17,9 +17,11 @@ LANGUAGES = dict(
     en='English',
     es='Español',
     fr='Français',
+    id='Indonesia',
     it='Italiano',
     pt='Português',
     ru='русский',
+    th='ภาษาไทย',
 )
 
 

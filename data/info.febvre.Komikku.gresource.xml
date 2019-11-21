@@ -35,6 +35,8 @@
         <file compressed="true">icons/ui/servers/scanvf.ico</file>
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/webtoon.ico</file>
+        <file compressed="true" alias="icons/ui/servers/webtoon_id.ico">icons/ui/servers/webtoon.ico</file>
+        <file compressed="true" alias="icons/ui/servers/webtoon_th.ico">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>
 
         <file compressed="true">images/logo.png</file>
