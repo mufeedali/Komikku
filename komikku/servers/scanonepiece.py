@@ -24,6 +24,7 @@ class Scanonepiece(Server):
 
     base_url = 'https://scan-vf.co'
     search_url = base_url + '/search'
+    popular_url = base_url + '/topManga'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -183,6 +184,31 @@ class Scanonepiece(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns Top manga list
+        """
+        try:
+            r = self.session.get(self.popular_url)
+        except (ConnectionError, RuntimeError):
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for h_element in soup.find_all('h5', class_='media-heading'):
+            results.append(dict(
+                name=h_element.a.text.strip(),
+                slug=h_element.a.get('href').split('/')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
