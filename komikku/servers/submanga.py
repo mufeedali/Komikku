@@ -24,6 +24,7 @@ class Submanga(Server):
 
     base_url = 'https://submanga.li'
     search_url = base_url + '/search'
+    popular_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -177,6 +178,31 @@ class Submanga(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns most viewed manga list
+        """
+        try:
+            r = self.session.get(self.popular_url)
+        except (ConnectionError, RuntimeError):
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for element in soup.find_all('div', class_='thumbnail'):
+            results.append(dict(
+                name=element.find('h3').a.text.strip(),
+                slug=element.a.get('href').split('/')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
