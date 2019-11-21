@@ -57,6 +57,9 @@ class Ninemanga(Server):
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
+        if r.url == self.base_url:
+            # Manga page doesn't exist, we have been redirected to homepage
+            return None
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
@@ -186,6 +189,32 @@ class Ninemanga(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns Hot manga list
+        """
+        try:
+            r = self.session.get(self.base_url)
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for li_element in soup.find('div', class_='rightbox').find_all('ul')[0].find_all('li'):
+            a_element = li_element.find_all('a')[1]
+            results.append(dict(
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1][:-5],
+            ))
+
+        return results
 
     def search(self, term):
         try:
