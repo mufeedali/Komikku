@@ -33,7 +33,8 @@ class Mangaeden(Server):
     lang = server_lang
 
     base_url = 'http://www.mangaeden.com'
-    search_url = base_url + '/ajax/search-manga/'
+    search_url = base_url + '/en/en-directory/'
+    popular_url = search_url + '?order=1'
     manga_url = base_url + '/en/en-manga/{0}/'
     chapter_url = base_url + '/en/en-manga/{0}/{1}/1/'
 
@@ -75,7 +76,10 @@ class Mangaeden(Server):
         ))
 
         data['name'] = soup.find('span', class_='manga-title').text.strip()
-        data['cover'] = 'https:{0}'.format(soup.find('div', class_='mangaImage2').img.get('src'))
+
+        cover_element = soup.find('div', class_='mangaImage2')
+        if cover_element:
+            data['cover'] = 'https:{0}'.format(cover_element.img.get('src'))
 
         # Details
         for element in soup.find_all('div', class_='rightBox')[1].find_all():
@@ -173,6 +177,9 @@ class Mangaeden(Server):
         """
         Returns manga cover (image) content
         """
+        if url is None:
+            return None
+
         try:
             r = self.session.get(url)
         except ConnectionError:
@@ -188,32 +195,58 @@ class Mangaeden(Server):
         """
         return self.manga_url.format(slug)
 
-    def search(self, term):
+    def get_popular(self):
+        """
+        Returns most viewed manga list
+        """
         try:
-            r = self.session.get(self.search_url, params=dict(term=term))
+            r = self.session.get(self.popular_url)
         except ConnectionError:
             return None
 
-        if r.status_code == 200:
-            try:
-                # Returned data for each manga:
-                # label: manga name with language (EN, IT)
-                # url: manga relative URL
-                # value: manga name
-                data = r.json()
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-                results = []
-                for item in data:
-                    if not item['label'].endswith(self.lang.upper()):
-                        continue
-
-                    results.append(dict(
-                        slug=item['url'].split('/')[-2],
-                        name=item['value'],
-                    ))
-
-                return results
-            except Exception:
-                return None
-        else:
+        if r.status_code != 200 or mime_type != 'text/html':
             return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for tr_element in soup.find('table', id='mangaList').tbody.find_all('tr'):
+            td_elements = tr_element.find_all('td')
+            a_element = td_elements[0].a
+            results.append(dict(
+                slug=a_element.get('href').split('/')[-2],
+                name=a_element.text.strip(),
+            ))
+
+        return results
+
+    def search(self, term):
+        try:
+            r = self.session.get(self.search_url, params=dict(title=term))
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for tr_element in soup.find('table', id='mangaList').tbody.find_all('tr'):
+            td_elements = tr_element.find_all('td')
+
+            if td_elements[3].text.strip() == '0':
+                # Skipped manga with no chapters
+                continue
+
+            a_element = td_elements[0].a
+            results.append(dict(
+                slug=a_element.get('href').split('/')[-2],
+                name=a_element.text.strip(),
+            ))
+
+        return results

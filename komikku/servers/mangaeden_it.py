@@ -17,6 +17,7 @@ class Mangaeden_it(Mangaeden):
     lang = server_lang
 
     base_url = 'http://www.mangaeden.com'
-    search_url = base_url + '/ajax/search-manga/'
+    search_url = base_url + '/it/it-directory/'
+    popular_url = search_url + '?order=1'
     manga_url = base_url + '/it/it-manga/{0}/'
     chapter_url = base_url + '/it/it-manga/{0}/{1}/1/'
