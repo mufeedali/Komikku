@@ -33,6 +33,7 @@ class Mangarock(Server):
     base_url = 'https://mangarock.com'
     api_url = 'https://api.mangarockhd.com/query/web401'
     api_search_url = api_url + '/mrs_search?country='
+    api_popular_url = api_url + '/mrs_latest'
     api_manga_url = api_url + '/info?oid={0}&last=0'
     # api_chapter_url = api_url + '/pages?oid={0}'
     api_chapter_url = api_url + '/pagesv2?oid={0}'
@@ -188,6 +189,39 @@ class Mangarock(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns full list of manga sorted by rank
+        """
+        try:
+            r = self.session.post(self.api_popular_url)
+        except (ConnectionError, RuntimeError):
+            print('plop')
+            return None
+
+        if r.status_code != 200:
+            return None
+
+        try:
+            res = r.json()
+        except json.decoder.JSONDecodeError:
+            return None
+
+        if res['code'] != 0:
+            return None
+
+        # Sort by rank
+        res = sorted(res['data'], key=lambda i: i['rank'])
+
+        results = []
+        for item in res:
+            results.append(dict(
+                name=item['name'],
+                slug=item['oid'],
+            ))
+
+        return results
 
     def search(self, term):
         try:
