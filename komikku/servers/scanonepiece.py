@@ -22,9 +22,9 @@ class Scanonepiece(Server):
     name = server_name
     lang = server_lang
 
-    base_url = 'https://scan-vf.co'
+    base_url = 'https://www.scan-vf.co'
     search_url = base_url + '/search'
-    popular_url = base_url + '/topManga'
+    popular_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -196,16 +196,17 @@ class Scanonepiece(Server):
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        if r.status_code != 200 or mime_type != 'text/html':
+        if r.status_code != 200 or mime_type != 'text/plain':
+            print(self.popular_url, mime_type)
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        for h_element in soup.find_all('h5', class_='media-heading'):
+        for a_element in soup.find_all('a', class_='chart-title'):
             results.append(dict(
-                name=h_element.a.text.strip(),
-                slug=h_element.a.get('href').split('/')[-1],
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1],
             ))
 
         return results
