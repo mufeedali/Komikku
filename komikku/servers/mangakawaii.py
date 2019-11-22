@@ -24,6 +24,7 @@ class Mangakawaii(Server):
 
     base_url = 'https://www.mangakawaii.to'
     search_url = base_url + '/recherche'
+    popular_url = base_url + '/mieux-notes'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
     image_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/chapters/{1}/{2}'
@@ -179,6 +180,34 @@ class Mangakawaii(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns best noted manga list
+        """
+        try:
+            r = self.session.get(self.popular_url)
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            print(self.search_url, mime_type)
+            return None
+
+        soup = BeautifulSoup(r.text, 'lxml')
+
+        results = []
+        for tr_element in soup.find('table', class_='table').tbody.find_all('tr', recursive=False):
+            a_element = tr_element.find_all('td')[2].a
+            a_element.span.decompose()
+            results.append(dict(
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
