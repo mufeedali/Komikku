@@ -108,14 +108,16 @@ class Ninemanga(Server):
             data['synopsis'] = synopsis_element.text.strip()
 
         # Chapters
-        elements = soup.find('div', class_='chapterbox').find_all('li')
-        for element in reversed(elements):
-            slug = element.a.get('href').split('/')[-1].replace('.html', '')
-            data['chapters'].append(dict(
-                slug=slug,
-                title=element.a.text.strip(),
-                date=convert_date_string(element.span.text.strip(), format='%b %d, %Y'),
-            ))
+        div_element = soup.find('div', class_='chapterbox')
+        if div_element:
+            li_elements = div_element.find_all('li')
+            for li_element in reversed(li_elements):
+                slug = li_element.a.get('href').split('/')[-1].replace('.html', '')
+                data['chapters'].append(dict(
+                    slug=slug,
+                    title=li_element.a.text.strip(),
+                    date=convert_date_string(li_element.span.text.strip(), format='%b %d, %Y'),
+                ))
 
         return data
 
