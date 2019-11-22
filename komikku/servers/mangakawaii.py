@@ -123,7 +123,6 @@ class Mangakawaii(Server):
         try:
             r = self.session.get(url)
         except (ConnectionError, RuntimeError):
-            print('error get_manga_chapter_data')
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -155,7 +154,6 @@ class Mangakawaii(Server):
         try:
             r = self.session.get(url)
         except (ConnectionError, RuntimeError):
-            print('error get_manga_chapter_page_image')
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -193,7 +191,6 @@ class Mangakawaii(Server):
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
-            print(self.search_url, mime_type)
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')

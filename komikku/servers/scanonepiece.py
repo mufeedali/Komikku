@@ -187,7 +187,7 @@ class Scanonepiece(Server):
 
     def get_popular(self):
         """
-        Returns Top manga list
+        Returns list of most viewed manga
         """
         try:
             r = self.session.get(self.popular_url)
@@ -197,7 +197,6 @@ class Scanonepiece(Server):
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/plain':
-            print(self.popular_url, mime_type)
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')

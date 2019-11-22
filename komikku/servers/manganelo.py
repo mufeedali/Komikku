@@ -192,7 +192,6 @@ class Manganelo(Server):
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         if r.status_code != 200 or mime_type != 'text/html':
-            print(self.search_url, mime_type)
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')

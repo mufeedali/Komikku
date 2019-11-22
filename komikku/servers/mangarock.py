@@ -197,7 +197,6 @@ class Mangarock(Server):
         try:
             r = self.session.post(self.api_popular_url)
         except (ConnectionError, RuntimeError):
-            print('plop')
             return None
 
         if r.status_code != 200:
