@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import magic
 import requests
 from requests.exceptions import ConnectionError
+from urllib.parse import unquote_plus
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -33,6 +34,7 @@ class Ninemanga(Server):
 
     base_url = 'http://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
+    popular_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
@@ -195,7 +197,7 @@ class Ninemanga(Server):
         Returns Hot manga list
         """
         try:
-            r = self.session.get(self.base_url)
+            r = self.session.get(self.popular_url)
         except ConnectionError:
             return None
 
@@ -207,11 +209,10 @@ class Ninemanga(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        for li_element in soup.find('div', class_='rightbox').find_all('ul')[0].find_all('li'):
-            a_element = li_element.find_all('a')[1]
+        for a_element in soup.find('ul', class_='direlist').find_all('a', class_='bookname'):
             results.append(dict(
                 name=a_element.text.strip(),
-                slug=a_element.get('href').split('/')[-1][:-5],
+                slug=unquote_plus(a_element.get('href')).split('/')[-1][:-5],
             ))
 
         return results

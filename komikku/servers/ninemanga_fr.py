@@ -12,6 +12,7 @@ class Ninemanga_fr(Ninemanga):
 
     base_url = 'http://fr.ninemanga.com'
     search_url = base_url + '/search/ajax/'
+    popular_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
