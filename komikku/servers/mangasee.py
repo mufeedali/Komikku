@@ -181,6 +181,32 @@ class Mangasee(Server):
         """
         return self.manga_url.format(slug)
 
+    def get_popular(self):
+        """
+        Returns most popular manga list
+        """
+        try:
+            r = self.session.post(self.search_url, data=dict(page=1, sortBy='popularity', sortOrder='descending'))
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/plain':
+            print(self.search_url, mime_type)
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for a_element in soup.find_all('a', class_='resultLink'):
+            results.append(dict(
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1],
+            ))
+
+        return results
+
     def search(self, term):
         try:
             r = self.session.post(self.search_url, data=dict(keyword=term, page=1))
