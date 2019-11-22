@@ -25,6 +25,7 @@ class Hatigarmscans(Server):
 
     base_url = 'https://www.hatigarmscans.net'
     search_url = base_url + '/search'
+    popular_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -184,6 +185,31 @@ class Hatigarmscans(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns list of most viewed manga
+        """
+        try:
+            r = self.session.get(self.popular_url)
+        except (ConnectionError, RuntimeError):
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/plain':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for a_element in soup.find_all('a', class_='chart-title'):
+            results.append(dict(
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
