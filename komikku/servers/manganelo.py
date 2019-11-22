@@ -26,6 +26,7 @@ class Manganelo(Server):
 
     base_url = 'https://manganelo.com'
     search_url = base_url + '/home_json_search'
+    popular_url = base_url + '/manga_list?type=topview&category=all&state=all&page=1'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/chapter/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -178,6 +179,32 @@ class Manganelo(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_popular(self):
+        """
+        Returns hot manga list
+        """
+        try:
+            r = self.session.get(self.popular_url)
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            print(self.search_url, mime_type)
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for element in soup.find('div', class_='truyen-list').find_all('div', class_='list-truyen-item-wrap'):
+            results.append(dict(
+                name=element.h3.a.get('title').strip(),
+                slug=element.h3.a.get('href').split('/')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
