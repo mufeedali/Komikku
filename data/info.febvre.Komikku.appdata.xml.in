@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.2.0" date="2019-11-23">
+            <description>
+                <p>New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai</p>
+                <p>For all servers that allow it, most popular mangas are now offered as starting search results.</p>
+            </description>
+        </release>
         <release version="0.1.5" date="2019-11-20">
             <description>
                 <p>Improve speed of dates parsing</p>
