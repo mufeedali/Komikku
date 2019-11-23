@@ -16,7 +16,6 @@ from komikku.reader.pager.page import Page
 
 
 class Pager(Gtk.ScrolledWindow):
-    pages = []
     current_page = None
 
     button_press_timeout_id = None
@@ -71,11 +70,11 @@ class Pager(Gtk.ScrolledWindow):
                 adj.set_value(start + t * (end - start))
 
                 return True
-            else:
-                adj.set_value(end)
-                self.scroll_lock = False
 
-                return False
+            adj.set_value(end)
+            self.scroll_lock = False
+
+            return False
 
         adj = self.get_hadjustment()
         start = adj.get_value()
