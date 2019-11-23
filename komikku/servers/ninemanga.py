@@ -34,7 +34,7 @@ class Ninemanga(Server):
 
     base_url = 'http://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
-    popular_url = base_url + '/list/Hot-Book/'
+    most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
@@ -181,12 +181,12 @@ class Ninemanga(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_popular(self):
+    def get_most_populars(self):
         """
         Returns Hot manga list
         """
         try:
-            r = self.session.get(self.popular_url)
+            r = self.session.get(self.most_populars_url)
         except ConnectionError:
             return None
 

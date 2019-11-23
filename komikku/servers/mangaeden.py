@@ -34,7 +34,7 @@ class Mangaeden(Server):
 
     base_url = 'http://www.mangaeden.com'
     search_url = base_url + '/en/en-directory/'
-    popular_url = search_url + '?order=1'
+    most_populars_url = search_url + '?order=1'
     manga_url = base_url + '/en/en-manga/{0}/'
     chapter_url = base_url + '/en/en-manga/{0}/{1}/1/'
 
@@ -179,12 +179,12 @@ class Mangaeden(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_popular(self):
+    def get_most_populars(self):
         """
         Returns most viewed manga list
         """
         try:
-            r = self.session.get(self.popular_url)
+            r = self.session.get(self.most_populars_url)
         except ConnectionError:
             return None
 

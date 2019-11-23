@@ -139,7 +139,7 @@ class Xkcd(Server):
         """
         return self.manga_url
 
-    def get_popular(self):
+    def get_most_populars(self):
         return self.search()
 
     def search(self, term=None):

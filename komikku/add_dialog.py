@@ -186,6 +186,9 @@ class AddDialog():
 
             return False
 
+        if row.manga_data is None:
+            return
+
         self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
@@ -210,23 +213,38 @@ class AddDialog():
             return
 
         term = self.custom_title_search_page_searchentry.get_text().strip()
-        if not term and getattr(self.server, 'get_popular', None) is None:
-            # An empty term is allowed only if server has 'get_popular' method
+        if not term and getattr(self.server, 'get_most_populars', None) is None:
+            # An empty term is allowed only if server has 'get_most_populars' method
             return
 
         def run():
-            if term:
-                result = self.server.search(term)
+            most_populars = not term
+
+            if most_populars:
+                # We offer most popular mangas as starting search results
+                result = self.server.get_most_populars()
             else:
-                result = self.server.get_popular()
+                result = self.server.search(term)
 
             if result:
-                GLib.idle_add(complete, result)
+                GLib.idle_add(complete, result, most_populars)
             else:
                 GLib.idle_add(error, result)
 
-        def complete(result):
+        def complete(result, most_populars):
             self.activity_indicator.stop()
+
+            if most_populars:
+                row = Gtk.ListBoxRow()
+                row.get_style_context().add_class('add-dialog-search-section-listboxrow')
+                row.manga_data = None
+                box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+                row.add(box)
+                label = Gtk.Label(xalign=0, margin=6)
+                label.set_text(_('MOST POPULARS'))
+                box.pack_start(label, True, True, 0)
+
+                self.search_page_listbox.add(row)
 
             for item in result:
                 row = Gtk.ListBoxRow()

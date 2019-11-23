@@ -24,7 +24,7 @@ class Mangakawaii(Server):
 
     base_url = 'https://www.mangakawaii.to'
     search_url = base_url + '/recherche'
-    popular_url = base_url + '/mieux-notes'
+    most_populars_url = base_url + '/mieux-notes'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
     image_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/chapters/{1}/{2}'
@@ -166,12 +166,12 @@ class Mangakawaii(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_popular(self):
+    def get_most_populars(self):
         """
         Returns best noted manga list
         """
         try:
-            r = self.session.get(self.popular_url)
+            r = self.session.get(self.most_populars_url)
         except ConnectionError:
             return None
 

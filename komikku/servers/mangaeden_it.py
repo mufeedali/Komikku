@@ -18,6 +18,6 @@ class Mangaeden_it(Mangaeden):
 
     base_url = 'http://www.mangaeden.com'
     search_url = base_url + '/it/it-directory/'
-    popular_url = search_url + '?order=1'
+    most_populars_url = search_url + '?order=1'
     manga_url = base_url + '/it/it-manga/{0}/'
     chapter_url = base_url + '/it/it-manga/{0}/{1}/1/'

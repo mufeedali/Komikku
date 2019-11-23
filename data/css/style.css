@@ -56,3 +56,10 @@
 .add-dialog-server-language-label {
     font-size: 11px;
 }
+
+/* Add dialog - search page */
+.add-dialog-search-section-listboxrow {
+    font-weight: bold;
+    color: @insensitive_fg_color;
+    background: @insensitive_bg_color;
+}

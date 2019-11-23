@@ -168,7 +168,7 @@ class Mangasee(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_popular(self):
+    def get_most_populars(self):
         """
         Returns most popular manga list
         """

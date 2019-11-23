@@ -26,7 +26,7 @@ class Manganelo(Server):
 
     base_url = 'https://manganelo.com'
     search_url = base_url + '/home_json_search'
-    popular_url = base_url + '/manga_list?type=topview&category=all&state=all&page=1'
+    most_populars_url = base_url + '/manga_list?type=topview&category=all&state=all&page=1'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/chapter/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -167,12 +167,12 @@ class Manganelo(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_popular(self):
+    def get_most_populars(self):
         """
         Returns hot manga list
         """
         try:
-            r = self.session.get(self.popular_url)
+            r = self.session.get(self.most_populars_url)
         except ConnectionError:
             return None
 
