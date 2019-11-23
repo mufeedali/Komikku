@@ -162,28 +162,6 @@ class Mangarock(Server):
 
         return (None, None)
 
-    def get_manga_cover_image(self, url):
-        """
-        Returns manga cover (image) content
-        """
-        try:
-            r = self.session.get(url)
-        except (ConnectionError, RuntimeError):
-            return None
-
-        if r.status_code != 200:
-            return None
-
-        buffer = r.content
-        mime_type = magic.from_buffer(buffer[:128], mime=True)
-        if not mime_type.startswith('image'):
-            return None
-
-        if mime_type == 'image/webp':
-            buffer = convert_webp_buffer(buffer)
-
-        return buffer
-
     def get_manga_url(self, slug, url):
         """
         Returns manga absolute URL

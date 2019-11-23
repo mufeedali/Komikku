@@ -27,7 +27,6 @@ class Scantrad(Server):
     search_url = base_url + '/mangas'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/mangas/{0}/{1}'
-    cover_url = base_url + '/{0}'
     image_url = base_url + '/{0}'
 
     def __init__(self):
@@ -69,7 +68,7 @@ class Scantrad(Server):
 
         div_info = soup.find('div', class_='mf-info')
         data['name'] = div_info.find('div', class_='titre').text.strip()
-        data['cover'] = div_info.find('div', class_='poster').img.get('src')
+        data['cover'] = '{0}/{1}'.format(self.base_url, div_info.find('div', class_='poster').img.get('src'))
 
         status = div_info.find_all('div', class_='sub-i')[1].span.text.strip().lower()
         if status == 'en cours':
@@ -146,19 +145,6 @@ class Scantrad(Server):
         image_name = page['image'].split('/')[-1]
 
         return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
-
-    def get_manga_cover_image(self, url):
-        """
-        Returns manga cover (image) content
-        """
-        try:
-            r = self.session.get(self.cover_url.format(url))
-        except ConnectionError:
-            return None
-
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-
-        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
 
     def get_manga_url(self, slug, url):
         """

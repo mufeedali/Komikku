@@ -177,19 +177,6 @@ class Centraldemangas(Server):
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_cover_image(self, url):
-        """
-        Returns manga cover (image) content
-        """
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
-            return None
-
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-
-        return r.content if r.status_code == 200 and mime_type.startswith('image') else None
-
     def get_manga_url(self, slug, url):
         """
         Returns manga absolute URL
@@ -241,5 +228,5 @@ class Centraldemangas(Server):
                 ))
 
             return results
-        else:
-            return None
+
+        return None

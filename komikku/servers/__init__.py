@@ -2,9 +2,11 @@ import dateparser
 import datetime
 from importlib import resources
 import io
+import magic
 from operator import itemgetter
 import os
 from PIL import Image
+from requests.exceptions import ConnectionError
 import struct
 
 SESSIONS = dict()
@@ -30,6 +32,8 @@ class Server:
     name = NotImplemented
     lang = NotImplemented
 
+    base_url = None
+
     @property
     def session(self):
         return SESSIONS.get(self.id)
@@ -37,6 +41,32 @@ class Server:
     @session.setter
     def session(self, value):
         SESSIONS[self.id] = value
+
+    def get_manga_cover_image(self, url):
+        """
+        Returns manga cover (image) content
+        """
+        if url is None:
+            return None
+
+        try:
+            r = self.session.get(url, headers={'referer': self.base_url})
+        except (ConnectionError, RuntimeError):
+            return None
+
+        if r.status_code != 200:
+            return None
+
+        buffer = r.content
+        mime_type = magic.from_buffer(buffer[:128], mime=True)
+
+        if not mime_type.startswith('image'):
+            return None
+
+        if mime_type == 'image/webp':
+            buffer = convert_webp_buffer(buffer)
+
+        return buffer
 
 
 def convert_date_string(date, format=None):

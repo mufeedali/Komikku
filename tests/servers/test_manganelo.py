@@ -15,6 +15,6 @@ def test_search_manganelo(manganelo_server):
 
 
 def test_get_manga_data_manganelo(manganelo_server):
-    response = manganelo_server.get_manga_data(dict(slug='tales_of_demons_and_gods'))
+    response = manganelo_server.get_manga_data(dict(slug='hyer5231574354229'))
     print('Manganelo: get manga data', response)
     assert response is not None
