@@ -34,6 +34,7 @@ class Webtoon(Server):
 
     base_url = 'https://www.webtoons.com'
     search_url = base_url + '/search'
+    popular_url = base_url + '/{0}/top'
     manga_url = base_url + '{0}'
     chapters_url = 'https://m.webtoons.com{0}'
     chapter_url = base_url + '{0}'
@@ -212,6 +213,31 @@ class Webtoon(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(url)
+
+    def get_popular(self):
+        """
+        Returns TOP 10 manga
+        """
+        try:
+            r = self.session.get(self.popular_url.format(LANGUAGES_CODES[self.lang]))
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for li_element in soup.find('ul', class_='lst_type1').find_all('li'):
+            results.append(dict(
+                name=li_element.a.find('p', class_='subj').text.strip(),
+                slug=li_element.a.get('href').split('=')[-1],
+            ))
+
+        return results
 
     def search(self, term):
         try:
