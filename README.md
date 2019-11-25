@@ -27,7 +27,7 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 <img src="screenshots/add-servers.png" width="290">
 <img src="screenshots/preferences.png" width="290">
 
-## Installation
+## Installing
 
 ### Flatpak of development version
 
