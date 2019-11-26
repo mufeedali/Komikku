@@ -1,5 +1,4 @@
 from gettext import gettext as _
-from pydoc import locate
 import threading
 
 from gi.repository import Gio
@@ -200,7 +199,7 @@ class AddDialog():
         self.dialog.close()
 
     def on_server_clicked(self, listbox, row):
-        self.server = locate('komikku.servers.{0}.{1}'.format(row.server_data['id'], row.server_data['class']))()
+        self.server = getattr(row.server_data['module'], row.server_data['class_'])()
         self.show_page('search')
 
     def open(self, action, param):
