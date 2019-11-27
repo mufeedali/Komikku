@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.3.0" date="2019-11-28">
+            <description>
+                <p>Added Dragon Ball Multiverse (DBM) server</p>
+                <p>Fixes in Japscan server (search still broken)</p>
+            </description>
+        </release>
         <release version="0.2.0" date="2019-11-23">
             <description>
                 <p>New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai</p>
