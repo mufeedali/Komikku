@@ -111,8 +111,8 @@ class Japscan(Server):
                 span = element.a.span.extract()
                 # JapScan sometimes uploads some "spoiler preview" chapters, containing 2 or 3 untranslated pictures taken from a raw.
                 # Sometimes they also upload full RAWs/US versions and replace them with a translation as soon as available.
-                # Those have a span.badge "SPOILER", "RAW" or "VUE". We exclude these from the chapters list.
-                if span.text() in ('RAW', 'SPOILER', 'VUE', ):
+                # Those have a span.badge "SPOILER", "RAW" or "VUS". We exclude these from the chapters list.
+                if span.text.strip() in ('RAW', 'SPOILER', 'VUS', ):
                     continue
 
             slug = element.a.get('href').split('/')[3]
@@ -197,6 +197,32 @@ class Japscan(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_most_populars(self):
+        """
+        Returns TOP manga
+        """
+        try:
+            r = self.session.get(self.base_url)
+        except ConnectionError:
+            return None
+
+        mime_type = magic.from_buffer(r.content[:128], mime=True)
+
+        if r.status_code != 200 or mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'lxml')
+
+        results = []
+        for li_element in soup.find('div', id='top_mangas_all_time').find_all('li'):
+            a_element = li_element.find_all('a')[0]
+            results.append(dict(
+                name=a_element.text.strip(),
+                slug=a_element.get('href').split('/')[-2],
+            ))
+
+        return results
 
     def search(self, term):
         try:
