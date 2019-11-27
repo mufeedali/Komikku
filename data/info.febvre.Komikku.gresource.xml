@@ -16,6 +16,13 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/menu_reader.xml</file>
 
         <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
+        <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_de.ico">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_es.ico">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_fr.ico">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_it.ico">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_pt.ico">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true" alias="icons/ui/servers/dbmultiverse_ru.ico">icons/ui/servers/dbmultiverse.ico</file>
         <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/servers/japscan.ico</file>
         <file compressed="true">icons/ui/servers/mangaeden.ico</file>
