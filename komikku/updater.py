@@ -26,6 +26,10 @@ class Updater():
     def add(self, mangas):
         if isinstance(mangas, list):
             for manga in mangas:
+                if manga.status not in (None, 'ongoing'):
+                    # Suspended, complete, ...
+                    continue
+
                 if manga.id not in self.queue:
                     self.queue.append(manga.id)
         elif mangas.id not in self.queue:
