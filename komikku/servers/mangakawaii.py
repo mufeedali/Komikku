@@ -65,7 +65,10 @@ class Mangakawaii(Server):
             server_id=self.id,
         ))
 
-        data['name'] = soup.find('h1', class_='manga__title').text.strip()
+        title_element = soup.find('h1', class_='manga-bg__title')
+        if title_element is None:
+            title_element = soup.find('h1', class_='manga__title')
+        data['name'] = title_element.text.strip()
         if data.get('cover') is None:
             data['cover'] = self.cover_url.format(data['slug'])
 
@@ -132,16 +135,26 @@ class Mangakawaii(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        pages_imgs = soup.find('div', id='all').find_all('img')
+        script_elements = soup.find_all('script')
 
         data = dict(
             pages=[],
         )
-        for img in pages_imgs:
-            data['pages'].append(dict(
-                slug=None,  # not necessary, we know image url directly
-                image=img.get('data-src').strip().split('/')[-1],
-            ))
+        for script_element in reversed(script_elements):
+            script = script_element.text.strip()
+            if not script.startswith('var $Imagesrc'):
+                continue
+
+            for line in script.split('\n'):
+                if '.rdata-' not in line:
+                    continue
+
+                data['pages'].append(dict(
+                    slug=line.strip().split('"')[-2].strip().split('/')[-1],
+                    image=None,
+                ))
+
+            break
 
         return data
 
@@ -149,7 +162,7 @@ class Mangakawaii(Server):
         """
         Returns chapter page scan (image) content
         """
-        url = self.image_url.format(manga_slug, chapter_slug, page['image'])
+        url = self.image_url.format(manga_slug, chapter_slug, page['slug'])
 
         try:
             r = self.session.get(url)
@@ -158,7 +171,7 @@ class Mangakawaii(Server):
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        return (page['image'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        return (page['slug'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_url(self, slug, url):
         """
