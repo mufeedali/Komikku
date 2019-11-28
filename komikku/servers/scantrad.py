@@ -70,7 +70,7 @@ class Scantrad(Server):
         data['name'] = div_info.find('div', class_='titre').text.strip()
         data['cover'] = '{0}/{1}'.format(self.base_url, div_info.find('div', class_='poster').img.get('src'))
 
-        status = div_info.find_all('div', class_='sub-i')[1].span.text.strip().lower()
+        status = div_info.find_all('div', class_='sub-i')[2].span.text.strip().lower()
         if status == 'en cours':
             data['status'] = 'ongoing'
         elif status == 'terminé':
