@@ -31,6 +31,11 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.3.1" date="2019-11-29">
+            <description>
+                <p>Fixes in Mangakawaii server</p>
+            </description>
+        </release>
         <release version="0.3.0" date="2019-11-28">
             <description>
                 <p>Added Dragon Ball Multiverse (DBM) server</p>
