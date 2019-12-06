@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 import textwrap
 
 from komikku.servers import convert_date_string
@@ -38,9 +37,8 @@ class Xkcd(Server):
         """
         Returns manga data by scraping manga HTML page content
         """
-        try:
-            r = self.session.get(self.manga_url)
-        except ConnectionError:
+        r = self.session_get(self.manga_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -80,12 +78,13 @@ class Xkcd(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(chapter_slug)
+        r = self.session_get(self.chapter_url.format(chapter_slug))
+        if r is None:
+            return None
 
         try:
-            r = self.session.get(url)
             data = r.json()
-        except ConnectionError:
+        except Exception:
             return None
 
         url_image = data['img']
@@ -111,23 +110,23 @@ class Xkcd(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            if page.get('image'):
-                r = self.session.get(page['image'])
-                image_name = page['image'].split('/')[-1]
-            else:
-                url = 'https://fakeimg.pl/1500x2126/ffffff/000000/'
-                r = self.session.get(
-                    url,
-                    params=dict(
-                        text='\n'.join(textwrap.wrap(page['text'], 25)),
-                        font_size=64,
-                        font='museo'
-                    )
+        if page.get('image'):
+            r = self.session_get(page['image'])
+            if r is None:
+                return None
+            image_name = page['image'].split('/')[-1]
+        else:
+            r = self.session_get(
+                'https://fakeimg.pl/1500x2126/ffffff/000000/',
+                params=dict(
+                    text='\n'.join(textwrap.wrap(page['text'], 25)),
+                    font_size=64,
+                    font='museo'
                 )
-                image_name = '{0}-alt-text.png'.format(chapter_slug)
-        except ConnectionError:
-            return (None, None)
+            )
+            if r is None:
+                return None
+            image_name = '{0}-alt-text.png'.format(chapter_slug)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 

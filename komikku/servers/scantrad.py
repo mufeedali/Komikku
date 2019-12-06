@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -42,9 +41,8 @@ class Scantrad(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -101,11 +99,8 @@ class Scantrad(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -136,9 +131,8 @@ class Scantrad(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            r = self.session.get(self.image_url.format(page['image']))
-        except ConnectionError:
+        r = self.session_get(self.image_url.format(page['image']))
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -153,9 +147,8 @@ class Scantrad(Server):
         return self.manga_url.format(slug)
 
     def search(self, term):
-        try:
-            r = self.session.get(self.search_url)
-        except ConnectionError:
+        r = self.session_get(self.search_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)

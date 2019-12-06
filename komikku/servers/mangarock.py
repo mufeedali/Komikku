@@ -8,7 +8,6 @@ import cloudscraper
 from datetime import datetime
 import json
 import magic
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_mri_data_to_webp_buffer
 from komikku.servers import convert_webp_buffer
@@ -52,9 +51,8 @@ class Mangarock(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.api_manga_url.format(initial_data['slug']))
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.api_manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         try:
@@ -110,11 +108,8 @@ class Mangarock(Server):
 
         Currently, only pages are expected.
         """
-        url = self.api_chapter_url.format(chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.api_chapter_url.format(chapter_slug))
+        if r is None:
             return None
 
         try:
@@ -140,16 +135,14 @@ class Mangarock(Server):
         """
         Returns chapter page scan (image) content
         """
-        image_url = page['image']
-        try:
-            r = self.session.get(image_url)
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(page['image'])
+        if r is None:
             return (None, None)
 
         if r.status_code != 200:
             return (None, None)
 
-        image_name = image_url.split('/')[-1]
+        image_name = page['image'].split('/')[-1]
         buffer = r.content
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
@@ -172,12 +165,8 @@ class Mangarock(Server):
         """
         Returns full list of manga sorted by rank
         """
-        try:
-            r = self.session.post(self.api_most_populars_url)
-        except (ConnectionError, RuntimeError):
-            return None
-
-        if r.status_code != 200:
+        r = self.session_post(self.api_most_populars_url)
+        if r is None or r.status_code != 200:
             return None
 
         try:
@@ -201,12 +190,8 @@ class Mangarock(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.post(self.api_search_url, json={'type': 'series', 'keywords': term})
-        except (ConnectionError, RuntimeError):
-            return None
-
-        if r.status_code != 200:
+        r = self.session_post(self.api_search_url, json={'type': 'series', 'keywords': term})
+        if r is None or r.status_code != 200:
             return None
 
         try:

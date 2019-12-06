@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 from urllib.parse import urlsplit
 
 from komikku.servers import convert_date_string
@@ -51,9 +50,8 @@ class Webtoon(Server):
         """
         assert 'url' in initial_data, 'Manga url is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['url']), headers={'user-agent': USER_AGENT})
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['url']), headers={'user-agent': USER_AGENT})
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -122,11 +120,8 @@ class Webtoon(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(chapter_url)
-
-        try:
-            r = self.session.get(url, headers={'user-agent': USER_AGENT})
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(chapter_url), headers={'user-agent': USER_AGENT})
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -153,12 +148,9 @@ class Webtoon(Server):
         """
         Returns manga chapters data by scraping content of manga Mobile HTML page
         """
-        url = self.chapters_url.format(url)
-
-        try:
-            # Use a Mobile user agent
-            r = self.session.get(url, headers={'user-agent': USER_AGENT_MOBILE})
-        except ConnectionError:
+        # Use a Mobile user agent
+        r = self.session_get(self.chapters_url.format(url), headers={'user-agent': USER_AGENT_MOBILE})
+        if r is None:
             return []
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -196,9 +188,8 @@ class Webtoon(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            r = self.session.get(page['image'], headers={'referer': self.base_url, 'user-agent': USER_AGENT})
-        except ConnectionError:
+        r = self.session_get(page['image'], headers={'referer': self.base_url, 'user-agent': USER_AGENT})
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -218,9 +209,8 @@ class Webtoon(Server):
         """
         Returns TOP 10 manga
         """
-        try:
-            r = self.session.get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
-        except ConnectionError:
+        r = self.session_get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -245,11 +235,8 @@ class Webtoon(Server):
         return results
 
     def search(self, term):
-        try:
-            referer_url = '{0}/{1}'.format(self.base_url, LANGUAGES_CODES[self.lang])
-            self.session.get(referer_url)
-        except ConnectionError:
-            return None
+        referer_url = '{0}/{1}'.format(self.base_url, LANGUAGES_CODES[self.lang])
+        self.session_get(referer_url)
 
         results = None
 
@@ -269,12 +256,8 @@ class Webtoon(Server):
     def search_by_type(self, term, type):
         assert type in ('CHALLENGE', 'WEBTOON', ), 'Invalid type'
 
-        try:
-            r = self.session.get(
-                self.search_url,
-                params=dict(keyword=term, type=type),
-            )
-        except ConnectionError:
+        r = self.session_get(self.search_url, params=dict(keyword=term, type=type))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)

@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-from gettext import gettext as _
 import threading
 
 from gi.repository import GLib
@@ -14,6 +13,7 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.activity_indicator import ActivityIndicator
+from komikku.utils import error_message
 
 
 class Page(Gtk.Overlay):
@@ -83,13 +83,13 @@ class Page(Gtk.Overlay):
         def run():
             # First, we ensure that chapter's list of pages is known
             if self.chapter.pages is None:
-                if self.window.application.connected:
+                try:
                     if not self.chapter.update_full():
                         on_error('server')
                         GLib.idle_add(complete)
                         return
-                else:
-                    on_error('connection')
+                except Exception as e:
+                    on_error('connection', error_message(e))
                     GLib.idle_add(complete)
                     return
 
@@ -106,13 +106,13 @@ class Page(Gtk.Overlay):
                     # Chapter has changed
                     # Again, we ensure that chapter's list of pages is known
                     if self.chapter.pages is None:
-                        if self.window.application.connected:
+                        try:
                             if not self.chapter.update_full():
                                 on_error('server')
                                 GLib.idle_add(complete)
                                 return
-                        else:
-                            on_error('connection')
+                        except Exception as e:
+                            on_error('connection', error_message(e))
                             GLib.idle_add(complete)
                             return
 
@@ -135,23 +135,20 @@ class Page(Gtk.Overlay):
 
             page_path = self.chapter.get_page_path(self.index)
             if page_path is None:
-                if self.window.application.connected:
+                try:
                     page_path = self.chapter.get_page(self.index)
                     if page_path:
                         self.pixbuf = Pixbuf.new_from_file(page_path)
                     else:
                         on_error('server')
-                else:
-                    on_error('connection')
+                except Exception as e:
+                    on_error('connection', error_message(e))
             else:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
 
             GLib.idle_add(complete)
 
         def complete():
-            if self.error == 'connection':
-                self.window.show_notification(_('No Internet connection'), 2)
-
             if self.status == 'cleaned' or self.get_parent() is None:
                 # Page has been removed from pager
                 # rare case that occurs during a quick navigation
@@ -170,8 +167,11 @@ class Page(Gtk.Overlay):
 
             return False
 
-        def on_error(kind):
+        def on_error(kind, message=None):
             assert kind in ('connection', 'server'), 'Invalid error kind'
+
+            if message is not None:
+                self.window.show_notification(message, 2)
 
             self.error = kind
             self.pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')

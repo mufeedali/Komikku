@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -44,9 +43,8 @@ class Manganelo(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -121,11 +119,8 @@ class Manganelo(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -152,9 +147,8 @@ class Manganelo(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            r = self.session.get(page['image'])
-        except ConnectionError:
+        r = self.session_get(page['image'])
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -171,9 +165,8 @@ class Manganelo(Server):
         """
         Returns hot manga list
         """
-        try:
-            r = self.session.get(self.most_populars_url)
-        except ConnectionError:
+        r = self.session_get(self.most_populars_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -193,9 +186,8 @@ class Manganelo(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.post(self.search_url, data=dict(searchword=term))
-        except ConnectionError:
+        r = self.session_post(self.search_url, data=dict(searchword=term))
+        if r is None:
             return None
 
         if r.status_code == 200:

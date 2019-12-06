@@ -208,7 +208,7 @@ class Manga:
 
         data = data.copy()
         chapters = data.pop('chapters')
-        cover_path_or_url = data.pop('cover')
+        cover_url = data.pop('cover')
 
         # Fill data with internal data or later scraped values
         data.update(dict(
@@ -238,7 +238,7 @@ class Manga:
         if not os.path.exists(manga.path):
             os.makedirs(manga.path)
 
-        manga._save_cover(cover_path_or_url)
+        manga._save_cover(cover_url)
 
         return manga
 
@@ -295,17 +295,19 @@ class Manga:
 
         return self._server
 
-    def _save_cover(self, path_or_url):
-        if path_or_url is None:
+    def _save_cover(self, url):
+        if url is None:
             return
 
         # Save cover image file
-        cover_data = self.server.get_manga_cover_image(path_or_url)
-        if cover_data is not None:
-            cover_fs_path = os.path.join(self.path, 'cover.jpg')
+        cover_data = self.server.get_manga_cover_image(url)
+        if cover_data is None:
+            return
 
-            with open(cover_fs_path, 'wb') as fp:
-                fp.write(cover_data)
+        cover_fs_path = os.path.join(self.path, 'cover.jpg')
+
+        with open(cover_fs_path, 'wb') as fp:
+            fp.write(cover_data)
 
     def delete(self):
         db_conn = create_db_connection()
@@ -369,12 +371,12 @@ class Manga:
         :return: True on success False otherwise, number of recent chapters
         :rtype: tuple
         """
+        data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
+        if data is None:
+            return False, 0
+
         db_conn = create_db_connection()
         with db_conn:
-            data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
-            if data is None:
-                return False, 0
-
             # Update cover
             cover = data.pop('cover')
             if cover:
@@ -510,29 +512,28 @@ class Chapter:
 
         imagename, data = self.manga.server.get_manga_chapter_page_image(
             self.manga.slug, self.manga.name, self.slug, self.pages[page_index])
+        if data is None:
+            return None
 
-        if imagename and data:
-            if not os.path.exists(self.path):
-                os.mkdir(self.path)
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
 
-            page_path = os.path.join(self.path, imagename)
+        page_path = os.path.join(self.path, imagename)
 
-            if self.scrambled:
-                with open(page_path + '_scrambled', 'wb') as fp:
-                    fp.write(data)
+        if self.scrambled:
+            with open(page_path + '_scrambled', 'wb') as fp:
+                fp.write(data)
 
-                unscramble_image(page_path + '_scrambled', page_path)
-            else:
-                with open(page_path, 'wb') as fp:
-                    fp.write(data)
+            unscramble_image(page_path + '_scrambled', page_path)
+        else:
+            with open(page_path, 'wb') as fp:
+                fp.write(data)
 
-            if self.pages[page_index]['image'] is None:
-                self.pages[page_index]['image'] = imagename
-                self.update(dict(pages=self.pages))
+        if self.pages[page_index]['image'] is None:
+            self.pages[page_index]['image'] = imagename
+            self.update(dict(pages=self.pages))
 
-            return page_path
-
-        return None
+        return page_path
 
     def get_page_path(self, page_index):
         if self.pages[page_index]['image'] is not None:
@@ -597,11 +598,28 @@ class Chapter:
 
 
 class Download:
+    _chapter = None
+
     STATUSES = dict(
         pending=_('Pending'),
         downloading=_('Downloading'),
         error=_('Error'),
     )
+
+    @classmethod
+    def get(cls, id):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT * FROM downloads WHERE id = ?', (id,)).fetchone()
+        db_conn.close()
+
+        if row is None:
+            return None
+
+        d = cls()
+        for key in row.keys():
+            setattr(d, key, row[key])
+
+        return d
 
     @classmethod
     def get_by_chapter_id(cls, chapter_id):
@@ -610,12 +628,12 @@ class Download:
         db_conn.close()
 
         if row:
-            c = cls()
+            d = cls()
 
             for key in row.keys():
-                setattr(c, key, row[key])
+                setattr(d, key, row[key])
 
-            return c
+            return d
 
         return None
 
@@ -627,7 +645,7 @@ class Download:
         if row:
             return None
 
-        c = cls()
+        d = cls()
         data = dict(
             chapter_id=chapter_id,
             status='pending',
@@ -636,15 +654,22 @@ class Download:
         )
 
         for key in data:
-            setattr(c, key, data[key])
+            setattr(d, key, data[key])
 
         db_conn = create_db_connection()
         with db_conn:
-            c.id = insert_row(db_conn, 'downloads', data)
+            d.id = insert_row(db_conn, 'downloads', data)
 
         db_conn.close()
 
-        return c
+        return d
+
+    @property
+    def chapter(self):
+        if self._chapter is None:
+            self._chapter = Chapter.get(self.chapter_id)
+
+        return self._chapter
 
     def delete(self):
         db_conn = create_db_connection()
@@ -655,21 +680,6 @@ class Download:
             db_conn.execute('DELETE FROM downloads WHERE id = ?', (self.id, ))
 
         db_conn.close()
-
-    @classmethod
-    def next(cls):
-        db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchone()
-        db_conn.close()
-
-        if row:
-            c = cls()
-            for key in row.keys():
-                setattr(c, key, row[key])
-
-            return c
-
-        return None
 
     def update(self, data):
         """

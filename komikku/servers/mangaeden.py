@@ -9,7 +9,6 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -51,9 +50,8 @@ class Mangaeden(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -128,11 +126,8 @@ class Mangaeden(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -163,9 +158,8 @@ class Mangaeden(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            r = self.session.get(page['image'])
-        except ConnectionError:
+        r = self.session_get(page['image'])
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -183,9 +177,8 @@ class Mangaeden(Server):
         """
         Returns most viewed manga list
         """
-        try:
-            r = self.session.get(self.most_populars_url)
-        except ConnectionError:
+        r = self.session_get(self.most_populars_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -207,9 +200,8 @@ class Mangaeden(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.get(self.search_url, params=dict(title=term))
-        except ConnectionError:
+        r = self.session_get(self.search_url, params=dict(title=term))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)

@@ -8,7 +8,6 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 from urllib.parse import unquote_plus
 
 from komikku.servers import convert_date_string
@@ -52,9 +51,8 @@ class Ninemanga(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -127,11 +125,8 @@ class Ninemanga(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -158,11 +153,8 @@ class Ninemanga(Server):
         Returns chapter page scan (image) content
         """
         # Scrap HTML page to get image url
-        url = self.page_url.format(manga_slug, page['slug'])
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.page_url.format(manga_slug, page['slug']))
+        if r is None:
             return (None, None)
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -170,7 +162,10 @@ class Ninemanga(Server):
         imagename = url.split('/')[-1]
 
         # Get scan image
-        r = self.session.get(url)
+        r = self.session_get(url)
+        if r is None:
+            return (None, None)
+
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
@@ -185,9 +180,8 @@ class Ninemanga(Server):
         """
         Returns Hot manga list
         """
-        try:
-            r = self.session.get(self.most_populars_url)
-        except ConnectionError:
+        r = self.session_get(self.most_populars_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -207,9 +201,8 @@ class Ninemanga(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.get(self.search_url, params=dict(term=term))
-        except ConnectionError:
+        r = self.session_get(self.search_url, params=dict(term=term))
+        if r is None:
             return None
 
         if r.status_code == 200:

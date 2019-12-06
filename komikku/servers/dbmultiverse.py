@@ -7,10 +7,7 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
-import textwrap
 
-from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -40,9 +37,8 @@ class Dbmultiverse(Server):
         """
         Returns manga data by scraping manga HTML page content
         """
-        try:
-            r = self.session.get(self.manga_url)
-        except ConnectionError:
+        r = self.session_get(self.manga_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -93,9 +89,8 @@ class Dbmultiverse(Server):
         """
         Returns manga data by scraping manga HTML page content
         """
-        try:
-            r = self.session.get(self.manga_url)
-        except ConnectionError:
+        r = self.session_get(self.manga_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -120,9 +115,8 @@ class Dbmultiverse(Server):
         """
         Returns chapter page scan (image) content
         """
-        try:
-            r = self.session.get(self.page_url.format(page['slug']))
-        except ConnectionError:
+        r = self.session_get(self.page_url.format(page['slug']))
+        if r is None:
             return (None, None)
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -137,9 +131,8 @@ class Dbmultiverse(Server):
         except Exception:
             return (None, None)
 
-        try:
-            r = self.session.get(self.base_url + image_url)
-        except ConnectionError:
+        r = self.session_get(self.base_url + image_url)
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)

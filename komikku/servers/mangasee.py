@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -42,9 +41,8 @@ class Mangasee(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -113,11 +111,8 @@ class Mangasee(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -144,18 +139,15 @@ class Mangasee(Server):
         """
         Returns chapter page scan (image) content
         """
-        url = self.page_url.format(manga_slug, chapter_slug, page['slug'])
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.page_url.format(manga_slug, chapter_slug, page['slug']))
+        if r is None:
             return (None, None)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         image_url = soup.find('img', class_='CurImage').get('src')
-        try:
-            r = self.session.get(image_url)
-        except ConnectionError:
+        r = self.session_get(image_url)
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -172,9 +164,8 @@ class Mangasee(Server):
         """
         Returns most popular manga list
         """
-        try:
-            r = self.session.post(self.search_url, data=dict(page=1, sortBy='popularity', sortOrder='descending'))
-        except ConnectionError:
+        r = self.session_post(self.search_url, data=dict(page=1, sortBy='popularity', sortOrder='descending'))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -194,9 +185,8 @@ class Mangasee(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.post(self.search_url, data=dict(keyword=term, page=1))
-        except ConnectionError:
+        r = self.session_post(self.search_url, data=dict(keyword=term, page=1))
+        if r is None:
             return None
 
         if r.status_code != 200:

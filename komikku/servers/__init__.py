@@ -2,18 +2,18 @@ import dateparser
 import datetime
 import importlib
 import io
+import logging
 import magic
 from operator import itemgetter
 import os
 from PIL import Image
 import pkgutil
+import requests
+from requests.adapters import TimeoutSauce
 from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
+import traceback
 import struct
-
-SESSIONS = dict()
-
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
-USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
 
 LANGUAGES = dict(
     de='Deutsch',
@@ -26,6 +26,28 @@ LANGUAGES = dict(
     ru='русский',
     th='ภาษาไทย',
 )
+
+REQUESTS_TIMEOUT = 5
+SESSIONS = dict()
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
+USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+
+class CustomTimeout(TimeoutSauce):
+    def __init__(self, *args, **kwargs):
+        if kwargs["connect"] is None:
+            kwargs["connect"] = REQUESTS_TIMEOUT
+        if kwargs["read"] is None:
+            kwargs["read"] = REQUESTS_TIMEOUT * 2
+        super().__init__(*args, **kwargs)
+
+
+# Set requests timeout globally, instead of specifying ``timeout=..`` kwarg on each call
+requests.adapters.TimeoutSauce = CustomTimeout
 
 
 class Server:
@@ -50,9 +72,8 @@ class Server:
         if url is None:
             return None
 
-        try:
-            r = self.session.get(url, headers={'referer': self.base_url})
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(url, headers={'referer': self.base_url})
+        if r is None:
             return None
 
         if r.status_code != 200:
@@ -68,6 +89,28 @@ class Server:
             buffer = convert_webp_buffer(buffer)
 
         return buffer
+
+    def session_get(self, *args, **kwargs):
+        try:
+            r = self.session.get(*args, **kwargs)
+        except (ConnectionError, Timeout):
+            raise
+        except Exception:
+            logger.debug(traceback.format_exc())
+            return None
+
+        return r
+
+    def session_post(self, *args, **kwargs):
+        try:
+            r = self.session.post(*args, **kwargs)
+        except (ConnectionError, Timeout):
+            raise
+        except Exception:
+            logger.debug(traceback.format_exc())
+            return None
+
+        return r
 
 
 def convert_date_string(date, format=None):

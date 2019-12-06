@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -42,9 +41,8 @@ class Scanonepiece(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -124,11 +122,8 @@ class Scanonepiece(Server):
 
         Currently, only pages (list of images filenames) are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -155,11 +150,8 @@ class Scanonepiece(Server):
         """
         Returns chapter page scan (image) content
         """
-        url = self.image_url.format(manga_slug, chapter_slug, page['image'])
-
-        try:
-            r = self.session.get(url)
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.image_url.format(manga_slug, chapter_slug, page['image']))
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -176,9 +168,8 @@ class Scanonepiece(Server):
         """
         Returns list of most viewed manga
         """
-        try:
-            r = self.session.get(self.most_populars_url)
-        except (ConnectionError, RuntimeError):
+        r = self.session_get(self.most_populars_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -198,11 +189,9 @@ class Scanonepiece(Server):
         return results
 
     def search(self, term):
-        try:
-            self.session.get(self.base_url)
-
-            r = self.session.get(self.search_url, params=dict(query=term))
-        except (ConnectionError, RuntimeError):
+        self.session_get(self.base_url)
+        r = self.session_get(self.search_url, params=dict(query=term))
+        if r is None:
             return None
 
         if r.status_code == 200:

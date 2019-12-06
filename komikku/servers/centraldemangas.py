@@ -8,7 +8,6 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
-from requests.exceptions import ConnectionError
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -48,9 +47,8 @@ class Centraldemangas(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        try:
-            r = self.session.get(self.manga_url.format(initial_data['slug']))
-        except ConnectionError:
+        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -121,11 +119,8 @@ class Centraldemangas(Server):
 
         Currently, only pages are expected.
         """
-        url = self.chapter_url.format(manga_slug, chapter_slug)
-
-        try:
-            r = self.session.get(url)
-        except ConnectionError:
+        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -167,9 +162,8 @@ class Centraldemangas(Server):
         # Scrap HTML page to get image url
         url = page['image']
 
-        try:
-            r = self.session.get(url, headers={'Referer': self.chapter_url.format(manga_slug, chapter_slug)})
-        except ConnectionError:
+        r = self.session_get(url, headers={'Referer': self.chapter_url.format(manga_slug, chapter_slug)})
+        if r is None:
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -187,9 +181,8 @@ class Centraldemangas(Server):
         """
         Returns TOP 10 manga
         """
-        try:
-            r = self.session.get(self.base_url)
-        except ConnectionError:
+        r = self.session_get(self.base_url)
+        if r is None:
             return None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
@@ -209,9 +202,8 @@ class Centraldemangas(Server):
         return results
 
     def search(self, term):
-        try:
-            r = self.session.get(self.search_url, headers={'X-Requested-With': 'XMLHttpRequest'})
-        except ConnectionError:
+        r = self.session_get(self.search_url, headers={'X-Requested-With': 'XMLHttpRequest'})
+        if r is None:
             return None
 
         if r.status_code == 200:

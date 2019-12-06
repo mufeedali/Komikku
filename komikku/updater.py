@@ -5,10 +5,13 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+from gettext import ngettext as n_
 import threading
 
 from gi.repository import GLib
 
+from komikku.utils import error_message
+from komikku.model import create_db_connection
 from komikku.model import Manga
 
 
@@ -24,21 +27,19 @@ class Updater():
         self.window = window
 
     def add(self, mangas):
-        if isinstance(mangas, list):
-            for manga in mangas:
-                if manga.status not in (None, 'ongoing'):
-                    # Suspended, complete, ...
-                    continue
+        if not isinstance(mangas, list):
+            mangas = [mangas, ]
 
-                if manga.id not in self.queue:
-                    self.queue.append(manga.id)
-        elif mangas.id not in self.queue:
-            self.queue.append(mangas.id)
+        for manga in mangas:
+            if manga.status not in (None, 'ongoing'):
+                # Suspended, complete, ...
+                continue
+
+            if manga.id not in self.queue:
+                self.queue.append(manga.id)
 
     def start(self):
         def run():
-            self.window.show_notification(_('Start update'))
-
             while self.queue:
                 if self.stop_flag is True:
                     self.status = 'interrupted'
@@ -48,35 +49,39 @@ class Updater():
                 if manga is None:
                     continue
 
-                status, nb_recent_chapters = manga.update_full()
-                if status is True:
-                    GLib.idle_add(complete, manga, nb_recent_chapters)
-                else:
-                    GLib.idle_add(error, manga)
+                try:
+                    status, nb_recent_chapters = manga.update_full()
+                    if status is True:
+                        GLib.idle_add(complete, manga, nb_recent_chapters)
+                    else:
+                        GLib.idle_add(error, manga)
+                except Exception as e:
+                    GLib.idle_add(error, None, error_message(e))
 
             self.status = 'done'
 
         def complete(manga, nb_recent_chapters):
             if nb_recent_chapters > 0:
-                self.window.show_notification(_('{0}\n{1} new chapters have been found').format(manga.name, nb_recent_chapters))
+                self.window.show_notification(
+                    n_('{0}\n{1} new chapter has been found', '{0}\n{1} new chapters have been found', nb_recent_chapters).format(
+                        manga.name, nb_recent_chapters
+                    )
+                )
 
                 if self.window.page == 'library':
                     # Schedule a library redraw
                     self.window.library.flowbox.queue_draw()
                 elif self.window.page == 'card':
                     # Update card only if manga has not changed
-                    if self.window.card.manga.id == manga.id:
+                    if self.window.card.manga and self.window.card.manga.id == manga.id:
                         self.window.card.init(manga)
 
             return False
 
-        def error(manga):
-            self.window.show_notification(_('{0}\nOops, update has failed. Please try again.').format(manga.name))
-            return False
+        def error(manga, message=None):
+            self.window.show_notification(message or _('{0}\nOops, update has failed. Please try again.').format(manga.name))
 
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
+            return False
 
         if self.status == 'running':
             return

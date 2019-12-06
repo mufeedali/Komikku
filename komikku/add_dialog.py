@@ -12,6 +12,7 @@ from komikku.model import create_db_connection
 from komikku.model import Manga
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
+from komikku.utils import error_message
 
 
 class AddDialog():
@@ -137,17 +138,26 @@ class AddDialog():
 
     def on_manga_clicked(self, listbox, row):
         def run():
-            manga_data = self.server.get_manga_data(row.manga_data)
-            if manga_data is not None:
-                GLib.idle_add(complete, manga_data)
-            else:
-                GLib.idle_add(error)
+            try:
+                manga_data = self.server.get_manga_data(row.manga_data)
+
+                if manga_data is not None:
+                    GLib.idle_add(complete, manga_data)
+                else:
+                    GLib.idle_add(error)
+            except Exception as e:
+                GLib.idle_add(error, error_message(e))
 
         def complete(manga_data):
             self.manga_data = manga_data
 
             # Populate manga card
-            cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
+            try:
+                cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
+            except Exception as e:
+                cover_data = None
+                self.show_notification(error_message(e))
+
             if cover_data is not None:
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
                 pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
@@ -179,9 +189,10 @@ class AddDialog():
 
             return False
 
-        def error():
+        def error(message=None):
             self.activity_indicator.stop()
-            self.show_notification("Oops, failed to retrieve manga's information.")
+
+            self.show_notification(message or _("Oops, failed to retrieve manga's information."))
 
             return False
 
@@ -219,16 +230,19 @@ class AddDialog():
         def run():
             most_populars = not term
 
-            if most_populars:
-                # We offer most popular mangas as starting search results
-                result = self.server.get_most_populars()
-            else:
-                result = self.server.search(term)
+            try:
+                if most_populars:
+                    # We offer most popular mangas as starting search results
+                    result = self.server.get_most_populars()
+                else:
+                    result = self.server.search(term)
 
-            if result:
-                GLib.idle_add(complete, result, most_populars)
-            else:
-                GLib.idle_add(error, result)
+                if result:
+                    GLib.idle_add(complete, result, most_populars)
+                else:
+                    GLib.idle_add(error, result)
+            except Exception as e:
+                GLib.idle_add(error, None, error_message(e))
 
         def complete(result, most_populars):
             self.activity_indicator.stop()
@@ -263,11 +277,13 @@ class AddDialog():
 
             return False
 
-        def error(result):
+        def error(result, message=None):
             self.activity_indicator.stop()
             self.search_lock = False
 
-            if result is None:
+            if message:
+                self.show_notification(message)
+            elif result is None:
                 self.show_notification(_('Oops, search failed. Please try again.'))
             elif len(result) == 0:
                 self.show_notification(_('No results'))
@@ -280,11 +296,14 @@ class AddDialog():
         thread.daemon = True
         thread.start()
 
-    def show_notification(self, message):
+    def show_notification(self, message, interval=5):
+        if not message:
+            return
+
         self.builder.get_object('notification_label').set_text(message)
         self.builder.get_object('notification_revealer').set_reveal_child(True)
 
-        revealer_timer = threading.Timer(3.0, GLib.idle_add, args=[self.hide_notification])
+        revealer_timer = threading.Timer(interval, GLib.idle_add, args=[self.hide_notification])
         revealer_timer.start()
 
     def show_page(self, name):

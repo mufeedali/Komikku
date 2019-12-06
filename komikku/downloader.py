@@ -11,8 +11,9 @@ import time
 from gi.repository import GLib
 from gi.repository import Notify
 
-from komikku.model import Chapter
 from komikku.model import Download
+from komikku.model import create_db_connection
+from komikku.utils import error_message
 
 
 class Downloader():
@@ -31,20 +32,22 @@ class Downloader():
 
     def start(self):
         def run():
-            while self.status == 'running':
-                download = Download.next()
+            db_conn = create_db_connection()
+            rows = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchall()
+            db_conn.close()
 
-                if download:
-                    chapter = Chapter.get(id=download.chapter_id)
-                    if chapter is None:
-                        # Missing chapter: chapter has disappeared from server and has been deleted after a manga update
-                        download.delete()
-                        continue
+            for row in rows:
+                if self.stop_flag:
+                    break
 
-                    download.update(dict(status='downloading'))
-                    GLib.idle_add(start, chapter)
+                download = Download.get(row['id'])
+                download.update(dict(status='downloading'))
 
-                    if chapter.update_full():
+                chapter = download.chapter
+                GLib.idle_add(start, chapter)
+
+                try:
+                    if download.chapter.update_full():
                         for index, page in enumerate(chapter.pages):
                             if self.stop_flag:
                                 self.status = 'interrupted'
@@ -67,8 +70,11 @@ class Downloader():
                     else:
                         download.update(dict(status='error'))
                         GLib.idle_add(error, chapter)
-                else:
-                    self.status = 'done'
+                except Exception as e:
+                    download.update(dict(status='pending'))
+                    GLib.idle_add(error, chapter, error_message(e))
+
+            self.status = 'done'
 
         def notify_progress(chapter, index, success):
             summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
@@ -94,8 +100,11 @@ class Downloader():
 
             return False
 
-        def error(chapter):
+        def error(chapter, message=None):
             self.window.card.update_chapter_row(chapter)
+
+            if message:
+                self.window.show_notification(message)
 
             return False
 
@@ -104,16 +113,15 @@ class Downloader():
 
             return False
 
-        if self.status == 'running' or not Download.next():
+        if self.status == 'running':
             return
 
         self.status = 'running'
         self.stop_flag = False
 
         # Create notification
-        notification = Notify.Notification.new(_('Start chapters download'))
+        notification = Notify.Notification.new('')
         notification.set_timeout(Notify.EXPIRES_DEFAULT)
-        notification.show()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
