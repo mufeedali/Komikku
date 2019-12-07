@@ -223,10 +223,8 @@ class MainWindow(Gtk.ApplicationWindow):
         if self.page == 'library':
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            elif self.application.connected:
-                AddDialog(self).open(action, param)
             else:
-                self.show_notification(_('No Internet connection'))
+                AddDialog(self).open(action, param)
         elif self.page == 'card':
             if self.card.selection_mode:
                 self.card.leave_selection_mode()

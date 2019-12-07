@@ -113,10 +113,6 @@ class Card():
         self.window.application.add_action(reset_chapter_action)
 
     def download_chapter(self, action, param):
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
-
         # Add chapter in download queue
         self.window.downloader.add(self.action_row.chapter)
 
@@ -126,10 +122,6 @@ class Card():
         self.window.downloader.start()
 
     def download_selected_chapters(self, action, param):
-        if not self.window.application.connected:
-            self.window.show_notification(_('No Internet connection'))
-            return
-
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
             self.window.downloader.add(row.chapter)
@@ -188,10 +180,7 @@ class Card():
             else:
                 row._selected = True
         else:
-            if not self.window.application.connected and row.chapter.pages is None:
-                self.window.show_notification(_('No Internet connection'))
-            else:
-                self.window.reader.init(row.chapter)
+            self.window.reader.init(row.chapter)
 
     def on_delete_menu_clicked(self, action, param):
         def confirm_callback():

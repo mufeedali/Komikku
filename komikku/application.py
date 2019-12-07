@@ -17,7 +17,6 @@ from komikku.main_window import MainWindow
 
 
 class Application(Gtk.Application):
-    connected = False
     development_mode = False
     application_id = 'info.febvre.Komikku'
 
@@ -40,10 +39,6 @@ class Application(Gtk.Application):
         Handy.init()
         Notify.init(_('Komikku'))
 
-        nm = Gio.NetworkMonitor.get_default()
-        nm.connect('network-changed', self.on_network_status_changed)  # Seems to work only inside Flatpak sandbox!
-        self.connected = nm.get_network_available()
-
     def do_activate(self):
         if not self.window:
             self.window = MainWindow(application=self, title='Komikku', icon_name=self.application_id)
@@ -62,9 +57,6 @@ class Application(Gtk.Application):
             logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
 
         return logger
-
-    def on_network_status_changed(self, monitor, connected):
-        self.connected = connected
 
 
 if __name__ == '__main__':
