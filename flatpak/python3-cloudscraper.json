@@ -92,8 +92,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/06/d1/d336ae87c0ebfaab284fc058b1cfc2fdb583fd889b5604877c52fcc243f5/cloudscraper-1.2.13-py2.py3-none-any.whl",
-            "sha256": "3d64b2225e002dbd264773999b8dbba0ecc45245b0006c713633d5c4e7b4ad8b"
+            "url": "https://files.pythonhosted.org/packages/d0/cd/9e6c63b7da131ee5ef8f30fd88dc9b6465f57eabb921576a0204cddcd3f2/cloudscraper-1.2.14-py2.py3-none-any.whl",
+            "sha256": "d4fa4257c9a802c2c507bf607d560389c572fd7a99d7d33cb0260e48279018b7"
         }
     ]
 }
