@@ -39,22 +39,19 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.application = kwargs['application']
 
-        self.logging_manager = self.application.get_logger()
-        self.downloader = Downloader(self)
-        self.updater = Updater(self)
-
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/main_window.ui')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu.xml')
+
+        self.logging_manager = self.application.get_logger()
+        self.downloader = Downloader(self)
+        self.updater = Updater(self, komikku.config_manager.get_update_at_startup())
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
         self.title_stack = self.builder.get_object('title_stack')
 
         self.assemble_window()
-
-        if Gio.Application.get_default().development_mode is True:
-            komikku.config_manager.set_development_backup_mode(True)
 
     def add_accelerators(self):
         self.application.set_accels_for_action('app.settings', ['<Control>p'])

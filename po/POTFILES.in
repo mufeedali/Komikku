@@ -11,12 +11,11 @@ data/ui/shortcuts_overview.ui
 komikku/add_dialog.py
 komikku/application.py
 komikku/card.py
-komikku/card.py komikku/card.py
 komikku/downloader.py
 komikku/library.py
 komikku/main_window.py
 komikku/model.py
 komikku/reader/pager/__init__.py
-komikku/reader/pager/page.py
 komikku/settings_dialog.py
 komikku/updater.py
+komikku/utils.py

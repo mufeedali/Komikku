@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-18 18:20+0100\n"
+"POT-Creation-Date: 2019-12-07 23:43+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: VaGNaroK <indialuz42@gmail.com>\n"
 "Language-Team: \n"
@@ -13,50 +13,39 @@ msgstr ""
 "X-Generator: Poedit 2.2.4\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../komikku/main_window.py:205
+#: ../komikku/main_window.py:202
 msgid "Are you sure you want to quit?"
 msgstr "Você tem certeza que quer sair?"
 
-#: ../komikku/main_window.py:208
+#: ../komikku/main_window.py:205
 msgid "Some chapters are currently being downloaded."
 msgstr "Alguns capítulos estão sendo baixados no momento."
 
-#: ../komikku/main_window.py:210
+#: ../komikku/main_window.py:207
 msgid "Some mangas are currently being updated."
 msgstr "Atualmente, alguns mangás estão sendo atualizados."
 
-#: ../komikku/main_window.py:213
+#: ../komikku/main_window.py:210
 msgid "Quit?"
 msgstr "Sair?"
 
-#: ../komikku/main_window.py:230 ../komikku/reader/pager/page.py:153
-#: ../komikku/updater.py:74 ../komikku/card.py:117 ../komikku/card.py:130
-#: ../komikku/card.py:192
-msgid "No Internet connection"
-msgstr "Sem conexão com a internet"
-
-#: ../komikku/reader/pager/__init__.py:342
+#: ../komikku/reader/pager/__init__.py:338
 msgid "There is no previous chapter."
 msgstr "Não há capítulo anterior."
 
-#: ../komikku/reader/pager/__init__.py:344
+#: ../komikku/reader/pager/__init__.py:340
 msgid "It was the last chapter."
 msgstr "Foi o último capítulo."
 
-#: ../komikku/updater.py:36
-msgid "Start update"
-msgstr "Iniciar Atualização"
-
-#: ../komikku/updater.py:57
-#, python-brace-format
-msgid ""
-"{0}\n"
-"{1} new chapters have been found"
+#: ../komikku/updater.py:76
+msgid "Library update completed"
 msgstr ""
-"{0}\n"
-"{1} novos capítulos foram encontrados"
 
-#: ../komikku/updater.py:70
+#: ../komikku/updater.py:85
+msgid "No new chapter found"
+msgstr ""
+
+#: ../komikku/updater.py:108
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -65,44 +54,48 @@ msgstr ""
 "{0}\n"
 "Opa, atualização falhou. Por favor, tente novamente."
 
-#: ../komikku/card.py:227 ../komikku/library.py:164
+#: ../komikku/updater.py:115
+msgid "Library update started"
+msgstr ""
+
+#: ../komikku/card.py:216 ../komikku/library.py:164
 msgid "Delete?"
 msgstr "Apagar?"
 
-#: ../komikku/card.py:228
+#: ../komikku/card.py:217
 msgid "Are you sure you want to delete this manga?"
 msgstr "Você tem certeza que quer apagar este mangá?"
 
-#: ../komikku/card.py:289
+#: ../komikku/card.py:278
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Espaço em disco usado: {0}"
 
-#: ../komikku/card.py:330
+#: ../komikku/card.py:319
 msgid "New"
 msgstr "Novo"
 
-#: ../komikku/card.py:336
+#: ../komikku/card.py:325
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: ../komikku/card.py:338
+#: ../komikku/card.py:327
 msgid "DOWNLOADED"
 msgstr "BAIXADO"
 
-#: ../komikku/card.py:402
+#: ../komikku/card.py:391
 msgid "Reset"
 msgstr "Resetar"
 
-#: ../komikku/card.py:404
+#: ../komikku/card.py:393
 msgid "Download"
 msgstr "Baixar"
 
-#: ../komikku/card.py:406
+#: ../komikku/card.py:395
 msgid "Mark as read"
 msgstr "Marcar como lido"
 
-#: ../komikku/card.py:408
+#: ../komikku/card.py:397
 msgid "Mark as unread"
 msgstr "Marcar como não lido"
 
@@ -111,52 +104,64 @@ msgstr "Marcar como não lido"
 msgid "{0} manga added"
 msgstr "{0} mangá adicionado"
 
-#: ../komikku/add_dialog.py:254
+#: ../komikku/add_dialog.py:195
+msgid "Oops, failed to retrieve manga's information."
+msgstr ""
+
+#: ../komikku/add_dialog.py:257
+msgid "MOST POPULARS"
+msgstr ""
+
+#: ../komikku/add_dialog.py:287
 msgid "Oops, search failed. Please try again."
 msgstr "Opa, a busca falhou. Por favor tente novamente."
 
-#: ../komikku/add_dialog.py:256
+#: ../komikku/add_dialog.py:289
 msgid "No results"
 msgstr "Sem resultados"
 
-#: ../komikku/add_dialog.py:276
+#: ../komikku/add_dialog.py:312
 #, python-brace-format
 msgid "Search in {0}..."
 msgstr "Buscar em {0}..."
+
+#: ../komikku/utils.py:14
+msgid "No Internet connection or server down"
+msgstr ""
 
 #: ../komikku/library.py:165
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Tem certeza de que deseja excluir mangás selecionados?"
 
-#: ../komikku/application.py:37 ../komikku/application.py:42
+#: ../komikku/application.py:36 ../komikku/application.py:41
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/settings_dialog.py:43
+#: ../komikku/settings_dialog.py:54
 msgid "Right to left ←"
 msgstr "Direita para a esquerda ←"
 
-#: ../komikku/settings_dialog.py:44
+#: ../komikku/settings_dialog.py:55
 msgid "Left to right →"
 msgstr "Esquerda pada direita →"
 
-#: ../komikku/settings_dialog.py:53
+#: ../komikku/settings_dialog.py:64
 msgid "Adapt to screen"
 msgstr "Adaptar a tela"
 
-#: ../komikku/settings_dialog.py:54
+#: ../komikku/settings_dialog.py:65
 msgid "Adapt to width"
 msgstr "Adaptar à largura"
 
-#: ../komikku/settings_dialog.py:55
+#: ../komikku/settings_dialog.py:66
 msgid "Adapt to height"
 msgstr "Adaptar à altura"
 
-#: ../komikku/settings_dialog.py:64
+#: ../komikku/settings_dialog.py:75
 msgid "White"
 msgstr "Branco"
 
-#: ../komikku/settings_dialog.py:65
+#: ../komikku/settings_dialog.py:76
 msgid "Black"
 msgstr "Preto"
 
@@ -172,65 +177,61 @@ msgstr "Em andamento"
 msgid "Suspended"
 msgstr "Suspenso"
 
-#: ../komikku/model.py:603
-msgid "Pending"
-msgstr "Pendente"
+#: ../komikku/model.py:606
+msgid "Download pending"
+msgstr ""
 
-#: ../komikku/model.py:604
+#: ../komikku/model.py:607
 msgid "Downloading"
 msgstr "Baixando"
 
-#: ../komikku/model.py:605
+#: ../komikku/model.py:608
 msgid "Error"
 msgstr "Erro"
 
-#: ../komikku/downloader.py:74
+#: ../komikku/downloader.py:80
 #, python-brace-format
 msgid "Download page {0} / {1}"
 msgstr "Baixando página {0} / {1}"
 
-#: ../komikku/downloader.py:76
+#: ../komikku/downloader.py:82
 msgid "error"
 msgstr "erro"
 
-#: ../komikku/downloader.py:80 ../komikku/downloader.py:89
+#: ../komikku/downloader.py:86 ../komikku/downloader.py:95
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
 msgstr "[{0}] Capítulo {1}"
 
-#: ../komikku/downloader.py:88
+#: ../komikku/downloader.py:94
 msgid "Download completed"
 msgstr "Download finalizado"
-
-#: ../komikku/downloader.py:114
-msgid "Start chapters download"
-msgstr "Iniciar o download dos capítulos"
 
 #: ../data/ui/add_dialog.ui:47
 msgid "Select a server"
 msgstr "Selecione o servidor"
 
-#: ../data/ui/add_dialog.ui:268 ../data/ui/main_window.ui:175
+#: ../data/ui/add_dialog.ui:268 ../data/ui/main_window.ui:180
 msgid "Authors"
 msgstr "Autor"
 
-#: ../data/ui/add_dialog.ui:298 ../data/ui/main_window.ui:205
+#: ../data/ui/add_dialog.ui:298 ../data/ui/main_window.ui:210
 msgid "Genres"
 msgstr "Gênero"
 
-#: ../data/ui/add_dialog.ui:328 ../data/ui/main_window.ui:235
+#: ../data/ui/add_dialog.ui:328 ../data/ui/main_window.ui:240
 msgid "Status"
 msgstr "Estado"
 
-#: ../data/ui/add_dialog.ui:358 ../data/ui/main_window.ui:265
+#: ../data/ui/add_dialog.ui:358 ../data/ui/main_window.ui:270
 msgid "Server"
 msgstr "Servidor"
 
-#: ../data/ui/add_dialog.ui:389 ../data/ui/main_window.ui:296
+#: ../data/ui/add_dialog.ui:389 ../data/ui/main_window.ui:301
 msgid "Synopsis"
 msgstr "Sinopse"
 
-#: ../data/ui/add_dialog.ui:420 ../data/ui/main_window.ui:382
+#: ../data/ui/add_dialog.ui:421 ../data/ui/main_window.ui:388
 msgid "Scanlators"
 msgstr "Tradutores"
 
@@ -279,39 +280,47 @@ msgstr "Configurações"
 msgid "General"
 msgstr "Geral"
 
-#: ../data/ui/settings_dialog.ui:113
+#: ../data/ui/settings_dialog.ui:115
 msgid "Dark Theme"
 msgstr "Tema Escuro"
 
-#: ../data/ui/settings_dialog.ui:130
+#: ../data/ui/settings_dialog.ui:131
 msgid "Use dark GTK+ theme"
 msgstr "Usar tema escuro GTK+"
 
-#: ../data/ui/settings_dialog.ui:189
+#: ../data/ui/settings_dialog.ui:198
+msgid "Update at startup"
+msgstr ""
+
+#: ../data/ui/settings_dialog.ui:214
+msgid "Automatically update library at startup"
+msgstr ""
+
+#: ../data/ui/settings_dialog.ui:273
 msgid "Reader"
 msgstr "Leitor"
 
-#: ../data/ui/settings_dialog.ui:217 ../data/ui/menu_reader.xml:7
+#: ../data/ui/settings_dialog.ui:301 ../data/ui/menu_reader.xml:7
 msgid "Reading direction"
 msgstr "Direção de leitura"
 
-#: ../data/ui/settings_dialog.ui:224
+#: ../data/ui/settings_dialog.ui:308
 msgid "Type of scaling to adapt image"
 msgstr "Tipo de dimensionamento para adaptar a imagem"
 
-#: ../data/ui/settings_dialog.ui:225
+#: ../data/ui/settings_dialog.ui:309
 msgid "Scaling"
 msgstr "Dimensionamento"
 
-#: ../data/ui/settings_dialog.ui:233 ../data/ui/menu_reader.xml:48
+#: ../data/ui/settings_dialog.ui:317 ../data/ui/menu_reader.xml:48
 msgid "Background color"
 msgstr "Cor do fundo"
 
-#: ../data/ui/settings_dialog.ui:262
+#: ../data/ui/settings_dialog.ui:346
 msgid "Fullscreen"
 msgstr "Tela cheia"
 
-#: ../data/ui/settings_dialog.ui:279
+#: ../data/ui/settings_dialog.ui:363
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrar automaticamente no modo de tela cheia"
 
@@ -324,19 +333,19 @@ msgstr "Tipo de escala"
 msgid "An online/offline manga reader"
 msgstr "Um leitor de mangá online/offline"
 
-#: ../data/ui/main_window.ui:327
+#: ../data/ui/main_window.ui:333
 msgid "Last update"
 msgstr "Última atualização"
 
-#: ../data/ui/main_window.ui:400
+#: ../data/ui/main_window.ui:408
 msgid "Info"
 msgstr "Informação"
 
-#: ../data/ui/main_window.ui:424
+#: ../data/ui/main_window.ui:439
 msgid "Chapters"
 msgstr "Capítulos"
 
-#: ../data/ui/main_window.ui:572
+#: ../data/ui/main_window.ui:587
 msgid "Library"
 msgstr "Biblioteca"
 
@@ -385,29 +394,82 @@ msgid ""
 "An online/offline manga reader for GNOME developed with the aim of being "
 "used with the Librem 5 phone"
 msgstr ""
-"Um leitor de mangá online/offline para GNOME desenvolvido com o objetivo "
-"de ser usado com o telefone Librem 5"
+"Um leitor de mangá online/offline para GNOME desenvolvido com o objetivo de "
+"ser usado com o telefone Librem 5"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:26
 msgid "Valéry Febvre"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:36
-msgid "Add a new server: xkcd (English)"
+msgid "Fixes in Mangakawaii server"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:41
-msgid "Add the Portuguese (Brazil) translation"
+msgid "Added Dragon Ball Multiverse (DBM) server"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:42
-msgid "Add a new server: Central de Mangas (Portuguese)"
+msgid "Fixes in Japscan server (search still broken)"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:47
+msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:48
+msgid ""
+"For all servers that allow it, most popular mangas are now offered as "
+"starting search results."
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:53
+msgid "Improve speed of dates parsing"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:54
+msgid "Fixed order of manga chapters for Scantrad France and Central de Mangás"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:59
+msgid "Fix keyboard navigation in reader"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:64
+msgid "Add a new server: xkcd (English)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:69
+msgid "Add the Portuguese (Brazil) translation"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:70
+msgid "Add a new server: Central de Mangas (Portuguese)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:75
 msgid "Bug fix: Change the location of the data storage"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:52
+#: ../data/info.febvre.Komikku.appdata.xml.in:80
 msgid "First release"
 msgstr "Primeiro lançamento"
+
+#~ msgid "Pending"
+#~ msgstr "Pendente"
+
+#~ msgid "No Internet connection"
+#~ msgstr "Sem conexão com a internet"
+
+#~ msgid "Start update"
+#~ msgstr "Iniciar Atualização"
+
+#~ msgid ""
+#~ "{0}\n"
+#~ "{1} new chapters have been found"
+#~ msgstr ""
+#~ "{0}\n"
+#~ "{1} novos capítulos foram encontrados"
+
+#~ msgid "Start chapters download"
+#~ msgstr "Iniciar o download dos capítulos"

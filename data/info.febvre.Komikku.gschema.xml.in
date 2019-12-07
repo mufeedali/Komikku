@@ -19,6 +19,12 @@
             <summary>Use dark GTK+ theme</summary>
             <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
         </key>
+        <key type="b" name="update-at-startup">
+            <default>false</default>
+            <summary>Update at startup</summary>
+            <description>Automatically update library at startup</description>
+        </key>
+
         <key enum="@appid@.BackgroundColor" name="background-color">
             <default>"white"</default>
             <summary>Background color</summary>
@@ -43,11 +49,6 @@
             <default>[360, 648]</default>
             <summary>Window size</summary>
             <description>Remember the window size.</description>
-        </key>
-        <key type="b" name="development-backup-mode">
-            <default>false</default>
-            <summary>Backup the database</summary>
-            <description>If an error occurs while saving the database, a backup can be found at ~/.cache/@projectname@/backups</description>
         </key>
     </schema>
 </schemalist>

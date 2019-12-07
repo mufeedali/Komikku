@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gettext import gettext as _
 
 from gi.repository import Gio
@@ -33,6 +39,11 @@ class SettingsDialog():
         settings_theme_switch = self.builder.get_object('settings_theme_switch')
         settings_theme_switch.connect('notify::active', self.on_theme_changed)
         settings_theme_switch.set_active(komikku.config_manager.get_dark_theme())
+
+        # Update manga at startup
+        settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
+        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
+        settings_update_at_startup_switch.set_active(komikku.config_manager.get_update_at_startup())
 
         #
         # Reader
@@ -115,3 +126,11 @@ class SettingsDialog():
         else:
             komikku.config_manager.set_dark_theme(False)
             gtk_settings.set_property('gtk-application-prefer-dark-theme', False)
+
+    def on_update_at_startup_changed(self, switch_button, gparam):
+        gtk_settings = Gtk.Settings.get_default()
+
+        if switch_button.get_active():
+            komikku.config_manager.set_update_at_startup(True)
+        else:
+            komikku.config_manager.set_update_at_startup(False)

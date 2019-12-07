@@ -601,7 +601,7 @@ class Download:
     _chapter = None
 
     STATUSES = dict(
-        pending=_('Pending'),
+        pending=_('Download pending'),
         downloading=_('Downloading'),
         error=_('Error'),
     )

@@ -2,13 +2,14 @@ from gi.repository import GLib, Gio
 
 setting = Gio.Settings.new('info.febvre.Komikku')
 
-background_color = 'background-color'
 dark_theme = 'dark-theme'
+update_at_startup = 'update-at-startup'
+
+background_color = 'background-color'
 fullscreen = 'fullscreen'
 reading_direction = 'reading-direction'
 scaling = 'scaling'
 window_size = 'window-size'
-development_backup_mode = 'development-backup-mode'
 
 
 def get_background_color(nick=True):
@@ -94,9 +95,9 @@ def set_window_size(size):
     setting.set_value(window_size, g_variant)
 
 
-def get_development_backup_mode():
-    return setting.get_boolean(development_backup_mode)
+def get_update_at_startup():
+    return setting.get_boolean(update_at_startup)
 
 
-def set_development_backup_mode(value):
-    setting.set_boolean(development_backup_mode, value)
+def set_update_at_startup(value):
+    setting.set_boolean(update_at_startup, value)

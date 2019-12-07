@@ -23,8 +23,18 @@ class Updater():
     status = None
     stop_flag = False
 
-    def __init__(self, window):
+    def __init__(self, window, update_at_startup=False):
         self.window = window
+
+        if update_at_startup:
+            db_conn = create_db_connection()
+            rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
+            db_conn.close()
+
+            for row in rows:
+                self.add(Manga.get(row['id']))
+
+            self.start()
 
     def add(self, mangas):
         if not isinstance(mangas, list):
@@ -40,6 +50,8 @@ class Updater():
 
     def start(self):
         def run():
+            total_recent_chapters = 0
+
             while self.queue:
                 if self.stop_flag is True:
                     self.status = 'interrupted'
@@ -52,6 +64,7 @@ class Updater():
                 try:
                     status, nb_recent_chapters = manga.update_full()
                     if status is True:
+                        total_recent_chapters += nb_recent_chapters
                         GLib.idle_add(complete, manga, nb_recent_chapters)
                     else:
                         GLib.idle_add(error, manga)
@@ -60,7 +73,20 @@ class Updater():
 
             self.status = 'done'
 
+            message = _('Library update completed')
+            if total_recent_chapters > 0:
+                message = '{0}\n{1}'.format(
+                    message,
+                    n_('{0} new chapter found', '{0} new chapters found', total_recent_chapters).format(
+                        total_recent_chapters
+                    )
+                )
+            else:
+                message = '{0}\n{1}'.format(message, _('No new chapter found'))
+            self.window.show_notification(message)
+
         def complete(manga, nb_recent_chapters):
+
             if nb_recent_chapters > 0:
                 self.window.show_notification(
                     n_('{0}\n{1} new chapter has been found', '{0}\n{1} new chapters have been found', nb_recent_chapters).format(
@@ -72,7 +98,7 @@ class Updater():
                     # Schedule a library redraw
                     self.window.library.flowbox.queue_draw()
                 elif self.window.page == 'card':
-                    # Update card only if manga has not changed
+                    # Update card if card manga is manga updated
                     if self.window.card.manga and self.window.card.manga.id == manga.id:
                         self.window.card.init(manga)
 
@@ -83,8 +109,10 @@ class Updater():
 
             return False
 
-        if self.status == 'running':
+        if self.status == 'running' or len(self.queue) == 0:
             return
+
+        self.window.show_notification(_('Library update started'))
 
         self.status = 'running'
         self.stop_flag = False
