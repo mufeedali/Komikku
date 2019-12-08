@@ -379,14 +379,11 @@ class Library():
             self.search_entry.set_text('')
             self.search_entry.grab_remove()
 
-    def update(self, mangas):
-        self.window.updater.add(mangas)
+    def update_all(self, action, param):
+        self.window.updater.update_library()
+
+    def update_selected(self, action, param):
+        self.window.updater.add([child.get_children()[0].manga for child in self.flowbox.get_selected_children()])
         self.window.updater.start()
 
         self.leave_selection_mode()
-
-    def update_all(self, action, param):
-        self.update([child.get_children()[0].manga for child in self.flowbox.get_children()])
-
-    def update_selected(self, action, param):
-        self.update([child.get_children()[0].manga for child in self.flowbox.get_selected_children()])
