@@ -22,19 +22,13 @@ class Updater():
     queue = []
     status = None
     stop_flag = False
+    update_library_flag = False
 
     def __init__(self, window, update_at_startup=False):
         self.window = window
 
         if update_at_startup:
-            db_conn = create_db_connection()
-            rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
-            db_conn.close()
-
-            for row in rows:
-                self.add(Manga.get(row['id']))
-
-            self.start()
+            self.update_library()
 
     def add(self, mangas):
         if not isinstance(mangas, list):
@@ -73,7 +67,13 @@ class Updater():
 
             self.status = 'done'
 
-            message = _('Library update completed')
+            # End notification
+            if self.update_library_flag:
+                self.update_library_flag = False
+                message = _('Library update completed')
+            else:
+                message = _('Update completed')
+
             if total_recent_chapters > 0:
                 message = '{0}\n{1}'.format(
                     message,
@@ -86,7 +86,6 @@ class Updater():
             self.window.show_notification(message)
 
         def complete(manga, nb_recent_chapters):
-
             if nb_recent_chapters > 0:
                 self.window.show_notification(
                     n_('{0}\n{1} new chapter has been found', '{0}\n{1} new chapters have been found', nb_recent_chapters).format(
@@ -112,7 +111,10 @@ class Updater():
         if self.status == 'running' or len(self.queue) == 0:
             return
 
-        self.window.show_notification(_('Library update started'))
+        if self.update_library_flag:
+            self.window.show_notification(_('Library update started'))
+        else:
+            self.window.show_notification(_('Update started'))
 
         self.status = 'running'
         self.stop_flag = False
@@ -128,3 +130,15 @@ class Updater():
     def stop(self):
         if self.status == 'running':
             self.stop_flag = True
+
+    def update_library(self):
+        self.update_library_flag = True
+
+        db_conn = create_db_connection()
+        rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
+        db_conn.close()
+
+        for row in rows:
+            self.add(Manga.get(row['id']))
+
+        self.start()
