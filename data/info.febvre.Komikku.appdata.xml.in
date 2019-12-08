@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.4.0" date="2019-12-08">
+            <description>
+                <p>New preference: Automatically update library at startup</p>
+                <p>Fix in Mangakawaii server (Cloudflare problem)</p>
+            </description>
+        </release>
         <release version="0.3.1" date="2019-11-29">
             <description>
                 <p>Fixes in Mangakawaii server</p>
