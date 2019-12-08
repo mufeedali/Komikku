@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-07 23:43+0100\n"
+"POT-Creation-Date: 2019-12-08 01:14+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -36,15 +36,19 @@ msgstr "Il n'y a pas de chapitre précédent."
 msgid "It was the last chapter."
 msgstr "C'était le dernier chapitre."
 
-#: ../komikku/updater.py:76
+#: ../komikku/updater.py:73
 msgid "Library update completed"
 msgstr "Mise à jour de la bibliothèque terminée"
+
+#: ../komikku/updater.py:75
+msgid "Update completed"
+msgstr "Mise à jour terminée"
 
 #: ../komikku/updater.py:85
 msgid "No new chapter found"
 msgstr "Aucun nouveau chapitre trouvé"
 
-#: ../komikku/updater.py:108
+#: ../komikku/updater.py:107
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -56,6 +60,10 @@ msgstr ""
 #: ../komikku/updater.py:115
 msgid "Library update started"
 msgstr "Mise à jour de la bibliothèque démarrée"
+
+#: ../komikku/updater.py:117
+msgid "Update started"
+msgstr "Mise à jour démarrée"
 
 #: ../komikku/card.py:216 ../komikku/library.py:164
 msgid "Delete?"

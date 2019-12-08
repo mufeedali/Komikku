@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-07 23:43+0100\n"
+"POT-Creation-Date: 2019-12-08 01:14+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: VaGNaroK <indialuz42@gmail.com>\n"
 "Language-Team: \n"
@@ -37,15 +37,19 @@ msgstr "Não há capítulo anterior."
 msgid "It was the last chapter."
 msgstr "Foi o último capítulo."
 
-#: ../komikku/updater.py:76
+#: ../komikku/updater.py:73
 msgid "Library update completed"
+msgstr ""
+
+#: ../komikku/updater.py:75
+msgid "Update completed"
 msgstr ""
 
 #: ../komikku/updater.py:85
 msgid "No new chapter found"
 msgstr ""
 
-#: ../komikku/updater.py:108
+#: ../komikku/updater.py:107
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -56,6 +60,10 @@ msgstr ""
 
 #: ../komikku/updater.py:115
 msgid "Library update started"
+msgstr ""
+
+#: ../komikku/updater.py:117
+msgid "Update started"
 msgstr ""
 
 #: ../komikku/card.py:216 ../komikku/library.py:164
