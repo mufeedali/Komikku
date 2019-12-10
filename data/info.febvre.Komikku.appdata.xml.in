@@ -33,7 +33,7 @@
     <releases>
         <release version="0.5.0" date="2019-12-11">
             <description>
-                <p>Added Pepper&Carrot server</p>
+                <p>Added Pepper&amp;Carrot server</p>
                 <p>A free(libre) and open-source webcomic supported directly by its patrons to change the comic book industry!</p>
             </description>
         </release>
