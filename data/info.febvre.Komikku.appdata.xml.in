@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.5.0" date="2019-12-11">
+            <description>
+                <p>Added Pepper&Carrot server</p>
+                <p>A free(libre) and open-source webcomic supported directly by its patrons to change the comic book industry!</p>
+            </description>
+        </release>
         <release version="0.4.0" date="2019-12-08">
             <description>
                 <p>New preference: Automatically update library at startup</p>
