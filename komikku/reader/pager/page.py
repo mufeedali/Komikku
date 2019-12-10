@@ -13,7 +13,7 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.activity_indicator import ActivityIndicator
-from komikku.utils import error_message
+from komikku.utils import log_error_traceback
 
 
 class Page(Gtk.Overlay):
@@ -89,7 +89,8 @@ class Page(Gtk.Overlay):
                         GLib.idle_add(complete)
                         return
                 except Exception as e:
-                    on_error('connection', error_message(e))
+                    user_error_message = log_error_traceback(e)
+                    on_error('connection', user_error_message)
                     GLib.idle_add(complete)
                     return
 
@@ -112,7 +113,8 @@ class Page(Gtk.Overlay):
                                 GLib.idle_add(complete)
                                 return
                         except Exception as e:
-                            on_error('connection', error_message(e))
+                            user_error_message = log_error_traceback(e)
+                            on_error('connection', user_error_message)
                             GLib.idle_add(complete)
                             return
 
@@ -142,7 +144,8 @@ class Page(Gtk.Overlay):
                     else:
                         on_error('server')
                 except Exception as e:
-                    on_error('connection', error_message(e))
+                    user_error_message = log_error_traceback(e)
+                    on_error('connection', user_error_message)
             else:
                 self.pixbuf = Pixbuf.new_from_file(page_path)
 

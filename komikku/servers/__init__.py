@@ -2,7 +2,6 @@ import dateparser
 import datetime
 import importlib
 import io
-import logging
 import magic
 from operator import itemgetter
 import os
@@ -10,9 +9,6 @@ from PIL import Image
 import pkgutil
 import requests
 from requests.adapters import TimeoutSauce
-from requests.exceptions import ConnectionError
-from requests.exceptions import Timeout
-import traceback
 import struct
 
 LANGUAGES = dict(
@@ -20,7 +16,7 @@ LANGUAGES = dict(
     en='English',
     es='Español',
     fr='Français',
-    id='Indonesia',
+    id='Bahasa Indonesia',
     it='Italiano',
     pt='Português',
     ru='русский',
@@ -30,19 +26,16 @@ LANGUAGES = dict(
 REQUESTS_TIMEOUT = 5
 SESSIONS = dict()
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60"
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60'
 USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
-
-logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class CustomTimeout(TimeoutSauce):
     def __init__(self, *args, **kwargs):
-        if kwargs["connect"] is None:
-            kwargs["connect"] = REQUESTS_TIMEOUT
-        if kwargs["read"] is None:
-            kwargs["read"] = REQUESTS_TIMEOUT * 2
+        if kwargs['connect'] is None:
+            kwargs['connect'] = REQUESTS_TIMEOUT
+        if kwargs['read'] is None:
+            kwargs['read'] = REQUESTS_TIMEOUT * 2
         super().__init__(*args, **kwargs)
 
 
@@ -93,22 +86,16 @@ class Server:
     def session_get(self, *args, **kwargs):
         try:
             r = self.session.get(*args, **kwargs)
-        except (ConnectionError, Timeout):
-            raise
         except Exception:
-            logger.debug(traceback.format_exc())
-            return None
+            raise
 
         return r
 
     def session_post(self, *args, **kwargs):
         try:
             r = self.session.post(*args, **kwargs)
-        except (ConnectionError, Timeout):
-            raise
         except Exception:
-            logger.debug(traceback.format_exc())
-            return None
+            raise
 
         return r
 
@@ -133,7 +120,7 @@ def convert_mri_data_to_webp_buffer(data):
 
     # little endian byte representation
     # zeros to the right don't change the value
-    for i, byte in enumerate(struct.pack("<I", header_size)):
+    for i, byte in enumerate(struct.pack('<I', header_size)):
         size_list[i] = byte
 
     buffer = [

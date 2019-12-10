@@ -49,12 +49,11 @@ class Application(Gtk.Application):
         self.window.present()
 
     def get_logger(self):
+        logging.basicConfig(
+            format='%(asctime)s | %(levelname)s | %(name)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S',
+            level=logging.DEBUG if self.development_mode else logging.INFO,
+        )
         logger = logging.getLogger()
-
-        if self.development_mode is True:
-            logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.DEBUG)
-        else:
-            logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
 
         return logger
 

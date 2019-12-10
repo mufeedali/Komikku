@@ -10,7 +10,7 @@ import threading
 
 from gi.repository import GLib
 
-from komikku.utils import error_message
+from komikku.utils import log_error_traceback
 from komikku.model import create_db_connection
 from komikku.model import Manga
 
@@ -63,7 +63,8 @@ class Updater():
                     else:
                         GLib.idle_add(error, manga)
                 except Exception as e:
-                    GLib.idle_add(error, None, error_message(e))
+                    user_error_message = log_error_traceback(e)
+                    GLib.idle_add(error, None, user_error_message)
 
             self.status = 'done'
 

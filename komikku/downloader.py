@@ -13,7 +13,7 @@ from gi.repository import Notify
 
 from komikku.model import Download
 from komikku.model import create_db_connection
-from komikku.utils import error_message
+from komikku.utils import log_error_traceback
 
 
 class Downloader():
@@ -72,7 +72,8 @@ class Downloader():
                         GLib.idle_add(error, chapter)
                 except Exception as e:
                     download.update(dict(status='pending'))
-                    GLib.idle_add(error, chapter, error_message(e))
+                    user_error_message = log_error_traceback(e)
+                    GLib.idle_add(error, chapter, user_error_message)
 
             self.status = 'done'
 

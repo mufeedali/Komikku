@@ -1,4 +1,5 @@
 from gettext import gettext as _
+import html
 import threading
 
 from gi.repository import Gio
@@ -12,7 +13,7 @@ from komikku.model import create_db_connection
 from komikku.model import Manga
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
-from komikku.utils import error_message
+from komikku.utils import log_error_traceback
 
 
 class AddDialog():
@@ -146,7 +147,8 @@ class AddDialog():
                 else:
                     GLib.idle_add(error)
             except Exception as e:
-                GLib.idle_add(error, error_message(e))
+                user_error_message = log_error_traceback(e)
+                GLib.idle_add(error, user_error_message)
 
         def complete(manga_data):
             self.manga_data = manga_data
@@ -156,7 +158,9 @@ class AddDialog():
                 cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
             except Exception as e:
                 cover_data = None
-                self.show_notification(error_message(e))
+                user_error_message = log_error_traceback(e)
+                if user_error_message:
+                    self.show_notification(user_error_message)
 
             if cover_data is not None:
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
@@ -177,7 +181,7 @@ class AddDialog():
             self.builder.get_object('server_value_label').set_markup(
                 '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
-                    self.server.name,
+                    html.escape(self.server.name),
                     len(self.manga_data['chapters'])
                 )
             )
@@ -242,7 +246,8 @@ class AddDialog():
                 else:
                     GLib.idle_add(error, result)
             except Exception as e:
-                GLib.idle_add(error, None, error_message(e))
+                user_error_message = log_error_traceback(e)
+                GLib.idle_add(error, None, user_error_message)
 
         def complete(result, most_populars):
             self.activity_indicator.stop()
