@@ -38,6 +38,14 @@
         <file compressed="true" alias="icons/ui/servers/ninemanga_fr.ico">icons/ui/servers/ninemanga.ico</file>
         <file compressed="true" alias="icons/ui/servers/ninemanga_it.ico">icons/ui/servers/ninemanga.ico</file>
         <file compressed="true" alias="icons/ui/servers/ninemanga_ru.ico">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_de.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_es.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_fr.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_id.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_it.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_pt.ico">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true" alias="icons/ui/servers/peppercarrot_ru.ico">icons/ui/servers/peppercarrot.ico</file>
         <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
         <file compressed="true">icons/ui/servers/scantrad.ico</file>
         <file compressed="true">icons/ui/servers/submanga.ico</file>
