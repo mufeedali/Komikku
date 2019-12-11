@@ -319,7 +319,7 @@ class Pager(Gtk.ScrolledWindow):
 
     def reverse_pages(self):
         self.box.reorder_child(self.pages[0], 2)
-        self.box.reorder_child(self.pages[2], 0)
+        self.box.reorder_child(self.pages[1], 0)
 
         self.adjust_scroll(animate=False)
 
