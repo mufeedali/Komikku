@@ -86,10 +86,13 @@ class Peppercarrot(Server):
         if r is None:
             return None
 
+        chapters_data = r.json()
         try:
-            chapter_data = r.json()[int(chapter_slug)]
+            chapter_data = chapters_data[int(chapter_slug)]
         except Exception:
-            return None
+            for chapter_data in chapters_data:
+                if chapter_data['name'] == chapter_slug:
+                    break
 
         data = dict(
             slug=chapter_data['name'],  # real slug
