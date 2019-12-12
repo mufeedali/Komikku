@@ -12,15 +12,13 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'hatigarmscans'
-server_name = 'Hatigarm Scans'
-server_lang = 'en'
+SERVER_NAME = 'Hatigarm Scans'
 
 
 class Hatigarmscans(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'hatigarmscans'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://www.hatigarmscans.net'
     search_url = base_url + '/search'

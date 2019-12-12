@@ -13,15 +13,13 @@ import unicodedata
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 
-server_id = 'japscan'
-server_name = 'JapScan'
-server_lang = 'fr'
+SERVER_NAME = 'JapScan'
 
 
 class Japscan(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'japscan'
+    name = SERVER_NAME
+    lang = 'fr'
 
     base_url = 'https://www.japscan.co'
     search_url = base_url + '/search/'

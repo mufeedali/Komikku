@@ -12,15 +12,13 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'mangasee'
-server_name = 'MangaSee'
-server_lang = 'en'
+SERVER_NAME = 'MangaSee'
 
 
 class Mangasee(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'mangasee'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://mangaseeonline.us'
     search_url = base_url + '/search/request.php'

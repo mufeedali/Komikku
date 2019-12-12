@@ -21,15 +21,13 @@ LANGUAGES_CODES = dict(
     zh_HANT='zh-hant',
 )
 
-server_id = 'webtoon'
-server_name = 'WEBTOON'
-server_lang = 'en'
+SERVER_NAME = 'WEBTOON'
 
 
 class Webtoon(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'webtoon'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://www.webtoons.com'
     search_url = base_url + '/search'
@@ -283,3 +281,15 @@ class Webtoon(Server):
             ))
 
         return results
+
+
+class Webtoon_id(Webtoon):
+    id = 'webtoon_id'
+    name = SERVER_NAME
+    lang = 'id'
+
+
+class Webtoon_th(Webtoon):
+    id = 'webtoon_th'
+    name = SERVER_NAME
+    lang = 'th'

@@ -56,7 +56,7 @@ class AddDialog():
 
             # Server logo
             pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(server['id']), 24, 24, True)
+                '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(server['id'].split('_')[0]), 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
@@ -179,9 +179,10 @@ class AddDialog():
             self.builder.get_object('scanlators_value_label').set_markup(
                 '<span size="small">{0}</span>'.format(', '.join(self.manga_data['scanlators']) if self.manga_data['scanlators'] else '-'))
             self.builder.get_object('server_value_label').set_markup(
-                '<span size="small"><a href="{0}">{1}</a> ({2} chapters)</span>'.format(
+                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
                     html.escape(self.server.name),
+                    self.server.lang.upper(),
                     len(self.manga_data['chapters'])
                 )
             )
@@ -196,7 +197,7 @@ class AddDialog():
         def error(message=None):
             self.activity_indicator.stop()
 
-            self.show_notification(message or _("Oops, failed to retrieve manga's information."))
+            self.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
 
             return False
 
@@ -289,7 +290,7 @@ class AddDialog():
             if message:
                 self.show_notification(message)
             elif result is None:
-                self.show_notification(_('Oops, search failed. Please try again.'))
+                self.show_notification(_('Oops, search failed. Please try again.'), 2)
             elif len(result) == 0:
                 self.show_notification(_('No results'))
 

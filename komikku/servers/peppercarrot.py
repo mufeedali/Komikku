@@ -12,15 +12,13 @@ import textwrap
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'peppercarrot'
-server_name = 'Pepper&Carrot'
-server_lang = 'en'
+SERVER_NAME = 'Pepper&Carrot'
 
 
 class Peppercarrot(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'peppercarrot'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://www.peppercarrot.com'
     manga_url = base_url + '/{0}/'
@@ -143,3 +141,59 @@ class Peppercarrot(Server):
             slug='',
             name='Pepper&Carrot',
         )]
+
+
+class Peppercarrot_de(Peppercarrot):
+    id = 'peppercarrot_de'
+    name = SERVER_NAME
+    lang = 'de'
+
+    synopsis = 'Dies ist die Geschichte der jungen Hexe Pepper und ihrer Katze Carrot in der magischen Welt von Hereva. Pepper lernt mit seinen Patinnen Cayenne, Thymian und Kreuzkümmel die Magie von Chaosah, die Magie des Chaos. Andere Hexen wie Saffran, Koriander, Kamille und Schichimi lernen Magie, die jeweils ihre Besonderheiten haben.'
+
+
+class Peppercarrot_es(Peppercarrot):
+    id = 'peppercarrot_es'
+    name = SERVER_NAME
+    lang = 'es'
+
+    synopsis = 'Esta es la historia de la joven bruja Pepper y su gato Zanahoria en el mundo mágico de Hereva. Pepper aprende la magia de Chaosah, la magia del caos, con sus madrinas Cayenne, Thyme y Cumin. Otras brujas como Saffran, Cilantro, Manzanilla y Schichimi aprenden magias que tienen sus especificidades.'
+
+
+class Peppercarrot_fr(Peppercarrot):
+    id = 'peppercarrot_fr'
+    name = SERVER_NAME
+    lang = 'fr'
+
+    synopsis = "C'est l'histoire de la jeune sorcière Pepper et de son chat Carrot dans le monde magique d'Hereva. Pepper apprend la magie de Chaosah, la magie du chaos, avec ses marraines Cayenne, Thym et Cumin. D'autres sorcières comme Saffran, Coriander, Camomile et Schichimi apprennent des magies qui ont chacune leurs spécificités."
+
+
+class Peppercarrot_id(Peppercarrot):
+    id = 'peppercarrot_id'
+    name = SERVER_NAME
+    lang = 'id'
+
+    synopsis = 'Ini adalah kisah penyihir muda Pepper dan kucingnya Wortel di dunia magis Hereva. Pepper mempelajari keajaiban Chaosah, keajaiban kekacauan, dengan ibu baptisnya Cayenne, Thyme dan Cumin. Penyihir lain seperti Saffran, Ketumbar, Camomile, dan Schichimi mempelajari sihir yang masing-masing memiliki kekhasan masing-masing.'
+
+
+class Peppercarrot_it(Peppercarrot):
+    id = 'peppercarrot_it'
+    name = SERVER_NAME
+    lang = 'it'
+
+    synopsis = 'Questa è la storia della giovane strega Pepper e del suo gatto Carota nel magico mondo di Hereva. Pepper impara la magia di Chaosah, la magia del caos, con le sue madrine Cayenne, Timo e Cumino. Altre streghe come Saffran, Coriandolo, Camomilla e Schichimi imparano magie che hanno ciascuna le loro specificità.'
+
+
+class Peppercarrot_pt(Peppercarrot):
+    id = 'peppercarrot_pt'
+    name = SERVER_NAME
+    lang = 'pt'
+
+    synopsis = 'Esta é a história da jovem bruxa Pepper e seu gato Cenoura no mundo mágico de Hereva. Pepper aprende a magia de Chaosah, a magia do caos, com suas madrinhas Cayenne, Tomilho e Cominho. Outras bruxas como Saffran, Coentro, Camomila e Schichimi aprendem magias que cada uma tem suas especificidades.'
+
+
+class Peppercarrot_ru(Peppercarrot):
+    id = 'peppercarrot_ru'
+    name = SERVER_NAME
+    lang = 'ru'
+
+    synopsis = 'Это история молодой ведьмы Пеппер и ее кота Морковки в волшебном мире Херева. Пеппер изучает магию Хаоса, магию хаоса вместе со своими крестными матерями Кайеной, Тимьяном и Кумином. Другие ведьмы, такие как Саффран, Кориандр, Ромашка и Счими, изучают магию, каждая из которых имеет свои особенности.'

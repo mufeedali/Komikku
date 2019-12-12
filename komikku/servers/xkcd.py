@@ -13,15 +13,13 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'xkcd'
-server_name = 'xkcd'
-server_lang = 'en'
+SERVER_NAME = 'xkcd'
 
 
 class Xkcd(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'xkcd'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://www.xkcd.com'
     manga_url = base_url + '/archive/'

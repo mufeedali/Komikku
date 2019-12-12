@@ -11,15 +11,13 @@ import magic
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 
-server_id = 'mangakawaii'
-server_name = 'Mangakawaii'
-server_lang = 'fr'
+SERVER_NAME = 'Mangakawaii'
 
 
 class Mangakawaii(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'mangakawaii'
+    name = SERVER_NAME
+    lang = 'fr'
 
     base_url = 'https://www.mangakawaii.to'
     search_url = base_url + '/recherche'

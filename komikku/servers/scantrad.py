@@ -12,15 +12,13 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'scantrad'
-server_name = 'Scantrad France'
-server_lang = 'fr'
+SERVER_NAME = 'Scantrad France'
 
 
 class Scantrad(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'scantrad'
+    name = SERVER_NAME
+    lang = 'fr'
 
     base_url = 'https://www.scantrad.net'
     search_url = base_url + '/mangas'

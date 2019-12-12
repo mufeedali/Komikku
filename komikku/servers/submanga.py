@@ -11,15 +11,13 @@ import magic
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 
-server_id = 'submanga'
-server_name = 'Submanga'
-server_lang = 'es'
+SERVER_NAME = 'Submanga'
 
 
 class Submanga(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'submanga'
+    name = SERVER_NAME
+    lang = 'es'
 
     base_url = 'https://submanga.li'
     search_url = base_url + '/search'

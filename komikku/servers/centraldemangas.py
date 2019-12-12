@@ -13,9 +13,7 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'centraldemangas'
-server_name = 'Central de Mangás'
-server_lang = 'pt'
+SERVER_NAME = 'Central de Mangás'
 
 headers = OrderedDict(
     [
@@ -25,9 +23,9 @@ headers = OrderedDict(
 
 
 class Centraldemangas(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'centraldemangas'
+    name = SERVER_NAME
+    lang = 'pt'
 
     base_url = 'http://centraldemangas.online'
     search_url = base_url + '/api/titulos'

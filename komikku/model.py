@@ -290,8 +290,9 @@ class Manga:
     @property
     def server(self):
         if self._server is None:
-            server_module = importlib.import_module('.' + self.server_id, package='komikku.servers')
-            self._server = getattr(server_module, self.server_id.capitalize())()
+            module_name = self.server_id.split('_')[0]
+            module = importlib.import_module('.' + module_name, package='komikku.servers')
+            self._server = getattr(module, self.server_id.capitalize())()
 
         return self._server
 

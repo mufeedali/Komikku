@@ -13,15 +13,13 @@ from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
 # NOTE: https://mangakakalot.com seems to be a clone (same IP)
-server_id = 'manganelo'
-server_name = 'MangaNelo'
-server_lang = 'en'
+SERVER_NAME = 'MangaNelo'
 
 
 class Manganelo(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'manganelo'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://manganelo.com'
     search_url = base_url + '/home_json_search'

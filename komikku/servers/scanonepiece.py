@@ -11,15 +11,13 @@ import magic
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 
-server_id = 'scanonepiece'
-server_name = 'ScanOnePiece'
-server_lang = 'fr'
+SERVER_NAME = 'ScanOnePiece'
 
 
 class Scanonepiece(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'scanonepiece'
+    name = SERVER_NAME
+    lang = 'fr'
 
     base_url = 'https://www.scan-vf.co'
     search_url = base_url + '/search'

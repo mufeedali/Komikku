@@ -268,7 +268,8 @@ class Card():
         self.builder.get_object('scanlators_value_label').set_markup(
             '<span size="small">{0}</span>'.format(', '.join(self.manga.scanlators) if self.manga.scanlators else '-'))
         self.builder.get_object('server_value_label').set_markup(
-            '<span size="small">{0} ({1} chapters)</span>'.format(html.escape(self.manga.server.name), len(self.manga.chapters)))
+            '<span size="small">{0} [{1}] - {2} chapters</span>'.format(
+                html.escape(self.manga.server.name), self.manga.server.lang.upper(), len(self.manga.chapters)))
 
         self.builder.get_object('last_update_value_label').set_markup(
             '<span size="small">{0}</span>'.format(self.manga.last_update.strftime('%m/%d/%Y')) if self.manga.last_update else '-')

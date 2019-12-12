@@ -14,9 +14,7 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'mangaeden'
-server_name = 'Manga Eden'
-server_lang = 'en'
+SERVER_NAME = 'Manga Eden'
 
 headers = OrderedDict(
     [
@@ -27,9 +25,9 @@ headers = OrderedDict(
 
 
 class Mangaeden(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'mangaeden'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'http://www.mangaeden.com'
     search_url = base_url + '/en/en-directory/'
@@ -226,3 +224,15 @@ class Mangaeden(Server):
             ))
 
         return results
+
+
+class Mangaeden_it(Mangaeden):
+    id = 'mangaeden_it'
+    name = SERVER_NAME
+    lang = 'it'
+
+    base_url = 'http://www.mangaeden.com'
+    search_url = base_url + '/it/it-directory/'
+    most_populars_url = search_url + '?order=1'
+    manga_url = base_url + '/it/it-manga/{0}/'
+    chapter_url = base_url + '/it/it-manga/{0}/{1}/1/'

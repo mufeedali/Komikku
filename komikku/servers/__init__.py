@@ -1,6 +1,13 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 import dateparser
 import datetime
 import importlib
+import inspect
 import io
 import magic
 from operator import itemgetter
@@ -169,14 +176,15 @@ def get_servers_list():
     servers = []
     for finder, name, ispkg in iter_namespace(komikku.servers):
         module = importlib.import_module(name)
-
-        servers.append(dict(
-            id=module.server_id,
-            name=module.server_name,
-            lang=module.server_lang,
-            module=module,
-            class_=name.split('.')[-1].capitalize(),
-        ))
+        for name, obj in dict(inspect.getmembers(module)).items():
+            if inspect.isclass(obj) and obj.__module__.startswith('komikku.servers.'):
+                servers.append(dict(
+                    id=obj.id,
+                    name=obj.name,
+                    lang=obj.lang,
+                    class_=obj.id.capitalize(),
+                    module=module,
+                ))
 
     return sorted(servers, key=itemgetter('lang', 'name'))
 

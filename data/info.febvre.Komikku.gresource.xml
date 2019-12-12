@@ -17,41 +17,19 @@
 
         <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
         <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_de.ico">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_es.ico">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_fr.ico">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_it.ico">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_pt.ico">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true" alias="icons/ui/servers/dbmultiverse_ru.ico">icons/ui/servers/dbmultiverse.ico</file>
         <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/servers/japscan.ico</file>
         <file compressed="true">icons/ui/servers/mangaeden.ico</file>
-        <file compressed="true" alias="icons/ui/servers/mangaeden_it.ico">icons/ui/servers/mangaeden.ico</file>
         <file compressed="true">icons/ui/servers/mangakawaii.ico</file>
         <file compressed="true">icons/ui/servers/manganelo.ico</file>
         <file compressed="true">icons/ui/servers/mangarock.ico</file>
         <file compressed="true">icons/ui/servers/mangasee.ico</file>
         <file compressed="true">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_br.ico">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_de.ico">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_es.ico">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_fr.ico">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_it.ico">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true" alias="icons/ui/servers/ninemanga_ru.ico">icons/ui/servers/ninemanga.ico</file>
         <file compressed="true">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_de.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_es.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_fr.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_id.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_it.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_pt.ico">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true" alias="icons/ui/servers/peppercarrot_ru.ico">icons/ui/servers/peppercarrot.ico</file>
         <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
         <file compressed="true">icons/ui/servers/scantrad.ico</file>
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/webtoon.ico</file>
-        <file compressed="true" alias="icons/ui/servers/webtoon_id.ico">icons/ui/servers/webtoon.ico</file>
-        <file compressed="true" alias="icons/ui/servers/webtoon_th.ico">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>
 
         <file compressed="true">images/logo.png</file>

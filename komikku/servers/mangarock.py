@@ -14,9 +14,7 @@ from komikku.servers import convert_webp_buffer
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'mangarock'
-server_name = 'Manga Rock'
-server_lang = 'en'
+SERVER_NAME = 'Manga Rock'
 
 headers = {
     'User-Agent': USER_AGENT,
@@ -25,9 +23,9 @@ headers = {
 
 
 class Mangarock(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'mangarock'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'https://mangarock.com'
     api_url = 'https://api.mangarockhd.com/query/web401'

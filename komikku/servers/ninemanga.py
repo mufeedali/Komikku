@@ -14,9 +14,7 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-server_id = 'ninemanga'
-server_name = 'Nine Manga'
-server_lang = 'en'
+SERVER_NAME = 'Nine Manga'
 
 headers = OrderedDict(
     [
@@ -27,9 +25,9 @@ headers = OrderedDict(
 
 
 class Ninemanga(Server):
-    id = server_id
-    name = server_name
-    lang = server_lang
+    id = 'ninemanga'
+    name = SERVER_NAME
+    lang = 'en'
 
     base_url = 'http://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
@@ -227,3 +225,81 @@ class Ninemanga(Server):
                 return None
         else:
             return None
+
+
+class Ninemanga_br(Ninemanga):
+    id = 'ninemanga_br'
+    name = SERVER_NAME
+    lang = 'pt'
+
+    base_url = 'http://br.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
+
+
+class Ninemanga_de(Ninemanga):
+    id = 'ninemanga_de'
+    name = SERVER_NAME
+    lang = 'de'
+
+    base_url = 'http://de.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
+
+
+class Ninemanga_es(Ninemanga):
+    id = 'ninemanga_es'
+    name = SERVER_NAME
+    lang = 'es'
+
+    base_url = 'http://es.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
+
+
+class Ninemanga_fr(Ninemanga):
+    id = 'ninemanga_fr'
+    name = SERVER_NAME
+    lang = 'fr'
+
+    base_url = 'http://fr.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
+
+
+class Ninemanga_it(Ninemanga):
+    id = 'ninemanga_it'
+    name = SERVER_NAME
+    lang = 'it'
+
+    base_url = 'http://it.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
+
+
+class Ninemanga_ru(Ninemanga):
+    id = 'ninemanga_ru'
+    name = SERVER_NAME
+    lang = 'ru'
+
+    base_url = 'http://ru.ninemanga.com'
+    search_url = base_url + '/search/ajax/'
+    most_populars_url = base_url + '/list/Hot-Book/'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
+    chapter_url = base_url + '/chapter/{0}/{1}'
+    page_url = chapter_url
