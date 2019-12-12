@@ -115,7 +115,7 @@ class Scantrad(Server):
         )
         for img_element in imgs_elements:
             url = img_element.get('data-src')
-            if not url.startswith('lel'):
+            if not url or not url.startswith('lel'):
                 continue
 
             data['pages'].append(dict(
