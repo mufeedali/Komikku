@@ -98,7 +98,7 @@ class Dbmultiverse(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        data =dict(
+        data = dict(
             pages=[],
         )
         for a_element in soup.find('div', class_='chapters', ch=chapter_slug).p.find_all('a'):
@@ -120,14 +120,11 @@ class Dbmultiverse(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
-            if page['slug'] == '0':
-                image_url = soup.find('div', id='balloonsimg').get('style').split(';')[0].split(':')[1][4:-1]
-            else:
-                image_url = soup.find('img', id='balloonsimg').get('src')
-
-            image_name = '{0}.png'.format(page['slug'])
+            image_url = soup.find('img', id='balloonsimg').get('src')
         except Exception:
-            return (None, None)
+            image_url = soup.find('div', id='balloonsimg').get('style').split(';')[0].split(':')[1][4:-1]
+
+        image_name = '{0}.png'.format(page['slug'])
 
         r = self.session_get(self.base_url + image_url)
         if r is None:
