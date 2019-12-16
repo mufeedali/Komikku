@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-08 01:14+0100\n"
+"POT-Creation-Date: 2019-12-16 23:55+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -36,19 +36,19 @@ msgstr "Il n'y a pas de chapitre précédent."
 msgid "It was the last chapter."
 msgstr "C'était le dernier chapitre."
 
-#: ../komikku/updater.py:73
+#: ../komikku/updater.py:74
 msgid "Library update completed"
 msgstr "Mise à jour de la bibliothèque terminée"
 
-#: ../komikku/updater.py:75
+#: ../komikku/updater.py:76
 msgid "Update completed"
 msgstr "Mise à jour terminée"
 
-#: ../komikku/updater.py:85
+#: ../komikku/updater.py:86
 msgid "No new chapter found"
 msgstr "Aucun nouveau chapitre trouvé"
 
-#: ../komikku/updater.py:107
+#: ../komikku/updater.py:108
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -57,82 +57,82 @@ msgstr ""
 "{0}\n"
 "Oups, la mise à jour a échouée. Veuillez réessayer."
 
-#: ../komikku/updater.py:115
+#: ../komikku/updater.py:116
 msgid "Library update started"
 msgstr "Mise à jour de la bibliothèque démarrée"
 
-#: ../komikku/updater.py:117
+#: ../komikku/updater.py:118
 msgid "Update started"
 msgstr "Mise à jour démarrée"
 
-#: ../komikku/card.py:216 ../komikku/library.py:164
+#: ../komikku/card.py:217 ../komikku/library.py:164
 msgid "Delete?"
 msgstr "Supprimer ?"
 
-#: ../komikku/card.py:217
+#: ../komikku/card.py:218
 msgid "Are you sure you want to delete this manga?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
 
-#: ../komikku/card.py:278
+#: ../komikku/card.py:285
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
 
-#: ../komikku/card.py:319
+#: ../komikku/card.py:326
 msgid "New"
 msgstr "Nouveau"
 
-#: ../komikku/card.py:325
+#: ../komikku/card.py:332
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: ../komikku/card.py:327
+#: ../komikku/card.py:334
 msgid "DOWNLOADED"
 msgstr "TÉLÉCHARGER"
 
-#: ../komikku/card.py:391
+#: ../komikku/card.py:398
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../komikku/card.py:393
+#: ../komikku/card.py:400
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../komikku/card.py:395
+#: ../komikku/card.py:402
 msgid "Mark as read"
 msgstr "Marquer comme lu"
 
-#: ../komikku/card.py:397
+#: ../komikku/card.py:404
 msgid "Mark as unread"
 msgstr "Marquer comme non lu"
 
-#: ../komikku/add_dialog.py:113
+#: ../komikku/add_dialog.py:119
 #, python-brace-format
 msgid "{0} manga added"
 msgstr "{0} manga ajouté"
 
-#: ../komikku/add_dialog.py:195
+#: ../komikku/add_dialog.py:205
 msgid "Oops, failed to retrieve manga's information."
 msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
 
-#: ../komikku/add_dialog.py:257
+#: ../komikku/add_dialog.py:268
 msgid "MOST POPULARS"
 msgstr "LES PLUS POPULAIRES"
 
-#: ../komikku/add_dialog.py:287
+#: ../komikku/add_dialog.py:298
 msgid "Oops, search failed. Please try again."
 msgstr "Oups, la recherche a échoué. Veuillez réessayer."
 
-#: ../komikku/add_dialog.py:289
+#: ../komikku/add_dialog.py:300
 msgid "No results"
 msgstr "Aucun résultat"
 
-#: ../komikku/add_dialog.py:312
+#: ../komikku/add_dialog.py:323
 #, python-brace-format
 msgid "Search in {0}..."
 msgstr "Rechercher dans {0}..."
 
-#: ../komikku/utils.py:14
+#: ../komikku/utils.py:18
 msgid "No Internet connection or server down"
 msgstr "Pas de connexion Internet ou serveur en panne"
 
@@ -144,31 +144,31 @@ msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/settings_dialog.py:54
+#: ../komikku/settings_dialog.py:82
 msgid "Right to left ←"
 msgstr "De droite à gauche ←"
 
-#: ../komikku/settings_dialog.py:55
+#: ../komikku/settings_dialog.py:83
 msgid "Left to right →"
 msgstr "De gauche à droite →"
 
-#: ../komikku/settings_dialog.py:64
+#: ../komikku/settings_dialog.py:92
 msgid "Adapt to screen"
 msgstr "Ajuster à l'écran"
 
-#: ../komikku/settings_dialog.py:65
+#: ../komikku/settings_dialog.py:93
 msgid "Adapt to width"
 msgstr "Ajuster à la largeur"
 
-#: ../komikku/settings_dialog.py:66
+#: ../komikku/settings_dialog.py:94
 msgid "Adapt to height"
 msgstr "Ajuster à la hauteur"
 
-#: ../komikku/settings_dialog.py:75
+#: ../komikku/settings_dialog.py:103
 msgid "White"
 msgstr "Blanc"
 
-#: ../komikku/settings_dialog.py:76
+#: ../komikku/settings_dialog.py:104
 msgid "Black"
 msgstr "Noir"
 
@@ -184,33 +184,33 @@ msgstr "En cours"
 msgid "Suspended"
 msgstr "Suspendu"
 
-#: ../komikku/model.py:606
+#: ../komikku/model.py:607
 msgid "Download pending"
 msgstr "Téléchargement en attente"
 
-#: ../komikku/model.py:607
+#: ../komikku/model.py:608
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../komikku/model.py:608
+#: ../komikku/model.py:609
 msgid "Error"
 msgstr "Erreur"
 
-#: ../komikku/downloader.py:80
+#: ../komikku/downloader.py:81
 #, python-brace-format
 msgid "Download page {0} / {1}"
 msgstr "Télécharger le page {0} / {1}"
 
-#: ../komikku/downloader.py:82
+#: ../komikku/downloader.py:83
 msgid "error"
 msgstr "erreur"
 
-#: ../komikku/downloader.py:86 ../komikku/downloader.py:95
+#: ../komikku/downloader.py:87 ../komikku/downloader.py:96
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
 msgstr "[{0}] Chapitre {1}"
 
-#: ../komikku/downloader.py:94
+#: ../komikku/downloader.py:95
 msgid "Download completed"
 msgstr "Téléchargement terminé"
 
@@ -295,39 +295,51 @@ msgstr "Thème sombre"
 msgid "Use dark GTK+ theme"
 msgstr "Utiliser le thème GTK+ sombre"
 
-#: ../data/ui/settings_dialog.ui:198
+#: ../data/ui/settings_dialog.ui:189 ../data/ui/main_window.ui:587
+msgid "Library"
+msgstr "Bibliothèque"
+
+#: ../data/ui/settings_dialog.ui:238
 msgid "Update at startup"
 msgstr "Mise à jour au démarrage"
 
-#: ../data/ui/settings_dialog.ui:214
+#: ../data/ui/settings_dialog.ui:254
 msgid "Automatically update library at startup"
 msgstr "Mettre à jour automatiquement la bibliothèque au démarrage"
 
-#: ../data/ui/settings_dialog.ui:273
+#: ../data/ui/settings_dialog.ui:303
+msgid "Restrict servers to selected languages"
+msgstr "Restreindre les serveurs aux langues sélectionnées"
+
+#: ../data/ui/settings_dialog.ui:304
+msgid "Servers languages"
+msgstr "Langues des serveurs"
+
+#: ../data/ui/settings_dialog.ui:328
 msgid "Reader"
 msgstr "Lecteur"
 
-#: ../data/ui/settings_dialog.ui:301 ../data/ui/menu_reader.xml:7
+#: ../data/ui/settings_dialog.ui:356 ../data/ui/menu_reader.xml:7
 msgid "Reading direction"
 msgstr "Sens de lecture"
 
-#: ../data/ui/settings_dialog.ui:308
+#: ../data/ui/settings_dialog.ui:363
 msgid "Type of scaling to adapt image"
 msgstr "Type de mise à l'échelle pour adapter l'image"
 
-#: ../data/ui/settings_dialog.ui:309
+#: ../data/ui/settings_dialog.ui:364
 msgid "Scaling"
 msgstr "Mise à l'échelle"
 
-#: ../data/ui/settings_dialog.ui:317 ../data/ui/menu_reader.xml:48
+#: ../data/ui/settings_dialog.ui:372 ../data/ui/menu_reader.xml:48
 msgid "Background color"
 msgstr "Couleur de fond"
 
-#: ../data/ui/settings_dialog.ui:346
+#: ../data/ui/settings_dialog.ui:401
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: ../data/ui/settings_dialog.ui:363
+#: ../data/ui/settings_dialog.ui:418
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrer automatiquement en mode plein écran"
 
@@ -351,10 +363,6 @@ msgstr "Infos"
 #: ../data/ui/main_window.ui:439
 msgid "Chapters"
 msgstr "Chapitres"
-
-#: ../data/ui/main_window.ui:587
-msgid "Library"
-msgstr "Bibliothèque"
 
 #: ../data/ui/menu_card.xml:7 ../data/ui/menu_library_selection_mode.xml:11
 msgid "Delete"
@@ -409,55 +417,81 @@ msgid "Valéry Febvre"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:36
-msgid "Fixes in Mangakawaii server"
+msgid "A bug fix in change of reading direction"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:41
-msgid "Added Dragon Ball Multiverse (DBM) server"
+#: ../data/info.febvre.Komikku.appdata.xml.in:37
+msgid "A bug fix in Pepper&amp;Carrot"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:42
-msgid "Fixes in Japscan server (search still broken)"
+msgid "Added Pepper&amp;Carrot server"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:47
-msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
+#: ../data/info.febvre.Komikku.appdata.xml.in:43
+msgid ""
+"A free(libre) and open-source webcomic supported directly by its patrons to "
+"change the comic book industry!"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:48
+msgid "New preference: Automatically update library at startup"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:49
+msgid "Fix in Mangakawaii server (Cloudflare problem)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:54
+msgid "Fixes in Mangakawaii server"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:59
+msgid "Added Dragon Ball Multiverse (DBM) server"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:60
+msgid "Fixes in Japscan server (search still broken)"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:65
+msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:66
 msgid ""
 "For all servers that allow it, most popular mangas are now offered as "
 "starting search results."
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:53
+#: ../data/info.febvre.Komikku.appdata.xml.in:71
 msgid "Improve speed of dates parsing"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:54
+#: ../data/info.febvre.Komikku.appdata.xml.in:72
 msgid "Fixed order of manga chapters for Scantrad France and Central de Mangás"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:59
+#: ../data/info.febvre.Komikku.appdata.xml.in:77
 msgid "Fix keyboard navigation in reader"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:64
+#: ../data/info.febvre.Komikku.appdata.xml.in:82
 msgid "Add a new server: xkcd (English)"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:69
+#: ../data/info.febvre.Komikku.appdata.xml.in:87
 msgid "Add the Portuguese (Brazil) translation"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:70
+#: ../data/info.febvre.Komikku.appdata.xml.in:88
 msgid "Add a new server: Central de Mangas (Portuguese)"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:75
+#: ../data/info.febvre.Komikku.appdata.xml.in:93
 msgid "Bug fix: Change the location of the data storage"
 msgstr ""
 
-#: ../data/info.febvre.Komikku.appdata.xml.in:80
+#: ../data/info.febvre.Komikku.appdata.xml.in:98
 msgid "First release"
 msgstr "Première sortie"
