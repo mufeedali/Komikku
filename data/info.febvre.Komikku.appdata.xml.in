@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.6.0" date="2019-12-17">
+            <description>
+                <p>New preference: Servers languages</p>
+                <p>Bug fixes in Scantrad France and DB Multiverse</p>
+            </description>
+        </release>
         <release version="0.5.1" date="2019-12-11">
             <description>
                 <p>A bug fix in change of reading direction</p>
