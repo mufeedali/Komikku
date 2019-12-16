@@ -19,10 +19,16 @@
             <summary>Use dark GTK+ theme</summary>
             <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
         </key>
+
         <key type="b" name="update-at-startup">
             <default>false</default>
             <summary>Update at startup</summary>
             <description>Automatically update library at startup</description>
+        </key>
+        <key type="as" name="servers-languages">
+            <default>[]</default>
+            <summary>Servers languages</summary>
+            <description>Allowed languages in servers list</description>
         </key>
 
         <key enum="@appid@.BackgroundColor" name="background-color">

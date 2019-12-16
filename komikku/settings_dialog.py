@@ -9,7 +9,9 @@ from gettext import gettext as _
 from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Handy
+
 import komikku.config_manager
+from komikku.servers import LANGUAGES
 
 
 class SettingsDialog():
@@ -39,6 +41,32 @@ class SettingsDialog():
         settings_theme_switch = self.builder.get_object('settings_theme_switch')
         settings_theme_switch.connect('notify::active', self.on_theme_changed)
         settings_theme_switch.set_active(komikku.config_manager.get_dark_theme())
+
+        #
+        # Library
+        #
+
+        # Servers languages
+        servers_languages = komikku.config_manager.get_servers_languages()
+
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        vbox.set_border_width(10)
+
+        for code, language in LANGUAGES.items():
+            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+
+            label = Gtk.Label(language, xalign=0)
+            hbox.pack_start(label, True, True, 0)
+
+            switch = Gtk.Switch.new()
+            switch.set_active(code in servers_languages)
+            switch.connect('notify::active', self.on_servers_language_activated, code)
+            hbox.pack_start(switch, False, False, 0)
+
+            vbox.pack_start(hbox, True, True, 0)
+
+        vbox.show_all()
+        self.builder.get_object('settings_servers_languages_row').add(vbox)
 
         # Update manga at startup
         settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
@@ -117,6 +145,12 @@ class SettingsDialog():
         elif index == 2:
             komikku.config_manager.set_scaling('height')
 
+    def on_servers_language_activated(self, switch_button, gparam, code):
+        if switch_button.get_active():
+            komikku.config_manager.add_servers_language(code)
+        else:
+            komikku.config_manager.remove_servers_language(code)
+
     def on_theme_changed(self, switch_button, gparam):
         gtk_settings = Gtk.Settings.get_default()
 
@@ -128,8 +162,6 @@ class SettingsDialog():
             gtk_settings.set_property('gtk-application-prefer-dark-theme', False)
 
     def on_update_at_startup_changed(self, switch_button, gparam):
-        gtk_settings = Gtk.Settings.get_default()
-
         if switch_button.get_active():
             komikku.config_manager.set_update_at_startup(True)
         else:

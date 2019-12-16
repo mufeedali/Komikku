@@ -3,7 +3,9 @@ from gi.repository import GLib, Gio
 setting = Gio.Settings.new('info.febvre.Komikku')
 
 dark_theme = 'dark-theme'
+
 update_at_startup = 'update-at-startup'
+servers_languages = 'servers-languages'
 
 background_color = 'background-color'
 fullscreen = 'fullscreen'
@@ -84,6 +86,31 @@ def set_scaling(value):
         setting.set_enum(scaling, 1)
     elif value == 'height':
         setting.set_enum(scaling, 2)
+
+
+def add_servers_language(code):
+    codes = get_servers_languages()
+    if code not in codes:
+        codes.append(code)
+
+    set_servers_languages(codes)
+
+
+def get_servers_languages():
+    return list(setting.get_value(servers_languages))
+
+
+def remove_servers_language(code):
+    codes = get_servers_languages()
+    if code in codes:
+        codes.remove(code)
+
+    set_servers_languages(codes)
+
+
+def set_servers_languages(codes):
+    g_variant = GLib.Variant('as', codes)
+    setting.set_value(servers_languages, g_variant)
 
 
 def get_window_size():

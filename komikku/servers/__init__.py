@@ -19,11 +19,11 @@ from requests.adapters import TimeoutSauce
 import struct
 
 LANGUAGES = dict(
+    id='Bahasa Indonesia',
     de='Deutsch',
     en='English',
     es='Español',
     fr='Français',
-    id='Bahasa Indonesia',
     it='Italiano',
     pt='Português',
     ru='русский',
