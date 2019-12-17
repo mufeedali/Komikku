@@ -32,7 +32,7 @@ class Ninemanga(Server):
     base_url = 'http://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
-    manga_url = base_url + '/manga/{0}.html'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
 
@@ -235,7 +235,7 @@ class Ninemanga_br(Ninemanga):
     base_url = 'http://br.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
-    manga_url = base_url + '/manga/{0}.html'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
 
@@ -248,7 +248,7 @@ class Ninemanga_de(Ninemanga):
     base_url = 'http://de.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
-    manga_url = base_url + '/manga/{0}.html'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
 
@@ -261,7 +261,7 @@ class Ninemanga_es(Ninemanga):
     base_url = 'http://es.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
-    manga_url = base_url + '/manga/{0}.html'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
 
@@ -287,7 +287,7 @@ class Ninemanga_it(Ninemanga):
     base_url = 'http://it.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
-    manga_url = base_url + '/manga/{0}.html'
+    manga_url = base_url + '/manga/{0}.html?waring=1'
     chapter_url = base_url + '/chapter/{0}/{1}'
     page_url = chapter_url
 
