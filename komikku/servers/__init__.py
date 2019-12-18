@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2019 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
@@ -18,16 +16,25 @@ import requests
 from requests.adapters import TimeoutSauce
 import struct
 
+# https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 LANGUAGES = dict(
     id='Bahasa Indonesia',
+    cs='Čeština',
     de='Deutsch',
     en='English',
     es='Español',
     fr='Français',
     it='Italiano',
+    nl='Nederlands',
+    nb='Norsk Bokmål',
+    pl='Polsky',
     pt='Português',
     ru='русский',
-    th='ภาษาไทย',
+    vi='Tiếng Việt',
+    ja='日本語',
+    ko='한국어',
+    th='ไทย',
+    zh='中文 (简体字)',
 )
 
 REQUESTS_TIMEOUT = 5
