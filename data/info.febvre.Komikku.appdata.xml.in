@@ -31,6 +31,13 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.6.1" date="2019-12-18">
+            <description>
+                <p>Ninemanga: Fixed missing chapters issue (EN, BR, DE, ES, IT)</p>
+                <p>Pepper&amp;Carrot: Fixed chapters update</p>
+                <p>Pepper&amp;Carrot: Added missing Cover and Credits pages</p>
+            </description>
+        </release>
         <release version="0.6.0" date="2019-12-17">
             <description>
                 <p>New preference: Servers languages</p>
