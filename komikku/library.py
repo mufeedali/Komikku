@@ -219,7 +219,7 @@ class Library():
         ctx.restore()
 
     def draw_cover_server_logo(self, da, ctx, manga):
-        size = 50
+        size = 75
 
         ctx.save()
 
