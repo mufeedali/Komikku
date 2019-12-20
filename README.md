@@ -51,8 +51,8 @@ Dependencies:
 
 * `git`
 * `ninja`
-* `meson` >= 0.46.0
-* `python` >= 3.5
+* `meson` >= 0.50.0
+* `python` >= 3.6
 * `gtk` >= 3.24.1
 * `libhandy` >= 0.0.10
 * `python-beautifulsoup4`

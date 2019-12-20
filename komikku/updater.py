@@ -100,7 +100,7 @@ class Updater():
                 elif self.window.page == 'card':
                     # Update card if card manga is manga updated
                     if self.window.card.manga and self.window.card.manga.id == manga.id:
-                        self.window.card.init(manga)
+                        self.window.card.init(manga, transition=False)
 
             return False
 

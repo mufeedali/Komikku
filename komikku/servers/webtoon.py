@@ -14,11 +14,29 @@ from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
 
+COOKIE_AGE_GATE_PASS = requests.cookies.create_cookie(
+    name='ageGatePass',
+    value='true',
+    domain='.webtoons.com',
+    path='/',
+    expires=None,
+)
+
+COOKIE_NEED_GDPR = requests.cookies.create_cookie(
+    name='needGDPR',
+    value='true',
+    domain='.webtoons.com',
+    path='/',
+    expires=None,
+)
+
 LANGUAGES_CODES = dict(
     en='en',
+    es='es',
+    fr='fr',
     id='id',
     th='th',
-    zh_HANT='zh-hant',
+    zh_HANT='zh-hant',  # diff
 )
 
 SERVER_NAME = 'WEBTOON'
@@ -39,6 +57,8 @@ class Webtoon(Server):
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
+            self.session.cookies.set_cookie(COOKIE_AGE_GATE_PASS)
+            self.session.cookies.set_cookie(COOKIE_NEED_GDPR)
 
     def get_manga_data(self, initial_data):
         """
@@ -233,9 +253,6 @@ class Webtoon(Server):
         return results
 
     def search(self, term):
-        referer_url = '{0}/{1}'.format(self.base_url, LANGUAGES_CODES[self.lang])
-        self.session_get(referer_url)
-
         results = None
 
         webtoon_results = self.search_by_type(term, 'WEBTOON')
@@ -283,6 +300,18 @@ class Webtoon(Server):
         return results
 
 
+class Webtoon_es(Webtoon):
+    id = 'webtoon_es'
+    name = SERVER_NAME
+    lang = 'es'
+
+
+class Webtoon_fr(Webtoon):
+    id = 'webtoon_fr'
+    name = SERVER_NAME
+    lang = 'fr'
+
+
 class Webtoon_id(Webtoon):
     id = 'webtoon_id'
     name = SERVER_NAME
@@ -293,3 +322,9 @@ class Webtoon_th(Webtoon):
     id = 'webtoon_th'
     name = SERVER_NAME
     lang = 'th'
+
+
+class Webtoon_zh_hant(Webtoon):
+    id = 'webtoon_zh_hant'
+    name = SERVER_NAME
+    lang = 'zh_HANT'

@@ -34,7 +34,8 @@ LANGUAGES = dict(
     ja='日本語',
     ko='한국어',
     th='ไทย',
-    zh='中文 (简体字)',
+    zh='中文 (简体)',
+    zh_HANT='中文 (繁體)',
 )
 
 REQUESTS_TIMEOUT = 5
