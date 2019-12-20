@@ -156,7 +156,7 @@ class Webtoon(Server):
         )
         for img in imgs:
             data['pages'].append(dict(
-                slug=None,  # not necessary, we know image url directly
+                slug=None,  # slug can't be used to forge image URL
                 image=img.get('data-url').strip(),
             ))
 

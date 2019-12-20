@@ -22,8 +22,8 @@ class Manganelo(Server):
     lang = 'en'
 
     base_url = 'https://manganelo.com'
-    search_url = base_url + '/home_json_search'
-    most_populars_url = base_url + '/manga_list?type=topview&category=all&state=all&page=1'
+    search_url = base_url + '/getstorysearchjson'
+    most_populars_url = base_url + '/genre-all?type=topview'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/chapter/{0}/{1}'
     image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
@@ -64,24 +64,21 @@ class Manganelo(Server):
         ))
 
         # Name & cover
-        data['name'] = soup.find('ul', class_='manga-info-text').find('h1').text.strip()
+        data['name'] = soup.find('div', class_='story-info-right').find('h1').text.strip()
         if data.get('cover') is None:
-            data['cover'] = soup.find('div', class_='manga-info-pic').img.get('src')
+            data['cover'] = soup.find('span', class_='info-image').img.get('src')
 
         # Details
-        elements = soup.find('ul', class_='manga-info-text').find_all('li')
-        for element in elements:
-            text = element.text.strip().split(':')
-            if len(text) != 2:
-                continue
-
-            label = text[0].strip()
-            value = text[1].strip()
+        tr_elements = soup.find('table', class_='variations-tableInfo').find_all('tr')
+        for tr_element in tr_elements:
+            td_elements = tr_element.find_all('td')
+            label = td_elements[0].text.strip()
+            value = td_elements[1].text.strip()
 
             if label.startswith('Author'):
-                data['authors'] = [t.strip() for t in value.split(',') if t]
+                data['authors'] = [t.strip() for t in value.split('-') if t]
             elif label.startswith('Genres'):
-                data['genres'] = [t.strip() for t in value.split(',')]
+                data['genres'] = [t.strip() for t in value.split('-')]
             elif label.startswith('Status'):
                 status = value.lower()
                 if status == 'completed':
@@ -90,23 +87,23 @@ class Manganelo(Server):
                     data['status'] = 'ongoing'
 
         # Synopsis
-        div_synopsis = soup.find('div', id='noidungm')
-        div_synopsis.h2.extract()
+        div_synopsis = soup.find('div', id='panel-story-info-description')
+        div_synopsis.h3.extract()
         data['synopsis'] = div_synopsis.text.strip()
 
         # Chapters
-        elements = soup.find('div', class_='chapter-list').find_all('div', class_='row')
-        for element in reversed(elements):
-            spans_info = element.find_all('span')
+        li_elements = soup.find('ul', class_='row-content-chapter').find_all('li')
+        for li_element in reversed(li_elements):
+            span_elements = li_element.find_all('span')
 
-            slug = spans_info[0].a.get('href').split('/')[-1]
-            title = spans_info[0].a.text.strip()
-            date = spans_info[2].text.strip()
+            slug = li_element.a.get('href').split('/')[-1]
+            title = li_element.a.text.strip()
+            date = span_elements[1].get('title')[:-6]
 
             data['chapters'].append(dict(
                 slug=slug,
                 title=title,
-                date=convert_date_string(date, format='%b-%d-%y'),
+                date=convert_date_string(date, format='%b %d,%y'),
             ))
 
         return data
@@ -128,15 +125,15 @@ class Manganelo(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        pages_imgs = soup.find('div', id='vungdoc').find_all('img')
+        pages_imgs = soup.find('div', class_='container-chapter-reader').find_all('img')
 
         data = dict(
             pages=[],
         )
         for img in pages_imgs:
             data['pages'].append(dict(
-                slug=None,  # not necessary, we know image url directly
-                image=img.get('src').strip(),
+                slug=None,  # slug can't be used to forge image URL
+                image=img.get('src'),
             ))
 
         return data
@@ -175,7 +172,7 @@ class Manganelo(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        for element in soup.find('div', class_='truyen-list').find_all('div', class_='list-truyen-item-wrap'):
+        for element in soup.find_all('div', class_='genres-item-info'):
             results.append(dict(
                 name=element.h3.a.get('title').strip(),
                 slug=element.h3.a.get('href').split('/')[-1],
@@ -189,23 +186,20 @@ class Manganelo(Server):
             return None
 
         if r.status_code == 200:
-            try:
-                # Returned data for each manga:
-                # name: name of the manga (HTML)
-                # nameunsigned: slug of the manga
-                # image: URL of the cover image
-                data = r.json()
+            # Returned data for each manga:
+            # name: name of the manga (HTML)
+            # nameunsigned: slug of the manga
+            # image: URL of the cover image
+            data = r.json(strict=False)
 
-                results = []
-                for item in data:
-                    results.append(dict(
-                        slug=item['nameunsigned'],
-                        name=BeautifulSoup(item['name'], 'html.parser').text,
-                        cover=item['image'],
-                    ))
+            results = []
+            for item in data:
+                results.append(dict(
+                    slug=item['id_encode'],
+                    name=BeautifulSoup(item['name'], 'html.parser').text,
+                    cover=item['image'],
+                ))
 
-                return results
-            except Exception:
-                return None
+            return results
         else:
             return None
