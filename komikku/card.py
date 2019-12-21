@@ -300,7 +300,10 @@ class Card():
             # Chapter reading started
             ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
-        label.set_text(chapter.title)
+        title = chapter.title
+        if chapter.manga.name in title:
+            title = title.replace(chapter.manga.name, '').strip()
+        label.set_text(title)
         hbox.pack_start(label, True, True, 0)
 
         # Action button
