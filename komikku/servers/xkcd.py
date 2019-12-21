@@ -24,6 +24,7 @@ class Xkcd(Server):
     base_url = 'https://www.xkcd.com'
     manga_url = base_url + '/archive/'
     chapter_url = base_url + '/{0}/info.0.json'
+    image_url = base_url + '/comics/{0}'
     cover_url = base_url + '/s/0b7742.png'
 
     def __init__(self):
@@ -94,7 +95,7 @@ class Xkcd(Server):
             pages=[
                 dict(
                     slug=None,
-                    image=url_image,
+                    image=url_image.split('/')[-1],
                 ),
                 dict(
                     slug=None,
@@ -109,10 +110,10 @@ class Xkcd(Server):
         Returns chapter page scan (image) content
         """
         if page.get('image'):
-            r = self.session_get(page['image'])
+            r = self.session_get(self.image_url.format(page['image']))
             if r is None:
                 return None
-            image_name = page['image'].split('/')[-1]
+            image_name = page['image']
         else:
             r = self.session_get(
                 'https://fakeimg.pl/1500x2126/ffffff/000000/',
