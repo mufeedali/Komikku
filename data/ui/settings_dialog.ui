@@ -292,18 +292,13 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkListBoxRow">
+                                  <object class="HdyExpanderRow" id="settings_servers_languages_row">
                                     <property name="width_request">100</property>
+                                    <property name="height_request">54</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <child>
-                                      <object class="HdyExpanderRow" id="settings_servers_languages_row">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="subtitle" translatable="yes">Restrict servers to selected languages</property>
-                                        <property name="title" translatable="yes">Servers languages</property>
-                                      </object>
-                                    </child>
+                                    <property name="subtitle" translatable="yes">Restrict servers to selected languages</property>
+                                    <property name="title" translatable="yes">Servers languages</property>
                                   </object>
                                 </child>
                                 <style>

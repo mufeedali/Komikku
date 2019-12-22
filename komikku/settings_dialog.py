@@ -50,7 +50,7 @@ class SettingsDialog():
         servers_languages = komikku.config_manager.get_servers_languages()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        vbox.set_border_width(10)
+        vbox.set_border_width(12)
 
         for code, language in LANGUAGES.items():
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
