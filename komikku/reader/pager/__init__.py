@@ -12,6 +12,7 @@ from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 
+import komikku.config_manager
 from komikku.reader.pager.page import Page
 
 
@@ -34,7 +35,10 @@ class Pager(Gtk.ScrolledWindow):
         self.viewport = Gtk.Viewport()
         self.add(self.viewport)
 
-        self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        if komikku.config_manager.get_reading_direction() == 'vertical':
+            self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        else:
+            self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.viewport.add(self.box)
 
         self.set_events(
@@ -76,9 +80,13 @@ class Pager(Gtk.ScrolledWindow):
 
             return False
 
-        adj = self.get_hadjustment()
+        if komikku.config_manager.get_reading_direction() == 'vertical':
+            adj = self.get_vadjustment()
+            end = position * self.reader.size.height
+        else:
+            adj = self.get_hadjustment()
+            end = position * self.reader.size.width
         start = adj.get_value()
-        end = position * self.reader.size.width
 
         if start - end == 0:
             return

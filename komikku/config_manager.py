@@ -57,6 +57,8 @@ def get_reading_direction(nick=True):
         return 'right-to-left'
     if value == 1:
         return 'left-to-right'
+    if value == 2:
+        return 'vertical'
 
 
 def set_reading_direction(value):
@@ -64,6 +66,8 @@ def set_reading_direction(value):
         setting.set_enum(reading_direction, 0)
     elif value == 'left-to-right':
         setting.set_enum(reading_direction, 1)
+    elif value == 'vertical':
+        setting.set_enum(reading_direction, 2)
 
 
 def get_scaling(nick=True):

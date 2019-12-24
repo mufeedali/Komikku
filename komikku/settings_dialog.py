@@ -81,6 +81,7 @@ class SettingsDialog():
         liststore = Gio.ListStore.new(Handy.ValueObject)
         liststore.insert(0, Handy.ValueObject.new(_('Right to left ←')))
         liststore.insert(1, Handy.ValueObject.new(_('Left to right →')))
+        liststore.insert(2, Handy.ValueObject.new(_('Vertical ↓')))
 
         row = self.builder.get_object('settings_reading_direction_row')
         row.bind_name_model(liststore, Handy.ValueObject.dup_string)
@@ -134,6 +135,8 @@ class SettingsDialog():
             komikku.config_manager.set_reading_direction('right-to-left')
         elif index == 1:
             komikku.config_manager.set_reading_direction('left-to-right')
+        elif index == 2:
+            komikku.config_manager.set_reading_direction('vertical')
 
     def on_scaling_changed(self, row, param):
         index = row.get_selected_index()
