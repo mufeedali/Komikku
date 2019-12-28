@@ -10,8 +10,8 @@ from gi.repository import Pango
 
 from komikku.activity_indicator import ActivityIndicator
 from komikku.model import create_db_connection
-import komikku.config_manager
 from komikku.model import Manga
+from komikku.models import Settings
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
 from komikku.utils import log_error_traceback
@@ -48,7 +48,7 @@ class AddDialog():
         listbox = self.builder.get_object('servers_page_listbox')
         listbox.connect('row-activated', self.on_server_clicked)
 
-        servers_languages = komikku.config_manager.get_servers_languages()
+        servers_languages = Settings.get_default().servers_languages
         for server in get_servers_list():
             if servers_languages and server['lang'] not in servers_languages:
                 continue

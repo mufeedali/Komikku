@@ -10,7 +10,7 @@ from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Handy
 
-import komikku.config_manager
+from komikku.models import Settings
 from komikku.servers import LANGUAGES
 
 
@@ -33,6 +33,8 @@ class SettingsDialog():
         self.set_config_values()
 
     def set_config_values(self):
+        settings = Settings.get_default()
+
         #
         # General
         #
@@ -40,14 +42,19 @@ class SettingsDialog():
         # Dark theme
         settings_theme_switch = self.builder.get_object('settings_theme_switch')
         settings_theme_switch.connect('notify::active', self.on_theme_changed)
-        settings_theme_switch.set_active(komikku.config_manager.get_dark_theme())
+        settings_theme_switch.set_active(settings.dark_theme)
 
         #
         # Library
         #
 
+        # Update manga at startup
+        settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
+        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
+        settings_update_at_startup_switch.set_active(settings.update_at_startup)
+
         # Servers languages
-        servers_languages = komikku.config_manager.get_servers_languages()
+        servers_languages = settings.servers_languages
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
         vbox.set_border_width(12)
@@ -68,11 +75,6 @@ class SettingsDialog():
         vbox.show_all()
         self.builder.get_object('settings_servers_languages_row').add(vbox)
 
-        # Update manga at startup
-        settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
-        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
-        settings_update_at_startup_switch.set_active(komikku.config_manager.get_update_at_startup())
-
         #
         # Reader
         #
@@ -85,7 +87,7 @@ class SettingsDialog():
 
         row = self.builder.get_object('settings_reading_direction_row')
         row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(komikku.config_manager.get_reading_direction(nick=False))
+        row.set_selected_index(settings.reading_direction_value)
         row.connect('notify::selected-index', self.on_reading_direction_changed)
 
         # Image scaling
@@ -96,7 +98,7 @@ class SettingsDialog():
 
         row = self.builder.get_object('settings_scaling_row')
         row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(komikku.config_manager.get_scaling(nick=False))
+        row.set_selected_index(settings.scaling_value)
         row.connect('notify::selected-index', self.on_scaling_changed)
 
         # Background color
@@ -106,66 +108,66 @@ class SettingsDialog():
 
         row = self.builder.get_object('settings_background_color_row')
         row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(komikku.config_manager.get_background_color(nick=False))
+        row.set_selected_index(settings.background_color_value)
         row.connect('notify::selected-index', self.on_background_color_changed)
 
         # Full screen
         settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
         settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
-        settings_fullscreen_switch.set_active(komikku.config_manager.get_fullscreen())
+        settings_fullscreen_switch.set_active(settings.fullscreen)
 
     def on_background_color_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            komikku.config_manager.set_background_color('white')
+            Settings.get_default().background_color = 'white'
         elif index == 1:
-            komikku.config_manager.set_background_color('black')
+            Settings.get_default().background_color = 'black'
 
     def on_fullscreen_changed(self, switch_button, gparam):
         if switch_button.get_active():
-            komikku.config_manager.set_fullscreen(True)
+            Settings.get_default().fullscreen = True
         else:
-            komikku.config_manager.set_fullscreen(False)
+            Settings.get_default().fullscreen = False
 
     def on_reading_direction_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            komikku.config_manager.set_reading_direction('right-to-left')
+            Settings.get_default().reading_direction = 'right-to-left'
         elif index == 1:
-            komikku.config_manager.set_reading_direction('left-to-right')
+            Settings.get_default().reading_direction = 'left-to-right'
         elif index == 2:
-            komikku.config_manager.set_reading_direction('vertical')
+            Settings.get_default().reading_direction = 'vertical'
 
     def on_scaling_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            komikku.config_manager.set_scaling('screen')
+            Settings.get_default().scaling = 'screen'
         elif index == 1:
-            komikku.config_manager.set_scaling('width')
+            Settings.get_default().scaling = 'width'
         elif index == 2:
-            komikku.config_manager.set_scaling('height')
+            Settings.get_default().scaling = 'height'
 
     def on_servers_language_activated(self, switch_button, gparam, code):
         if switch_button.get_active():
-            komikku.config_manager.add_servers_language(code)
+            Settings.get_default().add_servers_language(code)
         else:
-            komikku.config_manager.remove_servers_language(code)
+            Settings.get_default().remove_servers_language(code)
 
     def on_theme_changed(self, switch_button, gparam):
         gtk_settings = Gtk.Settings.get_default()
 
         if switch_button.get_active():
-            komikku.config_manager.set_dark_theme(True)
+            Settings.get_default().dark_theme = True
             gtk_settings.set_property('gtk-application-prefer-dark-theme', True)
         else:
-            komikku.config_manager.set_dark_theme(False)
+            Settings.get_default().dark_theme = False
             gtk_settings.set_property('gtk-application-prefer-dark-theme', False)
 
     def on_update_at_startup_changed(self, switch_button, gparam):
         if switch_button.get_active():
-            komikku.config_manager.set_update_at_startup(True)
+            Settings.get_default().update_at_startup = True
         else:
-            komikku.config_manager.set_update_at_startup(False)
+            Settings.get_default().update_at_startup = False

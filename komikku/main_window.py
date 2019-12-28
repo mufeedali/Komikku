@@ -16,11 +16,11 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Handy
 
 from komikku.add_dialog import AddDialog
-import komikku.config_manager
 from komikku.card import Card
 from komikku.downloader import Downloader
 from komikku.library import Library
 from komikku.model import backup_db
+from komikku.models import Settings
 from komikku.reader import Reader
 from komikku.settings_dialog import SettingsDialog
 from komikku.updater import Updater
@@ -45,7 +45,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.logging_manager = self.application.get_logger()
         self.downloader = Downloader(self)
-        self.updater = Updater(self, komikku.config_manager.get_update_at_startup())
+        self.updater = Updater(self, Settings.get_default().update_at_startup)
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
@@ -86,7 +86,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def assemble_window(self):
         # Default size
-        window_size = komikku.config_manager.get_window_size()
+        window_size = Settings.get_default().window_size
         self.set_default_size(window_size[0], window_size[1])
 
         # Min size
@@ -135,7 +135,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Apply theme
         gtk_settings = Gtk.Settings.get_default()
-        gtk_settings.set_property('gtk-application-prefer-dark-theme', komikku.config_manager.get_dark_theme())
+        gtk_settings.set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
 
         self.library.show()
 
@@ -277,7 +277,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def save_window_size(self):
         if not self.is_maximized and not self.is_fullscreen:
             size = self.get_size()
-            komikku.config_manager.set_window_size([size.width, size.height])
+            Settings.get_default().window_size = [size.width, size.height]
 
     def set_fullscreen(self):
         if not self.is_fullscreen:

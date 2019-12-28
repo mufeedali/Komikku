@@ -13,7 +13,6 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.activity_indicator import ActivityIndicator
-import komikku.config_manager
 from komikku.utils import log_error_traceback
 
 
@@ -36,12 +35,12 @@ class Page(Gtk.Overlay):
         self.error = None      # connection error or server error
         self.loadable = False  # loadable from disk or downloadable from server (chapter pages are known)
 
+        self.set_size()
+
         self.scrolledwindow = Gtk.ScrolledWindow()
-        if komikku.config_manager.get_reading_direction() == 'vertical':
-            self.set_size_request(-1, self.window.get_size().height)
+        if self.reader.reading_direction == 'vertical':
             self.scrolledwindow.get_vadjustment().connect('changed', self.adjust_scroll)
         else:
-            self.set_size_request(self.window.get_size().width, -1)
             self.scrolledwindow.get_hadjustment().connect('changed', self.adjust_scroll)
 
         self.add(self.scrolledwindow)
@@ -204,7 +203,7 @@ class Page(Gtk.Overlay):
             self.set_image()
 
     def resize(self):
-        self.set_size_request(self.reader.size.width, -1)
+        self.set_size()
 
         if self.status == 'rendered':
             self.set_image()
@@ -232,6 +231,9 @@ class Page(Gtk.Overlay):
             )
 
         self.image.set_from_pixbuf(pixbuf)
+
+    def set_size(self):
+        self.set_size_request(self.reader.size.width, self.reader.size.height)
 
     def toggle_page_number(self):
         if self.reader.controls.is_visible:

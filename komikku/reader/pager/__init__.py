@@ -12,7 +12,6 @@ from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 
-import komikku.config_manager
 from komikku.reader.pager.page import Page
 
 
@@ -35,10 +34,7 @@ class Pager(Gtk.ScrolledWindow):
         self.viewport = Gtk.Viewport()
         self.add(self.viewport)
 
-        if komikku.config_manager.get_reading_direction() == 'vertical':
-            self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        else:
-            self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.box = Gtk.Box(spacing=0)  # Orientation is not kown yet
         self.viewport.add(self.box)
 
         self.set_events(
@@ -80,7 +76,7 @@ class Pager(Gtk.ScrolledWindow):
 
             return False
 
-        if komikku.config_manager.get_reading_direction() == 'vertical':
+        if self.reader.reading_direction == 'vertical':
             adj = self.get_vadjustment()
             end = position * self.reader.size.height
         else:
@@ -129,10 +125,10 @@ class Pager(Gtk.ScrolledWindow):
             else:
                 page_index = 0
 
-        direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
-
         self.clear()
+        self.set_orientation()
 
+        direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
         # Left page
         left_page = Page(self, chapter, page_index + direction)
         self.box.pack_start(left_page, True, True, 0)
@@ -176,14 +172,14 @@ class Pager(Gtk.ScrolledWindow):
     def on_double_click(self, event):
         # Zoom/unzoom
 
-        def adjust_scroll(hadj, vadj, h_value, v_value):
-            hadj.disconnect(adjust_scroll_handler_id)
+        def on_adjustment_change(hadj, vadj, h_value, v_value):
+            hadj.disconnect(handler_id)
 
-            def adjust():
+            def adjust_scroll():
                 hadj.set_value(h_value)
                 vadj.set_value(v_value)
 
-            GLib.idle_add(adjust)
+            GLib.idle_add(adjust_scroll)
 
         page = self.current_page
         hadj = page.scrolledwindow.get_hadjustment()
@@ -217,7 +213,7 @@ class Pager(Gtk.ScrolledWindow):
             h_value = rel_event_x * ratio - event.x
             v_value = rel_event_y * ratio - event.y
 
-            adjust_scroll_handler_id = hadj.connect('changed', adjust_scroll, vadj, h_value, v_value)
+            handler_id = hadj.connect('changed', on_adjustment_change, vadj, h_value, v_value)
 
             scaled_pixbuf = pixbuf.scale_simple(zoom_width, zoom_height, InterpType.BILINEAR)
 
@@ -225,8 +221,8 @@ class Pager(Gtk.ScrolledWindow):
 
             self.zoom['active'] = True
         else:
-            adjust_scroll_handler_id = hadj.connect(
-                'changed', adjust_scroll, vadj, self.zoom['orig_hadj_value'], self.zoom['orig_vadj_value'])
+            handler_id = hadj.connect(
+                'changed', on_adjustment_change, vadj, self.zoom['orig_hadj_value'], self.zoom['orig_vadj_value'])
 
             page.set_image()
 
@@ -330,6 +326,20 @@ class Pager(Gtk.ScrolledWindow):
         self.box.reorder_child(self.pages[1], 0)
 
         self.adjust_scroll(animate=False)
+
+    def set_orientation(self):
+        """ Set box orientation """
+
+        def on_adjustment_change(adj):
+            self.adjust_scroll(animate=False)
+            adj.disconnect(handler_id)
+
+        if self.reader.reading_direction == 'vertical':
+            handler_id = self.get_vadjustment().connect('changed', on_adjustment_change)
+            self.box.props.orientation = Gtk.Orientation.VERTICAL
+        else:
+            handler_id = self.get_hadjustment().connect('changed', on_adjustment_change)
+            self.box.props.orientation = Gtk.Orientation.HORIZONTAL
 
     def switchto_page(self, position):
         if self.scroll_lock:

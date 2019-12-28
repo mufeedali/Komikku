@@ -9,7 +9,7 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 
-import komikku.config_manager
+from komikku.models import Settings
 from komikku.reader.controls import Controls
 from komikku.reader.pager import Pager
 
@@ -39,15 +39,15 @@ class Reader:
 
     @property
     def background_color(self):
-        return self.manga.background_color or komikku.config_manager.get_background_color()
+        return self.manga.background_color or Settings.get_default().background_color
 
     @property
     def reading_direction(self):
-        return self.manga.reading_direction or komikku.config_manager.get_reading_direction()
+        return self.manga.reading_direction or Settings.get_default().reading_direction
 
     @property
     def scaling(self):
-        return self.manga.scaling or komikku.config_manager.get_scaling()
+        return self.manga.scaling or Settings.get_default().scaling
 
     def add_actions(self):
         # Reading direction
@@ -99,10 +99,15 @@ class Reader:
         if value == self.manga.reading_direction:
             return
 
+        # Reverse pages order
+        # except in cases: LTR => Vertical and Vertial => LTR
+        if value not in ('left-to-right', 'vertical') or self.manga.reading_direction not in ('left-to-right', 'vertical'):
+            self.pager.reverse_pages()
+
         self.manga.update(dict(reading_direction=value))
         self.set_reading_direction()
 
-        self.pager.reverse_pages()
+        self.pager.set_orientation()
 
     def on_resize(self):
         self.size = self.window.get_size()
@@ -140,7 +145,7 @@ class Reader:
 
         self.controls.hide()
 
-        if komikku.config_manager.get_fullscreen():
+        if Settings.get_default().fullscreen:
             self.window.set_fullscreen()
 
         self.window.show_page('reader')
