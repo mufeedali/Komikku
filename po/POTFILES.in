@@ -2,10 +2,10 @@ data/info.febvre.Komikku.appdata.xml.in
 data/info.febvre.Komikku.desktop.in
 data/ui/add_dialog.ui
 data/ui/main_window.ui
-data/ui/menu_card.xml
-data/ui/menu_library_selection_mode.xml
-data/ui/menu_reader.xml
-data/ui/menu.xml
+data/ui/menu/card.xml
+data/ui/menu/library_selection_mode.xml
+data/ui/menu/main.xml
+data/ui/menu/reader.xml
 data/ui/settings_dialog.ui
 data/ui/shortcuts_overview.ui
 komikku/add_dialog.py

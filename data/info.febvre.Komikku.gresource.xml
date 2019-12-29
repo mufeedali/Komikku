@@ -9,11 +9,11 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/settings_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_overview.ui</file>
 
-        <file compressed="true" preprocess="xml-stripblanks">ui/menu.xml</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/menu_card.xml</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/menu_card_selection_mode.xml</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/menu_library_selection_mode.xml</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/menu_reader.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/main.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/card.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/card_selection_mode.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/library_selection_mode.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/reader.xml</file>
 
         <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
         <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>

@@ -26,8 +26,8 @@ class Card():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu_card.xml')
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu_card_selection_mode.xml')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card.xml')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card_selection_mode.xml')
 
         self.title_label = self.builder.get_object('card_page_title_label')
 

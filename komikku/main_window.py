@@ -41,7 +41,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/main_window.ui')
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu.xml')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/main.xml')
 
         self.logging_manager = self.application.get_logger()
         self.downloader = Downloader(self)

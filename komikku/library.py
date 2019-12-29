@@ -24,7 +24,7 @@ class Library():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu_library_selection_mode.xml')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_selection_mode.xml')
 
         # Search
         self.title_stack = self.builder.get_object('library_page_title_stack')

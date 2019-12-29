@@ -22,7 +22,7 @@ class Reader:
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu_reader.xml')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/reader.xml')
 
         self.overlay = self.builder.get_object('reader_overlay')
 
