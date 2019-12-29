@@ -11,6 +11,12 @@ import traceback
 logger = logging.getLogger()
 
 
+def folder_size(path):
+    res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE)
+
+    return res.stdout.split()[0].decode()
+
+
 def log_error_traceback(e):
     if isinstance(e, requests.exceptions.ConnectionError) or isinstance(e, requests.exceptions.Timeout):
         return _('No Internet connection or server down')
@@ -18,9 +24,3 @@ def log_error_traceback(e):
     logger.info(traceback.format_exc())
 
     return None
-
-
-def folder_size(path):
-    res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE)
-
-    return res.stdout.split()[0].decode()

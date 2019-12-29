@@ -6,6 +6,7 @@ from .database import backup_db
 from .database import Chapter
 from .database import create_db_connection
 from .database import Download
+from .database import init_db
 from .database import Manga
 
 from .settings import Settings

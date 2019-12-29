@@ -65,7 +65,7 @@ if __name__ == '__main__':
     from gi.repository import Gio
 
     from @projectname@.application import Application
-    from @projectname@.model import init_db
+    from @projectname@.models import init_db
 
     resource = Gio.Resource.load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
     resource._register()
