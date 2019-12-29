@@ -17,8 +17,13 @@
     <schema path="/@apppath@/" id="@appid@" gettext-domain="@projectname@">
         <key type="b" name="dark-theme">
             <default>false</default>
-            <summary>Use dark GTK+ theme</summary>
-            <description>Use the dark variant of your GTK+ theme. Please note that not every GTK+ theme has a dark variant.</description>
+            <summary>Dark theme</summary>
+            <description>Use the dark variant of your GTK theme. Please note that not every GTK theme has a dark variant.</description>
+        </key>
+        <key type="b" name="night-light">
+            <default>false</default>
+            <summary>Night light</summary>
+            <description>Automatically enable dark GTK theme at night</description>
         </key>
 
         <key type="b" name="update-at-startup">

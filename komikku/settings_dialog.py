@@ -39,8 +39,13 @@ class SettingsDialog():
 
         # Dark theme
         settings_theme_switch = self.builder.get_object('settings_theme_switch')
-        settings_theme_switch.connect('notify::active', self.on_theme_changed)
         settings_theme_switch.set_active(settings.dark_theme)
+        settings_theme_switch.connect('notify::active', self.on_theme_changed)
+
+        # Night light
+        settings_night_light_switch = self.builder.get_object('settings_night_light_switch')
+        settings_night_light_switch.set_active(settings.night_light)
+        settings_night_light_switch.connect('notify::active', self.on_night_light_changed)
 
         #
         # Library
@@ -48,8 +53,8 @@ class SettingsDialog():
 
         # Update manga at startup
         settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
-        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
         settings_update_at_startup_switch.set_active(settings.update_at_startup)
+        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
 
         # Servers languages
         servers_languages = settings.servers_languages
@@ -111,8 +116,8 @@ class SettingsDialog():
 
         # Full screen
         settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
-        settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
         settings_fullscreen_switch.set_active(settings.fullscreen)
+        settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
     def on_background_color_changed(self, row, param):
         index = row.get_selected_index()
@@ -123,10 +128,12 @@ class SettingsDialog():
             Settings.get_default().background_color = 'black'
 
     def on_fullscreen_changed(self, switch_button, gparam):
-        if switch_button.get_active():
-            Settings.get_default().fullscreen = True
-        else:
-            Settings.get_default().fullscreen = False
+        Settings.get_default().fullscreen = switch_button.get_active()
+
+    def on_night_light_changed(self, switch_button, gparam):
+        Settings.get_default().night_light = switch_button.get_active()
+
+        self.window.init_theme()
 
     def on_reading_direction_changed(self, row, param):
         index = row.get_selected_index()
@@ -155,14 +162,9 @@ class SettingsDialog():
             Settings.get_default().remove_servers_language(code)
 
     def on_theme_changed(self, switch_button, gparam):
-        gtk_settings = Gtk.Settings.get_default()
+        Settings.get_default().dark_theme = switch_button.get_active()
 
-        if switch_button.get_active():
-            Settings.get_default().dark_theme = True
-            gtk_settings.set_property('gtk-application-prefer-dark-theme', True)
-        else:
-            Settings.get_default().dark_theme = False
-            gtk_settings.set_property('gtk-application-prefer-dark-theme', False)
+        self.window.init_theme()
 
     def on_update_at_startup_changed(self, switch_button, gparam):
         if switch_button.get_active():

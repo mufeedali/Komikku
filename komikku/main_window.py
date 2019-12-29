@@ -37,6 +37,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.application = kwargs['application']
 
+        self._night_light_handler_id = 0
+        self._night_light_proxy = None
+
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/main_window.ui')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/main.xml')
@@ -131,9 +134,8 @@ class MainWindow(Gtk.ApplicationWindow):
         if Gio.Application.get_default().development_mode is True:
             self.get_style_context().add_class('devel')
 
-        # Apply theme
-        gtk_settings = Gtk.Settings.get_default()
-        gtk_settings.set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
+        # Theme (light or dark)
+        self.init_theme()
 
         self.library.show()
 
@@ -168,6 +170,38 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def hide_notification(self):
         self.builder.get_object('notification_revealer').set_reveal_child(False)
+
+    def init_theme(self):
+        if Settings.get_default().night_light and not self._night_light_proxy:
+            # Watch night light changes
+            self._night_light_proxy = Gio.DBusProxy.new_sync(
+                Gio.bus_get_sync(Gio.BusType.SESSION, None),
+                Gio.DBusProxyFlags.NONE,
+                None,
+                'org.gnome.SettingsDaemon.Color',
+                '/org/gnome/SettingsDaemon/Color',
+                'org.gnome.SettingsDaemon.Color',
+                None
+            )
+
+            def property_changed(proxy, gvariant):
+                data = gvariant.unpack()
+                if 'NightLightActive' in data.keys():
+                    Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', data['NightLightActive'])
+
+            self._night_light_handler_id = self._night_light_proxy.connect('g-properties-changed', property_changed)
+
+            Gtk.Settings.get_default().set_property(
+                'gtk-application-prefer-dark-theme',
+                self._night_light_proxy.get_cached_property('NightLightActive')
+            )
+        else:
+            if self._night_light_proxy and self._night_light_handler_id > 0:
+                self._night_light_proxy.disconnect(self._night_light_handler_id)
+                self._night_light_proxy = None
+                self._night_light_id = 0
+
+            Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
 
     def on_about_menu_clicked(self, action, param):
         builder = Gtk.Builder()

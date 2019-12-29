@@ -14,7 +14,7 @@ komikku/card.py
 komikku/downloader.py
 komikku/library.py
 komikku/main_window.py
-komikku/model.py
+komikku/models/database.py
 komikku/reader/pager/__init__.py
 komikku/settings_dialog.py
 komikku/updater.py
