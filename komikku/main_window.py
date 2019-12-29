@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2019 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
@@ -19,7 +17,7 @@ from komikku.add_dialog import AddDialog
 from komikku.card import Card
 from komikku.downloader import Downloader
 from komikku.library import Library
-from komikku.model import backup_db
+from komikku.models import backup_db
 from komikku.models import Settings
 from komikku.reader import Reader
 from komikku.settings_dialog import SettingsDialog

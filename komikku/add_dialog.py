@@ -1,3 +1,7 @@
+# Copyright (C) 2019 Valéry Febvre
+# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
+# Author: Valéry Febvre <vfebvre@easter-eggs.com>
+
 from gettext import gettext as _
 import html
 import threading
@@ -9,8 +13,8 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import Pango
 
 from komikku.activity_indicator import ActivityIndicator
-from komikku.model import create_db_connection
-from komikku.model import Manga
+from komikku.models import create_db_connection
+from komikku.models import Manga
 from komikku.models import Settings
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES

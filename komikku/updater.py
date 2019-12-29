@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2019 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
@@ -11,8 +9,8 @@ import threading
 from gi.repository import GLib
 
 from komikku.utils import log_error_traceback
-from komikku.model import create_db_connection
-from komikku.model import Manga
+from komikku.models import create_db_connection
+from komikku.models import Manga
 
 
 class Updater():
