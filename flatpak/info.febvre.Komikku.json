@@ -10,7 +10,8 @@
         "--share=network",
         "--socket=wayland",
         "--device=dri",
-        "--talk-name=org.freedesktop.Notifications"
+        "--talk-name=org.freedesktop.Notifications",
+        "--talk-name=org.gnome.SettingsDaemon.Color"
     ],
     "modules" : [
         "python3-wheel.json",
