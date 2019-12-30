@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.7.0" date="2019-12-30">
+            <description>
+                <p>Added 'Vertical' reading direction</p>
+                <p>Added 'Night Light' preference</p>
+            </description>
+        </release>
         <release version="0.6.2" date="2019-12-22">
             <description>
                 <p>Fixed Manganelo and WEBTOON servers</p>
