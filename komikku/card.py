@@ -138,8 +138,7 @@ class Card():
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
         self.window.titlebar.set_selection_mode(True)
-
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-card-selection-mode'))
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
     def init(self, manga=None, transition=True):
         if manga and (self.manga is None or manga.id != self.manga.id):
@@ -168,8 +167,7 @@ class Card():
             row._selected = False
 
         self.window.titlebar.set_selection_mode(False)
-
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-card'))
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
 
     def on_chapter_row_clicked(self, listbox, row):
         if self.selection_mode:
@@ -372,12 +370,12 @@ class Card():
     def show(self, transition=True):
         self.title_label.set_text(self.manga.name)
 
-        self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 
         self.builder.get_object('fullscreen_button').hide()
 
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-card'))
-        self.builder.get_object('menu_button_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
 
         self.window.show_page('card', transition=transition)
 

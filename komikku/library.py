@@ -253,8 +253,8 @@ class Library():
         selected_overlay._selected = True
 
         self.window.titlebar.set_selection_mode(True)
-        self.builder.get_object('left_button_image').set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-library-selection-mode'))
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -265,8 +265,8 @@ class Library():
             overlay._selected = False
 
         self.window.titlebar.set_selection_mode(False)
-        self.builder.get_object('left_button_image').set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu'))
+        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_manga_added(self, manga):
         """
@@ -357,12 +357,12 @@ class Library():
         image.set_from_pixbuf(pixbuf)
 
     def show(self, invalidate_sort=False):
-        self.builder.get_object('left_button_image').set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
         self.builder.get_object('fullscreen_button').hide()
 
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu'))
-        self.builder.get_object('menu_button_image').set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
+        self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
 
         if invalidate_sort:
             self.flowbox.invalidate_sort()

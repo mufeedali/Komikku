@@ -136,10 +136,15 @@ class Reader:
         self.scaling_action.set_state(GLib.Variant('s', self.scaling))
 
     def show(self):
+        def on_menu_popover_closed(menu_button):
+            self.pager.grab_focus()
+
         self.builder.get_object('fullscreen_button').show()
 
-        self.builder.get_object('menu_button').set_menu_model(self.builder.get_object('menu-reader'))
-        self.builder.get_object('menu_button_image').set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-reader'))
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        # Watch when menu is closed to be able to restore focus to pager
+        self.window.menu_button.get_popover().connect('closed', on_menu_popover_closed)
 
         self.controls.hide()
 

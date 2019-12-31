@@ -152,9 +152,6 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
-            # Restore keyboard focus to scrolled window in case it has been lost (needed for keys navigation)
-            self.grab_focus()
-
             if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
                 self.button_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())

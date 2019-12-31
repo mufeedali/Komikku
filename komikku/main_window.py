@@ -51,6 +51,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
         self.title_stack = self.builder.get_object('title_stack')
+        self.left_button_image = self.builder.get_object('left_button_image')
+        self.menu_button = self.builder.get_object('menu_button')
+        self.menu_button_image = self.builder.get_object('menu_button_image')
 
         self.assemble_window()
 
