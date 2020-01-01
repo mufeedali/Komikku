@@ -7,11 +7,21 @@ ninja -C _build install
 GTK_THEME=Adwaita:dark ninja -C _build run &
 
 sleep 5
+wmctrl -F -r Komikku -e 0,0,0,412,834
+
+sleep 5
 gnome-screenshot -w -f screenshots/main-window.png
 
 xdotool key --delay 100 Shift+Tab Shift+Tab Shift+Tab Return
 sleep 1
 gnome-screenshot -w -f screenshots/add-servers.png
+sleep 3
+
+xdotool key --delay 100 Shift+Tab Return
+xdotool key --delay 100 Tab Tab Return
+xdotool key --delay 100 Tab Return
+sleep 1
+gnome-screenshot -w -f screenshots/preferences.png
 sleep 3
 
 # xdotool key --delay 100 Escape Tab Tab Tab Return Return
