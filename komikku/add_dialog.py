@@ -5,6 +5,7 @@
 from gettext import gettext as _
 import html
 import threading
+import unidecode
 
 from gi.repository import Gio
 from gi.repository import GLib
@@ -236,7 +237,7 @@ class AddDialog():
         if self.search_lock:
             return
 
-        term = self.custom_title_search_page_searchentry.get_text().strip()
+        term = unidecode.unidecode(self.custom_title_search_page_searchentry.get_text().strip().lower())
         if not term and getattr(self.server, 'get_most_populars', None) is None:
             # An empty term is allowed only if server has 'get_most_populars' method
             return

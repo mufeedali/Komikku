@@ -1,0 +1,14 @@
+{
+    "name": "python3-unidecode",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} unidecode"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/d0/42/d9edfed04228bacea2d824904cae367ee9efd05e6cce7ceaaedd0b0ad964/Unidecode-1.1.1-py2.py3-none-any.whl",
+            "sha256": "1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a"
+        }
+    ]
+}

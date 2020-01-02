@@ -9,6 +9,7 @@ import cloudscraper
 import magic
 import re
 import unicodedata
+import unidecode
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -22,7 +23,7 @@ class Japscan(Server):
     lang = 'fr'
 
     base_url = 'https://www.japscan.co'
-    search_url = base_url + '/search/'
+    search_url = base_url + '/mangas/{0}/{1}'
     manga_url = base_url + '/manga/{0}/'
     chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
     image_url = 'https://c.japscan.co/lel/{0}/{1}/{2}'
@@ -167,8 +168,9 @@ class Japscan(Server):
         # This server use a specific manga slug for images URLs
         manga_slug = unicodedata.normalize('NFKD', manga_name)
         manga_slug = manga_slug.encode('ascii', 'ignore').decode()
-        manga_slug = re.sub(r'[^a-zA-Z0-9\- ]+', '', manga_slug)  # remove not alphanum characters
+        manga_slug = re.sub(r'[^a-zA-Z0-9\'\- ]+', '', manga_slug)  # remove not alphanum characters
         manga_slug = manga_slug.replace(' - ', ' ')
+        manga_slug = manga_slug.replace("'", '-')
         manga_slug = manga_slug.replace(' ', '-')
 
         chapter_slug = chapter_slug.capitalize()
@@ -216,33 +218,59 @@ class Japscan(Server):
         return results
 
     def search(self, term):
-        self.session_get(self.base_url)
+        """
+        JapScan does not provide a search. At our disposal, we only have a list.
+        Mangas are indexed by the first character of their name then paginated:
 
-        r = self.session_post(self.search_url, data=dict(search=term))
+        /mangas/0-9/1
+        /mangas/0-9/2
+        /mangas/0-9/...
+        /mangas/A/1
+        /mangas/A/2
+        /mangas/A/...
+        /mangas/...
+        """
+        if term[0] in '0123456789':
+            index = '0-9'
+        else:
+            index = term[0].upper()
+
+        r = self.session_get(self.search_url.format(index, 1))
         if r is None:
             return None
 
-        if r.status_code == 200:
-            if r.content == b'':
-                # No results
-                return []
+        soup = BeautifulSoup(r.text, 'html.parser')
 
-            try:
-                # Returned data for each manga:
-                # name:  name of the manga
-                # image: path of cover image
-                # url:   path of manga page
-                data = r.json(strict=False)
+        results = []
+        nb_pages = int(soup.find_all('div', class_='card')[0].find('ul', class_='pagination').find_all('a')[-1].text)
 
-                results = []
-                for item in data:
-                    results.append(dict(
-                        slug=item['url'].split('/')[2],
-                        cover=self.cover_url.format(item['image']),
-                    ))
+        for page in range(nb_pages):
+            page_results = self.search_manga_list_page(term, index, page + 1)
+            if page_results:
+                results += page_results
 
-                return results
-            except Exception:
-                return None
-        else:
+        return sorted(results, key=lambda m: m['name'])
+
+    def search_manga_list_page(self, term, index, page=1):
+        r = self.session_get(self.search_url.format(index, page))
+        if r is None:
             return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for element in soup.find_all('div', class_='card')[0].find('div', class_='d-flex').find_all('div'):
+            name = element.p.a.text.strip()
+            if term not in unidecode.unidecode(name).lower():
+                continue
+
+            slug = element.p.a.get('href').split('/')[-2]
+            cover = self.cover_url.format(element.a.img.get('src'))
+
+            results.append(dict(
+                name=name,
+                slug=slug,
+                cover=cover,
+            ))
+
+        return results
