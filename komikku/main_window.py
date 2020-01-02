@@ -187,10 +187,10 @@ class MainWindow(Gtk.ApplicationWindow):
                 None
             )
 
-            def property_changed(proxy, gvariant):
-                data = gvariant.unpack()
-                if 'NightLightActive' in data.keys():
-                    Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', data['NightLightActive'])
+            def property_changed(proxy, changed_properties, invalidated_properties):
+                properties = changed_properties.unpack()
+                if 'NightLightActive' in properties.keys():
+                    Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', properties['NightLightActive'])
 
             self._night_light_handler_id = self._night_light_proxy.connect('g-properties-changed', property_changed)
 
@@ -202,7 +202,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if self._night_light_proxy and self._night_light_handler_id > 0:
                 self._night_light_proxy.disconnect(self._night_light_handler_id)
                 self._night_light_proxy = None
-                self._night_light_id = 0
+                self._night_light_handler_id = 0
 
             Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
 
