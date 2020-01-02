@@ -230,6 +230,7 @@ class Japscan(Server):
         /mangas/A/...
         /mangas/...
         """
+        term = unidecode.unidecode(term).lower()
         if term[0] in '0123456789':
             index = '0-9'
         else:

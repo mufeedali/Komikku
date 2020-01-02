@@ -50,7 +50,7 @@ class CustomTimeout(TimeoutSauce):
         if kwargs['connect'] is None:
             kwargs['connect'] = REQUESTS_TIMEOUT
         if kwargs['read'] is None:
-            kwargs['read'] = REQUESTS_TIMEOUT * 2
+            kwargs['read'] = REQUESTS_TIMEOUT * 3
         super().__init__(*args, **kwargs)
 
 
