@@ -7,6 +7,7 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
+import unidecode
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -157,10 +158,11 @@ class Scantrad(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
+        term = unidecode.unidecode(term).lower()
         for a_element in soup.find('div', class_='h-left').find_all('a'):
             name = a_element.find('div', class_='hmi-titre').text.strip()
 
-            if name.lower().find(term.lower()) >= 0:
+            if term in unidecode.unidecode(name).lower():
                 results.append(dict(
                     slug=a_element.get('href').split('/')[-1],
                     name=name,

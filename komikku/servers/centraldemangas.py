@@ -8,6 +8,7 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 import magic
 import requests
+import unidecode
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -208,8 +209,9 @@ class Centraldemangas(Server):
             data = r.json(strict=False)
 
             results = []
+            term = unidecode.unidecode(term).lower()
             for item in data:
-                if term.lower() not in item['title'].lower():
+                if term not in unidecode.unidecode(item['title']).lower():
                     continue
 
                 results.append(dict(
