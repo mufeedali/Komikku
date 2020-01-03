@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Valéry Febvre
+# Copyright (C) 2019-2020 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -8,8 +8,8 @@ from gi.repository import GLib
 
 class Settings(Gio.Settings):
     """
-        Gio.Settings handler
-        Implements the basic dconf-settings as properties
+    Gio.Settings handler
+    Implements the basic dconf-settings as properties
     """
 
     # Default Settings instance

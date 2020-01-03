@@ -7,7 +7,7 @@
     <property name="type_hint">dialog</property>
     <property name="program_name">@prettyname@</property>
     <property name="version">@VERSION@</property>
-    <property name="copyright">© 2019 @authorfullname@</property>
+    <property name="copyright">© 2019-2020 @authorfullname@</property>
     <property name="comments" translatable="yes">An online/offline manga reader</property>
     <property name="website">@PACKAGE_URL@</property>
     <property name="website_label" translatable="yes">Learn more about Komikku</property>
