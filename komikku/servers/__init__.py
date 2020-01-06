@@ -185,6 +185,9 @@ def get_servers_list():
     for finder, name, ispkg in iter_namespace(komikku.servers):
         module = importlib.import_module(name)
         for name, obj in dict(inspect.getmembers(module)).items():
+            if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
+                continue
+
             if inspect.isclass(obj) and obj.__module__.startswith('komikku.servers.'):
                 servers.append(dict(
                     id=obj.id,

@@ -1,0 +1,14 @@
+{
+    "name": "python3-pure-protobuf",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} pure-protobuf"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/7d/90/85c89be09c81c13e5dcf9dee0ef0e9944723b8fc28a1e9f9289347c83126/pure_protobuf-2.0.0-py3-none-any.whl",
+            "sha256": "d1d6e6133b91f56cfda6d616e60890eabea0e2634ecb562717525684346451e9"
+        }
+    ]
+}

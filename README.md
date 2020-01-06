@@ -59,8 +59,10 @@ Dependencies:
 * `python-cloudscraper`
 * `python-dateparser`
 * `python-lxml`
-* `python-pillow`
 * `python-magic`
+* `python-pillow`
+* `python-pure-protobuf`
+* `python-unidecode`
 * `python-well`
 
 This is the best practice to test Komikku without installing using meson and ninja.
