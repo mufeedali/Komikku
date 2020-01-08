@@ -75,8 +75,9 @@ class Ninemanga(Server):
             cover=None,
         ))
 
-        # Last word (Manga, Manhwa, ...) must be removed from name
-        data['name'] = ' '.join(soup.find('div', class_='ttline').h1.text.strip().split()[:-1])
+        name = soup.find('div', class_='ttline').h1.text.strip()
+        name = name.replace(' Manga', '').replace(' Манга', '')  # cleaning
+        data['name'] = name
         data['cover'] = soup.find('a', class_='bookface').img.get('src')
 
         # Details
