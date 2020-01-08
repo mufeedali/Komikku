@@ -91,14 +91,14 @@ class Mangaplus(Server):
 
         for chapter in resp_data.first_chapters:
             data['chapters'].append(dict(
-                slug=chapter.id,
+                slug=str(chapter.id),
                 title='{0} - {1}'.format(chapter.name, chapter.subtitle),
                 date=datetime.fromtimestamp(chapter.start_timestamp).date(),
             ))
 
         for chapter in resp_data.last_chapters:
             data['chapters'].append(dict(
-                slug=chapter.id,
+                slug=str(chapter.id),
                 title='{0} - {1}'.format(chapter.name, chapter.subtitle),
                 date=datetime.fromtimestamp(chapter.start_timestamp).date(),
             ))
