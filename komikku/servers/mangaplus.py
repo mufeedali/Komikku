@@ -78,6 +78,7 @@ class Mangaplus(Server):
 
         data = initial_data.copy()
         data.update(dict(
+            name=resp_data.title.name,
             authors=[resp_data.title.author],
             scanlators=['Shueisha'],
             genres=[],
