@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_japscan(japscan_server):
         response = japscan_server.get_manga_chapter_page_image(None, 'Tales Of Demons And Gods', '1', dict(image='01.jpg'))
         print('JapScan: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

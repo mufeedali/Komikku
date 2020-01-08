@@ -49,6 +49,6 @@ def test_get_manga_chapter_page_image_peppercarrot(peppercarrot_server):
             None, None, 'ep01_Potion-of-Flight', dict(slug='Pepper-and-Carrot_by-David-Revoy_E01.jpg'))
         print('Pepper&Carrot: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

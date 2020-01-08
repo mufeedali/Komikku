@@ -63,6 +63,6 @@ def test_get_manga_chapter_page_image_mangaplus(mangaplus_server):
             ))
         print('MANGA Plus: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

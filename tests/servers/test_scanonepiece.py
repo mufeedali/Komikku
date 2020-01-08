@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_scanonepiece(scanonepiece_server):
         response = scanonepiece_server.get_manga_chapter_page_image('tales-of-demons-and-gods', None, 'chapitre-1', dict(image='01.jpg'))
         print('Scanonepiece: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

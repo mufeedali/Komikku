@@ -60,6 +60,6 @@ def test_get_manga_chapter_page_image_centraldemangas(centraldemangas_server):
             dict(image='http://mangas2016.centraldemangas.com.br/tales_of_demons_and_gods/tales_of_demons_and_gods001-02.jpg'))
         print('Central de mangas: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

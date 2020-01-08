@@ -48,6 +48,6 @@ def test_get_manga_chapter_page_image_scantrad(scantrad_server):
         response = scantrad_server.get_manga_chapter_page_image(None, None, None, dict(image='lel/51287.png'))
         print('Scantrad: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_webtoon(webtoon_server):
         response = webtoon_server.get_manga_chapter_page_image(None, None, None, dict(image='https://webtoon-phinf.pstatic.net/20181004_75/1538611782712ED47V_JPEG/1538611782675146117.jpg?type=q90'))
         print('Webtoon: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

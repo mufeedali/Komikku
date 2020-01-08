@@ -48,6 +48,6 @@ def test_get_manga_chapter_page_image_dbmultiverse(dbmultiverse_server):
         response = dbmultiverse_server.get_manga_chapter_page_image(None, None, None, dict(slug='0'))
         print('DB Multiverse: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

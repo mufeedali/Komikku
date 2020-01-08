@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_ninemanga(ninemanga_server):
         response = ninemanga_server.get_manga_chapter_page_image('Tales of Demons and Gods', None, None, dict(slug='1467410-1.html'))
         print('Ninemanga: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

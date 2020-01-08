@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_manganelo(manganelo_server):
         response = manganelo_server.get_manga_chapter_page_image(None, None, None, dict(image='https://s5.mkklcdnv5.com/mangakakalot/t1/tales_of_demons_and_gods/chapter_1_rebirth/15.jpg'))
         print('Manganelo: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

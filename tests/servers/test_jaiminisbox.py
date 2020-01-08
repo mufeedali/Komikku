@@ -62,6 +62,6 @@ def test_get_manga_chapter_page_image_jaiminisbox(jaiminisbox_server):
             ))
         print('Jaimini\'s Box: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
     assert response is not (None, None)

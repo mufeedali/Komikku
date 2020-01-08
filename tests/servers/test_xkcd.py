@@ -48,6 +48,6 @@ def test_get_manga_chapter_page_image_xkcd(xkcd_server):
         response = xkcd_server.get_manga_chapter_page_image(None, None, None, dict(image='barrel_cropped_(1).jpg'))
         print('xkcd: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

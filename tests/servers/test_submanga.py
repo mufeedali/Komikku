@@ -68,6 +68,6 @@ def test_get_manga_chapter_page_image_submanga(submanga_server):
         response = submanga_server.get_manga_chapter_page_image('tales-of-demons-and-gods', None, '1', dict(image='01.jpg'))
         print('Submanga: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)

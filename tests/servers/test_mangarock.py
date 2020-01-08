@@ -58,6 +58,6 @@ def test_get_manga_chapter_page_image_mangarock(mangarock_server):
         response = mangarock_server.get_manga_chapter_page_image(None, None, None, dict(image='https://f01.mrcdn.info/file/mrfiles/i/4/o/1/o.k2eogSxp.mri'))
         print('Mangarock: get manga chapter page image')
     except Exception as e:
-        response = None
+        response = (None, None)
         log_error_traceback(e)
-    assert response is not None
+    assert response is not (None, None)
