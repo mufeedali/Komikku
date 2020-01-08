@@ -8,6 +8,5 @@ Terminal=false
 Type=Application
 StartupNotify=true
 Categories=Office;Viewer;GTK;GNOME;
-MimeType=application/octet-stream;
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=manga;reader;viewer;comic;webtoon;scan;offline;
