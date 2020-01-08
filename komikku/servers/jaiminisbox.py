@@ -14,7 +14,7 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-SERVER_NAME = "Jaimini's box"
+SERVER_NAME = "Jaimini's Box"
 
 
 class Jaiminisbox(Server):
@@ -55,7 +55,7 @@ class Jaiminisbox(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
-            scanlators=["Jaimini's box"],
+            scanlators=[SERVER_NAME, ],
             genres=[],
             status=None,
             synopsis=None,
