@@ -9,8 +9,8 @@ from datetime import datetime
 from enum import IntEnum
 import magic
 import requests
-from typing import List
 import re
+from typing import List
 import uuid
 import unidecode
 
@@ -89,19 +89,13 @@ class Mangaplus(Server):
             cover=resp_data.title.portrait_image_url,
         ))
 
-        for chapter in resp_data.first_chapters:
-            data['chapters'].append(dict(
-                slug=str(chapter.id),
-                title='{0} - {1}'.format(chapter.name, chapter.subtitle),
-                date=datetime.fromtimestamp(chapter.start_timestamp).date(),
-            ))
-
-        for chapter in resp_data.last_chapters:
-            data['chapters'].append(dict(
-                slug=str(chapter.id),
-                title='{0} - {1}'.format(chapter.name, chapter.subtitle),
-                date=datetime.fromtimestamp(chapter.start_timestamp).date(),
-            ))
+        for chapters in (resp_data.first_chapters, resp_data.last_chapters):
+            for chapter in chapters:
+                data['chapters'].append(dict(
+                    slug=str(chapter.id),
+                    title='{0} - {1}'.format(chapter.name, chapter.subtitle),
+                    date=datetime.fromtimestamp(chapter.start_timestamp).date(),
+                ))
 
         return data
 
