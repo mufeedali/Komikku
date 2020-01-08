@@ -502,6 +502,8 @@ class Chapter:
 
     @property
     def path(self):
+        # BEWARE: self.slug may contain '/' characters
+        # os.makedirs() must be used to create chapter's folder
         return os.path.join(self.manga.path, self.slug)
 
     def get_page(self, page_index):
@@ -515,7 +517,7 @@ class Chapter:
             return None
 
         if not os.path.exists(self.path):
-            os.mkdir(self.path)
+            os.makedirs(self.path)
 
         page_path = os.path.join(self.path, imagename)
 
@@ -536,11 +538,11 @@ class Chapter:
 
     def get_page_path(self, page_index):
         if self.pages[page_index]['image'] is not None:
-            # self.pages[page_index]['image'] can be an image name or an image url (path + eventually a query)
+            # self.pages[page_index]['image'] can be an image name or an image url (path + eventually a query string)
 
             # Extract filename
             imagename = self.pages[page_index]['image'].split('/')[-1]
-            # Remove query
+            # Remove query string
             imagename = imagename.split('?')[0]
 
             path = os.path.join(self.path, imagename)
