@@ -26,7 +26,7 @@ class Jaiminisbox(Server):
     search_url = base_url + '/reader/search'
     mangas_url = base_url + '/reader/directory/'
     manga_url = base_url + '/reader/series/{0}/'
-    chapter_url = base_url + '/reader/read/{0}/en/{1}page/1'
+    chapter_url = base_url + '/reader/read/{0}/en/{1}/page/1'
 
     def __init__(self):
         if self.session is None:
@@ -82,7 +82,7 @@ class Jaiminisbox(Server):
                 a_element = element.find('div', class_='title').a
 
                 title = a_element.text.strip()
-                slug = '/'.join(a_element.get('href').split('/')[-3:])
+                slug = '/'.join(a_element.get('href').split('/')[-3:-1])
                 date = convert_date_string(list(element.find('div', class_='meta_r').a.next_siblings)[0][2:], '%Y.%m.%d')
 
                 data['chapters'].append(dict(
