@@ -85,7 +85,7 @@ def get_db_backup_path():
 
 def init_db():
     db_path = get_db_path()
-    db_backup_path = get_db_path()
+    db_backup_path = get_db_backup_path()
     if os.path.exists(db_path) and os.path.exists(db_backup_path) and not check_db():
         # Restore backup
         print('Restore DB from backup')
