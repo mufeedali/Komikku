@@ -213,9 +213,7 @@ class MainWindow(Gtk.ApplicationWindow):
         about_dialog = builder.get_object('about_dialog')
         about_dialog.set_modal(True)
         about_dialog.set_transient_for(self)
-        about_response = about_dialog.run()
-        if (about_response == Gtk.ResponseType.DELETE_EVENT or
-                about_response == Gtk.ResponseType.CANCEL):
+        if about_dialog.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT):
             about_dialog.hide()
 
     def on_application_quit(self, window, event):
