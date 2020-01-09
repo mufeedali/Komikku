@@ -115,7 +115,7 @@ class Jaiminisbox(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
+        r = self.session_post(self.chapter_url.format(manga_slug, chapter_slug), data=dict(adult='true'))
         if r is None:
             return None
 
