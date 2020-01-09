@@ -52,6 +52,16 @@ class Jaiminisbox(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
+        adult_alert = False
+        if soup.find('div', class_='alert'):
+            adult_alert = True
+
+            r = self.session_post(self.manga_url.format(initial_data['slug']), data=dict(adult='true'))
+            if r is None:
+                return None
+
+            soup = BeautifulSoup(r.text, 'html.parser')
+
         data = initial_data.copy()
         data.update(dict(
             authors=[],
@@ -74,7 +84,13 @@ class Jaiminisbox(Server):
             if label in ('Author', 'Artist'):
                 data['authors'].append(value)
             elif label == 'Synopsis':
-                data['synopsis'] = value
+                if adult_alert:
+                    data['synopsis'] = '{0}\n\n{1}'.format(
+                        'ALERT: This series contains mature contents and is meant to be viewed by an adult audience.',
+                        value
+                    )
+                else:
+                    data['synopsis'] = value
 
         # Chapters
         for group in reversed(soup.find('div', class_='list').find_all('div', class_='group')):
@@ -83,7 +99,7 @@ class Jaiminisbox(Server):
 
                 title = a_element.text.strip()
                 slug = '/'.join(a_element.get('href').split('/')[-3:-1])
-                date = convert_date_string(list(element.find('div', class_='meta_r').a.next_siblings)[0][2:], '%Y.%m.%d')
+                date = convert_date_string(list(element.find('div', class_='meta_r').find_all('a')[-1].next_siblings)[0][2:], '%Y.%m.%d')
 
                 data['chapters'].append(dict(
                     slug=slug,
