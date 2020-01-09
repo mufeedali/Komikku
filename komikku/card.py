@@ -411,6 +411,7 @@ class Card():
             chapter.update(dict(
                 pages=chapter.pages,
                 read=read,
+                recent=False,
             ))
 
             self.populate_chapter_row(row)
@@ -427,6 +428,7 @@ class Card():
         chapter.update(dict(
             pages=chapter.pages,
             read=read,
+            recent=False,
         ))
 
         self.populate_chapter_row(self.action_row)
