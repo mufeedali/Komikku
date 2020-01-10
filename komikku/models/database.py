@@ -282,6 +282,14 @@ class Manga:
         return row['recents']
 
     @property
+    def nb_unread_chapters(self):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT count() AS unread FROM chapters WHERE manga_id = ? AND read = 0', (self.id,)).fetchone()
+        db_conn.close()
+
+        return row['unread']
+
+    @property
     def path(self):
         return os.path.join(get_data_dir(), self.server_id, self.name)
 
