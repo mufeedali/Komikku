@@ -20,6 +20,7 @@ from komikku.utils import folder_size
 class Card():
     manga = None
     selection_mode = False
+    selection_count = 0
 
     def __init__(self, window):
         self.window = window
@@ -90,6 +91,10 @@ class Card():
         mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
         self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
+        select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
+        select_all_chapters_action.connect('activate', self.select_all_chapters)
+        self.window.application.add_action(select_all_chapters_action)
+
         reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
         reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
         self.window.application.add_action(reset_selected_chapters_action)
@@ -119,6 +124,14 @@ class Card():
         self.populate_chapter_row(self.action_row)
 
         self.window.downloader.start()
+
+    def select_all_chapters(self, action, param):
+        self.selection_count = 0
+        for row in self.listbox.get_children():
+            # Select all chapters
+            self.listbox.select_row(row)
+            row._selected = True
+            self.selection_count += 1
 
     def download_selected_chapters(self, action, param):
         for row in self.listbox.get_selected_rows():
@@ -161,6 +174,7 @@ class Card():
 
     def leave_selection_mode(self):
         self.selection_mode = False
+        self.selection_count = 0
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for row in self.listbox.get_children():
@@ -172,10 +186,15 @@ class Card():
     def on_chapter_row_clicked(self, listbox, row):
         if self.selection_mode:
             if row._selected:
+                self.selection_count -= 1
                 self.listbox.unselect_row(row)
                 row._selected = False
             else:
+                self.selection_count += 1
+                self.listbox.select_row(row)
                 row._selected = True
+            if self.selection_count == 0:
+                self.leave_selection_mode()
         else:
             self.window.reader.init(row.chapter)
 
