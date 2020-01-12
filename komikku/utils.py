@@ -12,7 +12,7 @@ logger = logging.getLogger()
 
 
 def folder_size(path):
-    res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE)
+    res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE, check=False)
 
     return res.stdout.split()[0].decode()
 

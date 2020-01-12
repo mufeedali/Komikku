@@ -116,6 +116,9 @@ class Card():
         reset_chapter_action.connect('activate', self.reset_chapter)
         self.window.application.add_action(reset_chapter_action)
 
+        stop_button = self.window.builder.get_object('stop_button')
+        stop_button.connect('clicked', self.on_stop_button_clicked)
+
     def download_chapter(self, action, param):
         # Add chapter in download queue
         self.window.downloader.add(self.action_row.chapter)
@@ -124,6 +127,22 @@ class Card():
         self.populate_chapter_row(self.action_row)
 
         self.window.downloader.start()
+
+    def on_stop_button_clicked(self, stop_button):
+        downloads_button_image = self.window.builder.get_object('downloads_button_image')
+        stop_button_image = self.window.builder.get_object('stop_button_image')
+        if not self.window.downloader.stop_flag:
+            self.window.downloader.stop()
+            self.window.downloader.stop_flag = True
+            self.window.downloader.status = 'interrupted'
+            downloads_button_image.set_from_icon_name('media-playback-pause-symbolic', Gtk.IconSize.MENU)
+            stop_button_image.set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+        else:
+            self.window.downloader.start()
+            self.window.downloader.stop_flag = False
+            self.window.downloader.status = 'running'
+            downloads_button_image.set_from_icon_name('document-save-symbolic', Gtk.IconSize.MENU)
+            stop_button_image.set_from_icon_name('media-playback-pause-symbolic', Gtk.IconSize.MENU)
 
     def select_all_chapters(self, action, param):
         self.selection_count = 0

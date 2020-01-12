@@ -20,6 +20,7 @@ class Downloader():
     """
     status = None
     stop_flag = False
+    pending = 0
 
     def __init__(self, window):
         self.window = window
@@ -27,6 +28,7 @@ class Downloader():
 
     def add(self, chapter):
         Download.new(chapter.id)
+        self.pending += 1
 
     def start(self):
         def run():
@@ -44,6 +46,13 @@ class Downloader():
                 chapter = download.chapter
                 GLib.idle_add(start, chapter)
 
+                downloading_label = self.window.builder.get_object("downloading_label")
+                download_progress = self.window.builder.get_object("download_progress")
+                downloads_button = self.window.builder.get_object("downloads_button")
+                downloads_button.set_visible(True)
+                downloading_label.set_label(_('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title))
+                download_progress.set_text('Pending')
+
                 try:
                     if download.chapter.update_full():
                         for index, page in enumerate(chapter.pages):
@@ -51,6 +60,10 @@ class Downloader():
                                 self.status = 'interrupted'
                                 download.update(dict(status='pending'))
                                 break
+
+                            downloading_label.set_label(_('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title))
+                            download_progress.set_text(_('Downloading page {0} / {1}').format(index + 1, len(chapter.pages)))
+                            download_progress.set_fraction((index + 1) / len(chapter.pages))
 
                             if chapter.get_page_path(index) is None:
                                 path = chapter.get_page(index)
@@ -64,7 +77,9 @@ class Downloader():
                         if self.status != 'interrupted':
                             chapter.update(dict(downloaded=1))
                             download.delete()
+                            self.pending -= 1
                             GLib.idle_add(complete, chapter)
+                            download_progress.set_text('Download Complete.')
                     else:
                         download.update(dict(status='error'))
                         GLib.idle_add(error, chapter)
@@ -93,6 +108,9 @@ class Downloader():
                 _('Download completed'),
                 _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
             )
+            downloads_button = self.window.builder.get_object("downloads_button")
+            if self.status == 'done' and self.pending == 0:
+                downloads_button.set_visible(False)
             notification.show()
 
             self.window.card.update_chapter_row(chapter)
