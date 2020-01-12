@@ -179,6 +179,7 @@ class Manga:
         complete=_('Complete'),
         ongoing=_('Ongoing'),
         suspended=_('Suspended'),
+        hiatus=_('Hiatus'),
     )
 
     def __init__(self, server=None):
