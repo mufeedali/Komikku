@@ -20,6 +20,11 @@
             <summary>Dark theme</summary>
             <description>Use the dark variant of your GTK theme. Please note that not every GTK theme has a dark variant.</description>
         </key>
+        <key type="b" name="notifications">
+            <default>true</default>
+            <summary>Notifications</summary>
+            <description>Show system notifications for downloads. The internal download interface will still work.</description>
+        </key>
         <key type="b" name="night-light">
             <default>false</default>
             <summary>Night light</summary>

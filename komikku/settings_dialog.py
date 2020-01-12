@@ -42,6 +42,11 @@ class SettingsDialog():
         settings_theme_switch.set_active(settings.dark_theme)
         settings_theme_switch.connect('notify::active', self.on_theme_changed)
 
+        # Notifications
+        settings_notifications_switch = self.builder.get_object('settings_notifications_switch')
+        settings_notifications_switch.set_active(settings.notifications)
+        settings_notifications_switch.connect('notify::active', self.on_notifications_changed)
+
         # Night light
         settings_night_light_switch = self.builder.get_object('settings_night_light_switch')
         settings_night_light_switch.set_active(settings.night_light)
@@ -165,6 +170,12 @@ class SettingsDialog():
         Settings.get_default().dark_theme = switch_button.get_active()
 
         self.window.init_theme()
+
+    def on_notifications_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            Settings.get_default().notifications = True
+        else:
+            Settings.get_default().notifications = False
 
     def on_update_at_startup_changed(self, switch_button, gparam):
         if switch_button.get_active():

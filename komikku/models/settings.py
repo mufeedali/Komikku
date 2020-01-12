@@ -70,6 +70,14 @@ class Settings(Gio.Settings):
         self.set_boolean('dark-theme', state)
 
     @property
+    def notifications(self):
+        return self.get_boolean('notifications')
+
+    @notifications.setter
+    def notifications(self, state):
+        self.set_boolean('notifications', state)
+
+    @property
     def fullscreen(self):
         return self.get_boolean('fullscreen')
 

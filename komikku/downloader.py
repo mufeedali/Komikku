@@ -10,6 +10,7 @@ from gi.repository import GLib
 from gi.repository import Notify
 
 from komikku.models import Download
+from komikku.models import Settings
 from komikku.models import create_db_connection
 from komikku.utils import log_error_traceback
 
@@ -35,6 +36,7 @@ class Downloader():
             db_conn = create_db_connection()
             rows = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchall()
             db_conn.close()
+            self.pending = len(rows)
 
             for row in rows:
                 if self.stop_flag:
@@ -61,9 +63,10 @@ class Downloader():
                                 download.update(dict(status='pending'))
                                 break
 
-                            downloading_label.set_label(_('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title))
-                            download_progress.set_text(_('Downloading page {0} / {1}').format(index + 1, len(chapter.pages)))
-                            download_progress.set_fraction((index + 1) / len(chapter.pages))
+                            downloading_label.set_label(_('[{0}] - {1}').format(chapter.manga.name, chapter.title))
+                            if chapter.pages:
+                                download_progress.set_text(_('Downloading page {0} / {1}').format(index + 1, len(chapter.pages)))
+                                download_progress.set_fraction((index + 1) / len(chapter.pages))
 
                             if chapter.get_page_path(index) is None:
                                 path = chapter.get_page(index)
@@ -91,27 +94,30 @@ class Downloader():
             self.status = 'done'
 
         def notify_progress(chapter, index, success):
-            summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
-            if not success:
-                summary = '{0} ({1})'.format(summary, _('error'))
+            if Settings.get_default().notifications:
+                summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
+                if not success:
+                    summary = '{0} ({1})'.format(summary, _('error'))
 
-            notification.update(
-                summary,
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
-            )
-            notification.show()
+                notification.update(
+                    summary,
+                    _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
+                )
+                notification.show()
 
             return False
 
         def complete(chapter):
-            notification.update(
-                _('Download completed'),
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
-            )
+            if Settings.get_default().notifications:
+                notification.update(
+                    _('Download completed'),
+                    _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
+                )
+                notification.show()
+
             downloads_button = self.window.builder.get_object("downloads_button")
             if self.status == 'done' and self.pending == 0:
                 downloads_button.set_visible(False)
-            notification.show()
 
             self.window.card.update_chapter_row(chapter)
 
@@ -137,8 +143,9 @@ class Downloader():
         self.stop_flag = False
 
         # Create notification
-        notification = Notify.Notification.new('')
-        notification.set_timeout(Notify.EXPIRES_DEFAULT)
+        if Settings.get_default().notifications:
+            notification = Notify.Notification.new('')
+            notification.set_timeout(Notify.EXPIRES_DEFAULT)
 
         thread = threading.Thread(target=run)
         thread.daemon = True
