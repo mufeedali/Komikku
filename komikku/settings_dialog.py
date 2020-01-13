@@ -84,8 +84,8 @@ class SettingsDialog():
 
         # Reading direction
         liststore = Gio.ListStore.new(Handy.ValueObject)
-        liststore.insert(0, Handy.ValueObject.new(_('Right to left ←')))
-        liststore.insert(1, Handy.ValueObject.new(_('Left to right →')))
+        liststore.insert(0, Handy.ValueObject.new(_('Right to Left ←')))
+        liststore.insert(1, Handy.ValueObject.new(_('Left to Right →')))
         liststore.insert(2, Handy.ValueObject.new(_('Vertical ↓')))
 
         row = self.builder.get_object('settings_reading_direction_row')
@@ -95,9 +95,9 @@ class SettingsDialog():
 
         # Image scaling
         liststore = Gio.ListStore.new(Handy.ValueObject)
-        liststore.insert(0, Handy.ValueObject.new(_('Adapt to screen')))
-        liststore.insert(1, Handy.ValueObject.new(_('Adapt to width')))
-        liststore.insert(2, Handy.ValueObject.new(_('Adapt to height')))
+        liststore.insert(0, Handy.ValueObject.new(_('Adapt to Screen')))
+        liststore.insert(1, Handy.ValueObject.new(_('Adapt to Width')))
+        liststore.insert(2, Handy.ValueObject.new(_('Adapt to Height')))
 
         row = self.builder.get_object('settings_scaling_row')
         row.bind_name_model(liststore, Handy.ValueObject.dup_string)

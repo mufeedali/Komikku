@@ -12,11 +12,11 @@
                 <attribute name="action">app.card.reset-selected-chapters</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">Mark as read</attribute>
+                <attribute name="label" translatable="yes">Mark as Read</attribute>
                 <attribute name="action">app.card.mark-selected-chapters-as-read</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">Mark as unread</attribute>
+                <attribute name="label" translatable="yes">Mark as Unread</attribute>
                 <attribute name="action">app.card.mark-selected-chapters-as-unread</attribute>
             </item>
         </section>

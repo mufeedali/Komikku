@@ -15,17 +15,17 @@
 
     <section>
       <submenu>
-        <attribute name="label" translatable="yes">Order of chapters</attribute>
+        <attribute name="label" translatable="yes">Order of Chapters</attribute>
         <section>
           <attribute name="id">card-sort-order</attribute>
 
           <item>
-            <attribute name="label" translatable="yes">By chapter number (9-0)</attribute>
+            <attribute name="label" translatable="yes">By Chapter Number (9-0)</attribute>
             <attribute name="action">app.card.sort-order</attribute>
             <attribute name="target">desc</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">By chapter number (0-9)</attribute>
+            <attribute name="label" translatable="yes">By Chapter Number (0-9)</attribute>
             <attribute name="action">app.card.sort-order</attribute>
             <attribute name="target">asc</attribute>
           </item>
@@ -35,7 +35,7 @@
 
     <section>
       <item>
-        <attribute name="label" translatable="yes">Open in browser</attribute>
+        <attribute name="label" translatable="yes">Open in Browser</attribute>
         <attribute name="action">app.card.open-in-browser</attribute>
       </item>
     </section>

@@ -4,7 +4,7 @@
   <menu id="menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">Update library</attribute>
+        <attribute name="label" translatable="yes">Update Library</attribute>
         <attribute name="action">app.library.update</attribute>
       </item>
       <item>
