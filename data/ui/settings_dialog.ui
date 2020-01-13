@@ -318,7 +318,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">end</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Update at startup</property>
+                                                <property name="label" translatable="yes">Update at Startup</property>
                                                 <property name="ellipsize">end</property>
                                               </object>
                                               <packing>
@@ -381,7 +381,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="subtitle" translatable="yes">Restrict servers to selected languages</property>
-                                    <property name="title" translatable="yes">Servers languages</property>
+                                    <property name="title" translatable="yes">Servers Languages</property>
                                   </object>
                                 </child>
                                 <style>
@@ -431,7 +431,7 @@
                                     <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="title" translatable="yes">Reading direction</property>
+                                    <property name="title" translatable="yes">Reading Direction</property>
                                   </object>
                                 </child>
                                 <child>
@@ -447,7 +447,7 @@
                                     <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="title" translatable="yes">Background color</property>
+                                    <property name="title" translatable="yes">Background Color</property>
                                   </object>
                                 </child>
                                 <child>
