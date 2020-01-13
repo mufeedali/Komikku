@@ -324,7 +324,7 @@ class AddDialog():
     def show_page(self, name):
         if name == 'search':
             if self.page == 'servers':
-                self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}...').format(self.server.name))
+                self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}…').format(self.server.name))
                 self.clear_search()
                 self.search()
             else:

@@ -168,16 +168,35 @@ class Library():
     def draw_cover_badges(self, da, ctx, manga):
         nb_recent_chapters = manga.nb_recent_chapters
         nb_downloaded_chapters = manga.nb_downloaded_chapters
+        nb_unread_chapters = manga.nb_unread_chapters
         cover_width, cover_height = self.cover_size
 
         x = cover_width
         spacing = 5  # with top and right borders, between badges
 
-        if nb_recent_chapters == 0 and nb_downloaded_chapters == 0:
+        if nb_recent_chapters == nb_downloaded_chapters == nb_unread_chapters == 0:
             return
 
         ctx.save()
         ctx.set_font_size(13)
+
+        # Numbers of unread chapters
+        if nb_unread_chapters > 0:
+            text = str(nb_unread_chapters)
+            text_extents = ctx.text_extents(text)
+            width = text_extents.x_advance + 2 * 3 + 1
+            height = text_extents.height + 2 * 5
+
+            # Draw rectangle
+            x = x - spacing - width
+            ctx.set_source_rgb(0.2, 0.5, 0)  # #338000
+            ctx.rectangle(x, spacing, width, height)
+            ctx.fill()
+
+            # Draw number
+            ctx.set_source_rgb(1, 1, 1)
+            ctx.move_to(x + 3, height)
+            ctx.show_text(text)
 
         # Numbers of recents chapters
         if nb_recent_chapters > 0:
