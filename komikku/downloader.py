@@ -46,6 +46,7 @@ class Downloader():
 
                 try:
                     if download.chapter.update_full():
+                        error_counter = 0
                         for index, page in enumerate(chapter.pages):
                             if self.stop_flag:
                                 self.status = 'interrupted'
@@ -54,15 +55,21 @@ class Downloader():
 
                             if chapter.get_page_path(index) is None:
                                 path = chapter.get_page(index)
+                                if path is not None:
+                                    success = True
+                                else:
+                                    success = False
+                                    error_counter += 1
 
                                 download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
-                                GLib.idle_add(notify_progress, chapter, index, path is not None)
+                                GLib.idle_add(notify_progress, chapter, index, success)
 
                                 if index < len(chapter.pages) - 1 and not self.stop_flag:
                                     time.sleep(1)
 
                         if self.status != 'interrupted':
-                            chapter.update(dict(downloaded=1))
+                            if error_counter == 0:
+                                chapter.update(dict(downloaded=1))
                             download.delete()
                             GLib.idle_add(complete, chapter)
                     else:
