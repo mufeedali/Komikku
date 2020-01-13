@@ -1,71 +1,71 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
-  <menu id="menu-reader">
-    <section>
-      <submenu>
-        <attribute name="label" translatable="yes">Reading direction</attribute>
+    <!-- interface-requires gtk+ 3.0 -->
+    <menu id="menu-reader">
         <section>
-          <attribute name="id">reading-direction-section</attribute>
+            <submenu>
+                <attribute name="label" translatable="yes">Reading direction</attribute>
+                <section>
+                    <attribute name="id">reading-direction-section</attribute>
 
-          <item>
-            <attribute name="label" translatable="yes">Right to Left ←</attribute>
-            <attribute name="action">app.reader.reading-direction</attribute>
-            <attribute name="target">right-to-left</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">Left to Right →</attribute>
-            <attribute name="action">app.reader.reading-direction</attribute>
-            <attribute name="target">left-to-right</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">Vertical ↓</attribute>
-            <attribute name="action">app.reader.reading-direction</attribute>
-            <attribute name="target">vertical</attribute>
-          </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Right to Left ←</attribute>
+                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="target">right-to-left</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Left to Right →</attribute>
+                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="target">left-to-right</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Vertical ↓</attribute>
+                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="target">vertical</attribute>
+                    </item>
+                </section>
+            </submenu>
+
+            <submenu>
+                <attribute name="label" translatable="yes">Type of Scaling</attribute>
+                <section>
+                    <attribute name="id">scaling-section</attribute>
+
+                    <item>
+                        <attribute name="label" translatable="yes">Adapt to Screen</attribute>
+                        <attribute name="action">app.reader.scaling</attribute>
+                        <attribute name="target">screen</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Adapt to Width</attribute>
+                        <attribute name="action">app.reader.scaling</attribute>
+                        <attribute name="target">width</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Adapt to Height</attribute>
+                        <attribute name="action">app.reader.scaling</attribute>
+                        <attribute name="target">height</attribute>
+                    </item>
+                </section>
+            </submenu>
+
+            <submenu>
+                <attribute name="label" translatable="yes">Background Color</attribute>
+                <section>
+                    <attribute name="id">background-color-section</attribute>
+
+                    <item>
+                        <attribute name="label" translatable="yes">White</attribute>
+                        <attribute name="action">app.reader.background-color</attribute>
+                        <attribute name="target">white</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Black</attribute>
+                        <attribute name="action">app.reader.background-color</attribute>
+                        <attribute name="target">black</attribute>
+                    </item>
+                </section>
+            </submenu>
         </section>
-      </submenu>
-
-      <submenu>
-        <attribute name="label" translatable="yes">Type of Scaling</attribute>
-        <section>
-          <attribute name="id">scaling-section</attribute>
-
-          <item>
-            <attribute name="label" translatable="yes">Adapt to Screen</attribute>
-            <attribute name="action">app.reader.scaling</attribute>
-            <attribute name="target">screen</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">Adapt to Width</attribute>
-            <attribute name="action">app.reader.scaling</attribute>
-            <attribute name="target">width</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">Adapt to Height</attribute>
-            <attribute name="action">app.reader.scaling</attribute>
-            <attribute name="target">height</attribute>
-          </item>
-        </section>
-      </submenu>
-
-      <submenu>
-        <attribute name="label" translatable="yes">Background Color</attribute>
-        <section>
-          <attribute name="id">background-color-section</attribute>
-
-          <item>
-            <attribute name="label" translatable="yes">White</attribute>
-            <attribute name="action">app.reader.background-color</attribute>
-            <attribute name="target">white</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">Black</attribute>
-            <attribute name="action">app.reader.background-color</attribute>
-            <attribute name="target">black</attribute>
-          </item>
-        </section>
-      </submenu>
-    </section>
-  </menu>
+    </menu>
 </interface>

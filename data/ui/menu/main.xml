@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
-  <menu id="menu">
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">Update Library</attribute>
-        <attribute name="action">app.library.update</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">Preferences</attribute>
-        <attribute name="action">app.settings</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
-        <attribute name="action">app.shortcuts</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">About Komikku</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-    </section>
-  </menu>
+    <!-- interface-requires gtk+ 3.0 -->
+    <menu id="menu">
+        <section>
+            <item>
+                <attribute name="label" translatable="yes">Update Library</attribute>
+                <attribute name="action">app.library.update</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">Preferences</attribute>
+                <attribute name="action">app.settings</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+                <attribute name="action">app.shortcuts</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">About Komikku</attribute>
+                <attribute name="action">app.about</attribute>
+            </item>
+        </section>
+    </menu>
 </interface>

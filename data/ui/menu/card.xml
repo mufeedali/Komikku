@@ -1,43 +1,43 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
-  <menu id="menu-card">
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">Delete</attribute>
-        <attribute name="action">app.card.delete</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">Update</attribute>
-        <attribute name="action">app.card.update</attribute>
-      </item>
-    </section>
-
-    <section>
-      <submenu>
-        <attribute name="label" translatable="yes">Order of Chapters</attribute>
+    <!-- interface-requires gtk+ 3.0 -->
+    <menu id="menu-card">
         <section>
-          <attribute name="id">card-sort-order</attribute>
-
-          <item>
-            <attribute name="label" translatable="yes">By Chapter Number (9-0)</attribute>
-            <attribute name="action">app.card.sort-order</attribute>
-            <attribute name="target">desc</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">By Chapter Number (0-9)</attribute>
-            <attribute name="action">app.card.sort-order</attribute>
-            <attribute name="target">asc</attribute>
-          </item>
+            <item>
+                <attribute name="label" translatable="yes">Delete</attribute>
+                <attribute name="action">app.card.delete</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">Update</attribute>
+                <attribute name="action">app.card.update</attribute>
+            </item>
         </section>
-      </submenu>
-    </section>
 
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">Open in Browser</attribute>
-        <attribute name="action">app.card.open-in-browser</attribute>
-      </item>
-    </section>
-  </menu>
+        <section>
+            <submenu>
+                <attribute name="label" translatable="yes">Order of Chapters</attribute>
+
+                <section>
+                    <attribute name="id">card-sort-order</attribute>
+                    <item>
+                        <attribute name="label" translatable="yes">By Chapter Number (9-0)</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">desc</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">By Chapter Number (0-9)</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">asc</attribute>
+                    </item>
+                </section>
+            </submenu>
+        </section>
+
+        <section>
+            <item>
+                <attribute name="label" translatable="yes">Open in Browser</attribute>
+                <attribute name="action">app.card.open-in-browser</attribute>
+            </item>
+        </section>
+    </menu>
 </interface>
