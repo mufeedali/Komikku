@@ -166,30 +166,40 @@ class Library():
         )
 
     def draw_cover_badges(self, da, ctx, manga):
+        """
+        Draws badges in top right corner of cover
+        * Unread chapter: green
+        * Recent chapters: blue
+        * Downloaded chapters: red
+        """
+        nb_unread_chapters = manga.nb_unread_chapters
         nb_recent_chapters = manga.nb_recent_chapters
         nb_downloaded_chapters = manga.nb_downloaded_chapters
-        nb_unread_chapters = manga.nb_unread_chapters
-        cover_width, cover_height = self.cover_size
 
-        x = cover_width
-        spacing = 5  # with top and right borders, between badges
-
-        if nb_recent_chapters == nb_downloaded_chapters == nb_unread_chapters == 0:
+        if nb_unread_chapters == nb_recent_chapters == nb_downloaded_chapters == 0:
             return
+
+        cover_width, cover_height = self.cover_size
+        spacing = 5  # with top and right borders, between badges
+        x = cover_width
 
         ctx.save()
         ctx.set_font_size(13)
 
-        # Numbers of unread chapters
-        if nb_unread_chapters > 0:
-            text = str(nb_unread_chapters)
+        def draw_badge(nb, color_r, color_g, color_b):
+            nonlocal x
+
+            if nb == 0:
+                return
+
+            text = str(nb)
             text_extents = ctx.text_extents(text)
             width = text_extents.x_advance + 2 * 3 + 1
             height = text_extents.height + 2 * 5
 
             # Draw rectangle
             x = x - spacing - width
-            ctx.set_source_rgb(0.2, 0.5, 0)  # #338000
+            ctx.set_source_rgb(color_r, color_g, color_b)
             ctx.rectangle(x, spacing, width, height)
             ctx.fill()
 
@@ -198,41 +208,9 @@ class Library():
             ctx.move_to(x + 3, height)
             ctx.show_text(text)
 
-        # Numbers of recents chapters
-        if nb_recent_chapters > 0:
-            text = str(nb_recent_chapters)
-            text_extents = ctx.text_extents(text)
-            width = text_extents.x_advance + 2 * 3 + 1
-            height = text_extents.height + 2 * 5
-
-            # Draw rectangle
-            x = x - spacing - width
-            ctx.set_source_rgb(0.2, 0.6, 1)  # #3399FF
-            ctx.rectangle(x, spacing, width, height)
-            ctx.fill()
-
-            # Draw number
-            ctx.set_source_rgb(1, 1, 1)
-            ctx.move_to(x + 3, height)
-            ctx.show_text(text)
-
-        # Numbers of downloaded chapters
-        if nb_downloaded_chapters > 0:
-            text = str(nb_downloaded_chapters)
-            text_extents = ctx.text_extents(text)
-            width = text_extents.x_advance + 2 * 3 + 1
-            height = text_extents.height + 2 * 5
-
-            # Draw rectangle
-            x = x - spacing - width
-            ctx.set_source_rgb(1, 0.266, 0.2)  # #FF4433
-            ctx.rectangle(x, spacing, width, height)
-            ctx.fill()
-
-            # Draw number
-            ctx.set_source_rgb(1, 1, 1)
-            ctx.move_to(x + 3, height)
-            ctx.show_text(text)
+        draw_badge(nb_unread_chapters, 0.2, 0.5, 0)        # #338000
+        draw_badge(nb_recent_chapters, 0.2, 0.6, 1)        # #3399FF
+        draw_badge(nb_downloaded_chapters, 1, 0.266, 0.2)  # #FF4433
 
         ctx.restore()
 
