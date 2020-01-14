@@ -4,6 +4,7 @@
 
 from gettext import gettext as _
 import html
+import threading
 import time
 
 from gi.repository import Gio
@@ -19,6 +20,7 @@ from komikku.utils import folder_size
 
 class Card():
     manga = None
+    populate_chapter_count = 0
     selection_mode = False
     selection_count = 0
 
@@ -125,14 +127,6 @@ class Card():
 
         self.window.downloader.start()
 
-    def select_all_chapters(self, action, param):
-        self.selection_count = 0
-        for row in self.listbox.get_children():
-            # Select all chapters
-            self.listbox.select_row(row)
-            row._selected = True
-            self.selection_count += 1
-
     def download_selected_chapters(self, action, param):
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
@@ -168,9 +162,15 @@ class Card():
         else:
             self.manga = Manga.get(self.manga.id, self.manga.server)
 
-        self.populate()
+        if len(manga.chapters) > 0:
+            self.window.activity_indicator.start()
+
+        for row in self.listbox.get_children():
+            row.destroy()
 
         self.show(transition)
+
+        GLib.timeout_add(400, self.populate)
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -250,22 +250,26 @@ class Card():
         self.window.updater.start()
 
     def populate(self):
-        # Chapters
-        for child in self.listbox.get_children():
-            child.destroy()
+        # Chapters list
+        def populate_chapters_rows(rows):
+            for row in rows:
+                GLib.idle_add(self.populate_chapter_row, row)
 
+        rows = []
+        self.populate_chapter_count = 0
         for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
             row._selected = False
-
-            self.populate_chapter_row(row)
-
             self.listbox.add(row)
 
-        self.set_sort_order(invalidate=False)
-        self.listbox.show_all()
+            rows.append(row)
+            self.populate_chapter_count += 1
+
+        thread = threading.Thread(target=populate_chapters_rows, args=(rows,))
+        thread.daemon = True
+        thread.start()
 
         # Info
         if self.manga.cover_fs_path is not None:
@@ -316,8 +320,8 @@ class Card():
             ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         title = chapter.title
-        if chapter.manga.name in title:
-            title = title.replace(chapter.manga.name, '').strip()
+        if self.manga.name in title:
+            title = title.replace(self.manga.name, '').strip()
         label.set_text(title)
         hbox.pack_start(label, True, True, 0)
 
@@ -362,7 +366,13 @@ class Card():
 
         box.pack_start(hbox, True, True, 0)
 
-        box.show_all()
+        self.populate_chapter_count -= 1
+        if self.populate_chapter_count == 0:
+            # End of populate
+            self.window.activity_indicator.stop()
+            self.listbox.show_all()
+        else:
+            box.show_all()
 
     def reset_chapter(self, action, param):
         chapter = self.action_row.chapter
@@ -380,6 +390,14 @@ class Card():
             self.populate_chapter_row(row)
 
         self.leave_selection_mode()
+
+    def select_all_chapters(self, action, param):
+        self.selection_count = 0
+
+        for row in self.listbox.get_children():
+            self.listbox.select_row(row)
+            row._selected = True
+            self.selection_count += 1
 
     def set_sort_order(self, invalidate=True):
         self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))

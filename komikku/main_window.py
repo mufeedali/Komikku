@@ -15,6 +15,7 @@ from gi.repository import Handy
 
 from komikku.add_dialog import AddDialog
 from komikku.card import Card
+from komikku.activity_indicator import ActivityIndicator
 from komikku.downloader import Downloader
 from komikku.library import Library
 from komikku.models import backup_db
@@ -54,6 +55,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.left_button_image = self.builder.get_object('left_button_image')
         self.menu_button = self.builder.get_object('menu_button')
         self.menu_button_image = self.builder.get_object('menu_button_image')
+
+        self.activity_indicator = ActivityIndicator()
+        self.overlay.add_overlay(self.activity_indicator)
+        self.overlay.set_overlay_pass_through(self.activity_indicator, True)
+        self.activity_indicator.show_all()
 
         self.assemble_window()
 
