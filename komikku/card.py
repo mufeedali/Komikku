@@ -20,7 +20,7 @@ from komikku.utils import folder_size
 
 class Card():
     manga = None
-    populate_chapter_count = 0
+    populate_chapters_count = 0
     selection_mode = False
     selection_count = 0
 
@@ -256,7 +256,7 @@ class Card():
                 GLib.idle_add(self.populate_chapter_row, row)
 
         rows = []
-        self.populate_chapter_count = 0
+        self.populate_chapters_count = 0
         for chapter in self.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
@@ -265,7 +265,7 @@ class Card():
             self.listbox.add(row)
 
             rows.append(row)
-            self.populate_chapter_count += 1
+            self.populate_chapters_count += 1
 
         thread = threading.Thread(target=populate_chapters_rows, args=(rows,))
         thread.daemon = True
@@ -366,9 +366,10 @@ class Card():
 
         box.pack_start(hbox, True, True, 0)
 
-        self.populate_chapter_count -= 1
-        if self.populate_chapter_count == 0:
-            # End of populate
+        self.populate_chapters_count -= 1
+        if self.populate_chapters_count == 0:
+            # All rows have been populated in chapters list
+            self.set_sort_order(invalidate=False)
             self.window.activity_indicator.stop()
             self.listbox.show_all()
         else:
