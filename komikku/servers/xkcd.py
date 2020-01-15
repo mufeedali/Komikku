@@ -24,7 +24,7 @@ class Xkcd(Server):
     base_url = 'https://www.xkcd.com'
     manga_url = base_url + '/archive/'
     chapter_url = base_url + '/{0}/info.0.json'
-    image_url = base_url + '/comics/{0}'
+    image_url = 'https://imgs.xkcd.com/comics/{0}'
     cover_url = base_url + '/s/0b7742.png'
 
     def __init__(self):
@@ -88,7 +88,7 @@ class Xkcd(Server):
 
         url_image = data['img']
         # The comic passed in HD after Chapter 1084
-        if int(chapter_slug) >= 1084 and int(chapter_slug) not in (1097,):
+        if int(chapter_slug) >= 1084 and int(chapter_slug) not in (1097, 2042, ):
             url_image = url_image.replace('.png', '_2x.png')
 
         return dict(
