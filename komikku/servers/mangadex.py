@@ -50,8 +50,8 @@ SERVER_NAME = 'MangaDex'
 
 headers = {
     'User-Agent': USER_AGENT,
-    'Host': 'mangadex.cc',
-    'Referer': 'https://mangadex.cc',
+    'Host': 'mangadex.org',
+    'Referer': 'https://mangadex.org',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Language': 'fr-FR,en-US;q=0.7,en;q=0.3',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -65,7 +65,7 @@ class Mangadex(Server):
     name = SERVER_NAME
     lang = 'en'
 
-    base_url = 'https://mangadex.cc'
+    base_url = 'https://mangadex.org'
     api_manga_url = base_url + '/api/manga/{0}'
     api_chapter_url = base_url + '/api/chapter/{0}'
     search_url = base_url + '/search'
@@ -96,8 +96,8 @@ class Mangadex(Server):
             headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': '*/*',
-                'Referer': 'https://mangadex.cc',
-                'Origin': 'https://mangadex.cc',
+                'Referer': self.base_url,
+                'Origin': self.base_url,
             }
         )
         if r is None or r.status_code != 200:
@@ -146,9 +146,11 @@ class Mangadex(Server):
 
             data['chapters'].append(dict(
                 slug=slug,
-                title=chapter['title'],
+                title='#{0} - {1}'.format(chapter['chapter'], chapter['title']),
                 date=datetime.fromtimestamp(chapter['timestamp']).date(),
             ))
+
+        data['chapters'].reverse()
 
         return data
 
