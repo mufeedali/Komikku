@@ -302,14 +302,16 @@ class Card():
         for child in row.get_children():
             child.destroy()
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         row.add(box)
 
         chapter = row.chapter
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+
         # Title
         label = Gtk.Label(xalign=0)
+        label.set_valign(Gtk.Align.CENTER)
         ctx = label.get_style_context()
         ctx.add_class('card-chapter-label')
         if chapter.read:
@@ -338,31 +340,53 @@ class Card():
         # Recent badge
         if chapter.recent == 1:
             label = Gtk.Label(xalign=0, yalign=1)
+            label.set_valign(Gtk.Align.CENTER)
             label.get_style_context().add_class('card-chapter-sublabel')
             label.get_style_context().add_class('badge')
             label.set_text(_('New'))
             hbox.pack_start(label, False, True, 0)
 
-        # Date + Downloaded state
-        label = Gtk.Label(xalign=0, yalign=1)
-        label.get_style_context().add_class('card-chapter-sublabel')
-        text = chapter.date.strftime(_('%m/%d/%Y')) if chapter.date else ''
+        # Date + Download status (text or progress bar)
+        download_status = None
         if chapter.downloaded:
-            text = '{0} - {1}'.format(text, _('DOWNLOADED'))
+            download_status = 'downloaded'
         else:
             active_download = Download.get_by_chapter_id(chapter.id)
             if active_download:
-                text = '{0} - {1}'.format(text, _(Download.STATUSES[active_download.status]))
-        label.set_text(text)
-        hbox.pack_start(label, True, True, 0)
+                download_status = active_download.status
 
-        # Counter: nb read / nb pages
-        if not chapter.read:
-            label = Gtk.Label(xalign=0, yalign=1)
-            label.get_style_context().add_class('card-chapter-sublabel')
-            if chapter.pages is not None and chapter.last_page_read_index is not None:
-                label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
-            hbox.pack_start(label, False, True, 0)
+        label = Gtk.Label(xalign=0, yalign=1)
+        label.set_valign(Gtk.Align.CENTER)
+        label.get_style_context().add_class('card-chapter-sublabel')
+        text = chapter.date.strftime(_('%m/%d/%Y')) if chapter.date else ''
+        if download_status is not None and download_status != 'downloading':
+            text = '{0} - {1}'.format(text, _(Download.STATUSES[download_status]))
+        label.set_text(text)
+
+        if download_status == 'downloading':
+            hbox.pack_start(label, False, False, 0)
+
+            # Download progress
+            # NOTE: Especially required as long as there is no download manager
+            progressbar = Gtk.ProgressBar()
+            progressbar.set_valign(Gtk.Align.CENTER)
+            progressbar.set_fraction(active_download.percent / 100)
+            hbox.pack_start(progressbar, True, True, 0)
+
+            stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
+            stop_button.connect('clicked', lambda button, chapter: self.window.downloader.remove(chapter), chapter)
+            hbox.pack_start(stop_button, False, False, 0)
+        else:
+            hbox.pack_start(label, True, True, 0)
+
+            # Counter: nb read / nb pages
+            if not chapter.read:
+                label = Gtk.Label(xalign=0.5, yalign=1)
+                label.set_valign(Gtk.Align.CENTER)
+                label.get_style_context().add_class('card-chapter-sublabel')
+                if chapter.pages is not None and chapter.last_page_read_index is not None:
+                    label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
+                hbox.pack_start(label, False, True, 0)
 
         box.pack_start(hbox, True, True, 0)
 

@@ -11,7 +11,7 @@
 /* Main window - manga card page - chapters list */
 .card-chapter-listboxrow {
     border-bottom: 1px solid #ccc;
-    padding: 16px;
+    padding: 6px 6px 12px 6px;
 }
 .card-chapter-label {
     font-size: 14px;
