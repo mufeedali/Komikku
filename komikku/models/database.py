@@ -60,6 +60,10 @@ def create_db_connection():
         return None
 
     con.row_factory = sqlite3.Row
+
+    # Enable integrity constraint
+    con.execute('PRAGMA foreign_keys = ON')
+
     return con
 
 
@@ -319,8 +323,6 @@ class Manga:
 
     def delete(self):
         db_conn = create_db_connection()
-        # Enable integrity constraint
-        db_conn.execute('PRAGMA foreign_keys = ON')
 
         with db_conn:
             db_conn.execute('DELETE FROM mangas WHERE id = ?', (self.id, ))
@@ -593,7 +595,7 @@ class Chapter:
         """
         Updates chapter
 
-        Fetches and saves data available in chapter's HTML page on server
+        Fetches server and saves chapter data
 
         :return: True on success False otherwise
         """
@@ -612,8 +614,9 @@ class Download:
 
     STATUSES = dict(
         pending=_('Download pending'),
+        downloaded=_('Downloaded'),
         downloading=_('Downloading'),
-        error=_('Error'),
+        error=_('Download error'),
     )
 
     @classmethod
@@ -646,6 +649,25 @@ class Download:
             return d
 
         return None
+
+    @classmethod
+    def next(cls, exclude_errors=False):
+        db_conn = create_db_connection()
+        if exclude_errors:
+            row = db_conn.execute('SELECT * FROM downloads WHERE status = "pending" ORDER BY date ASC').fetchone()
+        else:
+            row = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchone()
+        db_conn.close()
+
+        if row:
+            c = cls()
+
+            for key in row.keys():
+                setattr(c, key, row[key])
+
+            return c
+        else:
+            return None
 
     @classmethod
     def new(cls, chapter_id):
@@ -683,8 +705,6 @@ class Download:
 
     def delete(self):
         db_conn = create_db_connection()
-        # Enable integrity constraint
-        db_conn.execute('PRAGMA foreign_keys = ON')
 
         with db_conn:
             db_conn.execute('DELETE FROM downloads WHERE id = ?', (self.id, ))
