@@ -18,6 +18,7 @@ from komikku.models import Manga
 
 class Library():
     selection_mode = False
+    selection_count = 0
 
     def __init__(self, window):
         self.window = window
@@ -241,6 +242,7 @@ class Library():
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
+        self.selection_count = 1
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -283,10 +285,14 @@ class Library():
         if self.selection_mode:
             overlay = child.get_children()[0]
             if overlay._selected:
+                self.selection_count -= 1
                 self.flowbox.unselect_child(child)
                 overlay._selected = False
             else:
+                self.selection_count += 1
                 overlay._selected = True
+            if self.selection_count == 0:
+                self.leave_selection_mode()
         else:
             self.window.card.init(child.get_children()[0].manga)
 

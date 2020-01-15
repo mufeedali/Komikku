@@ -141,6 +141,7 @@ class Card():
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
+        self.selection_count = 0
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -174,7 +175,6 @@ class Card():
 
     def leave_selection_mode(self):
         self.selection_mode = False
-        self.selection_count = 0
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for row in self.listbox.get_children():
