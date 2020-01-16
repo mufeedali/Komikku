@@ -101,6 +101,10 @@ class Library():
         update_selected_action.connect('activate', self.update_selected)
         self.window.application.add_action(update_selected_action)
 
+        select_all_action = Gio.SimpleAction.new('library.select-all', None)
+        select_all_action.connect('activate', self.select_all)
+        self.window.application.add_action(select_all_action)
+
     def add_manga(self, manga, position=-1):
         width, height = self.cover_size
 
@@ -344,6 +348,15 @@ class Library():
 
     def search(self, search_entry):
         self.flowbox.invalidate_filter()
+
+    def select_all(self, action, param):
+        self.selection_count = 0
+
+        for child in self.flowbox.get_children():
+            overlay = child.get_children()[0]
+            overlay._selected = True
+            self.flowbox.select_child(child)
+            self.selection_count += 1
 
     def set_manga_cover_image(self, overlay, width, height):
         overlay.set_size_request(width, height)

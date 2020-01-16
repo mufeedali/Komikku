@@ -93,13 +93,13 @@ class Card():
         mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
         self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
-        select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
-        select_all_chapters_action.connect('activate', self.select_all_chapters)
-        self.window.application.add_action(select_all_chapters_action)
-
         reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
         reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
         self.window.application.add_action(reset_selected_chapters_action)
+
+        select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
+        select_all_chapters_action.connect('activate', self.select_all_chapters)
+        self.window.application.add_action(select_all_chapters_action)
 
         # Chapters menu actions
         download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
