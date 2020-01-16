@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-13 12:33+0100\n"
+"POT-Creation-Date: 2020-01-16 01:24+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -12,19 +12,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.4\n"
 
-#: ../komikku/main_window.py:237
+#: ../komikku/main_window.py:243
 msgid "Are you sure you want to quit?"
 msgstr "Êtes-vous sûr de vouloir quitter ?"
 
-#: ../komikku/main_window.py:240
+#: ../komikku/main_window.py:246
 msgid "Some chapters are currently being downloaded."
 msgstr "Certains chapitres sont en cours de téléchargement."
 
-#: ../komikku/main_window.py:242
+#: ../komikku/main_window.py:248
 msgid "Some mangas are currently being updated."
 msgstr "Certains mangas sont en cours de mise à jour."
 
-#: ../komikku/main_window.py:245
+#: ../komikku/main_window.py:251
 msgid "Quit?"
 msgstr "Quitter ?"
 
@@ -65,35 +65,39 @@ msgstr "Mise à jour de la bibliothèque démarrée"
 msgid "Update started"
 msgstr "Mise à jour démarrée"
 
-#: ../komikku/models/database.py:179
+#: ../komikku/models/database.py:183
 msgid "Complete"
 msgstr "Terminé"
 
-#: ../komikku/models/database.py:180
+#: ../komikku/models/database.py:184
 msgid "Ongoing"
 msgstr "En cours"
 
-#: ../komikku/models/database.py:181
+#: ../komikku/models/database.py:185
 msgid "Suspended"
 msgstr "Suspendu"
 
-#: ../komikku/models/database.py:182
+#: ../komikku/models/database.py:186
 msgid "Hiatus"
 msgstr "Hiatus"
 
-#: ../komikku/models/database.py:614
+#: ../komikku/models/database.py:616
 msgid "Download pending"
 msgstr "Téléchargement en attente"
 
-#: ../komikku/models/database.py:615
+#: ../komikku/models/database.py:617
+msgid "Downloaded"
+msgstr "Téléchargé"
+
+#: ../komikku/models/database.py:618
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../komikku/models/database.py:616
-msgid "Error"
-msgstr "Erreur"
+#: ../komikku/models/database.py:619
+msgid "Download error"
+msgstr "Erreur de téléchargement"
 
-#: ../komikku/card.py:232 ../komikku/library.py:163
+#: ../komikku/card.py:232 ../komikku/library.py:168
 msgid "Delete?"
 msgstr "Supprimer ?"
 
@@ -101,36 +105,32 @@ msgstr "Supprimer ?"
 msgid "Are you sure you want to delete this manga?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
 
-#: ../komikku/card.py:295
+#: ../komikku/card.py:299
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
 
-#: ../komikku/card.py:339
+#: ../komikku/card.py:346
 msgid "New"
 msgstr "Nouveau"
 
-#: ../komikku/card.py:345
+#: ../komikku/card.py:361
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: ../komikku/card.py:347
-msgid "DOWNLOADED"
-msgstr "TÉLÉCHARGER"
-
-#: ../komikku/card.py:411
+#: ../komikku/card.py:454
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../komikku/card.py:413
+#: ../komikku/card.py:456
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../komikku/card.py:415
+#: ../komikku/card.py:458
 msgid "Mark as read"
 msgstr "Marquer comme lu"
 
-#: ../komikku/card.py:417
+#: ../komikku/card.py:460
 msgid "Mark as unread"
 msgstr "Marquer comme non lu"
 
@@ -164,7 +164,7 @@ msgstr "Rechercher dans {0}…"
 msgid "No Internet connection or server down"
 msgstr "Pas de connexion Internet ou serveur en panne"
 
-#: ../komikku/library.py:164
+#: ../komikku/library.py:169
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 
@@ -204,21 +204,21 @@ msgstr "Blanc"
 msgid "Black"
 msgstr "Noir"
 
-#: ../komikku/downloader.py:79
+#: ../komikku/downloader.py:116
 #, python-brace-format
 msgid "Download page {0} / {1}"
 msgstr "Télécharger le page {0} / {1}"
 
-#: ../komikku/downloader.py:81
+#: ../komikku/downloader.py:118
 msgid "error"
 msgstr "erreur"
 
-#: ../komikku/downloader.py:85 ../komikku/downloader.py:94
+#: ../komikku/downloader.py:122 ../komikku/downloader.py:131
 #, python-brace-format
 msgid "[{0}] Chapter {1}"
 msgstr "[{0}] Chapitre {1}"
 
-#: ../komikku/downloader.py:93
+#: ../komikku/downloader.py:130
 msgid "Download completed"
 msgstr "Téléchargement terminé"
 
@@ -351,6 +351,11 @@ msgstr "Mettre à jour"
 msgid "Delete"
 msgstr "Supprimer"
 
+#: ../data/ui/menu/library_selection_mode.xml:18
+#: ../data/ui/menu/card_selection_mode.xml:26
+msgid "Select All"
+msgstr "Tout sélectionner"
+
 #: ../data/ui/menu/card.xml:18
 msgid "Order of Chapters"
 msgstr "Ordre des chapitres"
@@ -374,10 +379,6 @@ msgstr "Marquer comme lu"
 #: ../data/ui/menu/card_selection_mode.xml:19
 msgid "Mark as Unread"
 msgstr "Marquer comme non lu"
-
-#: ../data/ui/menu/card_selection_mode.xml:26
-msgid "Select All"
-msgstr "Tout sélectionner"
 
 #: ../data/ui/menu/reader.xml:7
 msgid "Reading direction"

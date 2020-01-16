@@ -360,7 +360,7 @@ class Card():
         label.get_style_context().add_class('card-chapter-sublabel')
         text = chapter.date.strftime(_('%m/%d/%Y')) if chapter.date else ''
         if download_status is not None and download_status != 'downloading':
-            text = '{0} - {1}'.format(text, _(Download.STATUSES[download_status]))
+            text = '{0} - {1}'.format(text, _(Download.STATUSES[download_status]).upper())
         label.set_text(text)
 
         if download_status == 'downloading':
