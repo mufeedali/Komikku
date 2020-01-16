@@ -112,7 +112,7 @@ class Xkcd(Server):
         if page.get('image'):
             r = self.session_get(self.image_url.format(page['image']))
             if r is None:
-                return None
+                return (None, None)
             image_name = page['image']
         else:
             r = self.session_get(
@@ -124,7 +124,7 @@ class Xkcd(Server):
                 )
             )
             if r is None:
-                return None
+                return (None, None)
             image_name = '{0}-alt-text.png'.format(chapter_slug)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
