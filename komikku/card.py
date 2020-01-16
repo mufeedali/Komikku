@@ -335,7 +335,7 @@ class Card():
 
         box.pack_start(hbox, True, True, 0)
 
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
 
         # Recent badge
         if chapter.recent == 1:
@@ -360,7 +360,7 @@ class Card():
         label.get_style_context().add_class('card-chapter-sublabel')
         text = chapter.date.strftime(_('%m/%d/%Y')) if chapter.date else ''
         if download_status is not None and download_status != 'downloading':
-            text = '{0} - {1}'.format(text, _(Download.STATUSES[download_status]).upper())
+            text = f'{text} - {_(Download.STATUSES[download_status]).upper()}'
         label.set_text(text)
 
         if download_status == 'downloading':
@@ -385,7 +385,7 @@ class Card():
                 label.set_valign(Gtk.Align.CENTER)
                 label.get_style_context().add_class('card-chapter-sublabel')
                 if chapter.pages is not None and chapter.last_page_read_index is not None:
-                    label.set_text('{0}/{1}'.format(chapter.last_page_read_index + 1, len(chapter.pages)))
+                    label.set_text(f'{chapter.last_page_read_index + 1}/{len(chapter.pages)}')
                 hbox.pack_start(label, False, True, 0)
 
         box.pack_start(hbox, True, True, 0)
