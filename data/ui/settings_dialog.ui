@@ -294,7 +294,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">start</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Show desktop notifications for downloads</property>
+                                                <property name="label" translatable="yes">Use desktop notifications for downloads</property>
                                                 <property name="ellipsize">end</property>
                                                 <attributes>
                                                   <attribute name="size" value="9500"/>

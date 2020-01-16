@@ -28,7 +28,7 @@
         <key type="b" name="desktop-notifications">
             <default>false</default>
             <summary>Desktop Notifications</summary>
-            <description>Use Desktop notifications for downloads</description>
+            <description>Use desktop notifications for downloads</description>
         </key>
 
         <key type="b" name="update-at-startup">

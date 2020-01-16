@@ -31,6 +31,18 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.9.0" date="2020-01-17">
+            <description>
+                <p>[Library] Add an unread badge</p>
+                <p>[Library/Manga] Added "Select All" in selection mode</p>
+                <p>[Library/Manga] Now leaves selection mode when no mangas/chapters are selected</p>
+                <p>[Manga] Improved chapters list rendering</p>
+                <p>[Manga] Improved chapters download: add a progress bar and a "Stop" button</p>
+                <p>[Settings] General: New option to disable desktop notifications</p>
+                <p>[Servers] Minor fixes in xkcd</p>
+                <p>[Servers] Add MangaDex (EN, ES, FR)</p>
+            </description>
+        </release>
         <release version="0.8.1" date="2020-01-09">
             <description>
                 <p>Jaimini's Box server: Fixed mangas with an adult alert</p>
