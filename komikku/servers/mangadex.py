@@ -6,6 +6,7 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+import html
 import magic
 import requests
 
@@ -132,7 +133,7 @@ class Mangadex(Server):
         elif resp_data['manga']['status'] == 4:
             data['status'] = 'hiatus'
 
-        data['synopsis'] = resp_data['manga']['description']
+        data['synopsis'] = html.unescape(resp_data['manga']['description'])
 
         for slug, chapter in resp_data['chapter'].items():
             if LANGUAGES_CODES.get(self.lang) != chapter['lang_code']:
