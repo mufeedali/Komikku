@@ -10,6 +10,7 @@ from gi.repository import GLib
 from gi.repository import Notify
 
 from komikku.models import Download
+from komikku.models import Settings
 from komikku.utils import log_error_traceback
 
 
@@ -113,24 +114,26 @@ class Downloader():
             self.status = 'done'
 
         def notify_progress(chapter, index, success):
-            summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
-            if not success:
-                summary = '{0} ({1})'.format(summary, _('error'))
+            if notification is not None:
+                summary = _('Download page {0} / {1}').format(index + 1, len(chapter.pages))
+                if not success:
+                    summary = '{0} ({1})'.format(summary, _('error'))
 
-            notification.update(
-                summary,
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
-            )
-            notification.show()
+                notification.update(
+                    summary,
+                    _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
+                )
+                notification.show()
 
             return update_ui(chapter)
 
         def notify_complete(chapter):
-            notification.update(
-                _('Download completed'),
-                _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
-            )
-            notification.show()
+            if notification is not None:
+                notification.update(
+                    _('Download completed'),
+                    _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
+                )
+                notification.show()
 
             return update_ui(chapter)
 
@@ -148,9 +151,12 @@ class Downloader():
         self.status = 'running'
         self.stop_flag = False
 
-        # Create notification
-        notification = Notify.Notification.new('')
-        notification.set_timeout(Notify.EXPIRES_DEFAULT)
+        if Settings.get_default().desktop_notifications:
+            # Create notification
+            notification = Notify.Notification.new('')
+            notification.set_timeout(Notify.EXPIRES_DEFAULT)
+        else:
+            notification = None
 
         thread = threading.Thread(target=run)
         thread.daemon = True

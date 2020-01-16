@@ -47,6 +47,11 @@ class SettingsDialog():
         settings_night_light_switch.set_active(settings.night_light)
         settings_night_light_switch.connect('notify::active', self.on_night_light_changed)
 
+        # Desktop notifications
+        settings_desktop_notifications_switch = self.builder.get_object('settings_desktop_notifications_switch')
+        settings_desktop_notifications_switch.set_active(settings.desktop_notifications)
+        settings_desktop_notifications_switch.connect('notify::active', self.on_desktop_notifications_changed)
+
         #
         # Library
         #
@@ -126,6 +131,12 @@ class SettingsDialog():
             Settings.get_default().background_color = 'white'
         elif index == 1:
             Settings.get_default().background_color = 'black'
+
+    def on_desktop_notifications_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            Settings.get_default().desktop_notifications = True
+        else:
+            Settings.get_default().desktop_notifications = False
 
     def on_fullscreen_changed(self, switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
