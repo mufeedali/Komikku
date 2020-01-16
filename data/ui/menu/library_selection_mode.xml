@@ -12,5 +12,12 @@
                 <attribute name="action">app.library.delete-selected</attribute>
             </item>
         </section>
+
+        <section>
+            <item>
+                <attribute name="label" translatable="yes">Select All</attribute>
+                <attribute name="action">app.library.select-all</attribute>
+            </item>
+        </section>
     </menu>
 </interface>
