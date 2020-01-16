@@ -63,7 +63,6 @@ Dependencies:
 * `python-pillow`
 * `python-pure-protobuf`
 * `python-unidecode`
-* `python-wheel`
 
 This is the best practice to test Komikku without installing using meson and ninja.
 
