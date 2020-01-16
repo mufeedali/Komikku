@@ -166,7 +166,7 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
     image = Image.open(io.BytesIO(webp_buffer))
 
     buffer = io.BytesIO()
-    image.save(buffer, format)
+    image.convert('RGB').save(buffer, format)
 
     return buffer.getvalue()
 
