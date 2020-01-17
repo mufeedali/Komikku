@@ -236,6 +236,21 @@ class Pager(Gtk.ScrolledWindow):
         modifiers = Gtk.accelerator_get_default_mod_mask()
         if (event.state & modifiers) == 0 and event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
             self.switchto_page('left' if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left) else 'right')
+        elif (((event.state & modifiers) == 0)
+              and (event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down))
+              and (self.reader.reading_direction == 'vertical')):
+            page = self.current_page
+            vadj = page.scrolledwindow.get_vadjustment()
+            if (vadj.get_upper() == vadj.get_value() + self.get_vadjustment().get_value()
+                    and event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down)):
+                self.switchto_page('right')
+            elif (vadj.get_lower() == vadj.get_value() and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up)):
+                self.switchto_page('left')
+                self.current_page.scrolledwindow.get_vadjustment().set_value(vadj.get_upper() + self.get_vadjustment().get_value())
+            elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                vadj.set_value(vadj.get_value() + 50)
+            elif event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
+                vadj.set_value(vadj.get_value() - 50)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
