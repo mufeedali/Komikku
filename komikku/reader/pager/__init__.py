@@ -248,9 +248,9 @@ class Pager(Gtk.ScrolledWindow):
                 self.switchto_page('left')
                 self.current_page.scrolledwindow.get_vadjustment().set_value(vadj.get_upper() + self.get_vadjustment().get_value())
             elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                vadj.set_value(vadj.get_value() + 50)
+                page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_DOWN, False)
             elif event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
-                vadj.set_value(vadj.get_value() - 50)
+                page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_UP, False)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
