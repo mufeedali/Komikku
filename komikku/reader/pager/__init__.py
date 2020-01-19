@@ -239,6 +239,7 @@ class Pager(Gtk.ScrolledWindow):
         elif (((event.state & modifiers) == 0)
               and (event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down))
               and (self.reader.reading_direction == 'vertical')):
+            # If reading direction is vertical, arrow keys should scroll.
             page = self.current_page
             vadj = page.scrolledwindow.get_vadjustment()
             if (vadj.get_upper() == vadj.get_value() + self.get_vadjustment().get_value()
@@ -246,8 +247,10 @@ class Pager(Gtk.ScrolledWindow):
                 self.switchto_page('right')
             elif (vadj.get_lower() == vadj.get_value() and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up)):
                 self.switchto_page('left')
+                # After switching pages, go to the end of the page that is now the current page
                 self.current_page.scrolledwindow.get_vadjustment().set_value(vadj.get_upper() + self.get_vadjustment().get_value())
             elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                # Emit scroll signal
                 page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_DOWN, False)
             elif event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
                 page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_UP, False)
