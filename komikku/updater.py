@@ -18,7 +18,7 @@ class Updater():
     Mangas updater
     """
     queue = []
-    status = None
+    running = False
     stop_flag = False
     update_library_flag = False
 
@@ -46,7 +46,6 @@ class Updater():
 
             while self.queue:
                 if self.stop_flag is True:
-                    self.status = 'interrupted'
                     break
 
                 manga = Manga.get(self.queue.pop(0))
@@ -64,7 +63,7 @@ class Updater():
                     user_error_message = log_error_traceback(e)
                     GLib.idle_add(error, None, user_error_message)
 
-            self.status = 'done'
+            self.running = False
 
             # End notification
             if self.update_library_flag:
@@ -82,6 +81,7 @@ class Updater():
                 )
             else:
                 message = '{0}\n{1}'.format(message, _('No new chapter found'))
+
             self.window.show_notification(message)
 
         def complete(manga, nb_recent_chapters):
@@ -107,7 +107,7 @@ class Updater():
 
             return False
 
-        if self.status == 'running' or len(self.queue) == 0:
+        if self.running or len(self.queue) == 0:
             return
 
         if self.update_library_flag:
@@ -115,7 +115,7 @@ class Updater():
         else:
             self.window.show_notification(_('Update started'))
 
-        self.status = 'running'
+        self.running = True
         self.stop_flag = False
 
         thread = threading.Thread(target=run)
@@ -127,7 +127,7 @@ class Updater():
             self.queue.remove(manga.id)
 
     def stop(self):
-        if self.status == 'running':
+        if self.running:
             self.stop_flag = True
 
     def update_library(self):

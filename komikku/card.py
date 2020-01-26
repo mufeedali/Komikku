@@ -204,7 +204,7 @@ class Card():
             self.window.downloader.stop()
             self.window.updater.stop()
 
-            while self.window.downloader.status == 'running' or self.window.updater.status == 'running':
+            while self.window.downloader.running or self.window.updater.running:
                 time.sleep(0.1)
                 continue
 
