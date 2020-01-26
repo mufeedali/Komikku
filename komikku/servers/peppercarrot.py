@@ -7,7 +7,6 @@
 from bs4 import BeautifulSoup
 import magic
 import requests
-import textwrap
 
 from komikku.servers import Server
 from komikku.servers import USER_AGENT

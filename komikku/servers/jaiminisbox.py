@@ -245,5 +245,5 @@ class Jaiminisbox(Server):
                 ))
 
             return results
-        else:
-            return None
+
+        return None

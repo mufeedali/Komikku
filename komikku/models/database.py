@@ -666,8 +666,8 @@ class Download:
                 setattr(c, key, row[key])
 
             return c
-        else:
-            return None
+
+        return None
 
     @classmethod
     def new(cls, chapter_id):
