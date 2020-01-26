@@ -5,6 +5,7 @@
 
         <file compressed="true" preprocess="xml-stripblanks">about_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/add_dialog.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/download_manager_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/main_window.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settings_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_overview.ui</file>
@@ -12,6 +13,8 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/main.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/card.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/card_selection_mode.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/download_manager.xml</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/menu/download_manager_selection_mode.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/library_selection_mode.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/reader.xml</file>
 

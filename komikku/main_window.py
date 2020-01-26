@@ -227,12 +227,12 @@ class MainWindow(Gtk.ApplicationWindow):
             self.save_window_size()
             backup_db()
 
-        if self.downloader.status == 'running' or self.updater.status == 'running':
+        if self.downloader.running or self.updater.status == 'running':
             def confirm_callback():
                 self.downloader.stop()
                 self.updater.stop()
 
-                while self.downloader.status == 'running' or self.updater.status == 'running':
+                while self.downloader.running or self.updater.status == 'running':
                     time.sleep(0.1)
                     continue
 
@@ -242,7 +242,7 @@ class MainWindow(Gtk.ApplicationWindow):
             message = [
                 _('Are you sure you want to quit?'),
             ]
-            if self.downloader.status == 'running':
+            if self.downloader.running:
                 message.append(_('Some chapters are currently being downloaded.'))
             if self.updater.status == 'running':
                 message.append(_('Some mangas are currently being updated.'))

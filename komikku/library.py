@@ -12,6 +12,7 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
+from komikku.downloader import DownloadManagerDialog
 from komikku.models import create_db_connection
 from komikku.models import Manga
 
@@ -91,6 +92,10 @@ class Library():
         update_action = Gio.SimpleAction.new('library.update', None)
         update_action.connect('activate', self.update_all)
         self.window.application.add_action(update_action)
+
+        download_manager_action = Gio.SimpleAction.new('library.download-manager', None)
+        download_manager_action.connect('activate', self.open_download_manager)
+        self.window.application.add_action(download_manager_action)
 
         # Menu actions in selection mode
         delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
@@ -316,6 +321,9 @@ class Library():
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
             self.set_manga_cover_image(overlay, width, height)
+
+    def open_download_manager(self, action, param):
+        DownloadManagerDialog(self.window).open(action, param)
 
     def populate(self):
         db_conn = create_db_connection()

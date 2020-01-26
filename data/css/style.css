@@ -63,3 +63,15 @@
     color: @insensitive_fg_color;
     background: @insensitive_bg_color;
 }
+
+/* Download manager dialog */
+.download-manager-download-listboxrow {
+    border-bottom: 1px solid #ccc;
+    padding: 6px 6px 12px 6px;
+}
+.download-manager-download-label {
+    font-size: 14px;
+}
+.download-manager-download-sublabel {
+    font-size: 10px;
+}

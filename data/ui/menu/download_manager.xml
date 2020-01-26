@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<interface>
+    <!-- interface-requires gtk+ 3.0 -->
+    <menu id="menu-download-manager">
+        <section>
+            <item>
+                <attribute name="label" translatable="yes">Delete All</attribute>
+                <attribute name="action">download-manager.delete-all</attribute>
+            </item>
+        </section>
+    </menu>
+</interface>

@@ -70,6 +70,14 @@ class Settings(Gio.Settings):
         self.set_boolean('dark-theme', state)
 
     @property
+    def downloader_state(self):
+        return self.get_boolean('downloader-state')
+
+    @downloader_state.setter
+    def downloader_state(self, state):
+        self.set_boolean('downloader-state', state)
+
+    @property
     def desktop_notifications(self):
         return self.get_boolean('desktop-notifications')
 
