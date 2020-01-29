@@ -62,6 +62,7 @@ class Server:
     id = NotImplemented
     name = NotImplemented
     lang = NotImplemented
+    status = 'enabled'
 
     base_url = None
 
@@ -186,6 +187,9 @@ def get_servers_list():
         module = importlib.import_module(name)
         for name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
+                continue
+
+            if obj.status == 'disabled':
                 continue
 
             if inspect.isclass(obj) and obj.__module__.startswith('komikku.servers.'):

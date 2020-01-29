@@ -615,7 +615,7 @@ class Chapter:
             return True
 
         data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug, self.url)
-        if data is None:
+        if data is None or not data['pages']:
             return False
 
         return self.update(data)

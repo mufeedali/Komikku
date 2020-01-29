@@ -159,6 +159,11 @@ class Card():
         else:
             self.manga = Manga.get(self.manga.id, self.manga.server)
 
+        if manga.server.status == 'disabled':
+            self.window.show_notification(
+                _('NOTICE\n{0} server is not longer supported.\nPlease switch to another server.').format(manga.server.name)
+            )
+
         if len(manga.chapters) > 0:
             self.window.activity_indicator.start()
 

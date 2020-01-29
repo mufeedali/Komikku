@@ -21,11 +21,17 @@ headers = {
     'Origin': 'https://mangarock.com',
 }
 
+#
+# BEWARE: This server is disabled
+# Dead since 01/2020
+#
+
 
 class Mangarock(Server):
     id = 'mangarock'
     name = SERVER_NAME
     lang = 'en'
+    status = 'disabled'
 
     base_url = 'https://mangarock.com'
     api_url = 'https://api.mangarockhd.com/query/web401'
