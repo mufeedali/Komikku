@@ -13,10 +13,11 @@ from gi.repository import Gtk
 from gi.repository import Notify
 
 from komikku.models import create_db_connection
-from komikku.models import Chapter
 from komikku.models import Download
 from komikku.models import Settings
 from komikku.utils import log_error_traceback
+
+DOWNLOAD_DELAY = 1  # in seconds
 
 
 class Downloader(GObject.GObject):
@@ -24,8 +25,7 @@ class Downloader(GObject.GObject):
     Chapters downloader
     """
     __gsignals__ = {
-        'page-downloaded': (GObject.SIGNAL_RUN_FIRST, None, (int, int, )),
-        'page-error': (GObject.SIGNAL_RUN_FIRST, None, (int, int, )),
+        'changed': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT, )),
         'ended': (GObject.SIGNAL_RUN_FIRST, None, ()),
         'started': (GObject.SIGNAL_RUN_FIRST, None, ()),
     }
@@ -41,7 +41,9 @@ class Downloader(GObject.GObject):
             self.start()
 
     def add(self, chapter):
-        Download.new(chapter.id)
+        download = Download.new(chapter.id)
+        if download:
+            self.emit('changed', download, None)
 
     def remove(self, chapters):
         if not isinstance(chapters, list):
@@ -60,34 +62,39 @@ class Downloader(GObject.GObject):
             if download:
                 download.delete()
 
-            self.window.card.update_chapter_row(chapter)
+            self.emit('changed', None, chapter)
 
         if was_running:
             self.start()
 
     def start(self):
-        def run():
-            GLib.idle_add(self.emit, 'started')
+        def run(exclude_errors=False):
+            db_conn = create_db_connection()
+            if exclude_errors:
+                rows = db_conn.execute('SELECT * FROM downloads WHERE status != "error" ORDER BY date ASC').fetchall()
+            else:
+                rows = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchall()
+            db_conn.close()
 
             interrupted = False
-            exclude_errors = False
-            while True:
+            for row in rows:
                 if self.stop_flag:
                     break
 
-                download = Download.next(exclude_errors=exclude_errors)
-                exclude_errors = True
+                download = Download.get(row['id'])
                 if download is None:
-                    break
-
-                download.update(dict(status='downloading'))
+                    # Download has been removed in the meantime
+                    continue
 
                 chapter = download.chapter
-                GLib.idle_add(update_ui, chapter)
+
+                download.update(dict(status='downloading'))
+                GLib.idle_add(notify_download_started, download)
 
                 try:
-                    if download.chapter.update_full():
+                    if chapter.update_full() and len(chapter.pages) > 0:
                         error_counter = 0
+                        success_counter = 0
                         for index, page in enumerate(chapter.pages):
                             if self.stop_flag:
                                 interrupted = True
@@ -96,16 +103,18 @@ class Downloader(GObject.GObject):
                             if chapter.get_page_path(index) is None:
                                 path = chapter.get_page(index)
                                 if path is not None:
-                                    success = True
+                                    success_counter += 1
+                                    download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
                                 else:
-                                    success = False
                                     error_counter += 1
+                                    download.update(dict(errors=error_counter))
 
-                                download.update(dict(percent=(index + 1) * 100 / len(chapter.pages)))
-                                GLib.idle_add(notify_progress, chapter, index, success)
+                                GLib.idle_add(notify_download_progress, download, success_counter, error_counter)
 
                                 if index < len(chapter.pages) - 1 and not self.stop_flag:
-                                    time.sleep(1)
+                                    time.sleep(DOWNLOAD_DELAY)
+                            else:
+                                success_counter += 1
 
                         if interrupted:
                             download.update(dict(status='pending'))
@@ -114,46 +123,35 @@ class Downloader(GObject.GObject):
                                 # All pages were successfully downloaded
                                 chapter.update(dict(downloaded=1))
                                 download.delete()
-                                GLib.idle_add(notify_complete, chapter)
+                                GLib.idle_add(notify_download_success, chapter)
                             else:
                                 # At least one page failed to be downloaded
                                 download.update(dict(status='error'))
-                                GLib.idle_add(update_ui, chapter)
+                                GLib.idle_add(notify_download_error, download)
                     else:
                         # Possible causes:
+                        # - Empty chapter
                         # - Outdated chapter info
-                        # - Server has undergone changes (API, HTML) and code is outdated
+                        # - Server has undergone changes (API, HTML) and plugin code is outdated
                         download.update(dict(status='error'))
-                        GLib.idle_add(update_ui, chapter)
+                        GLib.idle_add(notify_download_error, download)
                 except Exception as e:
                     # Possible causes:
                     # - No Internet connection
-                    # - Connexion timeout
+                    # - Connexion timeout, read timeout
                     # - Server down
                     download.update(dict(status='error'))
                     user_error_message = log_error_traceback(e)
-                    GLib.idle_add(update_ui, chapter, user_error_message)
+                    GLib.idle_add(notify_download_error, download, user_error_message)
 
-            self.running = False
-            GLib.idle_add(self.emit, 'ended')
+            if not rows or self.stop_flag:
+                self.running = False
+                GLib.idle_add(self.emit, 'ended')
+            else:
+                # Continue, new downloads may have been added in the meantime
+                run(exclude_errors=True)
 
-        def notify_progress(chapter, index, success):
-            if notification is not None:
-                summary = _('Download page {0}/{1}').format(index + 1, len(chapter.pages))
-                if not success:
-                    summary = '{0} ({1})'.format(summary, _('error'))
-
-                notification.update(
-                    summary,
-                    _('[{0}] Chapter {1}').format(chapter.manga.name, chapter.title)
-                )
-                notification.show()
-
-            self.emit('page-downloaded' if success else 'page-error', chapter.id, index + 1)
-
-            return update_ui(chapter)
-
-        def notify_complete(chapter):
+        def notify_download_success(chapter):
             if notification is not None:
                 notification.update(
                     _('Download completed'),
@@ -161,13 +159,36 @@ class Downloader(GObject.GObject):
                 )
                 notification.show()
 
-            return update_ui(chapter)
+            self.emit('changed', None, chapter)
 
-        def update_ui(chapter, message=None):
-            self.window.card.update_chapter_row(chapter)
+            return False
 
+        def notify_download_error(download, message=None):
             if message:
                 self.window.show_notification(message)
+
+            self.emit('changed', download, None)
+
+            return False
+
+        def notify_download_started(download):
+            self.emit('changed', download, None)
+
+            return False
+
+        def notify_download_progress(download, success_counter, error_counter):
+            if notification is not None:
+                summary = _('{0}/{1} pages downloaded').format(success_counter, len(download.chapter.pages))
+                if error_counter > 0:
+                    summary = '{0} ({1})'.format(summary, _('error'))
+
+                notification.update(
+                    summary,
+                    _('[{0}] Chapter {1}').format(download.chapter.manga.name, download.chapter.title)
+                )
+                notification.show()
+
+            self.emit('changed', download, None)
 
             return False
 
@@ -185,6 +206,8 @@ class Downloader(GObject.GObject):
         else:
             notification = None
 
+        GLib.idle_add(self.emit, 'started')
+
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
@@ -196,7 +219,9 @@ class Downloader(GObject.GObject):
                 Settings.get_default().downloader_state = False
 
 
-class DownloadManagerDialog():
+class DownloadManagerDialog:
+    __gsignals_handlers_ids__ = None
+
     selection_count = 0
     selection_mode = False
 
@@ -231,10 +256,11 @@ class DownloadManagerDialog():
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
 
-        self.window.downloader.connect('page-downloaded', self.update_row)
-        self.window.downloader.connect('page-error', self.update_row)
-        self.window.downloader.connect('ended', self.update_headerbar)
-        self.window.downloader.connect('started', self.update_headerbar)
+        self.__gsignals_handlers_ids__ = [
+            self.window.downloader.connect('changed', self.update_row),
+            self.window.downloader.connect('ended', self.update_headerbar),
+            self.window.downloader.connect('started', self.update_headerbar),
+        ]
 
         action_group = Gio.SimpleActionGroup.new()
 
@@ -253,6 +279,13 @@ class DownloadManagerDialog():
     @property
     def rows(self):
         return self.listbox.get_children()
+
+    def close(self):
+        # Disconnect from signals
+        for handler_id in self.__gsignals_handlers_ids__:
+            self.window.downloader.disconnect(handler_id)
+
+        self.dialog.destroy()
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
@@ -277,7 +310,7 @@ class DownloadManagerDialog():
         if self.selection_mode:
             self.leave_selection_mode()
         else:
-            self.dialog.close()
+            self.close()
 
     def on_download_row_clicked(self, listbox, row):
         if not self.selection_mode:
@@ -333,7 +366,8 @@ class DownloadManagerDialog():
         self.populate()
         self.update_headerbar()
 
-        self.dialog.present()
+        if self.dialog.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
+            self.close()
 
     def populate(self):
         db_conn = create_db_connection()
@@ -366,10 +400,15 @@ class DownloadManagerDialog():
             self.start_stop_button.hide()
             self.menu_button.hide()
 
-    def update_row(self, downloader, chapter_id, index):
+    def update_row(self, downloader, download, chapter):
+        chapter_id = chapter.id if chapter is not None else download.chapter.id
+
         for row in self.rows:
             if row.download.chapter.id == chapter_id:
-                if row.update(index) == 0:
+                row.download = download
+                if row.download:
+                    row.update()
+                else:
                     row.destroy()
                 break
 
@@ -387,6 +426,14 @@ class DownloadRow(Gtk.ListBoxRow):
 
         self.download = download
 
+        if self.download.percent:
+            nb_pages = len(download.chapter.pages)
+            counter = int((nb_pages / 100) * self.download.percent)
+            fraction = self.download.percent / 100
+        else:
+            counter = None
+            fraction = None
+
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -400,9 +447,14 @@ class DownloadRow(Gtk.ListBoxRow):
 
         # Progress label
         self.progress_label = Gtk.Label(xalign=0)
-        self.progress_label.get_style_context().add_class('download-manager-download-label')
+        self.progress_label.get_style_context().add_class('download-manager-download-sublabel')
         self.progress_label.set_valign(Gtk.Align.CENTER)
         self.progress_label.set_line_wrap(True)
+        text = _(Download.STATUSES[self.download.status]).upper() if self.download.status == 'error' else ''
+        if counter:
+            text = f'{text} {counter}/{nb_pages}'
+        if text:
+            self.progress_label.set_text(text)
         hbox.pack_start(self.progress_label, False, False, 0)
 
         vbox.pack_start(hbox, True, True, 0)
@@ -418,23 +470,21 @@ class DownloadRow(Gtk.ListBoxRow):
         # Progress bar
         self.progressbar = Gtk.ProgressBar()
         self.progressbar.set_show_text(False)
+        if fraction:
+            self.progressbar.set_fraction(fraction)
         vbox.pack_start(self.progressbar, True, True, 0)
 
         self.add(vbox)
 
-    def update(self, index):
+    def update(self):
         """
         Updates chapter download progress
-
-        :return: number of remaining pages
-        :rtype: int
         """
-        chapter = Chapter.get(self.download.chapter.id)
+        nb_pages = len(self.download.chapter.pages)
+        counter = int((nb_pages / 100) * self.download.percent)
+        fraction = self.download.percent / 100
 
-        nb_pages = len(chapter.pages)
-        percent = index / nb_pages
-
-        self.progressbar.set_fraction(percent)
-        self.progress_label.set_text('{0}/{1}'.format(index, nb_pages))
-
-        return nb_pages - index
+        self.progressbar.set_fraction(fraction)
+        text = _(Download.STATUSES[self.download.status]).upper() if self.download.status == 'error' else ''
+        text = f'{text} {counter}/{nb_pages}'
+        self.progress_label.set_text(text)

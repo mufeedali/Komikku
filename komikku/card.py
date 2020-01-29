@@ -41,6 +41,8 @@ class Card():
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
 
+        self.window.downloader.connect('changed', self.update_chapter_row)
+
         def sort(child1, child2):
             """
             This function gets two children and has to return:
@@ -122,18 +124,12 @@ class Card():
         # Add chapter in download queue
         self.window.downloader.add(self.action_row.chapter)
 
-        # Update chapter
-        self.populate_chapter_row(self.action_row)
-
         self.window.downloader.start()
 
     def download_selected_chapters(self, action, param):
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
             self.window.downloader.add(row.chapter)
-
-            # Update chapter
-            self.populate_chapter_row(row)
 
         self.window.downloader.start()
 
@@ -261,6 +257,7 @@ class Card():
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
+            row.download = None
             row._selected = False
             self.listbox.add(row)
 
@@ -351,9 +348,10 @@ class Card():
         if chapter.downloaded:
             download_status = 'downloaded'
         else:
-            active_download = Download.get_by_chapter_id(chapter.id)
-            if active_download:
-                download_status = active_download.status
+            if row.download is None:
+                row.download = Download.get_by_chapter_id(chapter.id)
+            if row.download:
+                download_status = row.download.status
 
         label = Gtk.Label(xalign=0, yalign=1)
         label.set_valign(Gtk.Align.CENTER)
@@ -367,10 +365,9 @@ class Card():
             hbox.pack_start(label, False, False, 0)
 
             # Download progress
-            # NOTE: Especially required as long as there is no download manager
             progressbar = Gtk.ProgressBar()
             progressbar.set_valign(Gtk.Align.CENTER)
-            progressbar.set_fraction(active_download.percent / 100)
+            progressbar.set_fraction(row.download.percent / 100)
             hbox.pack_start(progressbar, True, True, 0)
 
             stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
@@ -495,17 +492,21 @@ class Card():
 
         self.populate_chapter_row(self.action_row)
 
-    def update_chapter_row(self, chapter):
+    def update_chapter_row(self, downloader=None, download=None, chapter=None):
         """
         Update a specific chapter row
-        - used when download status change (in Downloader)
+        - used when download status change (via signal from Downloader)
         - used when we come back from reader to update last page read
         """
+        if chapter is None:
+            chapter = download.chapter
+
         if self.window.page not in ('card', 'reader') or self.manga.id != chapter.manga_id:
             return
 
         for row in self.listbox.get_children():
             if row.chapter.id == chapter.id:
                 row.chapter = chapter
+                row.download = download
                 self.populate_chapter_row(row)
                 break

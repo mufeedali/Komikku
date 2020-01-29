@@ -14,7 +14,7 @@ from gi.repository import GLib
 
 from komikku.servers import unscramble_image
 
-VERSION = 1
+VERSION = 2
 
 
 def adapt_json(data):
@@ -67,12 +67,14 @@ def create_db_connection():
     return con
 
 
-def create_table(conn, sql):
+def execute_sql(conn, sql):
     try:
         c = conn.cursor()
         c.execute(sql)
+        return True
     except Exception as e:
         print('SQLite-error:', e)
+        return False
 
 
 def get_data_dir():
@@ -137,18 +139,26 @@ def init_db():
         chapter_id integer REFERENCES chapters(id) ON DELETE CASCADE,
         status text NOT NULL,
         percent float NOT NULL,
+        errors integer DEFAULT 0,
         date timestamp NOT NULL,
         UNIQUE (chapter_id)
     );"""
 
     db_conn = create_db_connection()
     if db_conn is not None:
-        create_table(db_conn, sql_create_mangas_table)
-        create_table(db_conn, sql_create_chapters_table)
-        create_table(db_conn, sql_create_downloads_table)
+        execute_sql(db_conn, sql_create_mangas_table)
+        execute_sql(db_conn, sql_create_chapters_table)
+        execute_sql(db_conn, sql_create_downloads_table)
 
-        db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
-        print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
+        db_version = db_conn.execute('PRAGMA user_version').fetchone()[0]
+        if db_version == 1:
+            # Version 0.10.0
+            if execute_sql(db_conn, 'ALTER TABLE downloads ADD COLUMN errors integer DEFAULT 0;'):
+                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+                print('DB version', VERSION)
+        else:
+            db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+            print('DB version', VERSION)
 
         db_conn.close()
 
@@ -171,8 +181,10 @@ def update_row(db_conn, table, id, data):
             'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
             tuple(data.values()) + (id,)
         )
+        return True
     except Exception as e:
         print('SQLite-error:', e, data)
+        return False
 
 
 class Manga:
@@ -715,14 +727,19 @@ class Download:
         """
         Updates download
 
-        :param data: percent of pages downloaded and/or status
+        :param data: percent of pages downloaded, errors or status
         :return: True on success False otherwise
         """
 
         db_conn = create_db_connection()
+        result = False
+
         with db_conn:
-            update_row(db_conn, 'downloads', self.id, data)
+            if update_row(db_conn, 'downloads', self.id, data):
+                result = True
+                for key in data:
+                    setattr(self, key, data[key])
 
         db_conn.close()
 
-        return True
+        return result

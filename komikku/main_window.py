@@ -274,7 +274,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
             # In card page, update all previously chapters consulted (last page read may have changed)
             for chapter in self.reader.chapters_consulted:
-                self.card.update_chapter_row(chapter)
+                self.card.update_chapter_row(chapter=chapter)
 
             self.card.show()
 
