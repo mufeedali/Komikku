@@ -230,30 +230,40 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[2].render()
 
     def on_key_press(self, widget, event):
-        # Note: this code is never reached when controls is visible
-        # Slider (Gtk.Scale) has already consume event
+        # Note: in case of keys LEFT and RIGHT, this code is never reached when controls are visible
+        # Slider (Gtk.Scale) has already consume the event
 
         modifiers = Gtk.accelerator_get_default_mod_mask()
-        if (event.state & modifiers) == 0 and event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
+        if (event.state & modifiers) != 0:
+            return
+
+        if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
             self.switchto_page('left' if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left) else 'right')
-        elif (((event.state & modifiers) == 0)
-              and (event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down))
-              and (self.reader.reading_direction == 'vertical')):
-            # If reading direction is vertical, arrow keys should scroll.
+            return
+
+        if self.reader.reading_direction == 'vertical' and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
             page = self.current_page
             vadj = page.scrolledwindow.get_vadjustment()
-            if (vadj.get_upper() == vadj.get_value() + self.get_vadjustment().get_value()
-                    and event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down)):
-                self.switchto_page('right')
-            elif (vadj.get_lower() == vadj.get_value() and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up)):
-                self.switchto_page('left')
-                # After switching pages, go to the end of the page that is now the current page
-                self.current_page.scrolledwindow.get_vadjustment().set_value(vadj.get_upper() + self.get_vadjustment().get_value())
-            elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                # Emit scroll signal
-                page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_DOWN, False)
-            elif event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
-                page.scrolledwindow.do_scroll_child(page.scrolledwindow, Gtk.ScrollType.STEP_UP, False)
+
+            if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                if vadj.get_value() + self.reader.size.height == vadj.get_upper():
+                    self.switchto_page('right')
+                else:
+                    # If image height is greater than viewport height, arrow keys should scroll page down
+                    # Emit scroll signal: one step down
+                    page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
+
+            else:
+                if vadj.get_value() == 0:
+                    self.switchto_page('left')
+
+                    # After switching pages, go to the end of the page that is now the current page
+                    vadj = self.current_page.scrolledwindow.get_vadjustment()
+                    vadj.set_value(vadj.get_upper() - self.reader.size.height)
+                else:
+                    # If image height is greater than viewport height, arrow keys should scroll page up
+                    # Emit scroll signal: one step up
+                    page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
