@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
 import gettext
 import locale
+import os
+import sys
 
 sys.path.insert(1, '@pythondir@')
 
@@ -35,8 +35,6 @@ if builddir:
 
 def install_excepthook():
     """ Make sure we exit when an unhandled exception occurs. """
-    from gi.repository import Gtk
-
     old_hook = sys.excepthook
 
     def new_hook(etype, evalue, etb):
@@ -55,6 +53,9 @@ if __name__ == '__main__':
 
     gi.require_version('Gtk', '3.0')
 
+    from gi.repository import Gio
+    from gi.repository import Gtk
+
     install_excepthook()
 
     locale.textdomain('@projectname@')
@@ -62,13 +63,11 @@ if __name__ == '__main__':
     gettext.textdomain('@projectname@')
     gettext.bindtextdomain('@projectname@', '@localedir@')
 
-    from gi.repository import Gio
+    resource = Gio.Resource.load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
+    resource._register()
 
     from @projectname@.application import Application
     from @projectname@.models import init_db
-
-    resource = Gio.Resource.load(os.path.join('@pkgdatadir@', '@appid@.gresource'))
-    resource._register()
 
     init_db()
 

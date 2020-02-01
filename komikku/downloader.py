@@ -10,6 +10,7 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
+from gi.repository import Handy
 from gi.repository import Notify
 
 from komikku.models import create_db_connection
@@ -219,36 +220,37 @@ class Downloader(GObject.GObject):
                 Settings.get_default().downloader_state = False
 
 
-class DownloadManagerDialog:
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/download_manager_dialog.ui')
+class DownloadManagerDialog(Handy.Dialog):
+    __gtype_name__ = 'DownloadManagerDialog'
     __gsignals_handlers_ids__ = None
 
     selection_count = 0
     selection_mode = False
 
+    titlebar = Gtk.Template.Child('titlebar')
+    back_button = Gtk.Template.Child('back_button')
+    start_stop_button = Gtk.Template.Child('start_stop_button')
+    start_stop_button_image = Gtk.Template.Child('start_stop_button_image')
+    menu_button = Gtk.Template.Child('menu_button')
+    stack = Gtk.Template.Child('stack')
+    listbox = Gtk.Template.Child('listbox')
+
     def __init__(self, window):
-        self.window = window
+        Handy.Dialog.__init__(self)
+
+        self.set_titlebar(self.titlebar)
+        self.set_transient_for(window)
+
         self.builder = window.builder
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/download_manager_dialog.ui')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager_selection_mode.xml')
 
-        self.dialog = self.builder.get_object('dialog')
-        self.dialog.set_transient_for(self.window)
+        self.downloader = window.downloader
 
-        self.titlebar = self.builder.get_object('titlebar')
-
-        self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
-
-        self.start_stop_button = self.builder.get_object('start_stop_button')
-        self.start_stop_button_image = self.builder.get_object('start_stop_button_image')
+        self.back_button.connect('clicked', self.on_back_button_clicked)
         self.start_stop_button.connect('clicked', self.on_start_stop_button_clicked)
-
-        self.menu_button = self.builder.get_object('menu_button')
         self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
-
-        self.stack = self.builder.get_object('stack')
-
-        self.listbox = self.builder.get_object('listbox')
         self.listbox.connect('row-activated', self.on_download_row_clicked)
 
         # Gesture for multi-selection mode
@@ -257,9 +259,9 @@ class DownloadManagerDialog:
         self.gesture.connect('pressed', self.enter_selection_mode)
 
         self.__gsignals_handlers_ids__ = [
-            self.window.downloader.connect('changed', self.update_row),
-            self.window.downloader.connect('ended', self.update_headerbar),
-            self.window.downloader.connect('started', self.update_headerbar),
+            self.downloader.connect('changed', self.update_row),
+            self.downloader.connect('ended', self.update_headerbar),
+            self.downloader.connect('started', self.update_headerbar),
         ]
 
         action_group = Gio.SimpleActionGroup.new()
@@ -274,7 +276,7 @@ class DownloadManagerDialog:
         delete_selected_action.connect('activate', self.on_menu_delete_selected_clicked)
         action_group.add_action(delete_selected_action)
 
-        self.dialog.insert_action_group('download-manager', action_group)
+        self.insert_action_group('download-manager', action_group)
 
     @property
     def rows(self):
@@ -283,9 +285,9 @@ class DownloadManagerDialog:
     def close(self):
         # Disconnect from signals
         for handler_id in self.__gsignals_handlers_ids__:
-            self.window.downloader.disconnect(handler_id)
+            self.downloader.disconnect(handler_id)
 
-        self.dialog.destroy()
+        self.destroy()
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
@@ -334,7 +336,7 @@ class DownloadManagerDialog:
             chapters.append(row.download.chapter)
             row.destroy()
 
-        self.window.downloader.remove(chapters)
+        self.downloader.remove(chapters)
 
         self.leave_selection_mode()
         self.update_headerbar()
@@ -347,7 +349,7 @@ class DownloadManagerDialog:
                 chapters.append(row.download.chapter)
                 row.destroy()
 
-        self.window.downloader.remove(chapters)
+        self.downloader.remove(chapters)
 
         self.leave_selection_mode()
         self.update_headerbar()
@@ -357,17 +359,17 @@ class DownloadManagerDialog:
     def on_start_stop_button_clicked(self, button):
         self.start_stop_button.set_sensitive(False)
 
-        if self.window.downloader.running:
-            self.window.downloader.stop(save_state=True)
+        if self.downloader.running:
+            self.downloader.stop(save_state=True)
         else:
-            self.window.downloader.start()
+            self.downloader.start()
 
     def open(self, action, param):
         self.populate()
         self.update_headerbar()
 
-        if self.dialog.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
-            self.close()
+        if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
+            self.on_back_button_clicked(None)
 
     def populate(self):
         db_conn = create_db_connection()
@@ -388,7 +390,7 @@ class DownloadManagerDialog:
 
     def update_headerbar(self, *args):
         if self.rows:
-            if self.window.downloader.running:
+            if self.downloader.running:
                 self.start_stop_button_image.set_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
             else:
                 self.start_stop_button_image.set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)

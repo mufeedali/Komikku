@@ -3,7 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libhandy" version="0.0"/>
-  <object class="HdyDialog" id="dialog">
+  <template class="DownloadManagerDialog" parent="HdyDialog">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
@@ -205,5 +205,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
