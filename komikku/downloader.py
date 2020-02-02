@@ -96,7 +96,7 @@ class Downloader(GObject.GObject):
                     if chapter.update_full() and len(chapter.pages) > 0:
                         error_counter = 0
                         success_counter = 0
-                        for index, page in enumerate(chapter.pages):
+                        for index, _page in enumerate(chapter.pages):
                             if self.stop_flag:
                                 interrupted = True
                                 break

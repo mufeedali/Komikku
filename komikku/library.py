@@ -189,7 +189,7 @@ class Library():
         if nb_unread_chapters == nb_recent_chapters == nb_downloaded_chapters == 0:
             return
 
-        cover_width, cover_height = self.cover_size
+        cover_width, _cover_height = self.cover_size
         spacing = 5  # with top and right borders, between badges
         x = cover_width
 

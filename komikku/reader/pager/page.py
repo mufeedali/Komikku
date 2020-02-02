@@ -83,7 +83,7 @@ class Page(Gtk.Overlay):
         self.image.clear()
 
     def on_button_retry_clicked(self, button):
-        self.retry_button.destroy()
+        button.destroy()
         self.render()
 
     def render(self):
@@ -241,17 +241,17 @@ class Page(Gtk.Overlay):
         self.set_size_request(self.reader.size.width, self.reader.size.height)
 
     def show_retry_button(self):
-        self.retry_button = Gtk.Button.new()
-        self.retry_button.set_image(Gtk.Image.new_from_icon_name('view-refresh-symbolic', Gtk.IconSize.LARGE_TOOLBAR))
-        self.retry_button.set_image_position(Gtk.PositionType.TOP)
-        self.retry_button.set_always_show_image(True)
-        self.retry_button.set_label(_('Retry'))
-        self.retry_button.set_valign(Gtk.Align.CENTER)
-        self.retry_button.set_halign(Gtk.Align.CENTER)
-        self.retry_button.connect('clicked', self.on_button_retry_clicked)
+        button = Gtk.Button.new()
+        button.set_image(Gtk.Image.new_from_icon_name('view-refresh-symbolic', Gtk.IconSize.LARGE_TOOLBAR))
+        button.set_image_position(Gtk.PositionType.TOP)
+        button.set_always_show_image(True)
+        button.set_label(_('Retry'))
+        button.set_valign(Gtk.Align.CENTER)
+        button.set_halign(Gtk.Align.CENTER)
+        button.connect('clicked', self.on_button_retry_clicked)
 
-        self.add_overlay(self.retry_button)
-        self.retry_button.show()
+        self.add_overlay(button)
+        button.show()
 
     def toggle_page_number(self):
         if self.reader.controls.is_visible:
