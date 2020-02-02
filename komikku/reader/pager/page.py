@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from gettext import gettext as _
 import threading
 
 from gi.repository import GLib
@@ -80,6 +81,10 @@ class Page(Gtk.Overlay):
         self.error = None
         self.pixbuf = None
         self.image.clear()
+
+    def on_button_retry_clicked(self, button):
+        self.retry_button.destroy()
+        self.render()
 
     def render(self):
         def run():
@@ -181,6 +186,8 @@ class Page(Gtk.Overlay):
             self.error = kind
             self.pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
+            self.show_retry_button()
+
         if self.status is not None and self.error is None:
             return
 
@@ -232,6 +239,19 @@ class Page(Gtk.Overlay):
 
     def set_size(self):
         self.set_size_request(self.reader.size.width, self.reader.size.height)
+
+    def show_retry_button(self):
+        self.retry_button = Gtk.Button.new()
+        self.retry_button.set_image(Gtk.Image.new_from_icon_name('view-refresh-symbolic', Gtk.IconSize.LARGE_TOOLBAR))
+        self.retry_button.set_image_position(Gtk.PositionType.TOP)
+        self.retry_button.set_always_show_image(True)
+        self.retry_button.set_label(_('Retry'))
+        self.retry_button.set_valign(Gtk.Align.CENTER)
+        self.retry_button.set_halign(Gtk.Align.CENTER)
+        self.retry_button.connect('clicked', self.on_button_retry_clicked)
+
+        self.add_overlay(self.retry_button)
+        self.retry_button.show()
 
     def toggle_page_number(self):
         if self.reader.controls.is_visible:
