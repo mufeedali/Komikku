@@ -88,7 +88,7 @@ class Xkcd(Server):
 
         url_image = data['img']
         # The comic passed in HD after Chapter 1084
-        if int(chapter_slug) >= 1084 and int(chapter_slug) not in (1097, 2042, ):
+        if int(chapter_slug) >= 1084 and int(chapter_slug) not in (1097, 2042, 2202, ):
             url_image = url_image.replace('.png', '_2x.png')
 
         return dict(
