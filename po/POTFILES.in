@@ -1,9 +1,12 @@
 data/info.febvre.Komikku.appdata.xml.in
 data/info.febvre.Komikku.desktop.in
 data/ui/add_dialog.ui
+data/ui/download_manager_dialog.ui
 data/ui/main_window.ui
 data/ui/menu/card_selection_mode.xml
 data/ui/menu/card.xml
+data/ui/menu/download_manager_selection_mode.xml
+data/ui/menu/download_manager.xml
 data/ui/menu/library_selection_mode.xml
 data/ui/menu/main.xml
 data/ui/menu/reader.xml
@@ -17,6 +20,7 @@ komikku/library.py
 komikku/main_window.py
 komikku/models/database.py
 komikku/reader/pager/__init__.py
+komikku/reader/pager/page.py
 komikku/settings_dialog.py
 komikku/updater.py
 komikku/utils.py

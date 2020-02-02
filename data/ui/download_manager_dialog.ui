@@ -37,7 +37,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Downlaod Manager</property>
+                <property name="label" translatable="yes">Download Manager</property>
                 <style>
                   <class name="title"/>
                 </style>
