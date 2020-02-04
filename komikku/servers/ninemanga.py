@@ -229,9 +229,10 @@ class Ninemanga(Server):
 
 
 class Ninemanga_br(Ninemanga):
+    # BEWARE: For historical reasons, Id is ninemanga_br instead of ninemanga_pt_br (idem for class name)
     id = 'ninemanga_br'
     name = SERVER_NAME
-    lang = 'pt'
+    lang = 'pt_BR'
 
     base_url = 'http://br.ninemanga.com'
     search_url = base_url + '/search/ajax/'

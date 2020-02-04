@@ -28,7 +28,7 @@ LANGUAGES_CODES = dict(
     pt='pt',
     ru='ru',
     vi='vi',
-    zh='cn',  # diff
+    zh_Hans='cn',  # diff
 )
 
 SERVER_NAME = 'Pepper&Carrot'
@@ -252,7 +252,7 @@ class Peppercarrot_vi(Peppercarrot):
     lang = 'vi'
 
 
-class Peppercarrot_zh(Peppercarrot):
-    id = 'peppercarrot_zh'
+class Peppercarrot_zh_hans(Peppercarrot):
+    id = 'peppercarrot_zh_hans'
     name = SERVER_NAME
-    lang = 'zh'
+    lang = 'zh_Hans'

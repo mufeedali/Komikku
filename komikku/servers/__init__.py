@@ -16,7 +16,7 @@ import requests
 from requests.adapters import TimeoutSauce
 import struct
 
-# https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+# https://www.localeplanet.com/icu/
 LANGUAGES = dict(
     id='Bahasa Indonesia',
     cs='Čeština',
@@ -27,15 +27,16 @@ LANGUAGES = dict(
     it='Italiano',
     nl='Nederlands',
     nb='Norsk Bokmål',
-    pl='Polsky',
+    pl='Polski',
     pt='Português',
+    pt_BR='Português (Brasil)',
     ru='русский',
     vi='Tiếng Việt',
     ja='日本語',
     ko='한국어',
     th='ไทย',
-    zh='中文 (简体)',
-    zh_HANT='中文 (繁體)',
+    zh_Hans='中文 (简体)',
+    zh_Hant='中文 (繁體)',
 )
 
 REQUESTS_TIMEOUT = 5

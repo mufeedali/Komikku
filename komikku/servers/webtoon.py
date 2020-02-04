@@ -36,7 +36,7 @@ LANGUAGES_CODES = dict(
     fr='fr',
     id='id',
     th='th',
-    zh_HANT='zh-hant',  # diff
+    zh_Hant='zh-hant',  # diff
 )
 
 SERVER_NAME = 'WEBTOON'
@@ -327,4 +327,4 @@ class Webtoon_th(Webtoon):
 class Webtoon_zh_hant(Webtoon):
     id = 'webtoon_zh_hant'
     name = SERVER_NAME
-    lang = 'zh_HANT'
+    lang = 'zh_Hant'

@@ -42,11 +42,6 @@ GENRES = {
     '55': 'Thriller',
     '56': 'Wuxia',
 }
-LANGUAGES_CODES = dict(
-    en='gb',
-    es='es',
-    fr='fr',
-)
 SERVER_NAME = 'MangaDex'
 
 headers = {
@@ -65,6 +60,7 @@ class Mangadex(Server):
     id = 'mangadex'
     name = SERVER_NAME
     lang = 'en'
+    lang_code = 'gb'
 
     base_url = 'https://mangadex.org'
     api_manga_url = base_url + '/api/manga/{0}'
@@ -136,7 +132,7 @@ class Mangadex(Server):
         data['synopsis'] = html.unescape(resp_data['manga']['description'])
 
         for slug, chapter in resp_data['chapter'].items():
-            if LANGUAGES_CODES.get(self.lang) != chapter['lang_code']:
+            if self.lang_code != chapter['lang_code']:
                 continue
             if chapter['group_id'] == 9097:
                 # Chapters from MANGA Plus can be read from MangaDex
@@ -257,13 +253,120 @@ class Mangadex(Server):
         return results
 
 
+class Mangadex_cs(Mangadex):
+    id = 'mangadex_cs'
+    name = SERVER_NAME
+    lang = 'cs'
+    lang_code = 'cz'
+
+
+class Mangadex_de(Mangadex):
+    id = 'mangadex_de'
+    name = SERVER_NAME
+    lang = 'de'
+    lang_code = 'de'
+
+
 class Mangadex_es(Mangadex):
     id = 'mangadex_es'
     name = SERVER_NAME
     lang = 'es'
+    lang_code = 'es'
 
 
 class Mangadex_fr(Mangadex):
     id = 'mangadex_fr'
     name = SERVER_NAME
     lang = 'fr'
+    lang_code = 'fr'
+
+
+class Mangadex_id(Mangadex):
+    id = 'mangadex_id'
+    name = SERVER_NAME
+    lang = 'id'
+    lang_code = 'id'
+
+
+class Mangadex_it(Mangadex):
+    id = 'mangadex_it'
+    name = SERVER_NAME
+    lang = 'it'
+    lang_code = 'it'
+
+
+class Mangadex_ja(Mangadex):
+    id = 'mangadex_ja'
+    name = SERVER_NAME
+    lang = 'ja'
+    lang_code = 'jp'
+
+
+class Mangadex_ko(Mangadex):
+    id = 'mangadex_ko'
+    name = SERVER_NAME
+    lang = 'ko'
+    lang_code = 'kr'
+
+
+class Mangadex_nl(Mangadex):
+    id = 'mangadex_nl'
+    name = SERVER_NAME
+    lang = 'nl'
+    lang_code = 'nl'
+
+
+class Mangadex_pl(Mangadex):
+    id = 'mangadex_pl'
+    name = SERVER_NAME
+    lang = 'pl'
+    lang_code = 'pl'
+
+
+class Mangadex_pt(Mangadex):
+    id = 'mangadex_pt'
+    name = SERVER_NAME
+    lang = 'pt'
+    lang_code = 'pt'
+
+
+class Mangadex_pt_br(Mangadex):
+    id = 'mangadex_pt_br'
+    name = SERVER_NAME
+    lang = 'pt_BR'
+    lang_code = 'br'
+
+
+class Mangadex_ru(Mangadex):
+    id = 'mangadex_ru'
+    name = SERVER_NAME
+    lang = 'ru'
+    lang_code = 'ru'
+
+
+class Mangadex_th(Mangadex):
+    id = 'mangadex_th'
+    name = SERVER_NAME
+    lang = 'th'
+    lang_code = 'th'
+
+
+class Mangadex_vi(Mangadex):
+    id = 'mangadex_vi'
+    name = SERVER_NAME
+    lang = 'vi'
+    lang_code = 'vn'
+
+
+class Mangadex_zh_hans(Mangadex):
+    id = 'mangadex_zh_hans'
+    name = SERVER_NAME
+    lang = 'zh_Hans'
+    lang_code = 'cn'
+
+
+class Mangadex_zh_hant(Mangadex):
+    id = 'mangadex_zh_hant'
+    name = SERVER_NAME
+    lang = 'zh_Hant'
+    lang_code = 'hk'
