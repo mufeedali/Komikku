@@ -31,6 +31,11 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.10.1" date="2020-02-06">
+            <description>
+                <p>Fixe a bug in Download Manager</p>
+            </description>
+        </release>
         <release version="0.10.0" date="2020-02-05">
             <description>
                 <p>Added a Download Manager</p>
