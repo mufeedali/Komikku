@@ -6,8 +6,8 @@
     "command" : "komikku",
     "finish-args" : [
         "--share=ipc",
-        "--socket=x11",
         "--share=network",
+        "--socket=fallback-x11",
         "--socket=wayland",
         "--device=dri",
         "--talk-name=org.freedesktop.Notifications",

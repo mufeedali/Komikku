@@ -31,6 +31,17 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.10.0" date="2020-02-05">
+            <description>
+                <p>Added a Download Manager</p>
+                <p>[Manga] Improved chapters download</p>
+                <p>[Reader] Vertical reading direction: Added scrolling with UP and DOWN keys</p>
+                <p>[Reader] Added a Retry button when a image load failed</p>
+                <p>[Servers] Removed Manga Rock (server has closed)</p>
+                <p>[Servers] Minor fix in xkcd</p>
+                <p>[Servers] MangaDex: Added 15 languages</p>
+            </description>
+        </release>
         <release version="0.9.0" date="2020-01-17">
             <description>
                 <p>[Library] Add an unread badge</p>
