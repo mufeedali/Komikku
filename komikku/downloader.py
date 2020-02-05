@@ -482,6 +482,9 @@ class DownloadRow(Gtk.ListBoxRow):
         """
         Updates chapter download progress
         """
+        if not self.download.chapter.pages:
+            return
+
         nb_pages = len(self.download.chapter.pages)
         counter = int((nb_pages / 100) * self.download.percent)
         fraction = self.download.percent / 100
