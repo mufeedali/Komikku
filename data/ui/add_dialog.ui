@@ -46,9 +46,9 @@
                     <property name="hexpand">True</property>
                     <property name="label" translatable="yes">Select a server</property>
                     <property name="ellipsize">end</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
+                    <style>
+                      <class name="title"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="name">servers</property>
@@ -78,9 +78,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">title</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="ellipsize">end</property>
+                        <property name="single_line_mode">True</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">True</property>
