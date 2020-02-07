@@ -61,7 +61,7 @@ class Updater():
                         GLib.idle_add(error, manga)
                 except Exception as e:
                     user_error_message = log_error_traceback(e)
-                    GLib.idle_add(error, None, user_error_message)
+                    GLib.idle_add(error, manga, user_error_message)
 
             self.running = False
 
