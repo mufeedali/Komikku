@@ -1,5 +1,6 @@
 data/info.febvre.Komikku.appdata.xml.in
 data/info.febvre.Komikku.desktop.in
+data/ui/about_dialog.ui.in
 data/ui/add_dialog.ui
 data/ui/download_manager_dialog.ui
 data/ui/main_window.ui

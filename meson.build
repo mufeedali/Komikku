@@ -19,13 +19,13 @@ domainext = 'info'
 gitrepo = 'https://gitlab.com/' + authornickname + '/' + prettyname
 website = gitrepo
 
-# NOTE: if you contributed, feel free to add your name and email address here
+# NOTE: if you contributed, feel free to add your name here
 contributors = '\n'.join([
-    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt;',
+    'Valéry Febvre (valos)',
 ])
 translators = '\n'.join([
-    'Valéry Febvre (valos) &lt;vfebvre@easter-eggs.com&gt; (French)',
-    'VaGNaroK &lt;indialuz42@gmail.com&gt; (Brazilian Portuguese)',
+    'VaGNaroK (Brazilian Portuguese)',
+    'Valéry Febvre (French)',
 ])
 
 python = import('python3')

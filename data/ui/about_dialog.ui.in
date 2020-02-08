@@ -8,7 +8,11 @@
     <property name="program_name">@prettyname@</property>
     <property name="version">@VERSION@</property>
     <property name="copyright">© 2019-2020 @authorfullname@</property>
-    <property name="comments" translatable="yes">An online/offline manga reader</property>
+    <property name="comments" translatable="yes">An online/offline manga reader.
+
+Never forget, you can support the authors
+by buying the official comics when they are
+available in your region/language.</property>
     <property name="website">@PACKAGE_URL@</property>
     <property name="website_label" translatable="yes">Learn more about Komikku</property>
     <property name="authors">@CONTRIBUTORS@</property>
