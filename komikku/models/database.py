@@ -3,15 +3,18 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 import datetime
+from functools import lru_cache
 from gettext import gettext as _
 import importlib
 import json
 import os
+from os import environ
 import sqlite3
 import shutil
 
 from gi.repository import GLib
 
+from komikku.servers import get_servers_list
 from komikku.servers import unscramble_image
 
 VERSION = 2
@@ -77,14 +80,39 @@ def execute_sql(conn, sql):
         return False
 
 
+@lru_cache(maxsize=None)
 def get_data_dir():
-    return GLib.get_user_data_dir()
+    data_dir_path = GLib.get_user_data_dir()
+
+    # Check if inside flatpak sandbox
+    is_flatpak = os.path.exists(os.path.join(environ['XDG_RUNTIME_DIR'], 'flatpak-info'))
+    if is_flatpak:
+        return data_dir_path
+
+    base_path = data_dir_path
+    data_dir_path = os.path.join(base_path, 'info.febvre.Komikku')
+    if not os.path.exists(data_dir_path):
+        os.mkdir(data_dir_path)
+
+        # Until version 0.10.2, data files (chapters, database) were stored in a wrong place
+        must_be_moved = ['komikku.db', 'komikku_backup.db', ]
+        for server in get_servers_list():
+            must_be_moved.append(server['id'])
+
+        for name in must_be_moved:
+            data_path = os.path.join(base_path, name)
+            if os.path.exists(data_path):
+                os.rename(data_path, os.path.join(data_dir_path, name))
+
+    return data_dir_path
 
 
+@lru_cache(maxsize=None)
 def get_db_path():
     return os.path.join(get_data_dir(), 'komikku.db')
 
 
+@lru_cache(maxsize=None)
 def get_db_backup_path():
     return os.path.join(get_data_dir(), 'komikku_backup.db')
 

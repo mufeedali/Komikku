@@ -4,6 +4,7 @@
 
 import dateparser
 import datetime
+from functools import lru_cache
 import importlib
 import inspect
 import io
@@ -173,6 +174,12 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
     return buffer.getvalue()
 
 
+@lru_cache(maxsize=None)
+def get_cache_dir():
+    return GLib.get_user_cache_dir()
+
+
+@lru_cache(maxsize=None)
 def get_servers_list():
     import komikku.servers
 
