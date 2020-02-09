@@ -19,6 +19,12 @@ from gi.repository import Notify
 
 from komikku.main_window import MainWindow
 
+CREDITS = dict(
+    developers=('Valéry Febvre (valos)', ),
+    contributors=('Gerben Droogers (Tijder)', 'Mufeed Ali (lastweakness)', 'Romain Vaudois', ),
+    translators=('VaGNaroK (Brazilian Portuguese)', 'Valéry Febvre (French)', ),
+)
+
 
 class Application(Gtk.Application):
     development_mode = False

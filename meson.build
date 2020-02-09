@@ -19,15 +19,6 @@ domainext = 'info'
 gitrepo = 'https://gitlab.com/' + authornickname + '/' + prettyname
 website = gitrepo
 
-# NOTE: if you contributed, feel free to add your name here
-contributors = '\n'.join([
-    'Valéry Febvre (valos)',
-])
-translators = '\n'.join([
-    'VaGNaroK (Brazilian Portuguese)',
-    'Valéry Febvre (French)',
-])
-
 python = import('python3')
 
 prefix = get_option('prefix') # should be /usr

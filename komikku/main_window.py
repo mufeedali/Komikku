@@ -213,10 +213,19 @@ class MainWindow(Gtk.ApplicationWindow):
             Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
 
     def on_about_menu_clicked(self, action, param):
+        from komikku.application import CREDITS
+
         builder = Gtk.Builder()
         builder.add_from_resource('/info/febvre/Komikku/about_dialog.ui')
 
         about_dialog = builder.get_object('about_dialog')
+        about_dialog.set_authors([
+            *CREDITS['developers'], '',
+
+            _('Contributors: Code, Patches, Debugging:'), '',
+            *CREDITS['contributors'], '',
+        ])
+        about_dialog.set_translator_credits('\n'.join(CREDITS['translators']))
         about_dialog.set_modal(True)
         about_dialog.set_transient_for(self)
         if about_dialog.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT):
