@@ -180,7 +180,7 @@ def get_cache_dir():
 
 
 @lru_cache(maxsize=None)
-def get_servers_list():
+def get_servers_list(include_disabled=False):
     import komikku.servers
 
     def iter_namespace(ns_pkg):
@@ -197,7 +197,7 @@ def get_servers_list():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
                 continue
 
-            if obj.status == 'disabled':
+            if not include_disabled and obj.status == 'disabled':
                 continue
 
             if inspect.isclass(obj) and obj.__module__.startswith('komikku.servers.'):
