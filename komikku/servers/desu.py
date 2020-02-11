@@ -26,7 +26,7 @@ class Desu(Server):
     base_url = 'https://desu.me'
     api_manga_url = base_url + '/manga/api/{0}'
     api_chapter_url = base_url + '/manga/api/{0}/chapter/{1}'
-    api_search_url = base_url + '/manga/api?limit=100&search={0}'
+    api_search_url = base_url + '/manga/api?limit=50&search={0}'
     api_most_populars_url = base_url + '/manga/api?limit=50&order=popular'
 
     def __init__(self):
@@ -68,7 +68,7 @@ class Desu(Server):
         if resp_data['status'] == 'ongoing':
             data['status'] = 'ongoing'
         elif resp_data['status'] == 'released':
-            data['status'] = 'completed'
+            data['status'] = 'complete'
         data['synopsis'] = resp_data['description']
 
         for chapter in reversed(resp_data['chapters']['list']):
@@ -144,7 +144,5 @@ class Desu(Server):
             return None
 
         resp_data = r.json()['response']
-        for item in resp_data:
-            print(item['name'])
 
         return [dict(slug=item['id'], name=item['russian']) for item in resp_data]
