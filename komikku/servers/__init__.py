@@ -175,11 +175,6 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
 
 
 @lru_cache(maxsize=None)
-def get_cache_dir():
-    return GLib.get_user_cache_dir()
-
-
-@lru_cache(maxsize=None)
 def get_servers_list(include_disabled=False):
     import komikku.servers
 

@@ -31,6 +31,14 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.11.0" date="2020-02-11">
+            <description>
+                <p>Added Desu server (RU)</p>
+                <p>Added the Russian translation</p>
+                <p>Updated the Brazilian Portuguese translation</p>
+                <p>Fixed a bug in manga updater</p>
+            </description>
+        </release>
         <release version="0.10.1" date="2020-02-06">
             <description>
                 <p>Fixe a bug in Download Manager</p>

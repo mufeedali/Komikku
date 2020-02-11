@@ -93,7 +93,7 @@ def get_data_dir():
     if not os.path.exists(data_dir_path):
         os.mkdir(data_dir_path)
 
-        # Until version 0.10.2, data files (chapters, database) were stored in a wrong place
+        # Until version 0.11.0, data files (chapters, database) were stored in a wrong place
         must_be_moved = ['komikku.db', 'komikku_backup.db', ]
         for server in get_servers_list(include_disabled=True):
             must_be_moved.append(server['id'])
