@@ -20,6 +20,7 @@
 
         <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
         <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>
+        <file compressed="true">icons/ui/servers/desu.ico</file>
         <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/servers/jaiminisbox.ico</file>
         <file compressed="true">icons/ui/servers/japscan.ico</file>
@@ -37,8 +38,7 @@
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>
-	<file compressed="true">icons/ui/servers/desu.ico</file>
-	
+
         <file compressed="true">images/logo.png</file>
         <file compressed="true">images/missing_file.png</file>
     </gresource>

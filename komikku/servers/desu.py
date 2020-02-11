@@ -17,6 +17,7 @@ headers = {
     'User-Agent': USER_AGENT,
 }
 
+
 class Desu(Server):
     id = 'desu'
     name = SERVER_NAME
@@ -25,9 +26,8 @@ class Desu(Server):
     base_url = 'https://desu.me'
     api_manga_url = base_url + '/manga/api/{0}'
     api_chapter_url = base_url + '/manga/api/{0}/chapter/{1}'
-    api_search_url = base_url + '/manga/api?limit=1&search='
-    api_most_populars_url = base_url + '/manga/api?limit=32&order=popular'
-    manga_url = base_url + '/manga/{0}'
+    api_search_url = base_url + '/manga/api?limit=100&search={0}'
+    api_most_populars_url = base_url + '/manga/api?limit=50&order=popular'
 
     def __init__(self):
         if self.session is None:
@@ -46,7 +46,7 @@ class Desu(Server):
         if r is None or r.status_code != 200:
             return None
 
-        resp_data = r.json()["response"]
+        resp_data = r.json()['response']
 
         data = initial_data.copy()
         data.update(dict(
@@ -60,20 +60,27 @@ class Desu(Server):
         ))
 
         data['name'] = resp_data['russian']
+        data['url'] = resp_data['url']
         data['cover'] = resp_data['image']['original']
+
         data['scanlators'] = [t['name'] for t in resp_data['translators']]
         data['genres'] = [genre['russian'] for genre in resp_data['genres']]
-        data['status'] = resp_data['status']
+        if resp_data['status'] == 'ongoing':
+            data['status'] = 'ongoing'
+        elif resp_data['status'] == 'released':
+            data['status'] = 'completed'
         data['synopsis'] = resp_data['description']
 
-        for chapter in resp_data['chapters']['list']:
+        for chapter in reversed(resp_data['chapters']['list']):
+            title = '#{0}'.format(chapter['ch'])
+            if chapter['title']:
+                title = '{0} - {1}'.format(title, chapter['title'])
+
             data['chapters'].append(dict(
                 slug=chapter['id'],
-                title='#{0} - {1}'.format(chapter['ch'], chapter['title']),
+                title=title,
                 date=datetime.fromtimestamp(chapter['date']).date(),
             ))
-
-        data['chapters'].reverse()
 
         return data
 
@@ -94,7 +101,7 @@ class Desu(Server):
         )
         for page in resp_data['pages']['list']:
             data['pages'].append(dict(
-                slug=page['page'],
+                slug=None,
                 image=page['img'],
             ))
 
@@ -117,7 +124,7 @@ class Desu(Server):
         """
         Returns manga absolute URL
         """
-        return self.manga_url.format(slug)
+        return url
 
     def get_most_populars(self):
         """
@@ -127,15 +134,17 @@ class Desu(Server):
         if r is None or r.status_code != 200:
             return None
 
-        resp_data = r.json()["response"]
-        
-        return [dict(slug=element['id'], name=element['russian']) for element in resp_data]
+        resp_data = r.json()['response']
+
+        return [dict(slug=item['id'], name=item['russian']) for item in resp_data]
 
     def search(self, term):
-        r = self.session_get(self.api_search_url + term)
+        r = self.session_get(self.api_search_url.format(term))
         if r is None or r.status_code != 200:
             return None
 
-        resp_data = r.json()["response"]
+        resp_data = r.json()['response']
+        for item in resp_data:
+            print(item['name'])
 
-        return [dict(slug=element['id'], name=element['russian']) for element in resp_data]
+        return [dict(slug=item['id'], name=item['russian']) for item in resp_data]
