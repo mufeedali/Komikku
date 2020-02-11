@@ -15,7 +15,6 @@ from komikku.reader.pager import Pager
 class Reader:
     manga = None
     chapters_consulted = None
-    size = None
 
     def __init__(self, window):
         self.window = window
@@ -47,6 +46,10 @@ class Reader:
     def scaling(self):
         return self.manga.scaling or Settings.get_default().scaling
 
+    @property
+    def size(self):
+        return self.window.get_size()
+
     def add_actions(self):
         # Reading direction
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
@@ -69,8 +72,6 @@ class Reader:
 
     def init(self, chapter):
         self.manga = chapter.manga
-
-        self.size = self.window.get_size()
 
         # Reset list of chapters consulted
         self.chapters_consulted = set()
@@ -108,7 +109,6 @@ class Reader:
         self.pager.set_orientation()
 
     def on_resize(self):
-        self.size = self.window.get_size()
         self.pager.resize_pages()
 
     def on_scaling_changed(self, action, variant):
