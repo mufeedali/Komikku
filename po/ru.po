@@ -138,7 +138,7 @@ msgstr "%d/%m/%Y"
 
 #: ../komikku/card.py:456
 msgid "Reset"
-msgstr "Сброс"
+msgstr "Сбросить"
 
 #: ../komikku/card.py:458
 msgid "Download"
@@ -250,9 +250,10 @@ msgid ""
 msgstr ""
 "Онлайн/оффлайн читалка манги.\n"
 "\n"
-"Никогда не забывайте, что вы можете поддерживать авторов\n"
-"покупая оффициальные комиксы, когда они\n"
-"доступны на вашем регоине/языке."
+"Никогда не забывайте,\n"
+"что вы можете поддержать автора,\n"
+"купив официальный комикс,\n"
+"когда он будет доступен в вашем регионе и на вашем языке"
 
 #: ../data/ui/about_dialog.ui.in:17
 msgid "Learn more about Komikku"
@@ -443,7 +444,7 @@ msgstr "Обновить библиотеку"
 
 #: ../data/ui/menu/main.xml:11 ../data/ui/download_manager_dialog.ui:40
 msgid "Download Manager"
-msgstr "Менеджер Загрузок"
+msgstr "Менеджер загрузок"
 
 #: ../data/ui/menu/main.xml:17
 msgid "Preferences"
