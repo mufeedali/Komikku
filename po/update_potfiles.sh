@@ -24,7 +24,7 @@ for lang in $(sed "s/^#.*$//g" LINGUAS); do
     rm "${lang}.po.old" "${lang}.po.new"
 done
 
-rm *.pot
+rm komikku-*.pot
 
 # To create language file use this command
 # msginit --locale=LOCALE --input komikku.pot
