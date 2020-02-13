@@ -18,11 +18,9 @@ from komikku.models import Manga
 from komikku.utils import folder_size
 
 
-class Card():
+class Card:
     manga = None
-    populate_chapters_count = 0
     selection_mode = False
-    selection_count = 0
 
     def __init__(self, window):
         self.window = window
@@ -33,39 +31,14 @@ class Card():
         self.title_label = self.builder.get_object('card_page_title_label')
 
         self.stack = self.builder.get_object('card_stack')
-
-        # Chapters listbox
-        self.listbox = self.builder.get_object('chapters_listbox')
-        self.listbox.connect('row-activated', self.on_chapter_row_clicked)
-        self.gesture = Gtk.GestureLongPress.new(self.listbox)
-        self.gesture.set_touch_only(False)
-        self.gesture.connect('pressed', self.enter_selection_mode)
-
-        self.window.downloader.connect('changed', self.update_chapter_row)
-
-        def sort(child1, child2):
-            """
-            This function gets two children and has to return:
-            - a negative integer if the firstone should come before the second one
-            - zero if they are equal
-            - a positive integer if the second one should come before the firstone
-            """
-            if child1.chapter.rank > child2.chapter.rank:
-                return -1 if self.sort_order == 'desc' else 1
-
-            if child1.chapter.rank < child2.chapter.rank:
-                return 1 if self.sort_order == 'desc' else -1
-
-            return 0
-
-        self.listbox.set_sort_func(sort)
+        self.info_grid = InfoGrid(self)
+        self.chapters_list = ChaptersList(self)
 
     @property
     def sort_order(self):
         return self.manga.sort_order or 'desc'
 
     def add_actions(self):
-        # Menu actions
         delete_action = Gio.SimpleAction.new('card.delete', None)
         delete_action.connect('activate', self.on_delete_menu_clicked)
         self.window.application.add_action(delete_action)
@@ -82,64 +55,12 @@ class Card():
         open_in_browser_action.connect('activate', self.on_open_in_browser_menu_clicked)
         self.window.application.add_action(open_in_browser_action)
 
-        # Menu actions in selection mode
-        download_selected_chapters_action = Gio.SimpleAction.new('card.download-selected-chapters', None)
-        download_selected_chapters_action.connect('activate', self.download_selected_chapters)
-        self.window.application.add_action(download_selected_chapters_action)
-
-        mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
-        mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
-        self.window.application.add_action(mark_selected_chapters_as_read_action)
-
-        mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-unread', None)
-        mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
-        self.window.application.add_action(mark_selected_chapters_as_unread_action)
-
-        reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
-        reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
-        self.window.application.add_action(reset_selected_chapters_action)
-
-        select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
-        select_all_chapters_action.connect('activate', self.select_all_chapters)
-        self.window.application.add_action(select_all_chapters_action)
-
-        # Chapters menu actions
-        download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
-        download_chapter_action.connect('activate', self.download_chapter)
-        self.window.application.add_action(download_chapter_action)
-
-        mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
-        mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
-        self.window.application.add_action(mark_chapter_as_read_action)
-
-        mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-as-unread', None)
-        mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
-        self.window.application.add_action(mark_chapter_as_unread_action)
-
-        reset_chapter_action = Gio.SimpleAction.new('card.reset-chapter', None)
-        reset_chapter_action.connect('activate', self.reset_chapter)
-        self.window.application.add_action(reset_chapter_action)
-
-    def download_chapter(self, action, param):
-        # Add chapter in download queue
-        self.window.downloader.add(self.action_row.chapter)
-
-        self.window.downloader.start()
-
-    def download_selected_chapters(self, action, param):
-        for row in self.listbox.get_selected_rows():
-            # Add chapter in download queue
-            self.window.downloader.add(row.chapter)
-
-        self.window.downloader.start()
-
-        self.leave_selection_mode()
+        self.chapters_list.add_actions()
 
     def enter_selection_mode(self, gesture, x, y):
         self.selection_mode = True
-        self.selection_count = 0
 
-        self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+        self.chapters_list.enter_selection_mode()
 
         self.window.titlebar.set_selection_mode(True)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
@@ -150,7 +71,7 @@ class Card():
             self.stack.set_visible_child_name('page_card_chapters')
 
             for child in self.builder.get_object('card_stack').get_children():
-                # Scroll scrolledwindows (of info and chapters pages) to top when manga is changed
+                # Scroll scrolledwindows (of info and chapters pages) to top when manga change
                 child.get_vadjustment().set_value(0)
 
         # Create a fresh instance of manga
@@ -167,8 +88,7 @@ class Card():
         if len(manga.chapters) > 0:
             self.window.activity_indicator.start()
 
-        for row in self.listbox.get_children():
-            row.destroy()
+        self.chapters_list.clear()
 
         self.show(transition)
 
@@ -177,27 +97,10 @@ class Card():
     def leave_selection_mode(self):
         self.selection_mode = False
 
-        self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
-        for row in self.listbox.get_children():
-            row._selected = False
+        self.chapters_list.leave_selection_mode()
 
         self.window.titlebar.set_selection_mode(False)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
-
-    def on_chapter_row_clicked(self, listbox, row):
-        if self.selection_mode:
-            if row._selected:
-                self.selection_count -= 1
-                self.listbox.unselect_row(row)
-                row._selected = False
-            else:
-                self.selection_count += 1
-                self.listbox.select_row(row)
-                row._selected = True
-            if self.selection_count == 0:
-                self.leave_selection_mode()
-        else:
-            self.window.reader.init(row.chapter)
 
     def on_delete_menu_clicked(self, action, param):
         def confirm_callback():
@@ -251,14 +154,157 @@ class Card():
         self.window.updater.start()
 
     def populate(self):
-        # Chapters list
+        self.chapters_list.populate()
+        self.info_grid.populate()
+
+        self.set_sort_order(invalidate=False)
+
+    def set_sort_order(self, invalidate=True):
+        self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
+        if invalidate:
+            self.chapters_list.listbox.invalidate_sort()
+
+    def show(self, transition=True):
+        self.title_label.set_text(self.manga.name)
+
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+
+        self.builder.get_object('fullscreen_button').hide()
+
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+
+        self.window.show_page('card', transition=transition)
+
+    def refresh(self, chapters):
+        self.info_grid.refresh()
+        self.chapters_list.refresh(chapters)
+
+
+class ChaptersList:
+    populate_count = 0
+    selection_count = 0
+
+    def __init__(self, card):
+        self.card = card
+
+        self.listbox = self.card.builder.get_object('chapters_listbox')
+        self.listbox.connect('row-activated', self.on_chapter_row_clicked)
+
+        self.gesture = Gtk.GestureLongPress.new(self.listbox)
+        self.gesture.set_touch_only(False)
+        self.gesture.connect('pressed', self.card.enter_selection_mode)
+
+        self.card.window.downloader.connect('changed', self.update_chapter_row)
+
+        def sort(child1, child2):
+            """
+            This function gets two children and has to return:
+            - a negative integer if the firstone should come before the second one
+            - zero if they are equal
+            - a positive integer if the second one should come before the firstone
+            """
+            if child1.chapter.rank > child2.chapter.rank:
+                return -1 if self.card.sort_order == 'desc' else 1
+
+            if child1.chapter.rank < child2.chapter.rank:
+                return 1 if self.card.sort_order == 'desc' else -1
+
+            return 0
+
+        self.listbox.set_sort_func(sort)
+
+    def add_actions(self):
+        # Menu actions in selection mode
+        download_selected_chapters_action = Gio.SimpleAction.new('card.download-selected-chapters', None)
+        download_selected_chapters_action.connect('activate', self.download_selected_chapters)
+        self.card.window.application.add_action(download_selected_chapters_action)
+
+        mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
+        mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
+        self.card.window.application.add_action(mark_selected_chapters_as_read_action)
+
+        mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-unread', None)
+        mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
+        self.card.window.application.add_action(mark_selected_chapters_as_unread_action)
+
+        reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
+        reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
+        self.card.window.application.add_action(reset_selected_chapters_action)
+
+        select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
+        select_all_chapters_action.connect('activate', self.select_all_chapters)
+        self.card.window.application.add_action(select_all_chapters_action)
+
+        # Chapters menu actions
+        download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
+        download_chapter_action.connect('activate', self.download_chapter)
+        self.card.window.application.add_action(download_chapter_action)
+
+        mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
+        mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
+        self.card.window.application.add_action(mark_chapter_as_read_action)
+
+        mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-as-unread', None)
+        mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
+        self.card.window.application.add_action(mark_chapter_as_unread_action)
+
+        reset_chapter_action = Gio.SimpleAction.new('card.reset-chapter', None)
+        reset_chapter_action.connect('activate', self.reset_chapter)
+        self.card.window.application.add_action(reset_chapter_action)
+
+    def clear(self):
+        for row in self.listbox.get_children():
+            row.destroy()
+
+    def download_chapter(self, action, param):
+        # Add chapter in download queue
+        self.card.window.downloader.add(self.action_row.chapter)
+
+        self.card.window.downloader.start()
+
+    def download_selected_chapters(self, action, param):
+        for row in self.listbox.get_selected_rows():
+            # Add chapter in download queue
+            self.card.window.downloader.add(row.chapter)
+
+        self.card.window.downloader.start()
+
+        self.card.leave_selection_mode()
+
+    def enter_selection_mode(self):
+        self.selection_count = 0
+
+        self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
+
+    def leave_selection_mode(self):
+        self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        for row in self.listbox.get_children():
+            row._selected = False
+
+    def on_chapter_row_clicked(self, listbox, row):
+        if self.card.selection_mode:
+            if row._selected:
+                self.selection_count -= 1
+                self.listbox.unselect_row(row)
+                row._selected = False
+            else:
+                self.selection_count += 1
+                self.listbox.select_row(row)
+                row._selected = True
+            if self.selection_count == 0:
+                self.card.leave_selection_mode()
+        else:
+            self.card.window.reader.init(row.chapter)
+
+    def populate(self):
         def populate_chapters_rows(rows):
             for row in rows:
                 GLib.idle_add(self.populate_chapter_row, row)
 
         rows = []
-        self.populate_chapters_count = 0
-        for chapter in self.manga.chapters:
+        self.populate_count = 0
+        for chapter in self.card.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
             row.chapter = chapter
@@ -267,38 +313,11 @@ class Card():
             self.listbox.add(row)
 
             rows.append(row)
-            self.populate_chapters_count += 1
+            self.populate_count += 1
 
         thread = threading.Thread(target=populate_chapters_rows, args=(rows,))
         thread.daemon = True
         thread.start()
-
-        # Info
-        if self.manga.cover_fs_path is not None:
-            pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 174, -1, True)
-        else:
-            pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
-        self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-
-        self.builder.get_object('authors_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(self.manga.authors) if self.manga.authors else '-'))
-        self.builder.get_object('genres_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(self.manga.genres) if self.manga.genres else '-'))
-        self.builder.get_object('status_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(_(self.manga.STATUSES[self.manga.status])) if self.manga.status else '-')
-        self.builder.get_object('scanlators_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(self.manga.scanlators) if self.manga.scanlators else '-'))
-        self.builder.get_object('server_value_label').set_markup(
-            '<span size="small">{0} [{1}] - {2} chapters</span>'.format(
-                html.escape(self.manga.server.name), self.manga.server.lang.upper(), len(self.manga.chapters)))
-
-        self.builder.get_object('last_update_value_label').set_markup(
-            '<span size="small">{0}</span>'.format(self.manga.last_update.strftime('%m/%d/%Y')) if self.manga.last_update else '-')
-
-        self.builder.get_object('synopsis_value_label').set_text(self.manga.synopsis or '-')
-
-        self.builder.get_object('more_label').set_markup(
-            '<i>{0}</i>'.format(_('Disk space used: {0}').format(folder_size(self.manga.path))))
 
     def populate_chapter_row(self, row):
         for child in row.get_children():
@@ -324,8 +343,8 @@ class Card():
             ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         title = chapter.title
-        if self.manga.name in title:
-            title = title.replace(self.manga.name, '').strip()
+        if self.card.manga.name in title:
+            title = title.replace(self.card.manga.name, '').strip()
         label.set_text(title)
         hbox.pack_start(label, True, True, 0)
 
@@ -376,7 +395,7 @@ class Card():
             hbox.pack_start(progressbar, True, True, 0)
 
             stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
-            stop_button.connect('clicked', lambda button, chapter: self.window.downloader.remove(chapter), chapter)
+            stop_button.connect('clicked', lambda button, chapter: self.card.window.downloader.remove(chapter), chapter)
             hbox.pack_start(stop_button, False, False, 0)
         else:
             hbox.pack_start(label, True, True, 0)
@@ -392,14 +411,17 @@ class Card():
 
         box.pack_start(hbox, True, True, 0)
 
-        self.populate_chapters_count -= 1
-        if self.populate_chapters_count == 0:
+        self.populate_count -= 1
+        if self.populate_count == 0:
             # All rows have been populated in chapters list
-            self.set_sort_order(invalidate=False)
-            self.window.activity_indicator.stop()
+            self.card.window.activity_indicator.stop()
             self.listbox.show_all()
         else:
             box.show_all()
+
+    def refresh(self, chapters):
+        for chapter in chapters:
+            self.update_chapter_row(chapter=chapter)
 
     def reset_chapter(self, action, param):
         chapter = self.action_row.chapter
@@ -416,7 +438,7 @@ class Card():
 
             self.populate_chapter_row(row)
 
-        self.leave_selection_mode()
+        self.card.leave_selection_mode()
 
     def select_all_chapters(self, action, param):
         self.selection_count = 0
@@ -425,23 +447,6 @@ class Card():
             self.listbox.select_row(row)
             row._selected = True
             self.selection_count += 1
-
-    def set_sort_order(self, invalidate=True):
-        self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
-        if invalidate:
-            self.listbox.invalidate_sort()
-
-    def show(self, transition=True):
-        self.title_label.set_text(self.manga.name)
-
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
-
-        self.builder.get_object('fullscreen_button').hide()
-
-        self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
-        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
-
-        self.window.show_page('card', transition=transition)
 
     def show_chapter_menu(self, button, row):
         chapter = row.chapter
@@ -480,7 +485,7 @@ class Card():
 
             self.populate_chapter_row(row)
 
-        self.leave_selection_mode()
+        self.card.leave_selection_mode()
 
     def toggle_chapter_read_status(self, action, param, read):
         chapter = self.action_row.chapter
@@ -506,7 +511,7 @@ class Card():
         if chapter is None:
             chapter = download.chapter
 
-        if self.window.page not in ('card', 'reader') or self.manga.id != chapter.manga_id:
+        if self.card.window.page not in ('card', 'reader') or self.card.manga.id != chapter.manga_id:
             return
 
         for row in self.listbox.get_children():
@@ -515,3 +520,54 @@ class Card():
                 row.download = download
                 self.populate_chapter_row(row)
                 break
+
+
+class InfoGrid:
+    def __init__(self, card):
+        self.card = card
+
+        self.cover_image = self.card.builder.get_object('cover_image')
+        self.authors_value_label = self.card.builder.get_object('authors_value_label')
+        self.genres_value_label = self.card.builder.get_object('genres_value_label')
+        self.status_value_label = self.card.builder.get_object('status_value_label')
+        self.scanlators_value_label = self.card.builder.get_object('scanlators_value_label')
+        self.server_value_label = self.card.builder.get_object('server_value_label')
+        self.last_update_value_label = self.card.builder.get_object('last_update_value_label')
+        self.synopsis_value_label = self.card.builder.get_object('synopsis_value_label')
+        self.more_label = self.card.builder.get_object('more_label')
+
+    def populate(self):
+        manga = self.card.manga
+
+        if manga.cover_fs_path is not None:
+            pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
+        else:
+            pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+        self.cover_image.set_from_pixbuf(pixbuf)
+
+        self.authors_value_label.set_markup(
+            '<span size="small">{0}</span>'.format(', '.join(manga.authors) if manga.authors else '-'))
+        self.genres_value_label.set_markup(
+            '<span size="small">{0}</span>'.format(', '.join(manga.genres) if manga.genres else '-'))
+        self.status_value_label.set_markup(
+            '<span size="small">{0}</span>'.format(_(manga.STATUSES[manga.status])) if manga.status else '-')
+        self.scanlators_value_label.set_markup(
+            '<span size="small">{0}</span>'.format(', '.join(manga.scanlators) if manga.scanlators else '-'))
+        self.server_value_label.set_markup(
+            '<span size="small">{0} [{1}] - {2} chapters</span>'.format(
+                html.escape(manga.server.name), manga.server.lang.upper(), len(manga.chapters)
+            )
+        )
+
+        self.last_update_value_label.set_markup(
+            '<span size="small">{0}</span>'.format(manga.last_update.strftime('%m/%d/%Y')) if manga.last_update else '-')
+
+        self.synopsis_value_label.set_text(manga.synopsis or '-')
+
+        self.set_disk_usage()
+
+    def refresh(self):
+        self.set_disk_usage()
+
+    def set_disk_usage(self):
+        self.more_label.set_markup('<i>{0}</i>'.format(_('Disk space used: {0}').format(folder_size(self.card.manga.path))))
