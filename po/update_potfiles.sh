@@ -1,7 +1,5 @@
 #!/bin/bash
 
-rm *.pot
-
 version=$(fgrep "version: " ../meson.build | grep -v "meson" | grep -o "'.*'" | sed "s/'//g")
 
 find ../komikku -iname "*.py" | xargs xgettext --package-name=Komikku --package-version=$version --from-code=UTF-8 --output=komikku-python.pot
