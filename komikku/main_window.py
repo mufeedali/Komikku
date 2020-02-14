@@ -283,7 +283,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
             # Refresh to update all previously chapters consulted (last page read may have changed)
             # and update info like disk usage
-            self.card.refresh()
+            self.card.refresh(self.reader.chapters_consulted)
             self.card.show()
 
     def on_resize(self, window):
