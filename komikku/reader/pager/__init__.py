@@ -177,6 +177,10 @@ class Pager(Gtk.ScrolledWindow):
             GLib.idle_add(adjust_scroll)
 
         page = self.current_page
+
+        if not page.status == 'rendered':
+            return
+
         hadj = page.scrolledwindow.get_hadjustment()
         vadj = page.scrolledwindow.get_vadjustment()
 
