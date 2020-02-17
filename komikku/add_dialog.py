@@ -22,11 +22,13 @@ from komikku.utils import log_error_traceback
 
 
 class AddDialog():
-    server = None
     page = None
-    manga = None
-    manga_data = None
     search_lock = False
+
+    server = None
+    manga_slug = None
+    manga_data = None
+    manga = None
 
     def __init__(self, window):
         self.window = window
@@ -141,25 +143,35 @@ class AddDialog():
     def on_back_button_clicked(self, button):
         if self.page == 'servers':
             self.dialog.close()
+
         elif self.page == 'search':
+            self.activity_indicator.stop()
+            self.search_lock = False
+            self.server = None
             self.show_page('servers')
+
         elif self.page == 'manga':
+            self.activity_indicator.stop()
+            self.manga_slug = None
             self.show_page('search')
 
     def on_manga_clicked(self, listbox, row):
-        def run():
+        def run(server, manga_slug):
             try:
-                manga_data = self.server.get_manga_data(row.manga_data)
+                manga_data = server.get_manga_data(row.manga_data)
 
                 if manga_data is not None:
-                    GLib.idle_add(complete, manga_data)
+                    GLib.idle_add(complete, manga_data, server)
                 else:
-                    GLib.idle_add(error)
+                    GLib.idle_add(error, server, manga_slug)
             except Exception as e:
                 user_error_message = log_error_traceback(e)
-                GLib.idle_add(error, user_error_message)
+                GLib.idle_add(error, server, manga_slug, user_error_message)
 
-        def complete(manga_data):
+        def complete(manga_data, server):
+            if server != self.server or manga_data['slug'] != self.manga_slug:
+                return
+
             self.manga_data = manga_data
 
             # Populate manga card
@@ -203,7 +215,10 @@ class AddDialog():
 
             return False
 
-        def error(message=None):
+        def error(server, manga_slug, message=None):
+            if server != self.server or manga_slug != self.manga_slug:
+                return
+
             self.activity_indicator.stop()
 
             self.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
@@ -213,9 +228,10 @@ class AddDialog():
         if row.manga_data is None:
             return
 
+        self.manga_slug = row.manga_data['slug']
         self.activity_indicator.start()
 
-        thread = threading.Thread(target=run)
+        thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
         thread.daemon = True
         thread.start()
 
@@ -241,25 +257,28 @@ class AddDialog():
             # An empty term is allowed only if server has 'get_most_populars' method
             return
 
-        def run():
+        def run(server):
             most_populars = not term
 
             try:
                 if most_populars:
                     # We offer most popular mangas as starting search results
-                    result = self.server.get_most_populars()
+                    result = server.get_most_populars()
                 else:
-                    result = self.server.search(term)
+                    result = server.search(term)
 
                 if result:
-                    GLib.idle_add(complete, result, most_populars)
+                    GLib.idle_add(complete, result, server, most_populars)
                 else:
-                    GLib.idle_add(error, result)
+                    GLib.idle_add(error, result, server)
             except Exception as e:
                 user_error_message = log_error_traceback(e)
-                GLib.idle_add(error, None, user_error_message)
+                GLib.idle_add(error, None, server, user_error_message)
 
-        def complete(result, most_populars):
+        def complete(result, server, most_populars):
+            if server != self.server:
+                return
+
             self.activity_indicator.stop()
 
             if most_populars:
@@ -292,7 +311,10 @@ class AddDialog():
 
             return False
 
-        def error(result, message=None):
+        def error(result, server, message=None):
+            if server != self.server:
+                return
+
             self.activity_indicator.stop()
             self.search_lock = False
 
@@ -307,7 +329,7 @@ class AddDialog():
         self.clear_results()
         self.activity_indicator.start()
 
-        thread = threading.Thread(target=run)
+        thread = threading.Thread(target=run, args=(self.server, ))
         thread.daemon = True
         thread.start()
 
