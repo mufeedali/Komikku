@@ -477,7 +477,7 @@ class ChaptersList:
                 for chapter_page in chapter.pages:
                     chapter_page['read'] = read
 
-            if chapter.read == 0 and read == 0:
+            if chapter.read == read == 0:
                 chapter.last_page_read_index = None
 
             chapter.update(dict(
@@ -497,7 +497,7 @@ class ChaptersList:
             for chapter_page in chapter.pages:
                 chapter_page['read'] = read
 
-        if chapter.read == 0 and read == 0:
+        if chapter.read == read == 0:
             chapter.last_page_read_index = None
 
         chapter.update(dict(
