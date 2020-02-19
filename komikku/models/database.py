@@ -16,7 +16,7 @@ from gi.repository import GLib
 from komikku.servers import get_servers_list
 from komikku.servers import unscramble_image
 
-VERSION = 2
+VERSION = 3
 
 
 def adapt_json(data):
@@ -135,10 +135,11 @@ def init_db():
         genres json,
         synopsis text,
         status text,
-        sort_order text,
-        reading_direction text,
         background_color text,
+        borders_crop integer DEFAULT -1,
+        reading_direction text,
         scaling text,
+        sort_order text,
         last_read timestamp,
         last_update timestamp,
         UNIQUE (slug, server_id)
@@ -173,19 +174,27 @@ def init_db():
 
     db_conn = create_db_connection()
     if db_conn is not None:
-        execute_sql(db_conn, sql_create_mangas_table)
-        execute_sql(db_conn, sql_create_chapters_table)
-        execute_sql(db_conn, sql_create_downloads_table)
-
         db_version = db_conn.execute('PRAGMA user_version').fetchone()[0]
-        if db_version == 1:
+
+        if db_version == 0:
+            # First launch
+            execute_sql(db_conn, sql_create_mangas_table)
+            execute_sql(db_conn, sql_create_chapters_table)
+            execute_sql(db_conn, sql_create_downloads_table)
+
+            db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+
+        if db_version <= 1:
             # Version 0.10.0
             if execute_sql(db_conn, 'ALTER TABLE downloads ADD COLUMN errors integer DEFAULT 0;'):
                 db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
-                print('DB version', VERSION)
-        else:
-            db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
-            print('DB version', VERSION)
+
+        if db_version <= 2:
+            # Version 0.12.0
+            if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer DEFAULT -1;'):
+                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+
+        print('DB version', VERSION)
 
         db_conn.close()
 
