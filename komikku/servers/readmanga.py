@@ -140,7 +140,7 @@ class Readmanga(Server):
                     continue
 
                 pattern=re.compile('\'.*?\',\'.*?\',".*?"')
-                for urls in re.findall("'.*?','.*?',\".*?\"", line):
+                for urls in pattern.findall(line):
                     urls = urls.replace('\'','').replace('"','').split(',')
                     data['pages'].append(dict(
                         slug=None,
