@@ -1,11 +1,14 @@
 include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
 
+stages:
+￼  - flatpak
+
 variables:
     BUNDLE: "info.febvre.Komikku.flatpak"
 
 flatpak:
     image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.34'
-    stage: build
+    stage: flatpak
     variables:
         MANIFEST_PATH: "flatpak/info.febvre.Komikku.json"
         MESON_ARGS: "-Dprofile=development"
