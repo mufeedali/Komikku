@@ -1,7 +1,7 @@
 include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
 
 stages:
-￼    - flatpak
+    - flatpak
 
 variables:
     BUNDLE: "info.febvre.Komikku.flatpak"
@@ -16,13 +16,3 @@ flatpak:
         RUNTIME_REPO: "https://flathub.org/repo/flathub.flatpakrepo"
         APP_ID: "info.febvre.Komikku"
     extends: .flatpak
-
-review:
-    stage: deploy
-    dependencies:
-        - 'flatpak'
-    extends: '.review'
-
-stop_review:
-    stage: deploy
-    extends: '.stop_review'
