@@ -4,3 +4,4 @@ version = 1
 name = "python"
 enabled = true
 runtime_version = "3.x.x"
+max_line_length = 140
