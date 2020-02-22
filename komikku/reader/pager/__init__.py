@@ -45,6 +45,7 @@ class Pager(Gtk.ScrolledWindow):
         self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
         self.key_press_handler_id = self.connect('key-press-event', self.on_key_press)
         self.key_press_handler_id = self.connect('scroll-event', self.on_scroll)
+        self.mouse_motion_handler_id = self.connect('motion-notify-event', self.on_mouse_move)
 
         self.show_all()
 
@@ -238,6 +239,13 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[0].render()
         self.pages[2].render()
 
+    def on_mouse_move(self, widget, event):
+        if not self.get_window().get_cursor():
+            # By default, no cursor is set. So, if it's already None, do nothing.
+            return
+
+        self.get_window().set_cursor(None)
+
     def on_key_press(self, widget, event):
         # Note: in case of keys LEFT and RIGHT, this code is never reached when controls are visible
         # Slider (Gtk.Scale) has already consume the event
@@ -245,6 +253,9 @@ class Pager(Gtk.ScrolledWindow):
         modifiers = Gtk.accelerator_get_default_mod_mask()
         if (event.state & modifiers) != 0:
             return
+
+        # Hide the mouse cursor when using keyboard navigation.
+        self.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), "none"))
 
         if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
             self.switchto_page('left' if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left) else 'right')
