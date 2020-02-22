@@ -1,7 +1,7 @@
 include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
 
 stages:
-  - check
+  - build
   - test
   - deploy
 
@@ -19,9 +19,11 @@ flatpak:
     extends: .flatpak
 
 review:
+    stage: deploy
     dependencies:
         - 'flatpak'
     extends: '.review'
 
 stop_review:
+    stage: deploy
     extends: '.stop_review'
