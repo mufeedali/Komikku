@@ -155,13 +155,13 @@ class AddDialog():
             self.manga_slug = None
             self.show_page('search')
 
-    def on_manga_clicked(self, listbox, row):
+    def manga_load(self, manga_data):
         def run(server, manga_slug):
             try:
-                manga_data = server.get_manga_data(row.manga_data)
+                current_manga_data = server.get_manga_data(manga_data)
 
-                if manga_data is not None:
-                    GLib.idle_add(complete, manga_data, server)
+                if current_manga_data is not None:
+                    GLib.idle_add(complete, current_manga_data, server)
                 else:
                     GLib.idle_add(error, server, manga_slug)
             except Exception as e:
@@ -225,15 +225,21 @@ class AddDialog():
 
             return False
 
-        if row.manga_data is None:
+        if manga_data is None:
             return
 
-        self.manga_slug = row.manga_data['slug']
+        self.manga_slug = manga_data['slug']
         self.activity_indicator.start()
 
         thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
         thread.daemon = True
         thread.start()
+
+    def on_manga_clicked(self, listbox, row):
+        if row.manga_data is None:
+            return
+
+        self.manga_load(row.manga_data)
 
     def on_read_button_clicked(self, button):
         self.window.card.init(self.manga, transition=False)
@@ -253,6 +259,16 @@ class AddDialog():
             return
 
         term = self.custom_title_search_page_searchentry.get_text().strip()
+
+        if term.startswith("slug:"):
+            slug = term[5:]
+
+            if not slug:
+                return
+
+            self.manga_load(dict(slug=term[5:]))
+            return
+
         if not term and getattr(self.server, 'get_most_populars', None) is None:
             # An empty term is allowed only if server has 'get_most_populars' method
             return
