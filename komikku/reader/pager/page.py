@@ -3,16 +3,26 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+from PIL import Image
+from PIL import ImageChops
 import threading
 
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
+from gi.repository.GdkPixbuf import Colorspace
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.activity_indicator import ActivityIndicator
 from komikku.utils import log_error_traceback
+
+
+def compute_borders_crop_bbox(path):
+    im = Image.open(path)
+    bg = Image.new(im.mode, im.size, 255)
+
+    return ImageChops.difference(im, bg).getbbox()
 
 
 class Page(Gtk.Overlay):
@@ -105,10 +115,10 @@ class Page(Gtk.Overlay):
             if self.index < 0 or self.index > len(self.chapter.pages) - 1:
                 if self.index < 0:
                     # Page is the last page of previous chapter
-                    self.chapter = self.chapter.manga.get_next_chapter(self.chapter, -1)
+                    self.chapter = self.reader.manga.get_next_chapter(self.chapter, -1)
                 elif self.index > len(self.chapter.pages) - 1:
                     # Page is the first page of next chapter
-                    self.chapter = self.chapter.manga.get_next_chapter(self.chapter, 1)
+                    self.chapter = self.reader.manga.get_next_chapter(self.chapter, 1)
 
                 if self.chapter is not None:
                     # Chapter has changed
@@ -214,22 +224,34 @@ class Page(Gtk.Overlay):
             self.set_image()
 
     def set_image(self):
-        width = self.pixbuf.get_width()
-        height = self.pixbuf.get_height()
+        pixbuf = self.pixbuf
+
+        # Crop image borders
+        path = self.chapter.get_page_path(self.index)
+        if path is not None and self.reader.manga.borders_crop == 1:
+            bbox = compute_borders_crop_bbox(path)
+
+            # Crop is possible if computed bbox is included in pixbuf
+            if bbox[2] - bbox[0] < pixbuf.get_width() or bbox[3] - bbox[1] < pixbuf.get_height():
+                pixbuf = Pixbuf.new(Colorspace.RGB, False, 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
+                self.pixbuf.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
+
+        width = pixbuf.get_width()
+        height = pixbuf.get_height()
 
         adapt_to_width_height = height / (width / self.reader.size.width)
         adapt_to_height_width = width / (height / self.reader.size.height)
 
         if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
             # Adapt image to width
-            pixbuf = self.pixbuf.scale_simple(
+            pixbuf = pixbuf.scale_simple(
                 self.reader.size.width,
                 adapt_to_width_height,
                 InterpType.BILINEAR
             )
         elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
             # Adapt image to height
-            pixbuf = self.pixbuf.scale_simple(
+            pixbuf = pixbuf.scale_simple(
                 adapt_to_height_width,
                 self.reader.size.height,
                 InterpType.BILINEAR

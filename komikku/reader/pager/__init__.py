@@ -104,6 +104,11 @@ class Pager(Gtk.ScrolledWindow):
             page.clean()
             page.destroy()
 
+    def crop_pages_borders(self):
+        for page in self.pages:
+            if page.status == 'rendered' and page.error is None:
+                page.set_image()
+
     def goto_page(self, page_index):
         if self.pages[0].index == page_index and self.pages[0].chapter == self.current_page.chapter:
             self.switchto_page('left')
@@ -178,7 +183,7 @@ class Pager(Gtk.ScrolledWindow):
 
         page = self.current_page
 
-        if not page.status == 'rendered':
+        if page.status != 'rendered' or page.error is not None:
             return
 
         hadj = page.scrolledwindow.get_hadjustment()
@@ -305,7 +310,7 @@ class Pager(Gtk.ScrolledWindow):
             chapter = page.chapter
 
             # Update manga last read time
-            chapter.manga.update(dict(last_read=datetime.datetime.now()))
+            self.reader.manga.update(dict(last_read=datetime.datetime.now()))
 
             # Mark page as read
             chapter.pages[page.index]['read'] = True

@@ -477,11 +477,15 @@ class ChaptersList:
                 for chapter_page in chapter.pages:
                     chapter_page['read'] = read
 
-            chapter.update(dict(
+            data = dict(
                 pages=chapter.pages,
                 read=read,
                 recent=False,
-            ))
+            )
+            if chapter.read == read == 0:
+                data['last_page_read_index'] = None
+
+            chapter.update(data)
 
             self.populate_chapter_row(row)
 
@@ -494,11 +498,15 @@ class ChaptersList:
             for chapter_page in chapter.pages:
                 chapter_page['read'] = read
 
-        chapter.update(dict(
+        data = dict(
             pages=chapter.pages,
             read=read,
             recent=False,
-        ))
+        )
+        if chapter.read == read == 0:
+            data['last_page_read_index'] = None
+
+        chapter.update(data)
 
         self.populate_chapter_row(self.action_row)
 

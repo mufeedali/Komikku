@@ -62,6 +62,14 @@ class Settings(Gio.Settings):
             self.set_enum('background-color', 1)
 
     @property
+    def borders_crop(self):
+        return self.get_boolean('borders-crop')
+
+    @borders_crop.setter
+    def borders_crop(self, state):
+        self.set_boolean('borders-crop', state)
+
+    @property
     def dark_theme(self):
         return self.get_boolean('dark-theme')
 

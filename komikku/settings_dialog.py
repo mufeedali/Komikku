@@ -119,6 +119,11 @@ class SettingsDialog():
         row.set_selected_index(settings.background_color_value)
         row.connect('notify::selected-index', self.on_background_color_changed)
 
+        # Borders crop
+        borders_crop_switch = self.builder.get_object('settings_borders_crop_switch')
+        borders_crop_switch.set_active(settings.borders_crop)
+        borders_crop_switch.connect('notify::active', self.on_borders_crop_changed)
+
         # Full screen
         settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
         settings_fullscreen_switch.set_active(settings.fullscreen)
@@ -131,6 +136,9 @@ class SettingsDialog():
             Settings.get_default().background_color = 'white'
         elif index == 1:
             Settings.get_default().background_color = 'black'
+
+    def on_borders_crop_changed(self, switch_button, gparam):
+        Settings.get_default().borders_crop = switch_button.get_active()
 
     def on_desktop_notifications_changed(self, switch_button, gparam):
         if switch_button.get_active():

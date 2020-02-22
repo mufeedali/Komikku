@@ -39,6 +39,13 @@ class Reader:
         return self.manga.background_color or Settings.get_default().background_color
 
     @property
+    def borders_crop(self):
+        if self.manga.borders_crop in (0, 1):
+            return bool(self.manga.borders_crop)
+
+        return Settings.get_default().borders_crop
+
+    @property
     def reading_direction(self):
         return self.manga.reading_direction or Settings.get_default().reading_direction
 
@@ -66,9 +73,14 @@ class Reader:
             'reader.background-color', GLib.VariantType.new('s'), GLib.Variant('s', 'white'))
         self.background_color_action.connect('change-state', self.on_background_color_changed)
 
+        # Borders crop
+        self.borders_crop_action = Gio.SimpleAction.new_stateful('reader.borders-crop', None, GLib.Variant('b', False))
+        self.borders_crop_action.connect('change-state', self.on_borders_crop_changed)
+
         self.window.application.add_action(self.reading_direction_action)
         self.window.application.add_action(self.scaling_action)
         self.window.application.add_action(self.background_color_action)
+        self.window.application.add_action(self.borders_crop_action)
 
     def init(self, chapter):
         self.manga = chapter.manga
@@ -80,6 +92,7 @@ class Reader:
         self.set_reading_direction()
         self.set_scaling()
         self.set_background_color()
+        self.set_borders_crop()
 
         self.show()
 
@@ -92,6 +105,11 @@ class Reader:
 
         self.manga.update(dict(background_color=value))
         self.set_background_color()
+
+    def on_borders_crop_changed(self, action, variant):
+        self.manga.update(dict(borders_crop=variant.get_boolean()))
+        self.set_borders_crop()
+        self.pager.crop_pages_borders()
 
     def on_reading_direction_changed(self, action, variant):
         value = variant.get_string()
@@ -127,6 +145,9 @@ class Reader:
             self.pager.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         else:
             self.pager.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
+
+    def set_borders_crop(self):
+        self.borders_crop_action.set_state(GLib.Variant('b', self.borders_crop))
 
     def set_reading_direction(self):
         self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))

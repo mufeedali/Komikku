@@ -53,6 +53,11 @@
             <summary>Background color</summary>
             <description>Background color of reader</description>
         </key>
+        <key type="b" name="borders-crop">
+            <default>false</default>
+            <summary>Crop borders</summary>
+            <description>Crop white borders of images</description>
+        </key>
         <key enum="@appid@.ReadingDirection" name="reading-direction">
             <default>"right-to-left"</default>
             <summary>Reading direction</summary>
@@ -68,6 +73,7 @@
             <summary>Fullscreen</summary>
             <description>Automatically enter fullscreen mode in reader</description>
         </key>
+
         <key type="ai" name="window-size">
             <default>[768, 600]</default>
             <summary>Window size</summary>
