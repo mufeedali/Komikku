@@ -13,6 +13,9 @@ import shutil
 
 from gi.repository import GLib
 
+from komikku.servers import get_server_class_name_by_id
+from komikku.servers import get_server_dir_name_by_id
+from komikku.servers import get_server_module_name_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import unscramble_image
 
@@ -311,12 +314,24 @@ class Manga:
         return self._chapters
 
     @property
+    def class_name(self):
+        return get_server_class_name_by_id(self.server_id)
+
+    @property
     def cover_fs_path(self):
         path = os.path.join(self.path, 'cover.jpg')
         if os.path.exists(path):
             return path
 
         return None
+
+    @property
+    def dir_name(self):
+        return get_server_dir_name_by_id(self.server_id)
+
+    @property
+    def module_name(self):
+        return get_server_module_name_by_id(self.server_id)
 
     @property
     def nb_downloaded_chapters(self):
@@ -344,14 +359,13 @@ class Manga:
 
     @property
     def path(self):
-        return os.path.join(get_data_dir(), self.server_id, self.name)
+        return os.path.join(get_data_dir(), self.dir_name, self.name)
 
     @property
     def server(self):
         if self._server is None:
-            module_name = self.server_id.split('_')[0]
-            module = importlib.import_module('.' + module_name, package='komikku.servers')
-            self._server = getattr(module, self.server_id.capitalize())()
+            module = importlib.import_module('.' + self.module_name, package='komikku.servers')
+            self._server = getattr(module, self.class_name)()
 
         return self._server
 

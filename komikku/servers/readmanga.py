@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: GrownNed <grownned@gmail.com>
 
-import cloudscraper
 from bs4 import BeautifulSoup
 import magic
 import re
+import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
@@ -15,7 +15,7 @@ from komikku.servers import Server
 
 class Readmanga(Server):
     id = 'readmanga'
-    name = 'Readmanga'
+    name = 'Read Manga'
     lang = 'ru'
 
     base_url = 'https://readmanga.me'
@@ -26,7 +26,7 @@ class Readmanga(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = cloudscraper.create_scraper()
+            self.session = requests.Session()
 
     def get_manga_data(self, initial_data):
         """
@@ -63,7 +63,7 @@ class Readmanga(Server):
         title_element = info_element.find('span', class_='name')
         data['name'] = title_element.text.strip()
 
-        cover_element = info_element.find('img', attrs={'data-full':True})
+        cover_element = info_element.find('img', attrs={'data-full': True})
         data['cover'] = cover_element.get('data-full')
 
         # Details
@@ -139,9 +139,9 @@ class Readmanga(Server):
                 if not line.strip().startswith('rm_h.init'):
                     continue
 
-                pattern=re.compile('\'.*?\',\'.*?\',".*?"')
+                pattern = re.compile('\'.*?\',\'.*?\',".*?"')
                 for urls in pattern.findall(line):
-                    urls = urls.replace('\'','').replace('"','').split(',')
+                    urls = urls.replace('\'', '').replace('"', '').split(',')
                     data['pages'].append(dict(
                         slug=None,
                         image=urls[1] + urls[0] + urls[2],
@@ -217,23 +217,15 @@ class Readmanga(Server):
         return sorted(results, key=lambda m: m['name'])
 
 
-class Readmanga_mintmanga(Readmanga):
-    id = 'readmanga_mintmanga'
-    name = 'Mintmanga'
+class Mintmanga(Readmanga):
+    id = 'mintmanga:readmanga'
+    name = 'Mint Manga'
 
     base_url = 'https://mintmanga.live'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
-    manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
 
 
-class Readmanga_selfmanga(Readmanga):
-    id = 'readmanga_selfmanga'
-    name = 'Selfmanga'
+class Selfmanga(Readmanga):
+    id = 'selfmanga:readmanga'
+    name = 'Self Manga'
 
     base_url = 'https://selfmanga.ru'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
-    manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
