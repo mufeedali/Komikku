@@ -31,10 +31,13 @@
         <file compressed="true">icons/ui/servers/mangaplus.ico</file>
         <file compressed="true">icons/ui/servers/mangarock.ico</file>
         <file compressed="true">icons/ui/servers/mangasee.ico</file>
+        <file compressed="true">icons/ui/servers/mintmanga.ico</file>
         <file compressed="true">icons/ui/servers/ninemanga.ico</file>
         <file compressed="true">icons/ui/servers/peppercarrot.ico</file>
+        <file compressed="true">icons/ui/servers/readmanga.ico</file>
         <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
         <file compressed="true">icons/ui/servers/scantrad.ico</file>
+        <file compressed="true">icons/ui/servers/selfmanga.ico</file>
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>

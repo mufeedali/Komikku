@@ -16,6 +16,7 @@ from komikku.activity_indicator import ActivityIndicator
 from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
+from komikku.servers import get_server_logo_resource_path_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
 from komikku.utils import log_error_traceback
@@ -66,8 +67,7 @@ class AddDialog():
             row.add(box)
 
             # Server logo
-            pixbuf = Pixbuf.new_from_resource_at_scale(
-                '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(server['id'].split('_')[0]), 24, 24, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server['id']), 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)

@@ -31,7 +31,7 @@ LANGUAGES = dict(
     pl='Polski',
     pt='Português',
     pt_BR='Português (Brasil)',
-    ru='русский',
+    ru='Русский',
     vi='Tiếng Việt',
     ja='日本語',
     ko='한국어',
@@ -67,6 +67,10 @@ class Server:
     status = 'enabled'
 
     base_url = None
+
+    @property
+    def logo_resource_path(self):
+        return get_server_logo_resource_path_by_id(self.id)
 
     @property
     def session(self):
@@ -174,6 +178,22 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
     return buffer.getvalue()
 
 
+def get_server_class_name_by_id(id):
+    return id.split(':')[0].split('_')[0].capitalize()
+
+
+def get_server_dir_name_by_id(id):
+    return id.split(':')[0]
+
+
+def get_server_logo_resource_path_by_id(id):
+    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(id.split(':')[0].split('_')[0])
+
+
+def get_server_module_name_by_id(id):
+    return id.split(':')[-1].split('_')[0]
+
+
 @lru_cache(maxsize=None)
 def get_servers_list(include_disabled=False):
     import komikku.servers
@@ -200,7 +220,7 @@ def get_servers_list(include_disabled=False):
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
-                    class_=obj.id.capitalize(),
+                    class_=get_server_class_name_by_id(obj.id),
                     module=module,
                 ))
 
