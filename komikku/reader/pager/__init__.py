@@ -247,7 +247,22 @@ class Pager(Gtk.ScrolledWindow):
             return
 
         if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
-            self.switchto_page('left' if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left) else 'right')
+            page = self.current_page
+            hadj = page.scrolledwindow.get_hadjustment()
+
+            if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
+                if hadj.get_value() == 0 and self.zoom['active'] is False:
+                    self.switchto_page('left')
+                    return
+
+                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_LEFT, False)
+                return
+
+            if hadj.get_value() + self.reader.size.width == hadj.get_upper() and self.zoom['active'] is False:
+                self.switchto_page('right')
+                return
+
+            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_RIGHT, False)
             return
 
         if self.reader.reading_direction == 'vertical' and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
@@ -273,6 +288,15 @@ class Pager(Gtk.ScrolledWindow):
                     # If image height is greater than viewport height, arrow keys should scroll page up
                     # Emit scroll signal: one step up
                     page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
+            return
+
+        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            page = self.current_page
+
+            if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
+            else:
+                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended

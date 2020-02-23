@@ -78,6 +78,7 @@ class Mangadex(Server):
 
     @staticmethod
     def manga_id_from_slug(slug):
+        # Removing this will break manga that were added before the change to the manga slug.
         return slug.split('/')[0]
 
     def get_manga_data(self, initial_data):
@@ -220,7 +221,7 @@ class Mangadex(Server):
         results = []
         for element in soup.find_all('a', class_='manga_title'):
             results.append(dict(
-                slug=element.get('href').replace('/title/', ''),
+                slug=element.get('href').replace('/title/', '').split('/')[0],
                 name=element.text.strip(),
             ))
 
