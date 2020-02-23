@@ -19,12 +19,12 @@ class Readmanga(Server):
     lang = 'ru'
 
     base_url = 'https://readmanga.me'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
-    manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
 
     def __init__(self):
+        self.search_url = self.base_url + '/search/advanced'
+        self.most_populars_url = self.base_url + '/list?sortType=rate'
+        self.manga_url = self.base_url + '/{0}'
+        self.chapter_url = self.manga_url + '/{1}?mtr=1'
         if self.session is None:
             self.session = requests.Session()
 
