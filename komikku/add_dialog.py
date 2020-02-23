@@ -155,91 +155,11 @@ class AddDialog():
             self.manga_slug = None
             self.show_page('search')
 
-    def manga_load(self, manga_data):
-        def run(server, manga_slug):
-            try:
-                current_manga_data = server.get_manga_data(manga_data)
-
-                if current_manga_data is not None:
-                    GLib.idle_add(complete, current_manga_data, server)
-                else:
-                    GLib.idle_add(error, server, manga_slug)
-            except Exception as e:
-                user_error_message = log_error_traceback(e)
-                GLib.idle_add(error, server, manga_slug, user_error_message)
-
-        def complete(manga_data, server):
-            if server != self.server or manga_data['slug'] != self.manga_slug:
-                return
-
-            self.manga_data = manga_data
-
-            # Populate manga card
-            try:
-                cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
-            except Exception as e:
-                cover_data = None
-                user_error_message = log_error_traceback(e)
-                if user_error_message:
-                    self.show_notification(user_error_message)
-
-            if cover_data is not None:
-                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
-                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
-            else:
-                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
-
-            self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
-
-            self.builder.get_object('authors_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-'))
-            self.builder.get_object('genres_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-'))
-            self.builder.get_object('status_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(_(Manga.STATUSES[self.manga_data['status']])) if self.manga_data['status'] else '-')
-            self.builder.get_object('scanlators_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['scanlators']) if self.manga_data['scanlators'] else '-'))
-            self.builder.get_object('server_value_label').set_markup(
-                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
-                    self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
-                    html.escape(self.server.name),
-                    self.server.lang.upper(),
-                    len(self.manga_data['chapters'])
-                )
-            )
-
-            self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
-
-            self.activity_indicator.stop()
-            self.show_page('manga')
-
-            return False
-
-        def error(server, manga_slug, message=None):
-            if server != self.server or manga_slug != self.manga_slug:
-                return
-
-            self.activity_indicator.stop()
-
-            self.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
-
-            return False
-
-        if manga_data is None:
-            return
-
-        self.manga_slug = manga_data['slug']
-        self.activity_indicator.start()
-
-        thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
-        thread.daemon = True
-        thread.start()
-
     def on_manga_clicked(self, listbox, row):
         if row.manga_data is None:
             return
 
-        self.manga_load(row.manga_data)
+        self.show_manga(row.manga_data)
 
     def on_read_button_clicked(self, button):
         self.window.card.init(self.manga, transition=False)
@@ -260,13 +180,14 @@ class AddDialog():
 
         term = self.custom_title_search_page_searchentry.get_text().strip()
 
-        if term.startswith("slug:"):
-            slug = term[5:]
+        # Find manga by Id
+        if term.startswith('id:'):
+            slug = term[3:]
 
             if not slug:
                 return
 
-            self.manga_load(dict(slug=term[5:]))
+            self.show_manga(dict(slug=slug))
             return
 
         if not term and getattr(self.server, 'get_most_populars', None) is None:
@@ -346,6 +267,83 @@ class AddDialog():
         self.activity_indicator.start()
 
         thread = threading.Thread(target=run, args=(self.server, ))
+        thread.daemon = True
+        thread.start()
+
+    def show_manga(self, manga_data):
+        def run(server, manga_slug):
+            try:
+                current_manga_data = server.get_manga_data(manga_data)
+
+                if current_manga_data is not None:
+                    GLib.idle_add(complete, current_manga_data, server)
+                else:
+                    GLib.idle_add(error, server, manga_slug)
+            except Exception as e:
+                user_error_message = log_error_traceback(e)
+                GLib.idle_add(error, server, manga_slug, user_error_message)
+
+        def complete(manga_data, server):
+            if server != self.server or manga_data['slug'] != self.manga_slug:
+                return
+
+            self.manga_data = manga_data
+
+            # Populate manga card
+            try:
+                cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
+            except Exception as e:
+                cover_data = None
+                user_error_message = log_error_traceback(e)
+                if user_error_message:
+                    self.show_notification(user_error_message)
+
+            if cover_data is not None:
+                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
+                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
+            else:
+                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+
+            self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
+
+            self.builder.get_object('authors_value_label').set_markup(
+                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-'))
+            self.builder.get_object('genres_value_label').set_markup(
+                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-'))
+            self.builder.get_object('status_value_label').set_markup(
+                '<span size="small">{0}</span>'.format(_(Manga.STATUSES[self.manga_data['status']])) if self.manga_data['status'] else '-')
+            self.builder.get_object('scanlators_value_label').set_markup(
+                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['scanlators']) if self.manga_data['scanlators'] else '-'))
+            self.builder.get_object('server_value_label').set_markup(
+                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
+                    self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
+                    html.escape(self.server.name),
+                    self.server.lang.upper(),
+                    len(self.manga_data['chapters'])
+                )
+            )
+
+            self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
+
+            self.activity_indicator.stop()
+            self.show_page('manga')
+
+            return False
+
+        def error(server, manga_slug, message=None):
+            if server != self.server or manga_slug != self.manga_slug:
+                return
+
+            self.activity_indicator.stop()
+
+            self.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
+
+            return False
+
+        self.manga_slug = manga_data['slug']
+        self.activity_indicator.start()
+
+        thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
         thread.daemon = True
         thread.start()
 
