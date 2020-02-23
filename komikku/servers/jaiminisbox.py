@@ -21,12 +21,13 @@ class Jaiminisbox(Server):
     lang = 'en'
 
     base_url = 'https://jaiminisbox.com/reader'
-    search_url = base_url + '/search'
-    mangas_url = base_url + '/directory/'
-    manga_url = base_url + '/series/{0}/'
-    chapter_url = base_url + '/read/{0}/en/{1}/page/1'
 
     def __init__(self):
+        self.search_url = self.base_url + '/search'
+        self.mangas_url = self.base_url + '/directory/'
+        self.manga_url = self.base_url + '/series/{0}/'
+        self.chapter_url = self.base_url + '/read/{0}/en/{1}/page/1'
+
         if self.session is None:
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
@@ -165,7 +166,7 @@ class Jaiminisbox(Server):
         """
         r = self.session_get(page['image'])
         if r is None:
-            return (None, None)
+            return None, None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
         image_name = page['image'].split('?')[0].split('/')[-1]
@@ -252,7 +253,3 @@ class Kireicake(Jaiminisbox):
     lang = 'en'
 
     base_url = 'https://reader.kireicake.com'
-    search_url = base_url + '/search'
-    mangas_url = base_url + '/directory/'
-    manga_url = base_url + '/series/{0}/'
-    chapter_url = base_url + '/read/{0}/en/{1}/page/1'
