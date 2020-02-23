@@ -77,8 +77,8 @@ class Mangadex(Server):
             self.session.headers = headers
 
     @staticmethod
-    def manga_id_from_slug(slug):
-        # Removing this will break manga that were added before the change to the manga slug.
+    def convert_old_slug(slug):
+        # Removing this will break manga that were added before the change to the manga slug
         return slug.split('/')[0]
 
     def get_manga_data(self, initial_data):
@@ -90,7 +90,7 @@ class Mangadex(Server):
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
         r = self.session_get(
-            self.api_manga_url.format(self.manga_id_from_slug(initial_data['slug'])),
+            self.api_manga_url.format(self.convert_old_slug(initial_data['slug'])),
             headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': '*/*',
