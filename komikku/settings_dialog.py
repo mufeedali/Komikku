@@ -129,7 +129,8 @@ class SettingsDialog():
         settings_fullscreen_switch.set_active(settings.fullscreen)
         settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
-    def on_background_color_changed(self, row, param):
+    @staticmethod
+    def on_background_color_changed(row, param):
         index = row.get_selected_index()
 
         if index == 0:
@@ -137,16 +138,19 @@ class SettingsDialog():
         elif index == 1:
             Settings.get_default().background_color = 'black'
 
-    def on_borders_crop_changed(self, switch_button, gparam):
+    @staticmethod
+    def on_borders_crop_changed(switch_button, gparam):
         Settings.get_default().borders_crop = switch_button.get_active()
 
-    def on_desktop_notifications_changed(self, switch_button, gparam):
+    @staticmethod
+    def on_desktop_notifications_changed(switch_button, gparam):
         if switch_button.get_active():
             Settings.get_default().desktop_notifications = True
         else:
             Settings.get_default().desktop_notifications = False
 
-    def on_fullscreen_changed(self, switch_button, gparam):
+    @staticmethod
+    def on_fullscreen_changed(switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
 
     def on_night_light_changed(self, switch_button, gparam):
@@ -154,7 +158,8 @@ class SettingsDialog():
 
         self.window.init_theme()
 
-    def on_reading_direction_changed(self, row, param):
+    @staticmethod
+    def on_reading_direction_changed(row, param):
         index = row.get_selected_index()
 
         if index == 0:
@@ -164,7 +169,8 @@ class SettingsDialog():
         elif index == 2:
             Settings.get_default().reading_direction = 'vertical'
 
-    def on_scaling_changed(self, row, param):
+    @staticmethod
+    def on_scaling_changed(row, param):
         index = row.get_selected_index()
 
         if index == 0:
@@ -174,7 +180,8 @@ class SettingsDialog():
         elif index == 2:
             Settings.get_default().scaling = 'height'
 
-    def on_servers_language_activated(self, switch_button, gparam, code):
+    @staticmethod
+    def on_servers_language_activated(switch_button, gparam, code):
         if switch_button.get_active():
             Settings.get_default().add_servers_language(code)
         else:
@@ -185,7 +192,8 @@ class SettingsDialog():
 
         self.window.init_theme()
 
-    def on_update_at_startup_changed(self, switch_button, gparam):
+    @staticmethod
+    def on_update_at_startup_changed(switch_button, gparam):
         if switch_button.get_active():
             Settings.get_default().update_at_startup = True
         else:

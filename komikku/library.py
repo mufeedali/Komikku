@@ -224,7 +224,8 @@ class Library():
 
         ctx.restore()
 
-    def draw_cover_server_logo(self, da, ctx, manga):
+    @staticmethod
+    def draw_cover_server_logo(da, ctx, manga):
         size = 75
 
         ctx.save()
@@ -365,7 +366,8 @@ class Library():
             self.flowbox.select_child(child)
             self.selection_count += 1
 
-    def set_manga_cover_image(self, overlay, width, height):
+    @staticmethod
+    def set_manga_cover_image(overlay, width, height):
         overlay.set_size_request(width, height)
 
         if overlay._pixbuf is None:

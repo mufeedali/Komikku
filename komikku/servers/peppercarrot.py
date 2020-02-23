@@ -159,7 +159,8 @@ class Peppercarrot(Server):
     def get_most_populars(self):
         return self.search()
 
-    def search(self, term=None):
+    @staticmethod
+    def search(term=None):
         return [dict(
             slug='',
             name='Pepper&Carrot',

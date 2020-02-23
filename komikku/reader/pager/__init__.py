@@ -347,7 +347,8 @@ class Pager(Gtk.ScrolledWindow):
 
         return False
 
-    def on_scroll(self, widget, event):
+    @staticmethod
+    def on_scroll(widget, event):
         # Stop GDK_SCROLL_SMOOTH events propagation
         # mouse and touch pad (2 fingers) scrolling
         return True

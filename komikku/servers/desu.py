@@ -120,7 +120,8 @@ class Desu(Server):
 
         return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
-    def get_manga_url(self, slug, url):
+    @staticmethod
+    def get_manga_url(slug, url):
         """
         Returns manga absolute URL
         """
