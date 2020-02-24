@@ -276,38 +276,31 @@ class Pager(Gtk.ScrolledWindow):
             page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_RIGHT, False)
             return
 
-        if self.reader.reading_direction == 'vertical' and event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
+        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
             page = self.current_page
             vadj = page.scrolledwindow.get_vadjustment()
 
             if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                if vadj.get_value() + self.reader.size.height == vadj.get_upper():
+                if self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
                     self.switchto_page('right')
-                else:
-                    # If image height is greater than viewport height, arrow keys should scroll page down
-                    # Emit scroll signal: one step down
-                    page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
+                    return
 
-            else:
-                if vadj.get_value() == 0:
-                    self.switchto_page('left')
-
-                    # After switching pages, go to the end of the page that is now the current page
-                    vadj = self.current_page.scrolledwindow.get_vadjustment()
-                    vadj.set_value(vadj.get_upper() - self.reader.size.height)
-                else:
-                    # If image height is greater than viewport height, arrow keys should scroll page up
-                    # Emit scroll signal: one step up
-                    page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
-            return
-
-        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
-            page = self.current_page
-
-            if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                # If image height is greater than viewport height, arrow keys should scroll page down
+                # Emit scroll signal: one step down
                 page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
-            else:
-                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
+                return
+
+            if self.reader.reading_direction == 'vertical' and vadj.get_value() == 0:
+                self.switchto_page('left')
+
+                # After switching pages, go to the end of the page that is now the current page
+                vadj = self.current_page.scrolledwindow.get_vadjustment()
+                vadj.set_value(vadj.get_upper() - self.reader.size.height)
+                return
+
+            # If image height is greater than viewport height, arrow keys should scroll page up
+            # Emit scroll signal: one step up
+            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
