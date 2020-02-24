@@ -130,6 +130,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.connect('check-resize', self.on_resize)
         self.connect('delete-event', self.on_application_quit)
         self.connect('window-state-event', self.on_window_state_event)
+        self.connect('key-press-event', self.on_key_press_event)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()
@@ -266,6 +267,17 @@ class MainWindow(Gtk.ApplicationWindow):
 
         before_quit()
         return False
+
+    def on_key_press_event(self, action, param):
+        if param.keyval == Gdk.KEY_Escape:
+            if not self.page == 'library' or self.library.selection_mode:
+                self.on_left_button_clicked(None, None)
+            else:
+                self.confirm(
+                    _('Quit?'),
+                    _('Are you sure you want to quit?'),
+                    self.close
+                )
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
