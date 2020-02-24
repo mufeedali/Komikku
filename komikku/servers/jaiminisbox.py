@@ -14,21 +14,20 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-SERVER_NAME = "Jaimini's Box"
-
 
 class Jaiminisbox(Server):
     id = 'jaiminisbox'
-    name = SERVER_NAME
+    name = "Jaimini's Box"
     lang = 'en'
 
-    base_url = 'https://jaiminisbox.com'
-    search_url = base_url + '/reader/search'
-    mangas_url = base_url + '/reader/directory/'
-    manga_url = base_url + '/reader/series/{0}/'
-    chapter_url = base_url + '/reader/read/{0}/en/{1}/page/1'
+    base_url = 'https://jaiminisbox.com/reader'
 
     def __init__(self):
+        self.search_url = self.base_url + '/search'
+        self.mangas_url = self.base_url + '/directory/'
+        self.manga_url = self.base_url + '/series/{0}/'
+        self.chapter_url = self.base_url + '/read/{0}/en/{1}/page/1'
+
         if self.session is None:
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
@@ -65,7 +64,7 @@ class Jaiminisbox(Server):
         data = initial_data.copy()
         data.update(dict(
             authors=[],
-            scanlators=[SERVER_NAME, ],
+            scanlators=[self.name, ],
             genres=[],
             status=None,
             synopsis=None,
@@ -93,19 +92,18 @@ class Jaiminisbox(Server):
                     data['synopsis'] = value
 
         # Chapters
-        for group in reversed(soup.find('div', class_='list').find_all('div', class_='group')):
-            for element in reversed(group.find_all('div', class_='element')):
-                a_element = element.find('div', class_='title').a
+        for element in reversed(soup.find('div', class_='list').find_all('div', class_='element')):
+            a_element = element.find('div', class_='title').a
 
-                title = a_element.text.strip()
-                slug = '/'.join(a_element.get('href').split('/')[-3:-1])
-                date = convert_date_string(list(element.find('div', class_='meta_r').find_all('a')[-1].next_siblings)[0][2:], '%Y.%m.%d')
+            title = a_element.text.strip()
+            slug = a_element.get('href').replace(f'{self.base_url}/read/{initial_data["slug"]}/{self.lang}/', '')[:-1]
+            date = convert_date_string(list(element.find('div', class_='meta_r').find_all('a')[-1].next_siblings)[0][2:], '%Y.%m.%d')
 
-                data['chapters'].append(dict(
-                    slug=slug,
-                    date=date,
-                    title=title,
-                ))
+            data['chapters'].append(dict(
+                slug=slug,
+                date=date,
+                title=title,
+            ))
 
         return data
 
@@ -168,7 +166,7 @@ class Jaiminisbox(Server):
         """
         r = self.session_get(page['image'])
         if r is None:
-            return (None, None)
+            return None, None
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
         image_name = page['image'].split('?')[0].split('/')[-1]
@@ -247,3 +245,11 @@ class Jaiminisbox(Server):
             return results
 
         return None
+
+
+class Kireicake(Jaiminisbox):
+    id = 'kireicake:jaiminisbox'
+    name = 'Kirei Cake'
+    lang = 'en'
+
+    base_url = 'https://reader.kireicake.com'
