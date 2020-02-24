@@ -42,10 +42,10 @@ class Pager(Gtk.ScrolledWindow):
             Gdk.EventMask.SMOOTH_SCROLL_MASK
         )
 
-        self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
-        self.key_press_handler_id = self.connect('key-press-event', self.on_key_press)
-        self.key_press_handler_id = self.connect('scroll-event', self.on_scroll)
-        self.mouse_motion_handler_id = self.connect('motion-notify-event', self.on_mouse_move)
+        self.connect('button-press-event', self.on_btn_press)
+        self.connect('key-press-event', self.on_key_press)
+        self.connect('motion-notify-event', self.on_motion_notify)
+        self.connect('scroll-event', self.on_scroll)
 
         self.show_all()
 
@@ -239,13 +239,6 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[0].render()
         self.pages[2].render()
 
-    def on_mouse_move(self, widget, event):
-        if not self.get_window().get_cursor():
-            # By default, no cursor is set. So, if it's already None, do nothing.
-            return
-
-        self.get_window().set_cursor(None)
-
     def on_key_press(self, widget, event):
         # Note: in case of keys LEFT and RIGHT, this code is never reached when controls are visible
         # Slider (Gtk.Scale) has already consume the event
@@ -301,6 +294,15 @@ class Pager(Gtk.ScrolledWindow):
             # If image height is greater than viewport height, arrow keys should scroll page up
             # Emit scroll signal: one step up
             page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
+
+    def on_motion_notify(self, widget, event):
+        # Hide cursor during keyboard navigation
+
+        if not self.get_window().get_cursor():
+            # By default, no cursor is set. So, if it's already None, do nothing.
+            return
+
+        self.get_window().set_cursor(None)
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended
