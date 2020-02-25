@@ -1,14 +1,16 @@
+# This is a personal fork of [Komikku](https://www.gitlab.com/valos/Komikku)
+
+This is a fork of Komikku and NOT the official repo. It will almost definitely have issues and the git log will always remain a mess. The `master` branch is forced to remain in sync with the upstream `master` branch so that I can branch off of it and make merge requests (yeah, i know that's not good). The `personal` branch is where I make my changes. Most of the time, both upstream and this branch are **essentially the same** because I try to upstream all the working changes asap and I also create patches and then stash away the more "experimental" changes.
+
+Basically, don't use this. The official README follows.
+
 # <img height="32" src="data/icons/info.febvre.Komikku.svg" /> Komikku
 
-[![pipeline status](https://gitlab.com/valos/Komikku/badges/master/pipeline.svg)](https://gitlab.com/valos/Komikku/commits/master)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 An online/offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
-<a href='https://flathub.org/apps/details/info.febvre.Komikku'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
-
 **PLEASE NOTE**: *Komikku* is still in **an early stage of development**. Some design changes or unexpected errors may lead to data loss (even if everything is done for them not to happen).
-
 
 ## License
 
