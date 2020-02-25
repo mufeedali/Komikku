@@ -12,6 +12,7 @@ import unicodedata
 import unidecode
 
 from komikku.servers import convert_date_string
+from komikku.servers import search_duckduckgo
 from komikku.servers import Server
 
 SERVER_NAME = 'JapScan'
@@ -23,7 +24,7 @@ class Japscan(Server):
     lang = 'fr'
 
     base_url = 'https://www.japscan.co'
-    search_url = base_url + '/mangas/{0}/{1}'
+    search_url = base_url + '/manga/'
     manga_url = base_url + '/manga/{0}/'
     chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
     image_url = 'https://c.japscan.co/lel/{0}/{1}/{2}'
@@ -219,59 +220,19 @@ class Japscan(Server):
 
     def search(self, term):
         """
-        JapScan does not provide a search. At our disposal, we only have a list.
-        Mangas are indexed by the first character of their name then paginated:
-
-        /mangas/0-9/1
-        /mangas/0-9/2
-        /mangas/0-9/...
-        /mangas/A/1
-        /mangas/A/2
-        /mangas/A/...
-        /mangas/...
+        JapScan does not provide a search. Use DuckDuckGo Lite as fallback
         """
-        term = unidecode.unidecode(term).lower()
-        if term[0] in '0123456789':
-            index = '0-9'
-        else:
-            index = term[0].upper()
-
-        r = self.session_get(self.search_url.format(index, 1))
-        if r is None:
-            return None
-
-        soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        nb_pages = int(soup.find_all('div', class_='card')[0].find('ul', class_='pagination').find_all('a')[-1].text)
-
-        for page in range(nb_pages):
-            page_results = self.search_manga_list_page(term, index, page + 1)
-            if page_results:
-                results += page_results
-
-        return sorted(results, key=lambda m: m['name'])
-
-    def search_manga_list_page(self, term, index, page=1):
-        r = self.session_get(self.search_url.format(index, page))
-        if r is None:
-            return None
-
-        soup = BeautifulSoup(r.text, 'html.parser')
-
-        results = []
-        for element in soup.find_all('div', class_='card')[0].find('div', class_='d-flex').find_all('div'):
-            name = element.p.a.text.strip()
-            if term not in unidecode.unidecode(name).lower():
-                continue
-
-            slug = element.p.a.get('href').split('/')[-2]
-            cover = self.cover_url.format(element.a.img.get('src'))
+        for ddg_result in search_duckduckgo(self.search_url, term):
+            # Remove first word in name (Manga, Manhua, Manhwa...)
+            name = ' '.join(ddg_result['name'].split()[1:])
+            # Keep only words before "|" character
+            name = name.split('|')[0].strip()
 
             results.append(dict(
                 name=name,
-                slug=slug,
-                cover=cover,
+                slug=ddg_result['url'].split('/')[-2],
             ))
 
         return results
