@@ -19,7 +19,7 @@ class Mangakawaii(Server):
     name = SERVER_NAME
     lang = 'fr'
 
-    base_url = 'https://www.mangakawaii.to'
+    base_url = 'https://www.mangakawaii.com'
     search_url = base_url + '/recherche'
     most_populars_url = base_url + '/mieux-notes'
     manga_url = base_url + '/manga/{0}'
