@@ -179,7 +179,7 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
 
 
 def get_server_class_name_by_id(id):
-    return id.split(':')[0].split('_')[0].capitalize()
+    return id.split(':')[0].capitalize()
 
 
 def get_server_dir_name_by_id(id):

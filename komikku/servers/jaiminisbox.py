@@ -14,6 +14,9 @@ from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
+# All theses servers use FoOlSlide Open Source online comic management software (NO LONGER MAINTAINED)
+# https://github.com/FoolCode/FoOlSlide or https://github.com/chocolatkey/FoOlSlide2 (fork)
+
 
 class Jaiminisbox(Server):
     id = 'jaiminisbox'
@@ -21,6 +24,10 @@ class Jaiminisbox(Server):
     lang = 'en'
 
     base_url = 'https://jaiminisbox.com/reader'
+    search_url = base_url + '/search'
+    mangas_url = base_url + '/directory'
+    manga_url = base_url + '/series/{0}'
+    chapter_url = base_url + '/read/{0}/en/{1}/page/1'
 
     def __init__(self):
         self.search_url = self.base_url + '/search'
@@ -82,7 +89,7 @@ class Jaiminisbox(Server):
             value = list(element.next_siblings)[0][2:]
             if label in ('Author', 'Artist'):
                 data['authors'].append(value)
-            elif label == 'Synopsis':
+            elif label in ('Description', 'Synopsis', ):
                 if adult_alert:
                     data['synopsis'] = '{0}\n\n{1}'.format(
                         'ALERT: This series contains mature contents and is meant to be viewed by an adult audience.',
@@ -180,7 +187,7 @@ class Jaiminisbox(Server):
         return self.manga_url.format(slug)
 
     def get_mangas(self, page=1):
-        r = self.session_get('{0}/{1}/'.format(self.mangas_url, page))
+        r = self.session_get('{0}/{1}'.format(self.mangas_url, page))
         if r is None:
             return None
 
@@ -253,3 +260,7 @@ class Kireicake(Jaiminisbox):
     lang = 'en'
 
     base_url = 'https://reader.kireicake.com'
+    search_url = base_url + '/search'
+    mangas_url = base_url + '/directory'
+    manga_url = base_url + '/series/{0}'
+    chapter_url = base_url + '/read/{0}/en/{1}/page/1'

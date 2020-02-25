@@ -222,6 +222,10 @@ class Mintmanga(Readmanga):
     name = 'Mint Manga'
 
     base_url = 'https://mintmanga.live'
+    search_url = base_url + '/search/advanced'
+    most_populars_url = base_url + '/list?sortType=rate'
+    manga_url = base_url + '/{0}'
+    chapter_url = manga_url + '/{1}?mtr=1'
 
 
 class Selfmanga(Readmanga):
@@ -229,3 +233,7 @@ class Selfmanga(Readmanga):
     name = 'Self Manga'
 
     base_url = 'https://selfmanga.ru'
+    search_url = base_url + '/search/advanced'
+    most_populars_url = base_url + '/list?sortType=rate'
+    manga_url = base_url + '/{0}'
+    chapter_url = manga_url + '/{1}?mtr=1'
