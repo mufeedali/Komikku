@@ -81,22 +81,18 @@ This is the best practice to test Komikku without installing using meson and nin
 
 ```bash
 git clone https://gitlab.com/valos/Komikku
-cd Komikku
-mkdir _build
-cd _build
-meson ..
-meson configure -Dprefix=$(pwd)/testdir
-ninja install # This will actually install in _build/testdir
-ninja run
+make
+make install
 ```
 
 #### Later on
 
 ```bash
-cd Komikku/_build
-ninja install # This will actually install in _build/testdir
-ninja run
+make install
 ```
+
+#### To Run
+make run
 
 ### Option 3: Build and install systemwide directly with Meson
 
