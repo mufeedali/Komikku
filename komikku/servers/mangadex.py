@@ -9,7 +9,10 @@ from datetime import datetime
 import html
 import magic
 import requests
+import os
+import pickle
 
+from komikku.models import database
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -71,10 +74,16 @@ class Mangadex(Server):
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
 
+    cooked = False
+
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
             self.session.headers = headers
+            if os.path.exists(os.path.join(database.get_data_dir(), 'mangadex', 'cookies')):
+                with open(os.path.join(database.get_data_dir(), 'mangadex', 'cookies'), 'rb') as f:
+                    self.session.cookies.update(pickle.load(f))
+                self.cooked = True
 
     @staticmethod
     def convert_old_slug(slug):
@@ -228,6 +237,18 @@ class Mangadex(Server):
         return results
 
     def search(self, term):
+        if not self.cooked and os.path.exists(os.path.join(database.get_data_dir(), 'mangadex', 'login')):
+            with open(os.path.join(database.get_data_dir(), 'mangadex', 'login'), 'r') as login_file:
+                content = login_file.readlines()
+                details = {
+                    'login_username': content[0],
+                    'login_password': content[1]
+                }
+            self.session.post('https://mangadex.org/ajax/actions.ajax.php?function=login&nojs=1', details)
+            with open(os.path.join(database.get_data_dir(), 'mangadex', 'cookies'), 'wb') as f:
+                pickle.dump(self.session.cookies, f)
+            self.cooked = True
+
         r = self.session_get(self.search_url, params=dict(
             tag_mode_exc='any',
             tag_mode_inc='all',
