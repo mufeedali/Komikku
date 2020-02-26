@@ -19,7 +19,10 @@ from komikku.utils import log_error_traceback
 
 
 def compute_borders_crop_bbox(path):
-    im = Image.open(path)
+    # Maybe add a slider in the settings
+    value = 100
+    threshold = lambda x : 255 if x > value else 0
+    im = Image.open(path).convert('L').point(threshold, mode='1')
     bg = Image.new(im.mode, im.size, 255)
 
     return ImageChops.difference(im, bg).getbbox()
