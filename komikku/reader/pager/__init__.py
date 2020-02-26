@@ -304,12 +304,13 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_motion_notify(self, widget, event):
         # Hide cursor during keyboard navigation
+        # And make cursor visible again when mouse is moved
 
-        if not self.get_window().get_cursor():
-            # By default, no cursor is set. So, if it's already None, do nothing.
-            return
+        if self.get_window().get_cursor():
+            # Show cursor
+            self.get_window().set_cursor(None)
 
-        self.get_window().set_cursor(None)
+        return False
 
     def on_page_switch(self, page, chapter_changed):
         # Loop until page is loadable or render is ended

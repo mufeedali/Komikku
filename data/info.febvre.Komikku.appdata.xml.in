@@ -31,6 +31,21 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.12.0" date="2020-02-26">
+            <description>
+                <p>[Manga] Fixed the unread action of chapters</p>
+                <p>[Reader] Cursor hiding during keyboard navigation</p>
+                <p>[Reader] Arrow scrolling in every reading directions</p>
+                <p>[Reader] Added white borders crop</p>
+                <p>[Servers] Added Kirei Cake (EN)</p>
+                <p>[Servers] Added Read Manga, Mint Manga and Self Manga (RU)</p>
+                <p>[Servers] Updated Mangakawaii domain</p>
+                <p>[Servers] Fixed JapScan search (using DuckDuckGo Lite)</p>
+                <p>Added back navigation with Escape key</p>
+                <p>Added abilility to add manga by ID using keyword "id:&lt;id&gt;" (useful with MangaDex)</p>
+                <p>Various bugs fixes</p>
+            </description>
+        </release>
         <release version="0.11.1" date="2020-02-14">
             <description>
                 <p>Added the Dutch translation</p>

@@ -161,7 +161,7 @@ class Readmanga(Server):
             return (None, None)
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
-        image_name = page['image'].split('/')[-1]
+        image_name = page['image'].split('/')[-1].split('?')[0]
 
         return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
