@@ -239,7 +239,7 @@ class Page(Gtk.Overlay):
 
             # Crop is possible if computed bbox is included in pixbuf
             if bbox[2] - bbox[0] < pixbuf.get_width() or bbox[3] - bbox[1] < pixbuf.get_height():
-                pixbuf = Pixbuf.new(Colorspace.RGB, False, 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
+                pixbuf = Pixbuf.new(Colorspace.RGB, self.pixbuf.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
                 self.pixbuf.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
 
         width = pixbuf.get_width()
