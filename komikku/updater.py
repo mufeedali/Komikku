@@ -92,13 +92,13 @@ class Updater():
                     )
                 )
 
-                if self.window.page == 'library':
-                    # Schedule a library redraw
-                    self.window.library.flowbox.queue_draw()
-                elif self.window.page == 'card':
-                    # Update card if card manga is manga updated
-                    if self.window.card.manga and self.window.card.manga.id == manga.id:
-                        self.window.card.init(manga, transition=False)
+            if self.window.page == 'library':
+                # Schedule a library redraw
+                self.window.library.flowbox.queue_draw()
+            elif self.window.page == 'card':
+                # Update card if card manga is manga updated
+                if self.window.card.manga and self.window.card.manga.id == manga.id:
+                    self.window.card.init(manga, transition=False)
 
             return False
 
