@@ -34,6 +34,8 @@ class Card:
         self.info_grid = InfoGrid(self)
         self.chapters_list = ChaptersList(self)
 
+        self.window.updater.connect('manga-updated', self.on_manga_updated)
+
     @property
     def sort_order(self):
         return self.manga.sort_order or 'desc'
@@ -137,6 +139,13 @@ class Card:
             _('Are you sure you want to delete this manga?'),
             confirm_callback
         )
+
+    def on_manga_updated(self, updater, manga, nb_recent_chapters):
+        if self.window.page == 'card' and self.manga.id == manga.id:
+            if nb_recent_chapters:
+                self.chapters_list.populate()
+
+            self.info_grid.populate()
 
     def on_open_in_browser_menu_clicked(self, action, param):
         Gtk.show_uri_on_window(None, self.manga.server.get_manga_url(self.manga.slug, self.manga.url), time.time())

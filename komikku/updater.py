@@ -7,22 +7,29 @@ from gettext import ngettext as n_
 import threading
 
 from gi.repository import GLib
+from gi.repository import GObject
 
 from komikku.utils import log_error_traceback
 from komikku.models import create_db_connection
 from komikku.models import Manga
 
 
-class Updater():
+class Updater(GObject.GObject):
     """
     Mangas updater
     """
+    __gsignals__ = {
+        'manga_updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, )),
+    }
+
     queue = []
     running = False
     stop_flag = False
     update_library_flag = False
 
     def __init__(self, window, update_at_startup=False):
+        GObject.GObject.__init__(self)
+
         self.window = window
 
         if update_at_startup:
@@ -92,13 +99,7 @@ class Updater():
                     )
                 )
 
-            if self.window.page == 'library':
-                # Schedule a library redraw
-                self.window.library.flowbox.queue_draw()
-            elif self.window.page == 'card':
-                # Update card if card manga is manga updated
-                if self.window.card.manga and self.window.card.manga.id == manga.id:
-                    self.window.card.init(manga, transition=False)
+            self.emit('manga-updated', manga, nb_recent_chapters)
 
             return False
 
