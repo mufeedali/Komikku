@@ -19,7 +19,7 @@ class Updater(GObject.GObject):
     Mangas updater
     """
     __gsignals__ = {
-        'manga_updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, )),
+        'manga-updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, )),
     }
 
     queue = []
