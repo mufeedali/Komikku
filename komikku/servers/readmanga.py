@@ -96,7 +96,7 @@ class Readmanga(Server):
         for element in reversed(elements):
             a_element = element.find('a')
             slug = a_element.get('href').split('/', 2)[2]
-            title = a_element.text.strip()
+            title = a_element.find(text=True, recursive=False).strip()
             date = element.find('td', align="right").text.strip()
 
             data['chapters'].append(dict(

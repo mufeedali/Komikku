@@ -197,7 +197,7 @@ def init_db():
             if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer DEFAULT -1;'):
                 db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
 
-        print('DB version', VERSION)
+        print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
 
         db_conn.close()
 

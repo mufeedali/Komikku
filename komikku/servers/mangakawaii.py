@@ -24,8 +24,8 @@ class Mangakawaii(Server):
     most_populars_url = base_url + '/mieux-notes'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
-    image_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/chapters/{1}/{2}'
-    cover_url = 'https://cdn.mangakawaii.to/uploads/manga/{0}/cover/cover_250x350.jpg'
+    image_url = 'https://cdn.mangakawaii.com/uploads/manga/{0}/chapters/{1}/{2}'
+    cover_url = 'https://cdn.mangakawaii.com/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
         if self.session is None:

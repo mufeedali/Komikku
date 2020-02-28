@@ -19,7 +19,13 @@ from komikku.utils import log_error_traceback
 
 
 def compute_borders_crop_bbox(path):
-    im = Image.open(path)
+    # TODO: Add a slider in settings
+    threshold = 225
+
+    def lookup(x):
+        return 255 if x > threshold else 0
+
+    im = Image.open(path).convert('L').point(lookup, mode='1')
     bg = Image.new(im.mode, im.size, 255)
 
     return ImageChops.difference(im, bg).getbbox()
@@ -239,7 +245,7 @@ class Page(Gtk.Overlay):
 
             # Crop is possible if computed bbox is included in pixbuf
             if bbox[2] - bbox[0] < pixbuf.get_width() or bbox[3] - bbox[1] < pixbuf.get_height():
-                pixbuf = Pixbuf.new(Colorspace.RGB, False, 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
+                pixbuf = Pixbuf.new(Colorspace.RGB, self.pixbuf.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
                 self.pixbuf.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
 
         width = pixbuf.get_width()

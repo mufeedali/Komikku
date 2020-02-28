@@ -39,6 +39,8 @@ class Library():
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.enter_selection_mode)
 
+        self.window.updater.connect('manga-updated', self.on_manga_updated)
+
         def _filter(child):
             manga = Manga.get(child.get_children()[0].manga.id)
             term = self.search_entry.get_text().lower()
@@ -308,9 +310,27 @@ class Library():
     def on_manga_deleted(self, manga):
         # Remove manga cover in flowbox
         for child in self.flowbox.get_children():
-            if child.get_children()[0].manga.id == manga.id:
+            overlay = child.get_children()[0]
+            if overlay.manga.id == manga.id:
                 child.destroy()
                 break
+
+    def on_manga_updated(self, updater, manga, nb_recent_chapters):
+        for child in self.flowbox.get_children():
+            overlay = child.get_children()[0]
+
+            if overlay.manga.id == manga.id:
+                # Update cover
+                width, height = self.cover_size
+                self.set_manga_cover_image(overlay, width, height, True)
+
+                # Update manga name
+                name_label = overlay.get_children()[1]
+                name_label.set_text(manga.name)
+                break
+
+        # Schedule a redraw. It will update drawing areas (servers logos, badges)
+        self.flowbox.queue_draw()
 
     def on_resize(self):
         if self.window.first_start_grid.is_ancestor(self.window):
@@ -367,10 +387,10 @@ class Library():
             self.selection_count += 1
 
     @staticmethod
-    def set_manga_cover_image(overlay, width, height):
+    def set_manga_cover_image(overlay, width, height, update=False):
         overlay.set_size_request(width, height)
 
-        if overlay._pixbuf is None:
+        if overlay._pixbuf is None or update:
             manga = overlay.manga
             if manga.cover_fs_path is not None:
                 overlay._pixbuf = Pixbuf.new_from_file(manga.cover_fs_path)
