@@ -164,8 +164,14 @@ class Page(Gtk.Overlay):
                     user_error_message = log_error_traceback(e)
                     on_error('connection', user_error_message)
             else:
-                self.pixbuf = Pixbuf.new_from_file(page_path)
-
+                try:
+                    self.pixbuf = Pixbuf.new_from_file(page_path)
+                except GLib.GError as ex:
+                    user_error_message = log_error_traceback(ex)
+                    GLib.unlink(page_path)
+                    on_error('corrupt', user_error_message)
+                    GLib.idle_add(complete)
+                    return
             GLib.idle_add(complete)
 
         def complete():
@@ -188,7 +194,7 @@ class Page(Gtk.Overlay):
             return False
 
         def on_error(kind, message=None):
-            assert kind in ('connection', 'server'), 'Invalid error kind'
+            assert kind in ('connection', 'server', 'corrupt'), 'Invalid error kind'
 
             if message is not None:
                 self.window.show_notification(message, 2)
