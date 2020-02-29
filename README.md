@@ -2,10 +2,21 @@
 
 This is a fork of Komikku and NOT the official repo. It will almost definitely have issues and the git log will always remain a mess. The `master` branch is forced to remain in sync with the upstream `master` branch so that I can branch off of it and make merge requests (yeah, i know that's not good). The `personal` branch is where I make my changes. Most of the time, both upstream and this branch are **essentially the same** because I try to upstream all the working changes asap and I also create patches and then stash away the more "experimental" changes.
 
-Basically, don't use this. The official README follows.
+Basically, don't use this.
+
+Differences right now:
+
+* MangaDex Login workaround (Detailed [here](https://gitlab.com/valos/Komikku/issues/28#note_294548351)). Obviously not perfect and has far too many issues. Needs work.
+* A fix for when the Reader tries and fails to load empty image files. The used solution might be problematic in some ways, currently thinking of a better way to do this.
+* DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
+* Some fixes suggested by DeepSource (don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402))
+* This README file.
+
+The official README follows.
 
 # <img height="32" src="data/icons/info.febvre.Komikku.svg" /> Komikku
 
+[![pipeline status](https://gitlab.com/lastweakness/Komikku/badges/personal/pipeline.svg)](https://gitlab.com/lastweakness/Komikku/commits/personal)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 An online/offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
@@ -105,7 +116,9 @@ ninja install
 ```
 
 ## Translations
+
 Helping to translate Komikku or add support to a new language is very welcome.
 
 ## Disclaimer
+
 The developer of this application does not have any affiliation with the content providers available.
