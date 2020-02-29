@@ -346,7 +346,7 @@ class ChaptersList:
         ctx.add_class('card-chapter-label')
         if chapter.read:
             # Chapter reading ended
-            ctx.add_class('card-chapter-label-ended')
+            ctx.add_class('dim-label')
         elif chapter.last_page_read_index is not None:
             # Chapter reading started
             ctx.add_class('card-chapter-label-started')

@@ -1,3 +1,8 @@
+list {
+    border-right: 1px solid @borders;
+    border-left: 1px solid @borders;
+}
+
 /* Main window - library page - manga cover */
 .library-manga-name-label {
     font-size: 12px;
@@ -10,7 +15,7 @@
 
 /* Main window - manga card page - chapters list */
 .card-chapter-listboxrow {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid @borders;
     padding: 6px 6px 12px 6px;
 }
 .card-chapter-label {
@@ -18,9 +23,6 @@
 }
 .card-chapter-label-started {
     color: @warning_color;
-}
-.card-chapter-label-ended {
-    color: @insensitive_fg_color;
 }
 
 .card-chapter-sublabel {
