@@ -31,6 +31,12 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.12.1" date="2020-02-29">
+            <description>
+                <p>[Servers] Mangakawaii: Fixed manga cover</p>
+                <p>Improved manga update</p>
+            </description>
+        </release>
         <release version="0.12.0" date="2020-02-26">
             <description>
                 <p>[Manga] Fixed the unread action of chapters</p>
