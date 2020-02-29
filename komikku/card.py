@@ -142,6 +142,8 @@ class Card:
 
     def on_manga_updated(self, updater, manga, nb_recent_chapters):
         if self.window.page == 'card' and self.manga.id == manga.id:
+            self.manga = manga
+
             if nb_recent_chapters:
                 self.chapters_list.populate()
 
