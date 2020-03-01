@@ -131,7 +131,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.connect('delete-event', self.on_application_quit)
         self.connect('key-press-event', self.on_key_press_event)
         self.connect('window-state-event', self.on_window_state_event)
-        self.connect('key-press-event', self.on_key_press_event)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()

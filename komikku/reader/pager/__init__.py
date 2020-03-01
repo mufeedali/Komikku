@@ -239,13 +239,6 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[0].render()
         self.pages[2].render()
 
-    def on_mouse_move(self, widget, event):
-        if not self.get_window().get_cursor():
-            # By default, no cursor is set. So, if it's already None, do nothing.
-            return
-
-        self.get_window().set_cursor(None)
-
     def on_key_press(self, widget, event):
         # Note: in case of keys LEFT and RIGHT, this code is never reached when controls are visible
         # Slider (Gtk.Scale) has already consume the event

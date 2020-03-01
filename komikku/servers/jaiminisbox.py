@@ -30,10 +30,6 @@ class Jaiminisbox(Server):
     chapter_url = base_url + '/read/{0}/en/{1}/page/1'
 
     def __init__(self):
-        self.search_url = self.base_url + '/search'
-        self.mangas_url = self.base_url + '/directory/'
-        self.manga_url = self.base_url + '/series/{0}/'
-        self.chapter_url = self.base_url + '/read/{0}/en/{1}/page/1'
 
         if self.session is None:
             self.session = requests.Session()
