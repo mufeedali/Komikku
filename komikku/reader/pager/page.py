@@ -172,12 +172,10 @@ class Page(Gtk.Overlay):
             else:
                 try:
                     self.pixbuf = Pixbuf.new_from_file(page_path)
-                except GLib.GError as ex:
-                    user_error_message = log_error_traceback(ex)
+                except GLib.GError as e:
+                    user_error_message = log_error_traceback(e)
                     on_error('corrupt_file', user_error_message)
                     GLib.unlink(page_path)
-                    GLib.idle_add(complete)
-                    return
 
             GLib.idle_add(complete)
 
