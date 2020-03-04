@@ -9,7 +9,6 @@ import cloudscraper
 import magic
 import re
 import unicodedata
-import unidecode
 
 from komikku.servers import convert_date_string
 from komikku.servers import search_duckduckgo
