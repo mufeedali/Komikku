@@ -47,7 +47,7 @@ class Page(Gtk.Overlay):
         self.index = index
 
         self.status = None     # rendering, rendered, offlimit, cleaned
-        self.error = None      # connection error or server error
+        self.error = None      # connection error or server error or corrupt file error
         self.loadable = False  # loadable from disk or downloadable from server (chapter pages are known)
 
         self.set_size()
@@ -174,8 +174,8 @@ class Page(Gtk.Overlay):
                     self.pixbuf = Pixbuf.new_from_file(page_path)
                 except GLib.GError as ex:
                     user_error_message = log_error_traceback(ex)
+                    on_error('corrupt_file', user_error_message)
                     GLib.unlink(page_path)
-                    on_error('corrupt', user_error_message)
                     GLib.idle_add(complete)
                     return
             GLib.idle_add(complete)
@@ -200,7 +200,7 @@ class Page(Gtk.Overlay):
             return False
 
         def on_error(kind, message=None):
-            assert kind in ('connection', 'server', 'corrupt'), 'Invalid error kind'
+            assert kind in ('connection', 'server', 'corrupt_file'), 'Invalid error kind'
 
             if message is not None:
                 self.window.show_notification(message, 2)
