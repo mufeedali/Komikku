@@ -8,6 +8,8 @@ import requests
 import subprocess
 import traceback
 
+from gi.repository import GLib
+
 logger = logging.getLogger()
 
 
@@ -20,6 +22,8 @@ def folder_size(path):
 def log_error_traceback(e):
     if isinstance(e, (requests.exceptions.ConnectionError, requests.exceptions.Timeout)):
         return _('No Internet connection or server down')
+    if isinstance(e, GLib.GError):
+        return _('Failed to load image')
 
     logger.info(traceback.format_exc())
 
