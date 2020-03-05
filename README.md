@@ -6,8 +6,8 @@ Basically, don't use this.
 
 Differences right now:
 
-* MangaDex Login workaround (Detailed [here](https://gitlab.com/valos/Komikku/issues/28#note_294548351)). Obviously not perfect and has far too many issues. Needs work.
-* A fix for when the Reader tries and fails to load empty image files. The used solution might be problematic in some ways, currently thinking of a better way to do this.
+* MangaDex Login workaround (Detailed [here](https://gitlab.com/valos/Komikku/issues/28#note_294548351)). Obviously not perfect and has far too many issues. Needs work. This will stop being needed pretty soon, so I don't plan to keep it the way it is.
+* MangaDex 'Long Strip' support. So, any long strip Manhwa or web comics that you add from now should automatically start with the Vertical reading direction and "Adjust to Width" scaling. This may not be ideal for everybody and maybe needs an option in the settings specifically for MangaDex. I'm planning to send a merge request for this when Server settings arrives in Komikku.
 * DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
 * Some fixes suggested by DeepSource (don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402))
 * This README file.

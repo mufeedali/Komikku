@@ -130,6 +130,12 @@ class Mangadex(Server):
         data['authors'] += [t.strip() for t in resp_data['manga']['artist'].split(',') if t.strip() not in data['authors']]
         data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['genres'] if str(genre_id) in GENRES]
 
+        if 36 in resp_data['manga']['genres']:
+            data.update(dict(
+                reading_direction='vertical',
+                scaling='width',
+            ))
+
         if resp_data['manga']['status'] == 1:
             data['status'] = 'ongoing'
         elif resp_data['manga']['status'] == 2:

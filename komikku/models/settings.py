@@ -43,6 +43,8 @@ class Settings(Gio.Settings):
         if value == 1:
             return 'black'
 
+        return 'white'
+
     @property
     def background_color_value(self):
         """Return the reader's background color value"""
@@ -121,6 +123,8 @@ class Settings(Gio.Settings):
         if value == 2:
             return 'vertical'
 
+        return 'right-to-left'
+
     @property
     def reading_direction_value(self):
         """Return the reader's reading direction value"""
@@ -152,6 +156,8 @@ class Settings(Gio.Settings):
             return 'width'
         if value == 2:
             return 'height'
+
+        return 'screen'
 
     @property
     def scaling_value(self):

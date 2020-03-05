@@ -265,10 +265,13 @@ class Manga:
         cover_url = data.pop('cover')
 
         # Fill data with internal data or later scraped values
+        if not data['reading_direction']:
+            # If reading direction was not provided by the server
+            data.update(dict(reading_direction=None))
+
         data.update(dict(
             last_read=datetime.datetime.now(),
             sort_order=None,
-            reading_direction=None,
             last_update=None,
         ))
 
