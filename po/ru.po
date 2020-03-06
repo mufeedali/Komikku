@@ -251,9 +251,9 @@ msgstr ""
 "Онлайн/оффлайн читалка манги.\n"
 "\n"
 "Никогда не забывайте,\n"
-"что вы можете поддержать автора,\n"
-"купив официальный комикс,\n"
-"когда он будет доступен в вашем регионе и на вашем языке"
+"что вы можете поддержать авторов,\n"
+"покупая официальные комиксы,\n"
+"когда они будет доступен в вашем регионе и на вашем языке."
 
 #: ../data/ui/about_dialog.ui.in:17
 msgid "Learn more about Komikku"
@@ -382,11 +382,11 @@ msgstr "Цвет фона"
 
 #: ../data/ui/settings_dialog.ui:562 ../data/ui/menu/reader.xml:71
 msgid "Crop borders"
-msgstr ""
+msgstr "Обрезать края"
 
 #: ../data/ui/settings_dialog.ui:579
 msgid "Crop white borders of images"
-msgstr ""
+msgstr "Обрезать белые края изображений"
 
 #: ../data/ui/settings_dialog.ui:645
 msgid "Fullscreen"
