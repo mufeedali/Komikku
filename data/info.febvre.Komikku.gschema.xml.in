@@ -47,6 +47,11 @@
             <summary>Servers languages</summary>
             <description>Allowed languages in servers list</description>
         </key>
+        <key type="s" name="servers-settings">
+            <default>"{}"</default>
+            <summary>Servers Settings</summary>
+            <description>Enable/disable and configure servers</description>
+        </key>
 
         <key enum="@appid@.BackgroundColor" name="background-color">
             <default>"white"</default>

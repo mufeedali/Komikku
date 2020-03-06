@@ -188,7 +188,11 @@ def get_server_dir_name_by_id(id):
 
 
 def get_server_logo_resource_path_by_id(id):
-    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(id.split(':')[0].split('_')[0])
+    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
+
+
+def get_server_main_id_by_id(id):
+    return id.split(':')[0].split('_')[0]
 
 
 def get_server_module_name_by_id(id):
@@ -196,7 +200,7 @@ def get_server_module_name_by_id(id):
 
 
 @lru_cache(maxsize=None)
-def get_servers_list(include_disabled=False):
+def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
     import komikku.servers
 
     def iter_namespace(ns_pkg):
@@ -221,11 +225,11 @@ def get_servers_list(include_disabled=False):
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
-                    class_=get_server_class_name_by_id(obj.id),
+                    class_name=get_server_class_name_by_id(obj.id),
                     module=module,
                 ))
 
-    return sorted(servers, key=itemgetter('lang', 'name'))
+    return sorted(servers, key=itemgetter(*order_by))
 
 
 def search_duckduckgo(site, term):

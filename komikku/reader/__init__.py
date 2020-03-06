@@ -117,7 +117,7 @@ class Reader:
             return
 
         # Reverse pages order
-        # except in cases: LTR => Vertical and Vertial => LTR
+        # except in cases: LTR => Vertical and Vertical => LTR
         if value not in ('left-to-right', 'vertical') or self.manga.reading_direction not in ('left-to-right', 'vertical'):
             self.pager.reverse_pages()
 

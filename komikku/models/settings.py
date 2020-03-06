@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import json
+
 from gi.repository import Gio
 from gi.repository import GLib
 
@@ -172,6 +174,39 @@ class Settings(Gio.Settings):
             self.set_enum('scaling', 1)
         elif value == 'height':
             self.set_enum('scaling', 2)
+
+    def toggle_server(self, uid, state):
+        settings = self.servers_settings
+
+        if uid not in settings:
+            settings[uid] = dict(
+                langs=dict(),
+            )
+
+        settings[uid]['enabled'] = state
+
+        self.servers_settings = settings
+
+    def toggle_server_lang(self, uid, lang, state):
+        settings = self.servers_settings
+
+        if uid not in settings:
+            settings[uid] = dict(
+                langs=dict(),
+                enabled=True,
+            )
+
+        settings[uid]['langs'][lang] = state
+
+        self.servers_settings = settings
+
+    @property
+    def servers_settings(self):
+        return json.loads(self.get_string('servers-settings'))
+
+    @servers_settings.setter
+    def servers_settings(self, state):
+        self.set_string('servers-settings', json.dumps(state))
 
     def add_servers_language(self, code):
         codes = self.servers_languages
