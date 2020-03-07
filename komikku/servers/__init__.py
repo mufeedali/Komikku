@@ -131,6 +131,7 @@ class Server:
 
         with open(file_path, 'rb') as f:
             self.session = pickle.load(f)
+            return self.session
 
     def save_session(self):
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
@@ -232,7 +233,19 @@ def get_server_module_name_by_id(id):
 
 @lru_cache(maxsize=None)
 def get_cache_dir():
-    return GLib.get_user_cache_dir()
+    cache_dir_path = GLib.get_user_cache_dir()
+
+    # Check if inside flatpak sandbox
+    is_flatpak = os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
+    if is_flatpak:
+        return cache_dir_path
+
+    base_path = cache_dir_path
+    cache_dir_path = os.path.join(base_path, 'komikku')
+    if not os.path.exists(cache_dir_path):
+        os.mkdir(cache_dir_path)
+
+    return cache_dir_path
 
 
 @lru_cache(maxsize=None)
