@@ -142,6 +142,11 @@ class SettingsDialog():
         settings_fullscreen_switch.set_active(settings.fullscreen)
         settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
+        # Long strip detection
+        settings_fullscreen_switch = self.builder.get_object('settings_long_strip_switch')
+        settings_fullscreen_switch.set_active(settings.long_strip)
+        settings_fullscreen_switch.connect('notify::active', self.on_long_strip_changed)
+
     @staticmethod
     def on_background_color_changed(row, param):
         index = row.get_selected_index()
@@ -165,6 +170,10 @@ class SettingsDialog():
     @staticmethod
     def on_fullscreen_changed(switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
+
+    @staticmethod
+    def on_long_strip_changed(switch_button, gparam):
+        Settings.get_default().long_strip = switch_button.get_active()
 
     def on_night_light_changed(self, switch_button, gparam):
         Settings.get_default().night_light = switch_button.get_active()

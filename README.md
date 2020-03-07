@@ -6,7 +6,7 @@ Basically, don't use this.
 
 Differences right now:
 
-* MangaDex 'Long Strip' support. So, any long strip Manhwa or web comics that you add from now should automatically start with the Vertical reading direction and "Adjust to Width" scaling. This may not be ideal for everybody and maybe needs an option in the settings specifically for MangaDex. I'm planning to send a merge request for this when Server settings arrives in Komikku.
+* MangaDex 'Long Strip' support. So, any long strip Manhwa or web comics that you add from now should automatically start with the Vertical reading direction and "Adjust to Width" scaling. This may not be ideal for everybody, so it's not the default and should be enabled in the settings.
 * DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
 * Some fixes suggested by DeepSource (don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402))
 * This README file.
