@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 import dateparser
 import datetime
 from functools import lru_cache
+from gi.repository import GLib
 import importlib
 import inspect
 import io
 import magic
 from operator import itemgetter
 import os
+import pickle
 from PIL import Image
 import pkgutil
 import requests
@@ -66,6 +68,7 @@ class Server:
     name = NotImplemented
     lang = NotImplemented
     status = 'enabled'
+    logged_in = False
 
     base_url = None
 
@@ -80,6 +83,21 @@ class Server:
     @session.setter
     def session(self, value):
         SESSIONS[self.id] = value
+
+    @property
+    def sessions_dir(self):
+        dir = os.path.join(get_cache_dir(), 'sessions')
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+
+        return dir
+
+    def clear_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        if os.path.exists(file_path):
+            os.unlink(file_path)
+
+        del SESSIONS[self.id]
 
     def get_manga_cover_image(self, url):
         """
@@ -105,6 +123,19 @@ class Server:
             buffer = convert_webp_buffer(buffer)
 
         return buffer
+
+    def load_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        if not os.path.exists(file_path):
+            return None
+
+        with open(file_path, 'rb') as f:
+            self.session = pickle.load(f)
+
+    def save_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        with open(file_path, 'wb') as f:
+            pickle.dump(self.session, f)
 
     def session_get(self, *args, **kwargs):
         try:
@@ -197,6 +228,11 @@ def get_server_main_id_by_id(id):
 
 def get_server_module_name_by_id(id):
     return id.split(':')[-1].split('_')[0]
+
+
+@lru_cache(maxsize=None)
+def get_cache_dir():
+    return GLib.get_user_cache_dir()
 
 
 @lru_cache(maxsize=None)
