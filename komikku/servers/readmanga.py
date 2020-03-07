@@ -93,7 +93,8 @@ class Readmanga(Server):
 
         # Chapters
         chapters_element = info_element.find('div', class_='chapters-link', recursive=False)
-        if not chapters_element: return data
+        if not chapters_element:
+            return data
 
         for element in reversed(chapters_element.table.find_all('tr', recursive=False)):
             a_element = element.find('a')
