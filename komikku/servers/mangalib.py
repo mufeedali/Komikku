@@ -211,7 +211,7 @@ class Mangalib(Server):
 # NSFW
 class Hentailib(Mangalib):
     id = 'hentailib:mangalib'
-    name = 'HentaiLib'
+    name = 'HentaiLib (NSFW)'
 
     base_url = 'https://hentailib.me'
     search_url = base_url + '/manga-list?name={0}'
