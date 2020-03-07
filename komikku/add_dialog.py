@@ -17,6 +17,7 @@ from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
 from komikku.servers import get_server_logo_resource_path_by_id
+from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
 from komikku.utils import log_error_traceback
@@ -55,31 +56,37 @@ class AddDialog():
         listbox = self.builder.get_object('servers_page_listbox')
         listbox.connect('row-activated', self.on_server_clicked)
 
+        servers_settings = Settings.get_default().servers_settings
         servers_languages = Settings.get_default().servers_languages
-        for server in get_servers_list():
-            if servers_languages and server['lang'] not in servers_languages:
+
+        for server_data in get_servers_list():
+            if servers_languages and server_data['lang'] not in servers_languages:
+                continue
+
+            server_settings = servers_settings.get(get_server_main_id_by_id(server_data['id']))
+            if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
                 continue
 
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('add-dialog-server-listboxrow')
-            row.server_data = server
+            row.server_data = server_data
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)
 
             # Server logo
-            pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server['id']), 24, 24, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server_data['id']), 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
 
             # Server title
             label = Gtk.Label(xalign=0)
-            label.set_text(server['name'])
+            label.set_text(server_data['name'])
             box.pack_start(label, True, True, 0)
 
             # Server language
             label = Gtk.Label(xalign=0)
-            label.set_text(LANGUAGES[server['lang']])
+            label.set_text(LANGUAGES[server_data['lang']])
             label.get_style_context().add_class('add-dialog-server-language-label')
             box.pack_start(label, False, True, 0)
 
@@ -166,7 +173,7 @@ class AddDialog():
         self.dialog.close()
 
     def on_server_clicked(self, listbox, row):
-        self.server = getattr(row.server_data['module'], row.server_data['class_'])()
+        self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
         self.show_page('search')
 
     def open(self, action, param):

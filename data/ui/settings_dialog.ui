@@ -458,13 +458,21 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="HdyExpanderRow" id="settings_servers_languages_row">
-                                    <property name="width_request">100</property>
-                                    <property name="height_request">54</property>
+                                  <object class="HdyExpanderRow" id="settings_servers_languages_expander_row">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="valign">start</property>
                                     <property name="subtitle" translatable="yes">Restrict servers to selected languages</property>
                                     <property name="title" translatable="yes">Servers Languages</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="HdyActionRow" id="settings_servers_settings_action_row">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="valign">start</property>
+                                    <property name="subtitle" translatable="yes">Enable/disable and configure servers</property>
+                                    <property name="title" translatable="yes">Servers Settings</property>
                                   </object>
                                 </child>
                                 <style>

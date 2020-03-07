@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 import dateparser
 import datetime
 from functools import lru_cache
+from gi.repository import GLib
 import importlib
 import inspect
 import io
 import magic
 from operator import itemgetter
 import os
+import pickle
 from PIL import Image
 import pkgutil
 import requests
@@ -66,6 +68,7 @@ class Server:
     name = NotImplemented
     lang = NotImplemented
     status = 'enabled'
+    logged_in = False
 
     base_url = None
 
@@ -80,6 +83,21 @@ class Server:
     @session.setter
     def session(self, value):
         SESSIONS[self.id] = value
+
+    @property
+    def sessions_dir(self):
+        dir = os.path.join(get_cache_dir(), 'sessions')
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+
+        return dir
+
+    def clear_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        if os.path.exists(file_path):
+            os.unlink(file_path)
+
+        del SESSIONS[self.id]
 
     def get_manga_cover_image(self, url):
         """
@@ -105,6 +123,19 @@ class Server:
             buffer = convert_webp_buffer(buffer)
 
         return buffer
+
+    def load_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        if not os.path.exists(file_path):
+            return None
+
+        with open(file_path, 'rb') as f:
+            self.session = pickle.load(f)
+
+    def save_session(self):
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        with open(file_path, 'wb') as f:
+            pickle.dump(self.session, f)
 
     def session_get(self, *args, **kwargs):
         try:
@@ -188,7 +219,11 @@ def get_server_dir_name_by_id(id):
 
 
 def get_server_logo_resource_path_by_id(id):
-    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(id.split(':')[0].split('_')[0])
+    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
+
+
+def get_server_main_id_by_id(id):
+    return id.split(':')[0].split('_')[0]
 
 
 def get_server_module_name_by_id(id):
@@ -196,7 +231,12 @@ def get_server_module_name_by_id(id):
 
 
 @lru_cache(maxsize=None)
-def get_servers_list(include_disabled=False):
+def get_cache_dir():
+    return GLib.get_user_cache_dir()
+
+
+@lru_cache(maxsize=None)
+def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
     import komikku.servers
 
     def iter_namespace(ns_pkg):
@@ -221,11 +261,11 @@ def get_servers_list(include_disabled=False):
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
-                    class_=get_server_class_name_by_id(obj.id),
+                    class_name=get_server_class_name_by_id(obj.id),
                     module=module,
                 ))
 
-    return sorted(servers, key=itemgetter('lang', 'name'))
+    return sorted(servers, key=itemgetter(*order_by))
 
 
 def search_duckduckgo(site, term):

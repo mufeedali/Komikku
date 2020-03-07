@@ -9,12 +9,10 @@ from datetime import datetime
 import html
 import magic
 import requests
-import os
-import pickle
 
-from komikku.models import database
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.utils import SecretAccountHelper
 
 GENRES = {
     '2': 'Action',
@@ -66,6 +64,7 @@ class Mangadex(Server):
     lang_code = 'gb'
 
     base_url = 'https://mangadex.org'
+    action_url = base_url + '/ajax/actions.ajax.php?function={0}'
     api_manga_url = base_url + '/api/manga/{0}'
     api_chapter_url = base_url + '/api/chapter/{0}'
     search_url = base_url + '/search'
@@ -74,16 +73,29 @@ class Mangadex(Server):
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
 
-    cooked = False
+    def __init__(self, login=None, password=None):
+        def on_get_account(attributes, password, name):
+            if not attributes or not password:
+                return
 
-    def __init__(self):
+            self.login(attributes['login'], password)
+
+        if login and password:
+            self.clear_session()
+
         if self.session is None:
-            self.session = requests.Session()
-            self.session.headers = headers
-            if os.path.exists(os.path.join(database.get_data_dir(), 'mangadex', 'cookies')):
-                with open(os.path.join(database.get_data_dir(), 'mangadex', 'cookies'), 'rb') as f:
-                    self.session.cookies.update(pickle.load(f))
-                self.cooked = True
+            self.session = self.load_session()
+            if self.session is None:
+                self.session = requests.Session()
+                self.session.headers = headers
+
+                if login is None and password is None:
+                    helper = SecretAccountHelper()
+                    helper.get(self.id, on_get_account)
+                else:
+                    self.login(login, password)
+            else:
+                self.logged_in = True
 
     @staticmethod
     def convert_old_slug(slug):
@@ -242,19 +254,27 @@ class Mangadex(Server):
 
         return results
 
-    def search(self, term):
-        if not self.cooked and os.path.exists(os.path.join(database.get_data_dir(), 'mangadex', 'login')):
-            with open(os.path.join(database.get_data_dir(), 'mangadex', 'login'), 'r') as login_file:
-                content = login_file.readlines()
-                details = {
-                    'login_username': content[0],
-                    'login_password': content[1]
-                }
-            self.session.post('https://mangadex.org/ajax/actions.ajax.php?function=login&nojs=1', details)
-            with open(os.path.join(database.get_data_dir(), 'mangadex', 'cookies'), 'wb') as f:
-                pickle.dump(self.session.cookies, f)
-            self.cooked = True
+    def login(self, login, password):
+        r = self.session_post(
+            self.action_url.format('login'),
+            data={
+                'login_username': login,
+                'login_password': password,
+                'remember_me': '1',
+            },
+            headers={
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': '*/*',
+                'Referer': 'https://mangadex.org/login',
+                'Origin': 'https://mangadex.org'
+            }
+        )
 
+        if r.text == '':
+            self.save_session()
+            self.logged_in = True
+
+    def search(self, term):
         r = self.session_get(self.search_url, params=dict(
             tag_mode_exc='any',
             tag_mode_inc='all',

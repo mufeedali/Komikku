@@ -6,23 +6,24 @@
 
 from bs4 import BeautifulSoup
 import magic
-import re
 import requests
+import json
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 
 
-class Readmanga(Server):
-    id = 'readmanga'
-    name = 'Read Manga'
+class Mangalib(Server):
+    id = 'mangalib'
+    name = 'MangaLib'
     lang = 'ru'
 
-    base_url = 'https://readmanga.me'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
+    base_url = 'https://mangalib.me'
+    search_url = base_url + '/manga-list?name={0}'
+    most_populars_url = base_url + '/manga-list?sort=views'
     manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
+    chapter_url = manga_url + '/{1}'
+    img_url = 'https://img{0}.mangalib.me{1}'
 
     def __init__(self):
         if self.session is None:
@@ -35,7 +36,6 @@ class Readmanga(Server):
         Initial data should contain at least manga's slug (provided by search)
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
-
         r = self.session_get(self.manga_url.format(initial_data['slug']))
         if r is None:
             return None
@@ -58,46 +58,48 @@ class Readmanga(Server):
             server_id=self.id,
         ))
 
-        info_element = soup.find('div', class_='leftContent')
-
-        title_element = info_element.find('span', class_='name')
+        title_element = soup.find('h1', class_='manga-bg__title')
+        if not title_element:
+            title_element = soup.find('div', class_='manga-title').h1
         data['name'] = title_element.text.strip()
 
-        cover_element = info_element.find('img', attrs={'data-full': True})
-        data['cover'] = cover_element.get('data-full')
+        cover_element = soup.find('img', class_='manga__cover')
+        data['cover'] = cover_element.get('src')
 
         # Details
-        elements = info_element.find('div', class_='subject-meta').find_all('p', recursive=False)
+        for info in soup.find_all('div', class_='info-list__row'):
+            label = info.strong.text.strip()
 
-        status = elements[1].find(text=True, recursive=False).strip()
-        if status == 'продолжается':
-            data['status'] = 'ongoing'
-        elif status == 'завершен':
-            data['status'] = 'complete'
-
-        for element in elements[2:]:
-            label = element.span.text.strip()
-
-            if label.startswith('Автор') or label.startswith('Сценарист') or label.startswith('Художник'):
-                value = [author.text.strip() for author in element.find_all('a', class_='person-link')]
+            if label.startswith('Автор'):
+                value = [author.text.strip() for author in info.find_all('a')]
+                data['authors'].extend(value)
+            elif label.startswith('Художник'):
+                value = [author.text.strip() for author in info.find_all('a') if not author.text.strip() in data['authors']]
                 data['authors'].extend(value)
             elif label.startswith('Переводчик'):
-                value = [scanlator.text.strip() for scanlator in element.find_all('a', class_='person-link')]
+                value = [scanlator.text.strip() for scanlator in info.find_all('a')]
                 data['scanlators'].extend(value)
+            elif label.startswith('Перевод'):
+                status = info.span.text.strip()
+                if status == 'продолжается':
+                    data['status'] = 'ongoing'
+                elif status == 'завершен':
+                    data['status'] = 'complete'
             elif label.startswith('Жанр'):
-                value = [genre.text.strip() for genre in element.find_all('a', class_='element-link')]
+                value = [genre.text.strip() for genre in info.find_all('a')]
                 data['genres'].extend(value)
 
         # Synopsis
-        data['synopsis'] = info_element.find('div', class_='manga-description').text.strip()
+        synopsis_element = soup.find('div', class_='info-desc__content')
+        if synopsis_element:
+            data['synopsis'] = synopsis_element.text.strip()
 
         # Chapters
-        elements = info_element.find('div', class_='chapters-link', recursive=False).table.find_all('tr', recursive=False)
-        for element in reversed(elements):
+        for element in reversed(soup.find_all('div', class_='chapter-item')):
             a_element = element.find('a')
-            slug = a_element.get('href').split('/', 2)[2]
-            title = a_element.find(text=True, recursive=False).strip()
-            date = element.find('td', align='right').text.strip()
+            slug = a_element.get('href')[8:].split('/', 2)[2]
+            title = ' '.join(a_element.text.split())
+            date = element.find('div', class_='chapter-item__date').text.strip()
 
             data['chapters'].append(dict(
                 slug=slug,
@@ -124,30 +126,20 @@ class Readmanga(Server):
 
         soup = BeautifulSoup(r.text, 'lxml')
 
-        script_elements = soup.find_all('script')
+        scripts = soup.find_all('script')
+        for script_element in scripts:
+            script = script_element.text.strip()
+            if script.startswith('window.__info'):
+                chapter_json = json.loads(script[16:-1])
+            elif script.startswith('window.__pg'):
+                pages_json = json.loads(script[14:-1])
 
         data = dict(
-            pages=[],
+            pages=[dict(
+                slug=None,
+                image=self.img_url.format(3 if chapter_json['imgServer'] == 'compress' else 2, chapter_json['imgUrl'].replace('\\', '') + page['u'])
+            ) for page in pages_json]
         )
-
-        for script_element in script_elements:
-            script = script_element.text.strip()
-            if not script.startswith('var prevLink'):
-                continue
-
-            for line in script.split('\n'):
-                if not line.strip().startswith('rm_h.init'):
-                    continue
-
-                pattern = re.compile('\'.*?\',\'.*?\',".*?"')
-                for urls in pattern.findall(line):
-                    urls = urls.replace('\'', '').replace('"', '').split(',')
-                    data['pages'].append(dict(
-                        slug=None,
-                        image=urls[0] + urls[2],
-                    ))
-                break
-            break
 
         return data
 
@@ -155,7 +147,6 @@ class Readmanga(Server):
         """
         Returns chapter page scan (image) content
         """
-
         r = self.session_get(page['image'])
         if r is None:
             return (None, None)
@@ -187,16 +178,16 @@ class Readmanga(Server):
         soup = BeautifulSoup(r.text, 'lxml')
 
         results = []
-        for h3_element in soup.find_all('h3'):
+        for card in soup.find_all('a', class_='media-card'):
             results.append(dict(
-                name=h3_element.a.text.strip(),
-                slug=h3_element.a.get('href')[1:],
+                name=card.div.h3.text.strip(),
+                slug=card.get('href').split('/')[-1],
             ))
 
         return results
 
     def search(self, term):
-        r = self.session_get(self.search_url, params=dict(q=term))
+        r = self.session_get(self.search_url.format(term))
         if r is None:
             return None
 
@@ -208,32 +199,23 @@ class Readmanga(Server):
         soup = BeautifulSoup(r.text, 'lxml')
 
         results = []
-        for h3_element in soup.find_all('h3')[1:]:
+        for card in soup.find_all('a', class_='media-card'):
             results.append(dict(
-                name=h3_element.a.text.strip(),
-                slug=h3_element.a.get('href')[1:],
+                name=card.div.h3.text.strip(),
+                slug=card.get('href').split('/')[-1],
             ))
 
         return sorted(results, key=lambda m: m['name'])
 
 
-class Mintmanga(Readmanga):
-    id = 'mintmanga:readmanga'
-    name = 'Mint Manga'
+# NSFW
+class Hentailib(Mangalib):
+    id = 'hentailib:mangalib'
+    name = 'HentaiLib (NSFW)'
 
-    base_url = 'https://mintmanga.live'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
+    base_url = 'https://hentailib.me'
+    search_url = base_url + '/manga-list?name={0}'
+    most_populars_url = base_url + '/manga-list?sort=views'
     manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
-
-
-class Selfmanga(Readmanga):
-    id = 'selfmanga:readmanga'
-    name = 'Self Manga'
-
-    base_url = 'https://selfmanga.ru'
-    search_url = base_url + '/search/advanced'
-    most_populars_url = base_url + '/list?sortType=rate'
-    manga_url = base_url + '/{0}'
-    chapter_url = manga_url + '/{1}?mtr=1'
+    chapter_url = manga_url + '/{1}'
+    img_url = 'https://img{0}.hentailib.me{1}'
