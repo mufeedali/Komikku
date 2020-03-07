@@ -135,7 +135,7 @@ class Mangadex(Server):
             server_id=self.id,
         ))
 
-        data['name'] = resp_data['manga']['title']
+        data['name'] = html.unescape(resp_data['manga']['title'])
         data['cover'] = '{0}{1}'.format(self.base_url, resp_data['manga']['cover_url'])
 
         data['authors'] += [t.strip() for t in resp_data['manga']['author'].split(',')]
