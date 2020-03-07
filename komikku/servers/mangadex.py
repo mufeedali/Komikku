@@ -84,7 +84,7 @@ class Mangadex(Server):
             self.clear_session()
 
         if self.session is None:
-            self.session = self.load_session()
+            self.load_session()
             if self.session is None:
                 self.session = requests.Session()
                 self.session.headers = headers
