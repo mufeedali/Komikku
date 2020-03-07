@@ -23,7 +23,7 @@ class Mangalib(Server):
     most_populars_url = base_url + '/manga-list?sort=views'
     manga_url = base_url + '/{0}'
     chapter_url = manga_url + '/{1}'
-    img_url = "https://img{0}.mangalib.me{1}"
+    img_url = 'https://img{0}.mangalib.me{1}'
 
     def __init__(self):
         if self.session is None:
@@ -98,7 +98,7 @@ class Mangalib(Server):
         for element in reversed(soup.find_all('div', class_='chapter-item')):
             a_element = element.find('a')
             slug = a_element.get('href')[8:].split('/', 2)[2]
-            title = " ".join(a_element.text.split())
+            title = ' '.join(a_element.text.split())
             date = element.find('div', class_='chapter-item__date').text.strip()
 
             data['chapters'].append(dict(
@@ -136,7 +136,7 @@ class Mangalib(Server):
 
         data = dict(
             pages=[dict(
-                slug=page['p'],
+                slug=None,
                 image=self.img_url.format(3 if chapter_json['imgServer'] == 'compress' else 2, chapter_json['imgUrl'].replace('\\', '') + page['u'])
             ) for page in pages_json]
         )
@@ -207,15 +207,15 @@ class Mangalib(Server):
 
         return sorted(results, key=lambda m: m['name'])
 
-# NSFW
-#class Hentailib(Mangalib):
-#    id = 'hentailib:mangalib'
-#    name = 'HentaiLib'
-#
-#    base_url = 'https://hentailib.me'
-#    search_url = base_url + '/manga-list?name={0}'
-#    most_populars_url = base_url + '/manga-list?sort=views'
-#    manga_url = base_url + '/{0}'
-#    chapter_url = manga_url + '/{1}'
-#    img_url = "https://img{0}.hentailib.me{1}"
 
+# NSFW
+class Hentailib(Mangalib):
+    id = 'hentailib:mangalib'
+    name = 'HentaiLib'
+
+    base_url = 'https://hentailib.me'
+    search_url = base_url + '/manga-list?name={0}'
+    most_populars_url = base_url + '/manga-list?sort=views'
+    manga_url = base_url + '/{0}'
+    chapter_url = manga_url + '/{1}'
+    img_url = 'https://img{0}.hentailib.me{1}'
