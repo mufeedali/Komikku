@@ -131,7 +131,6 @@ class Server:
 
         with open(file_path, 'rb') as f:
             self.session = pickle.load(f)
-            return self.session
 
     def save_session(self):
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
@@ -240,8 +239,7 @@ def get_cache_dir():
     if is_flatpak:
         return cache_dir_path
 
-    base_path = cache_dir_path
-    cache_dir_path = os.path.join(base_path, 'komikku')
+    cache_dir_path = os.path.join(cache_dir_path, 'komikku')
     if not os.path.exists(cache_dir_path):
         os.mkdir(cache_dir_path)
 
@@ -264,6 +262,8 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
         module = importlib.import_module(name)
         for _name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
+                continue
+            if obj.id == NotImplemented or obj.name == NotImplemented or obj.lang == NotImplemented:
                 continue
 
             if not include_disabled and obj.status == 'disabled':

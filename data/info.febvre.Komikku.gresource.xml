@@ -19,9 +19,11 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/library_selection_mode.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/reader.xml</file>
 
+        <file compressed="true">icons/ui/servers/no_favicon.ico</file>
         <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
         <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>
         <file compressed="true">icons/ui/servers/desu.ico</file>
+        <file compressed="true">icons/ui/servers/edelgardescans.ico</file>
         <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
         <file compressed="true">icons/ui/servers/hentailib.ico</file>
         <file compressed="true">icons/ui/servers/jaiminisbox.ico</file>
@@ -37,14 +39,17 @@
         <file compressed="true">icons/ui/servers/mangasee.ico</file>
         <file compressed="true">icons/ui/servers/mintmanga.ico</file>
         <file compressed="true">icons/ui/servers/ninemanga.ico</file>
+        <file compressed="true">icons/ui/servers/oneshotscans.ico</file>
         <file compressed="true">icons/ui/servers/peppercarrot.ico</file>
         <file compressed="true">icons/ui/servers/readmanga.ico</file>
+        <file compressed="true">icons/ui/servers/reaperscans.ico</file>
         <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
         <file compressed="true">icons/ui/servers/scantrad.ico</file>
         <file compressed="true">icons/ui/servers/selfmanga.ico</file>
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>
+        <file compressed="true">icons/ui/servers/zeroscans.ico</file>
 
         <file compressed="true">images/logo.png</file>
         <file compressed="true">images/missing_file.png</file>

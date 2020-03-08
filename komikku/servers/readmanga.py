@@ -92,8 +92,11 @@ class Readmanga(Server):
         data['synopsis'] = info_element.find('div', class_='manga-description').text.strip()
 
         # Chapters
-        elements = info_element.find('div', class_='chapters-link', recursive=False).table.find_all('tr', recursive=False)
-        for element in reversed(elements):
+        chapters_element = info_element.find('div', class_='chapters-link', recursive=False)
+        if not chapters_element:
+            return data
+
+        for element in reversed(chapters_element.table.find_all('tr', recursive=False)):
             a_element = element.find('a')
             slug = a_element.get('href').split('/', 2)[2]
             title = a_element.find(text=True, recursive=False).strip()
