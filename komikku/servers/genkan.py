@@ -135,6 +135,29 @@ class Genkan(Server):
         """
         return self.manga_url.format(slug)
 
+    def get_most_populars(self):
+        """
+        Returns new and/or recommended manga
+        """
+        r = self.session_get(self.most_populars_url)
+        if r is None:
+            return None
+
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, 'html.parser')
+
+            results = []
+            for a_element in soup.find_all('a', class_='list-title ajax'):
+                result = dict(
+                    slug=a_element.get('href').split('/')[-1],
+                    name=a_element.text.strip(),
+                )
+                if result not in results:
+                    results.append(result)
+
+            return results
+        return None
+
     def search(self, term):
         r = self.session_get(self.search_url.format(term))
         if r is None:
@@ -151,8 +174,7 @@ class Genkan(Server):
                 ))
 
             return results
-        else:
-            return None
+        return None
 
 
 class GenkanInitial(Genkan):
@@ -180,8 +202,7 @@ class GenkanInitial(Genkan):
                 ))
 
             return results
-        else:
-            return None
+        return None
 
 
 class Edelgardescans(Genkan):
@@ -191,6 +212,7 @@ class Edelgardescans(Genkan):
 
     base_url = 'https://edelgardescans.com'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -203,6 +225,7 @@ class Hatigarmscans(GenkanInitial):
 
     base_url = 'https://hatigarmscanz.net'
     search_url = base_url + '/comics'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -215,6 +238,7 @@ class Hunlightscans(Genkan):
 
     base_url = 'https://hunlight-scans.info'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -227,6 +251,7 @@ class Leviatanscans(Genkan):
 
     base_url = 'https://leviatanscans.com'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -241,6 +266,7 @@ class Leviatanscans_es(GenkanInitial):
 
     base_url = 'https://es.leviatanscans.com'
     search_url = base_url + '/comics'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -253,6 +279,7 @@ class Oneshotscans(Genkan):
 
     base_url = 'https://oneshotscans.com'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -268,6 +295,7 @@ class Reaperscans(GenkanInitial):
 
     base_url = 'https://reaperscans.com'
     search_url = base_url + '/comics'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -280,6 +308,7 @@ class Thenonamesscans(Genkan):
 
     base_url = 'https://the-nonames.com'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
@@ -292,6 +321,7 @@ class Zeroscans(Genkan):
 
     base_url = 'https://zeroscans.com'
     search_url = base_url + '/comics?query={0}'
+    most_populars_url = base_url + '/home'
     manga_url = base_url + '/comics/{0}'
     chapter_url = base_url + '/comics/{0}/{1}'
     image_url = base_url + '{0}'
