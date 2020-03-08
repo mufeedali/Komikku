@@ -156,8 +156,7 @@ class Genkan(Server):
                     results.append(result)
 
             return results
-        else:
-            return None
+        return None
 
     def search(self, term):
         r = self.session_get(self.search_url.format(term))
@@ -175,8 +174,7 @@ class Genkan(Server):
                 ))
 
             return results
-        else:
-            return None
+        return None
 
 
 class GenkanInitial(Genkan):
@@ -204,8 +202,7 @@ class GenkanInitial(Genkan):
                 ))
 
             return results
-        else:
-            return None
+        return None
 
 
 class Edelgardescans(Genkan):
