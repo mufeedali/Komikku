@@ -4,7 +4,6 @@
 
 import cairo
 from gettext import gettext as _
-import os
 import time
 
 from gi.repository import Gdk
@@ -245,9 +244,9 @@ class Library():
         ctx.fill()
 
         # Draw server logo
-        if os.path.exists(manga.server.logo_resource_path):
+        try:
             pixbuf = Pixbuf.new_from_resource_at_scale(manga.server.logo_resource_path, 20, 20, True)
-        else:
+        except Exception:
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/icons/ui/servers/no_favicon.ico', 24, 24, True)
         Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 4, 4)
         ctx.paint()
