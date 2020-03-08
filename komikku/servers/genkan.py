@@ -91,7 +91,7 @@ class Genkan(Server):
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
-        soup = BeautifulSoup(r.text, 'lxml')
+        soup = BeautifulSoup(r.text, 'html.parser')
 
         data = dict(
             pages=[],
@@ -176,7 +176,7 @@ class GenkanInitial(Genkan):
 
                 results.append(dict(
                     slug=a_element.get('href').split('/')[-1],
-                    name=a_element.text.strip(),
+                    name=name,
                 ))
 
             return results
