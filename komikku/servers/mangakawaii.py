@@ -221,5 +221,5 @@ class Mangakawaii(Server):
                 return results
             except Exception:
                 return None
-        else:
-            return None
+
+        return None

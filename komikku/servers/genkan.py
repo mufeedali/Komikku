@@ -156,6 +156,7 @@ class Genkan(Server):
                     results.append(result)
 
             return results
+
         return None
 
     def search(self, term):
@@ -174,6 +175,7 @@ class Genkan(Server):
                 ))
 
             return results
+
         return None
 
 
@@ -202,6 +204,7 @@ class GenkanInitial(Genkan):
                 ))
 
             return results
+
         return None
 
 
