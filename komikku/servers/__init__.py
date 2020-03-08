@@ -263,6 +263,8 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
         for _name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
                 continue
+            if obj.id == NotImplemented or obj.name == NotImplemented or obj.lang == NotImplemented:
+                continue
 
             if not include_disabled and obj.status == 'disabled':
                 continue

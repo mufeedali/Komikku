@@ -14,11 +14,17 @@ from komikku.servers import USER_AGENT
 
 SERVER_NAME = 'Hatigarm Scans'
 
+#
+# BEWARE: This server is disabled
+# Dead since 02/2020
+#
+
 
 class Hatigarmscans(Server):
     id = 'hatigarmscans'
     name = SERVER_NAME
     lang = 'en'
+    status = 'disabled'
 
     base_url = 'https://www.hatigarmscans.net'
     search_url = base_url + '/search'
