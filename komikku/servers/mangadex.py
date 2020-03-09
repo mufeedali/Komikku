@@ -79,14 +79,15 @@ class Mangadex(Server):
             if not attributes or not password:
                 return
 
-            self.login(attributes['login'], password)
+            self.logged_in = self.login(attributes['login'], password)
 
         if login and password:
             self.clear_session()
 
         if self.session is None:
-            self.load_session()
-            if self.session is None:
+            if self.load_session():
+                self.logged_in = True
+            else:
                 self.session = requests.Session()
                 self.session.headers = headers
 
@@ -94,9 +95,7 @@ class Mangadex(Server):
                     helper = SecretAccountHelper()
                     helper.get(self.id, on_get_account)
                 else:
-                    self.login(login, password)
-            else:
-                self.logged_in = True
+                    self.logged_in = self.login(login, password)
 
     @staticmethod
     def convert_old_slug(slug):
@@ -271,9 +270,12 @@ class Mangadex(Server):
             }
         )
 
-        if r.text == '':
-            self.save_session()
-            self.logged_in = True
+        if r.text != '':
+            return False
+
+        self.save_session()
+
+        return True
 
     def search(self, term):
         r = self.session_get(self.search_url, params=dict(

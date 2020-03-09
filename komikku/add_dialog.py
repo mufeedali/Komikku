@@ -224,7 +224,7 @@ class AddDialog():
 
         def complete(result, server, most_populars):
             if server != self.server:
-                return
+                return False
 
             self.activity_indicator.stop()
 
@@ -295,7 +295,7 @@ class AddDialog():
 
         def complete(manga_data, server):
             if server != self.server or manga_data['slug'] != self.manga_slug:
-                return
+                return False
 
             self.manga_data = manga_data
 
@@ -342,7 +342,7 @@ class AddDialog():
 
         def error(server, manga_slug, message=None):
             if server != self.server or manga_slug != self.manga_slug:
-                return
+                return False
 
             self.activity_indicator.stop()
 
