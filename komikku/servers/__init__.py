@@ -127,10 +127,12 @@ class Server:
     def load_session(self):
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
         if not os.path.exists(file_path):
-            return None
+            return False
 
         with open(file_path, 'rb') as f:
             self.session = pickle.load(f)
+
+        return True
 
     def save_session(self):
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
@@ -263,7 +265,7 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
         for _name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):
                 continue
-            if obj.id == NotImplemented or obj.name == NotImplemented or obj.lang == NotImplemented:
+            if NotImplemented in (obj.id, obj.name, obj.lang):
                 continue
 
             if not include_disabled and obj.status == 'disabled':

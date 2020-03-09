@@ -77,7 +77,7 @@ class SecretAccountHelper:
                 *args
             )
         except Exception as e:
-            logger.debug("SecretHelper::get(): %s" % e)
+            logger.debug("SecretHelper::get(): %s", e)
 
     def store(self, service, login, password, callback, *args):
         """
@@ -114,7 +114,7 @@ class SecretAccountHelper:
                                   callback,
                                   *args)
         except Exception as e:
-            logger.debug("SecretHelper::store(): %s" % e)
+            logger.debug("SecretHelper::store(): %s", e)
 
     def clear(self, service, callback=None, *args):
         """
@@ -141,7 +141,7 @@ class SecretAccountHelper:
                                  callback,
                                  *args)
         except Exception as e:
-            logger.debug("SecretHelper::clear(): %s" % e)
+            logger.debug("SecretHelper::clear(): %s", e)
 
     #######################
     # PRIVATE             #
@@ -157,7 +157,7 @@ class SecretAccountHelper:
         if self.__secret is None:
             GLib.timeout_add(250, call, *args)
             raise Exception("Waiting Secret service")
-        elif self.__secret == -1:
+        if self.__secret == -1:
             raise Exception("Error waiting for Secret service")
 
     def __on_clear_search(self, source, result, callback=None, *args):
@@ -174,7 +174,7 @@ class SecretAccountHelper:
             if callback is not None:
                 callback(*args)
         except Exception as e:
-            logger.debug("SecretHelper::__on_clear_search(): %s" % e)
+            logger.debug("SecretHelper::__on_clear_search(): %s", e)
 
     def __on_load_secret(self, source, result, service, callback, *args):
         """
@@ -222,7 +222,7 @@ class SecretAccountHelper:
                 logger.debug("SecretHelper: no result!")
                 callback(None, None, service, *args)
         except Exception as e:
-            logger.debug("SecretHelper::__on_secret_search(): %s" % e)
+            logger.debug("SecretHelper::__on_secret_search(): %s", e)
             callback(None, None, service, *args)
 
     def __on_get_secret(self, source, result):
@@ -235,4 +235,4 @@ class SecretAccountHelper:
             self.__secret = source.get_finish(result)
         except Exception as e:
             self.__secret = -1
-            logger.debug("SecretHelper::__on_get_secret(): %s" % e)
+            logger.debug("SecretHelper::__on_get_secret(): %s", e)
