@@ -76,7 +76,7 @@ class AddDialog():
             # Server logo
             try:
                 pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server_data['id']), 24, 24, True)
-            except Exception:
+            except GLib.GError:
                 pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/icons/ui/servers/no_favicon.ico', 24, 24, True)
             logo = Gtk.Image(xalign=0)
             logo.set_from_pixbuf(pixbuf)

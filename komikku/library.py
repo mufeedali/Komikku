@@ -9,6 +9,7 @@ import time
 
 from gi.repository import Gdk
 from gi.repository import Gio
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
@@ -248,7 +249,7 @@ class Library():
         # Draw server logo
         try:
             pixbuf = Pixbuf.new_from_resource_at_scale(manga.server.logo_resource_path, 20, 20, True)
-        except Exception:
+        except GLib.GError:
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/icons/ui/servers/no_favicon.ico', 24, 24, True)
         Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 4, 4)
         ctx.paint()
