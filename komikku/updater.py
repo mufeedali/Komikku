@@ -19,7 +19,7 @@ class Updater(GObject.GObject):
     Mangas updater
     """
     __gsignals__ = {
-        'manga-updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, )),
+        'manga-updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, int, )),
     }
 
     queue = []
@@ -60,10 +60,10 @@ class Updater(GObject.GObject):
                     continue
 
                 try:
-                    status, nb_recent_chapters = manga.update_full()
+                    status, nb_recent_chapters, nb_deleted_chapters = manga.update_full()
                     if status is True:
                         total_recent_chapters += nb_recent_chapters
-                        GLib.idle_add(complete, manga, nb_recent_chapters)
+                        GLib.idle_add(complete, manga, nb_recent_chapters, nb_deleted_chapters)
                     else:
                         GLib.idle_add(error, manga)
                 except Exception as e:
@@ -91,7 +91,7 @@ class Updater(GObject.GObject):
 
             self.window.show_notification(message)
 
-        def complete(manga, nb_recent_chapters):
+        def complete(manga, nb_recent_chapters, nb_deleted_chapters):
             if nb_recent_chapters > 0:
                 self.window.show_notification(
                     n_('{0}\n{1} new chapter has been found', '{0}\n{1} new chapters have been found', nb_recent_chapters).format(
@@ -99,7 +99,7 @@ class Updater(GObject.GObject):
                     )
                 )
 
-            self.emit('manga-updated', manga, nb_recent_chapters)
+            self.emit('manga-updated', manga, nb_recent_chapters, nb_deleted_chapters)
 
             return False
 

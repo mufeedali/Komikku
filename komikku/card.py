@@ -140,11 +140,12 @@ class Card:
             confirm_callback
         )
 
-    def on_manga_updated(self, updater, manga, nb_recent_chapters):
+    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
         if self.window.page == 'card' and self.manga.id == manga.id:
             self.manga = manga
 
-            if nb_recent_chapters:
+            if nb_recent_chapters > 0 or nb_deleted_chapters > 0:
+                self.chapters_list.clear()
                 self.chapters_list.populate()
 
             self.info_grid.populate()

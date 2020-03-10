@@ -317,7 +317,7 @@ class Library():
                 child.destroy()
                 break
 
-    def on_manga_updated(self, updater, manga, nb_recent_chapters):
+    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
 
