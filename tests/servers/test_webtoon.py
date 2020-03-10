@@ -45,7 +45,7 @@ def test_get_manga_data_webtoon(webtoon_server):
 
 def test_get_manga_chapter_data_webtoon(webtoon_server):
     try:
-        response = webtoon_server.get_manga_chapter_data(None, None, '/en/action/caster/chapter-1/viewer?title_no=1461&episode_no=1')
+        response = webtoon_server.get_manga_chapter_data(None, None, None, '/en/action/caster/chapter-1/viewer?title_no=1461&episode_no=1')
         print('Webtoon: get manga chapter data', response)
     except Exception as e:
         response = None

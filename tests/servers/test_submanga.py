@@ -33,16 +33,6 @@ def test_most_populars_submanga(submanga_server):
     assert response is not None
 
 
-def test_most_populars_submanga(submanga_server):
-    try:
-        response = submanga_server.get_most_populars()
-        print('Submanga: get most populars', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
 def test_get_manga_data_submanga(submanga_server):
     try:
         response = submanga_server.get_manga_data(dict(slug='tales-of-demons-and-gods'))
@@ -55,7 +45,7 @@ def test_get_manga_data_submanga(submanga_server):
 
 def test_get_manga_chapter_data_submanga(submanga_server):
     try:
-        response = submanga_server.get_manga_chapter_data('tales-of-demons-and-gods', '1', None)
+        response = submanga_server.get_manga_chapter_data('tales-of-demons-and-gods', None, '1', None)
         print('Submanga: get manga chapter data', response)
     except Exception as e:
         response = None

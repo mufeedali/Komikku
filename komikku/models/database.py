@@ -610,7 +610,7 @@ class Chapter:
         return page_path
 
     def get_page_path(self, page_index):
-        if self.pages[page_index]['image'] is not None:
+        if self.pages and self.pages[page_index]['image'] is not None:
             # self.pages[page_index]['image'] can be an image name or an image url (path + eventually a query string)
 
             # Extract filename
@@ -664,7 +664,7 @@ class Chapter:
         if self.pages:
             return True
 
-        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug, self.url)
+        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.manga.name, self.slug, self.url)
         if data is None or not data['pages']:
             return False
 

@@ -45,7 +45,7 @@ def test_get_manga_data_scanonepiece(scanonepiece_server):
 
 def test_get_manga_chapter_data_scanonepiece(scanonepiece_server):
     try:
-        response = scanonepiece_server.get_manga_chapter_data('tales-of-demons-and-gods', 'chapitre-1', None)
+        response = scanonepiece_server.get_manga_chapter_data('tales-of-demons-and-gods', None, 'chapitre-1', None)
         print('Scanonepiece: get manga chapter data', response)
     except Exception as e:
         response = None

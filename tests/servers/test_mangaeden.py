@@ -45,7 +45,7 @@ def test_get_manga_data_mangaeden(mangaeden_server):
 
 def test_get_manga_chapter_data_mangaeden(mangaeden_server):
     try:
-        response = mangaeden_server.get_manga_chapter_data('tales-of-demons-and-gods', '1', None)
+        response = mangaeden_server.get_manga_chapter_data('tales-of-demons-and-gods', None, '1', None)
         print('Mangaeden: get manga chapter data', response)
     except Exception as e:
         response = None

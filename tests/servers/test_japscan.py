@@ -45,7 +45,7 @@ def test_get_manga_data_japscan(japscan_server):
 
 def test_get_manga_chapter_data_japscan(japscan_server):
     try:
-        response = japscan_server.get_manga_chapter_data('tales-of-demons-and-gods', '1', None)
+        response = japscan_server.get_manga_chapter_data('tales-of-demons-and-gods', None, '1', None)
         print('JapScan: get manga chapter data', response)
     except Exception as e:
         response = None

@@ -35,7 +35,7 @@ def test_get_manga_data_dbmultiverse(dbmultiverse_server):
 
 def test_get_manga_chapter_data_dbmultiverse(dbmultiverse_server):
     try:
-        response = dbmultiverse_server.get_manga_chapter_data(None, '1', None)
+        response = dbmultiverse_server.get_manga_chapter_data(None, None, '1', None)
         print('DB Multiverse: get manga chapter data', response)
     except Exception as e:
         response = None

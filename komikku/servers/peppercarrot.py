@@ -99,7 +99,7 @@ class Peppercarrot(Server):
 
         return data
 
-    def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):
+    def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data using episodes API service
         """
