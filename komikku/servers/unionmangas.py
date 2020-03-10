@@ -111,7 +111,7 @@ class Unionmangas(Server):
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
-        if r.url == self.manga_url.format(manga_slug):
+        if 'leitor' not in r.url:
             # Chapter page doesn't exist, we have been redirected to manga page
             return None
         if r.status_code != 200 or mime_type != 'text/html':
