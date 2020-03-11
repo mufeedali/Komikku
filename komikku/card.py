@@ -207,7 +207,7 @@ class ChaptersList:
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.card.enter_selection_mode)
 
-        self.card.window.downloader.connect('changed', self.update_chapter_row)
+        self.card.window.downloader.connect('download-changed', self.update_chapter_row)
 
         def sort(child1, child2):
             """

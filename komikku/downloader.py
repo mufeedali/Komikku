@@ -26,7 +26,7 @@ class Downloader(GObject.GObject):
     Chapters downloader
     """
     __gsignals__ = {
-        'changed': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT, )),
+        'download-changed': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT, )),
         'ended': (GObject.SIGNAL_RUN_FIRST, None, ()),
         'started': (GObject.SIGNAL_RUN_FIRST, None, ()),
     }
@@ -44,7 +44,7 @@ class Downloader(GObject.GObject):
     def add(self, chapter):
         download = Download.new(chapter.id)
         if download:
-            self.emit('changed', download, None)
+            self.emit('download-changed', download, None)
 
     def remove(self, chapters):
         if not isinstance(chapters, list):
@@ -63,7 +63,7 @@ class Downloader(GObject.GObject):
             if download:
                 download.delete()
 
-            self.emit('changed', None, chapter)
+            self.emit('download-changed', None, chapter)
 
         if was_running:
             self.start()
@@ -160,7 +160,7 @@ class Downloader(GObject.GObject):
                 )
                 notification.show()
 
-            self.emit('changed', None, chapter)
+            self.emit('download-changed', None, chapter)
 
             return False
 
@@ -168,12 +168,12 @@ class Downloader(GObject.GObject):
             if message:
                 self.window.show_notification(message)
 
-            self.emit('changed', download, None)
+            self.emit('download-changed', download, None)
 
             return False
 
         def notify_download_started(download):
-            self.emit('changed', download, None)
+            self.emit('download-changed', download, None)
 
             return False
 
@@ -189,7 +189,7 @@ class Downloader(GObject.GObject):
                 )
                 notification.show()
 
-            self.emit('changed', download, None)
+            self.emit('download-changed', download, None)
 
             return False
 
@@ -259,7 +259,7 @@ class DownloadManagerDialog(Handy.Dialog):
         self.gesture.connect('pressed', self.enter_selection_mode)
 
         self.__gsignals_handlers_ids__ = [
-            self.downloader.connect('changed', self.update_row),
+            self.downloader.connect('download-changed', self.update_row),
             self.downloader.connect('ended', self.update_headerbar),
             self.downloader.connect('started', self.update_headerbar),
         ]
