@@ -77,7 +77,7 @@ class SecretAccountHelper:
                 *args
             )
         except Exception as e:
-            logger.debug("SecretHelper::get(): %s", e)
+            logger.debug("SecretAccountHelper::get(): %s", e)
 
     def store(self, service, login, password, callback, *args):
         """
@@ -114,7 +114,7 @@ class SecretAccountHelper:
                                   callback,
                                   *args)
         except Exception as e:
-            logger.debug("SecretHelper::store(): %s", e)
+            logger.debug("SecretAccountHelper::store(): %s", e)
 
     def clear(self, service, callback=None, *args):
         """
@@ -141,7 +141,7 @@ class SecretAccountHelper:
                                  callback,
                                  *args)
         except Exception as e:
-            logger.debug("SecretHelper::clear(): %s", e)
+            logger.debug("SecretAccountHelper::clear(): %s", e)
 
     #######################
     # PRIVATE             #
@@ -174,7 +174,7 @@ class SecretAccountHelper:
             if callback is not None:
                 callback(*args)
         except Exception as e:
-            logger.debug("SecretHelper::__on_clear_search(): %s", e)
+            logger.debug("SecretAccountHelper::__on_clear_search(): %s", e)
 
     def __on_load_secret(self, source, result, service, callback, *args):
         """
@@ -194,7 +194,7 @@ class SecretAccountHelper:
                      service,
                      *args)
         else:
-            logger.debug("SecretHelper: no secret!")
+            logger.debug("SecretAccountHelper: no secret!")
             callback(None, None, service, *args)
 
     def __on_secret_search(self, source, result, service, callback, *args):
@@ -216,13 +216,13 @@ class SecretAccountHelper:
                                      callback,
                                      *args)
                 if not items:
-                    logger.debug("SecretHelper: no items!")
+                    logger.debug("SecretAccountHelper: no items!")
                     callback(None, None, service, *args)
             else:
-                logger.debug("SecretHelper: no result!")
+                logger.debug("SecretAccountHelper: no result!")
                 callback(None, None, service, *args)
         except Exception as e:
-            logger.debug("SecretHelper::__on_secret_search(): %s", e)
+            logger.debug("SecretAccountHelper::__on_secret_search(): %s", e)
             callback(None, None, service, *args)
 
     def __on_get_secret(self, source, result):
@@ -235,4 +235,4 @@ class SecretAccountHelper:
             self.__secret = source.get_finish(result)
         except Exception as e:
             self.__secret = -1
-            logger.debug("SecretHelper::__on_get_secret(): %s", e)
+            logger.debug("SecretAccountHelper::__on_get_secret(): %s", e)
