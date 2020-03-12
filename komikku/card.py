@@ -145,6 +145,9 @@ class Card:
             self.manga = manga
 
             if nb_recent_chapters > 0 or nb_deleted_chapters > 0:
+                if len(manga.chapters) > 0:
+                    self.window.activity_indicator.start()
+
                 self.chapters_list.clear()
                 self.chapters_list.populate()
 
