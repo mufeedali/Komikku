@@ -104,6 +104,14 @@ class Settings(Gio.Settings):
         self.set_boolean('fullscreen', state)
 
     @property
+    def new_chapters_auto_download(self):
+        return self.get_boolean('new-chapters-auto-download')
+
+    @new_chapters_auto_download.setter
+    def new_chapters_auto_download(self, state):
+        self.set_boolean('new-chapters-auto-download', state)
+
+    @property
     def night_light(self):
         return self.get_boolean('night-light')
 

@@ -26,6 +26,7 @@ class SettingsDialog(Handy.Dialog):
     desktop_notifications_switch = Gtk.Template.Child('desktop_notifications_switch')
 
     update_at_startup_switch = Gtk.Template.Child('update_at_startup_switch')
+    new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
     servers_languages_expander_row = Gtk.Template.Child('servers_languages_expander_row')
     servers_settings_action_row = Gtk.Template.Child('servers_settings_action_row')
 
@@ -73,6 +74,10 @@ class SettingsDialog(Handy.Dialog):
         # Update manga at startup
         self.update_at_startup_switch.set_active(settings.update_at_startup)
         self.update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
+
+        # Auto download new chapters
+        self.new_chapters_auto_download_switch.set_active(settings.new_chapters_auto_download)
+        self.new_chapters_auto_download_switch.connect('notify::active', self.on_new_chapters_auto_download_changed)
 
         # Servers languages
         servers_languages = settings.servers_languages
@@ -164,6 +169,12 @@ class SettingsDialog(Handy.Dialog):
 
     def on_fullscreen_changed(self, switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
+
+    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            Settings.get_default().new_chapters_auto_download = True
+        else:
+            Settings.get_default().new_chapters_auto_download = False
 
     def on_night_light_changed(self, switch_button, gparam):
         Settings.get_default().night_light = switch_button.get_active()

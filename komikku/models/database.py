@@ -456,7 +456,7 @@ class Manga:
 
             # Update chapters
             chapters_data = data.pop('chapters')
-            nb_recent_chapters = 0
+            recent_chapters_ids = []
             nb_deleted_chapters = 0
 
             rank = 0
@@ -480,10 +480,10 @@ class Manga:
                     ))
                     id = insert_row(db_conn, 'chapters', chapter_data)
                     if id is not None:
-                        nb_recent_chapters += 1
+                        recent_chapters_ids.append(id)
                         rank += 1
 
-            if nb_recent_chapters > 0:
+            if len(recent_chapters_ids) > 0 or nb_deleted_chapters > 0:
                 data['last_update'] = datetime.datetime.now()
 
             # Delete chapters that no longer exist (except downloaded)
@@ -511,7 +511,7 @@ class Manga:
 
         db_conn.close()
 
-        return True, nb_recent_chapters, nb_deleted_chapters
+        return True, recent_chapters_ids, nb_deleted_chapters
 
 
 class Chapter:

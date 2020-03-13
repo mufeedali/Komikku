@@ -13,6 +13,7 @@ from gi.repository import Gtk
 from gi.repository import Handy
 from gi.repository import Notify
 
+from komikku.models import Chapter
 from komikku.models import create_db_connection
 from komikku.models import Download
 from komikku.models import Settings
@@ -42,7 +43,12 @@ class Downloader(GObject.GObject):
             self.start()
 
     def add(self, chapter):
-        download = Download.new(chapter.id)
+        if isinstance(chapter, Chapter):
+            chapter_id = chapter.id
+        else:
+            chapter_id = chapter
+
+        download = Download.new(chapter_id)
         if download:
             self.emit('download-changed', download, None)
 
