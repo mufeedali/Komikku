@@ -288,7 +288,8 @@ class SettingsServersDialog(Handy.Dialog):
                 continue
 
             server_class = getattr(server_data['module'], server_data['main_id'].capitalize())
-            has_login = hasattr(server_class, 'login')
+            has_login = getattr(server_class, 'has_login')
+            print(server_data['main_id'], has_login)
 
             server_settings = settings.get(server_main_id)
             server_enabled = server_settings is None or server_settings['enabled'] is True

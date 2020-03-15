@@ -20,6 +20,7 @@ import pkgutil
 import requests
 from requests.adapters import TimeoutSauce
 import struct
+from komikku.utils import SecretAccountHelper
 
 # https://www.localeplanet.com/icu/
 LANGUAGES = dict(
@@ -70,6 +71,8 @@ class Server:
     status = 'enabled'
     logged_in = False
     long_strip_genres = []
+    has_login = False
+    headers = None
 
     base_url = None
     session = None
@@ -85,6 +88,33 @@ class Server:
     @classmethod
     def from_cache(cls, id):
         return Server.__servers.get(id)
+
+    def init(self, login=None, password=None):
+        def on_get_account(attributes, password, name):
+            if not attributes or not password:
+                return
+
+            self.logged_in = self.login(attributes['login'], password)
+
+        if login and password:
+            self.clear_session()
+
+        if self.session is None:
+            if self.load_session():
+                self.logged_in = True
+            else:
+                self.session = requests.Session()
+                if self.headers:
+                    self.session.headers = self.headers
+
+                if login is None and password is None:
+                    helper = SecretAccountHelper()
+                    helper.get(self.id, on_get_account)
+                else:
+                    self.logged_in = self.login(login, password)
+
+    def login(self, login, password):
+        return False
 
     @property
     def logo_resource_path(self):
