@@ -184,7 +184,7 @@ class SettingsDialog(Handy.Dialog):
         Settings.get_default().long_strip = switch_button.get_active()
 
     @staticmethod
-    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
+    def on_new_chapters_auto_download_changed(switch_button, gparam):
         if switch_button.get_active():
             Settings.get_default().new_chapters_auto_download = True
         else:
