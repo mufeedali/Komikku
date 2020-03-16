@@ -100,9 +100,7 @@ class Server:
         del SESSIONS[self.id]
 
     def get_manga_cover_image(self, url):
-        """
-        Returns manga cover (image) content
-        """
+        """ Returns manga cover (image) content """
         if url is None:
             return None
 

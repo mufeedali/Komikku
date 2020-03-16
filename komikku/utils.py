@@ -39,14 +39,10 @@ def log_error_traceback(e):
 # Heavily adapted from PasswordsHelper class of Lollypop music player
 # https://gitlab.gnome.org/World/lollypop/-/blob/master/lollypop/helper_passwords.py
 class SecretAccountHelper:
-    """
-        Simple helper to store servers accounts credentials using libsecret
-    """
+    """ Simple helper to store servers accounts credentials using libsecret """
 
     def __init__(self):
-        """
-            Init helper
-        """
+        """ Init helper """
         self.__secret = None
         Secret.Service.get(Secret.ServiceFlags.NONE, None, self.__on_get_secret)
 

@@ -22,9 +22,7 @@ DOWNLOAD_DELAY = 1  # in seconds
 
 
 class Downloader(GObject.GObject):
-    """
-    Chapters downloader
-    """
+    """ Chapters downloader """
     __gsignals__ = {
         'changed': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT, )),
         'ended': (GObject.SIGNAL_RUN_FIRST, None, ()),
@@ -479,9 +477,7 @@ class DownloadRow(Gtk.ListBoxRow):
         self.add(vbox)
 
     def update(self):
-        """
-        Updates chapter download progress
-        """
+        """Updates chapter download progress"""
         if not self.download.chapter.pages:
             return
 

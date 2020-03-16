@@ -152,9 +152,7 @@ class Mangakawaii(Server):
         return data
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
-        """
-        Returns chapter page scan (image) content
-        """
+        """ Returns chapter page scan (image) content """
         r = self.session_get(self.image_url.format(manga_slug, chapter_slug, page['slug']))
         if r is None:
             return (None, None)
@@ -164,15 +162,11 @@ class Mangakawaii(Server):
         return (page['slug'], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
+        """ Returns manga absolute URL """
         return self.manga_url.format(slug)
 
     def get_most_populars(self):
-        """
-        Returns best noted manga list
-        """
+        """ Returns best noted manga list """
         r = self.session_get(self.most_populars_url)
         if r is None:
             return None

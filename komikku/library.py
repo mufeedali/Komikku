@@ -284,9 +284,7 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_manga_added(self, manga):
-        """
-        Called from 'Add dialog' when user clicks on [+] button
-        """
+        """ Called from 'Add dialog' when user clicks on [+] button """
         db_conn = create_db_connection()
         nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
         db_conn.close()

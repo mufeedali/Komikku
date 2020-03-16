@@ -163,9 +163,7 @@ class Webtoon(Server):
         return data
 
     def get_manga_chapters_data(self, url):
-        """
-        Returns manga chapters data by scraping content of manga Mobile HTML page
-        """
+        """ Returns manga chapters data by scraping content of manga Mobile HTML page """
         # Use a Mobile user agent
         r = self.session_get(self.chapters_url.format(url), headers={'user-agent': USER_AGENT_MOBILE})
         if r is None:
@@ -203,9 +201,7 @@ class Webtoon(Server):
         return data
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
-        """
-        Returns chapter page scan (image) content
-        """
+        """ Returns chapter page scan (image) content """
         r = self.session_get(page['image'], headers={'referer': self.base_url, 'user-agent': USER_AGENT})
         if r is None:
             return (None, None)
@@ -218,15 +214,11 @@ class Webtoon(Server):
         return (None, None)
 
     def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
+        """ Returns manga absolute URL """
         return self.manga_url.format(url)
 
     def get_most_populars(self):
-        """
-        Returns TOP 10 manga
-        """
+        """ Returns TOP 10 manga """
         r = self.session_get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
         if r is None:
             return None

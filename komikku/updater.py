@@ -15,9 +15,7 @@ from komikku.models import Manga
 
 
 class Updater(GObject.GObject):
-    """
-    Mangas updater
-    """
+    """ Mangas updater """
     __gsignals__ = {
         'manga-updated': (GObject.SIGNAL_RUN_FIRST, None, (GObject.TYPE_PYOBJECT, int, )),
     }

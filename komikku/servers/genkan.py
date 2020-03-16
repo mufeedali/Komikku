@@ -117,9 +117,7 @@ class Genkan(Server):
         return data
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
-        """
-        Returns chapter page scan (image) content
-        """
+        """ Returns chapter page scan (image) content """
         r = self.session_get(self.image_url.format(page['image']))
         if r is None:
             return (None, None)
@@ -130,15 +128,11 @@ class Genkan(Server):
         return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
+        """ Returns manga absolute URL """
         return self.manga_url.format(slug)
 
     def get_most_populars(self):
-        """
-        Returns new and/or recommended manga
-        """
+        """ Returns new and/or recommended manga """
         r = self.session_get(self.most_populars_url)
         if r is None:
             return None
@@ -180,9 +174,7 @@ class Genkan(Server):
 
 
 class GenkanInitial(Genkan):
-    """
-    The initial version of the CMS doesn't provide search
-    """
+    """ The initial version of the CMS doesn't provide search """
 
     def search(self, term):
         r = self.session_get(self.search_url)

@@ -162,9 +162,7 @@ class Japscan(Server):
         return data
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
-        """
-        Returns chapter page scan (image) content
-        """
+        """ Returns chapter page scan (image) content """
         # This server use a specific manga slug for images URLs
         manga_slug = unicodedata.normalize('NFKD', manga_name)
         manga_slug = manga_slug.encode('ascii', 'ignore').decode()
@@ -187,15 +185,11 @@ class Japscan(Server):
         return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
 
     def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
+        """ Returns manga absolute URL """
         return self.manga_url.format(slug)
 
     def get_most_populars(self):
-        """
-        Returns TOP manga
-        """
+        """ Returns TOP manga """
         r = self.session_get(self.base_url)
         if r is None:
             return None
@@ -218,9 +212,7 @@ class Japscan(Server):
         return results
 
     def search(self, term):
-        """
-        JapScan does not provide a search. Use DuckDuckGo Lite as fallback
-        """
+        """ JapScan does not provide a search. Use DuckDuckGo Lite as fallback """
 
         results = []
         for ddg_result in search_duckduckgo(self.search_url, term):
