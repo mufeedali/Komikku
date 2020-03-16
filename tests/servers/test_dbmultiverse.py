@@ -25,7 +25,7 @@ def test_search_dbmultiverse(dbmultiverse_server):
 
 def test_get_manga_data_dbmultiverse(dbmultiverse_server):
     try:
-        response = dbmultiverse_server.get_manga_data(dict())
+        response = dbmultiverse_server.get_manga_data({})
         print('DB Multiverse: get manga data', response)
     except Exception as e:
         response = None

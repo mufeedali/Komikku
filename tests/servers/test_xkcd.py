@@ -25,7 +25,7 @@ def test_search_xkcd(xkcd_server):
 
 def test_get_manga_data_xkcd(xkcd_server):
     try:
-        response = xkcd_server.get_manga_data(dict())
+        response = xkcd_server.get_manga_data({})
         print('xkcd: get manga data', response)
     except Exception as e:
         response = None

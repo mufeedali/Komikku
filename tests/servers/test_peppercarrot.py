@@ -25,7 +25,7 @@ def test_search_peppercarrot(peppercarrot_server):
 
 def test_get_manga_data_peppercarrot(peppercarrot_server):
     try:
-        response = peppercarrot_server.get_manga_data(dict())
+        response = peppercarrot_server.get_manga_data({})
         print('Pepper&Carrot: get manga data', response)
     except Exception as e:
         response = None

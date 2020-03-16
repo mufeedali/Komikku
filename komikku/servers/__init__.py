@@ -44,7 +44,7 @@ LANGUAGES = dict(
 )
 
 REQUESTS_TIMEOUT = 5
-SESSIONS = dict()
+SESSIONS = {}
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60'
 USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
@@ -258,7 +258,7 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
         return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + '.')
 
     servers = []
-    for finder, name, ispkg in iter_namespace(komikku.servers):
+    for _, name, _ in iter_namespace(komikku.servers):
         module = importlib.import_module(name)
         for _name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):

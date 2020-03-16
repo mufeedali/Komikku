@@ -202,7 +202,7 @@ class Settings(Gio.Settings):
 
         if uid not in settings:
             settings[uid] = dict(
-                langs=dict(),
+                langs={},
             )
 
         settings[uid]['enabled'] = state
@@ -214,7 +214,7 @@ class Settings(Gio.Settings):
 
         if uid not in settings:
             settings[uid] = dict(
-                langs=dict(),
+                langs={},
                 enabled=True,
             )
 

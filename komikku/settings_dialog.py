@@ -265,7 +265,7 @@ class SettingsServersDialog(Handy.Dialog):
         settings = Settings.get_default().servers_settings
         languages = Settings.get_default().servers_languages
 
-        servers_data = dict()
+        servers_data = {}
         for server_data in get_servers_list(order_by=('name', 'lang')):
             main_id = get_server_main_id_by_id(server_data['id'])
 

@@ -4,7 +4,6 @@
 
 import cairo
 from gettext import gettext as _
-import os
 import time
 
 from gi.repository import Gdk
