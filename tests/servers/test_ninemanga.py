@@ -45,7 +45,7 @@ def test_get_manga_data_ninemanga(ninemanga_server):
 
 def test_get_manga_chapter_data_ninemanga(ninemanga_server):
     try:
-        response = ninemanga_server.get_manga_chapter_data('Tales of Demons and Gods', '1467410', None)
+        response = ninemanga_server.get_manga_chapter_data('Tales of Demons and Gods', None, '1467410', None)
         print('Ninemanga: get manga chapter data', response)
     except Exception as e:
         response = None

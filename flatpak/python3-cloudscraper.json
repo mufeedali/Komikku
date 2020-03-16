@@ -7,13 +7,13 @@
     "sources": [
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl",
-            "sha256": "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
+            "url": "https://files.pythonhosted.org/packages/e8/74/6e4f91745020f967d09332bb2b8b9b10090957334692eb88ea4afe91b77f/urllib3-1.25.8-py2.py3-none-any.whl",
+            "sha256": "2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/e8/74/6e4f91745020f967d09332bb2b8b9b10090957334692eb88ea4afe91b77f/urllib3-1.25.8-py2.py3-none-any.whl",
-            "sha256": "2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"
+            "url": "https://files.pythonhosted.org/packages/b9/63/df50cac98ea0d5b006c55a399c3bf1db9da7b5a24de7890bc9cfd5dd9e99/certifi-2019.11.28-py2.py3-none-any.whl",
+            "sha256": "017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"
         },
         {
             "type": "file",
@@ -22,8 +22,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b9/63/df50cac98ea0d5b006c55a399c3bf1db9da7b5a24de7890bc9cfd5dd9e99/certifi-2019.11.28-py2.py3-none-any.whl",
-            "sha256": "017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"
+            "url": "https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl",
+            "sha256": "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
         },
         {
             "type": "file",
@@ -37,8 +37,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/37/29/8d035302d7b6166b76f1a2cd603e837007eb229d5fae34d2a4f0ff40361f/cloudscraper-1.2.26-py2.py3-none-any.whl",
-            "sha256": "12eebdfab1e76ea82b0ac2bcbe9a53f2d5c7041bb7109d97465f720cecab8f33"
+            "url": "https://files.pythonhosted.org/packages/dc/47/e631decfbfce696adc72a134fc13d429d6754b4ff88f9b7264dd52147622/cloudscraper-1.2.28-py2.py3-none-any.whl",
+            "sha256": "ebeb5f9adcb52ed6b763688b05c34264942116b01f8f0b7a5b7de7c1d505cd67"
         }
     ]
 }

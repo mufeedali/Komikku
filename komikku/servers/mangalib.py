@@ -109,7 +109,7 @@ class Mangalib(Server):
 
         return data
 
-    def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):
+    def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data by scraping chapter HTML page content
 
@@ -206,6 +206,7 @@ class Mangalib(Server):
 class Hentailib(Mangalib):
     id = 'hentailib:mangalib'
     name = 'HentaiLib (NSFW)'
+    lang = 'ru'
 
     base_url = 'https://hentailib.me'
     search_url = base_url + '/manga-list?name={0}'

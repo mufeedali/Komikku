@@ -45,7 +45,7 @@ def test_get_manga_data_jaiminisbox(jaiminisbox_server):
 
 def test_get_manga_chapter_data_jaiminisbox(jaiminisbox_server):
     try:
-        response = jaiminisbox_server.get_manga_chapter_data('solo-leveling', '0/0', None)
+        response = jaiminisbox_server.get_manga_chapter_data('solo-leveling', None, '0/0', None)
         print('Jaimini\'s Box: get manga chapter data', response)
     except Exception as e:
         response = None

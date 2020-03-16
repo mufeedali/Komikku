@@ -45,7 +45,7 @@ def test_get_manga_data_mangaplus(mangaplus_server):
 
 def test_get_manga_chapter_data_mangaplus(mangaplus_server):
     try:
-        response = mangaplus_server.get_manga_chapter_data(None, '1000397', None)
+        response = mangaplus_server.get_manga_chapter_data(None, None, '1000397', None)
         print('MANGA Plus: get manga chapter data', response)
     except Exception as e:
         response = None

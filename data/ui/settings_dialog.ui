@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libhandy" version="0.0"/>
-  <object class="HdyDialog" id="settings_dialog">
+  <template class="SettingsDialog" parent="HdyDialog">
     <property name="can_focus">False</property>
     <property name="window_position">center-on-parent</property>
     <property name="default_width">500</property>
@@ -151,7 +151,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_theme_switch">
+                                          <object class="GtkSwitch" id="theme_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -234,7 +234,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_night_light_switch">
+                                          <object class="GtkSwitch" id="night_light_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -317,7 +317,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_desktop_notifications_switch">
+                                          <object class="GtkSwitch" id="desktop_notifications_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -440,7 +440,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_update_at_startup_switch">
+                                          <object class="GtkSwitch" id="update_at_startup_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -458,7 +458,89 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="HdyExpanderRow" id="settings_servers_languages_expander_row">
+                                  <object class="GtkListBoxRow">
+                                    <property name="width_request">100</property>
+                                    <property name="height_request">54</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="margin_left">12</property>
+                                        <property name="margin_right">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="hexpand">True</property>
+                                            <property name="orientation">vertical</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">end</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="label" translatable="yes">Auto Download of New Chapters</property>
+                                                <property name="ellipsize">end</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">start</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="label" translatable="yes">Automatically download new chapters</property>
+                                                <property name="ellipsize">end</property>
+                                                <attributes>
+                                                  <attribute name="size" value="9500"/>
+                                                </attributes>
+                                                <style>
+                                                  <class name="dim-label"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="new_chapters_auto_download_switch">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
+                                            <property name="hexpand">False</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="HdyExpanderRow" id="servers_languages_expander_row">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="valign">start</property>
@@ -467,7 +549,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="HdyActionRow" id="settings_servers_settings_action_row">
+                                  <object class="HdyActionRow" id="servers_settings_action_row">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="valign">start</property>
@@ -540,7 +622,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_long_strip_switch">
+                                          <object class="GtkSwitch" id="long_strip_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -600,7 +682,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="selection_mode">none</property>
                                 <child>
-                                  <object class="HdyComboRow" id="settings_reading_direction_row">
+                                  <object class="HdyComboRow" id="reading_direction_row">
                                     <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -608,7 +690,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="HdyComboRow" id="settings_scaling_row">
+                                  <object class="HdyComboRow" id="scaling_row">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="subtitle" translatable="yes">Type of scaling to adapt image</property>
@@ -616,7 +698,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="HdyComboRow" id="settings_background_color_row">
+                                  <object class="HdyComboRow" id="background_color_row">
                                     <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -649,7 +731,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">end</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Crop borders</property>
+                                                <property name="label" translatable="yes">Borders Crop</property>
                                                 <property name="ellipsize">end</property>
                                               </object>
                                               <packing>
@@ -689,7 +771,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_borders_crop_switch">
+                                          <object class="GtkSwitch" id="borders_crop_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -772,7 +854,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="settings_fullscreen_switch">
+                                          <object class="GtkSwitch" id="fullscreen_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
@@ -816,5 +898,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>

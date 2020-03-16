@@ -45,7 +45,7 @@ def test_get_manga_data_mangakawaii(mangakawaii_server):
 
 def test_get_manga_chapter_data_mangakawaii(mangakawaii_server):
     try:
-        response = mangakawaii_server.get_manga_chapter_data('yaoshenji', '251', None)
+        response = mangakawaii_server.get_manga_chapter_data('yaoshenji', None, '251', None)
         print('Mangakawaii: get manga chapter data', response)
     except Exception as e:
         response = None

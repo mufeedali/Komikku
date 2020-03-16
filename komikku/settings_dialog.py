@@ -15,25 +15,39 @@ from komikku.servers import LANGUAGES
 from komikku.utils import SecretAccountHelper
 
 
-class SettingsDialog():
-    window = NotImplemented
-    builder = NotImplemented
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_dialog.ui')
+class SettingsDialog(Handy.Dialog):
+    __gtype_name__ = 'SettingsDialog'
 
-    def __init__(self, window):
-        self.window = window
-        self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/settings_dialog.ui')
+    parent = NotImplemented
+
+    theme_switch = Gtk.Template.Child('theme_switch')
+    night_light_switch = Gtk.Template.Child('night_light_switch')
+    desktop_notifications_switch = Gtk.Template.Child('desktop_notifications_switch')
+
+    update_at_startup_switch = Gtk.Template.Child('update_at_startup_switch')
+    new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
+    servers_languages_expander_row = Gtk.Template.Child('servers_languages_expander_row')
+    servers_settings_action_row = Gtk.Template.Child('servers_settings_action_row')
+
+    reading_direction_row = Gtk.Template.Child('reading_direction_row')
+    scaling_row = Gtk.Template.Child('scaling_row')
+    background_color_row = Gtk.Template.Child('background_color_row')
+    borders_crop_switch = Gtk.Template.Child('borders_crop_switch')
+    fullscreen_switch = Gtk.Template.Child('fullscreen_switch')
+    long_strip_switch = Gtk.Template.Child('long_strip_switch')
+
+    def __init__(self, parent):
+        super(SettingsDialog, self).__init__(use_header_bar=True)
+        self.parent = parent
 
     def open(self, action, param):
-        self.settings_dialog = self.builder.get_object('settings_dialog')
-
-        self.settings_dialog.set_modal(True)
-        self.settings_dialog.set_transient_for(self.window)
-        self.settings_dialog.present()
-
-        self.servers_settings_dialog = SettingsServersDialog(self.settings_dialog)
-
+        self.get_header_bar().set_title(_('Settings'))
+        self.set_transient_for(self.parent)
         self.set_config_values()
+
+        if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
+            self.destroy()
 
     def set_config_values(self):
         settings = Settings.get_default()
@@ -43,28 +57,28 @@ class SettingsDialog():
         #
 
         # Dark theme
-        settings_theme_switch = self.builder.get_object('settings_theme_switch')
-        settings_theme_switch.set_active(settings.dark_theme)
-        settings_theme_switch.connect('notify::active', self.on_theme_changed)
+        self.theme_switch.set_active(settings.dark_theme)
+        self.theme_switch.connect('notify::active', self.on_theme_changed)
 
         # Night light
-        settings_night_light_switch = self.builder.get_object('settings_night_light_switch')
-        settings_night_light_switch.set_active(settings.night_light)
-        settings_night_light_switch.connect('notify::active', self.on_night_light_changed)
+        self.night_light_switch.set_active(settings.night_light)
+        self.night_light_switch.connect('notify::active', self.on_night_light_changed)
 
         # Desktop notifications
-        settings_desktop_notifications_switch = self.builder.get_object('settings_desktop_notifications_switch')
-        settings_desktop_notifications_switch.set_active(settings.desktop_notifications)
-        settings_desktop_notifications_switch.connect('notify::active', self.on_desktop_notifications_changed)
+        self.desktop_notifications_switch.set_active(settings.desktop_notifications)
+        self.desktop_notifications_switch.connect('notify::active', self.on_desktop_notifications_changed)
 
         #
         # Library
         #
 
         # Update manga at startup
-        settings_update_at_startup_switch = self.builder.get_object('settings_update_at_startup_switch')
-        settings_update_at_startup_switch.set_active(settings.update_at_startup)
-        settings_update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
+        self.update_at_startup_switch.set_active(settings.update_at_startup)
+        self.update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
+
+        # Auto download new chapters
+        self.new_chapters_auto_download_switch.set_active(settings.new_chapters_auto_download)
+        self.new_chapters_auto_download_switch.connect('notify::active', self.on_new_chapters_auto_download_changed)
 
         # Servers languages
         servers_languages = settings.servers_languages
@@ -86,14 +100,14 @@ class SettingsDialog():
             vbox.pack_start(hbox, True, True, 0)
 
         vbox.show_all()
-        self.builder.get_object('settings_servers_languages_expander_row').add(vbox)
+        self.servers_languages_expander_row.add(vbox)
 
         # Servers settings
         btn = Gtk.Button()
         btn.add(Gtk.Image.new_from_icon_name('emblem-system-symbolic', Gtk.IconSize.BUTTON))
         btn.set_valign(Gtk.Align.CENTER)
         btn.show_all()
-        self.builder.get_object('settings_servers_settings_action_row').add_action(btn)
+        self.servers_settings_action_row.add_action(btn)
         btn.connect('clicked', self.show_servers_settings)
 
         #
@@ -106,10 +120,9 @@ class SettingsDialog():
         liststore.insert(1, Handy.ValueObject.new(_('Left to Right →')))
         liststore.insert(2, Handy.ValueObject.new(_('Vertical ↓')))
 
-        row = self.builder.get_object('settings_reading_direction_row')
-        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(settings.reading_direction_value)
-        row.connect('notify::selected-index', self.on_reading_direction_changed)
+        self.reading_direction_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        self.reading_direction_row.set_selected_index(settings.reading_direction_value)
+        self.reading_direction_row.connect('notify::selected-index', self.on_reading_direction_changed)
 
         # Image scaling
         liststore = Gio.ListStore.new(Handy.ValueObject)
@@ -117,35 +130,30 @@ class SettingsDialog():
         liststore.insert(1, Handy.ValueObject.new(_('Adapt to Width')))
         liststore.insert(2, Handy.ValueObject.new(_('Adapt to Height')))
 
-        row = self.builder.get_object('settings_scaling_row')
-        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(settings.scaling_value)
-        row.connect('notify::selected-index', self.on_scaling_changed)
+        self.scaling_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        self.scaling_row.set_selected_index(settings.scaling_value)
+        self.scaling_row.connect('notify::selected-index', self.on_scaling_changed)
 
         # Background color
         liststore = Gio.ListStore.new(Handy.ValueObject)
         liststore.insert(0, Handy.ValueObject.new(_('White')))
         liststore.insert(1, Handy.ValueObject.new(_('Black')))
 
-        row = self.builder.get_object('settings_background_color_row')
-        row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        row.set_selected_index(settings.background_color_value)
-        row.connect('notify::selected-index', self.on_background_color_changed)
+        self.background_color_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        self.background_color_row.set_selected_index(settings.background_color_value)
+        self.background_color_row.connect('notify::selected-index', self.on_background_color_changed)
 
         # Borders crop
-        borders_crop_switch = self.builder.get_object('settings_borders_crop_switch')
-        borders_crop_switch.set_active(settings.borders_crop)
-        borders_crop_switch.connect('notify::active', self.on_borders_crop_changed)
+        self.borders_crop_switch.set_active(settings.borders_crop)
+        self.borders_crop_switch.connect('notify::active', self.on_borders_crop_changed)
 
         # Full screen
-        settings_fullscreen_switch = self.builder.get_object('settings_fullscreen_switch')
-        settings_fullscreen_switch.set_active(settings.fullscreen)
-        settings_fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
+        self.fullscreen_switch.set_active(settings.fullscreen)
+        self.fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
         # Long strip detection
-        settings_fullscreen_switch = self.builder.get_object('settings_long_strip_switch')
-        settings_fullscreen_switch.set_active(settings.long_strip)
-        settings_fullscreen_switch.connect('notify::active', self.on_long_strip_changed)
+        self.long_strip_switch.set_active(settings.long_strip)
+        self.long_strip_switch.connect('notify::active', self.on_long_strip_changed)
 
     @staticmethod
     def on_background_color_changed(row, param):
@@ -175,10 +183,17 @@ class SettingsDialog():
     def on_long_strip_changed(switch_button, gparam):
         Settings.get_default().long_strip = switch_button.get_active()
 
+    @staticmethod
+    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            Settings.get_default().new_chapters_auto_download = True
+        else:
+            Settings.get_default().new_chapters_auto_download = False
+
     def on_night_light_changed(self, switch_button, gparam):
         Settings.get_default().night_light = switch_button.get_active()
 
-        self.window.init_theme()
+        self.parent.init_theme()
 
     @staticmethod
     def on_reading_direction_changed(row, param):
@@ -212,7 +227,7 @@ class SettingsDialog():
     def on_theme_changed(self, switch_button, gparam):
         Settings.get_default().dark_theme = switch_button.get_active()
 
-        self.window.init_theme()
+        self.parent.init_theme()
 
     @staticmethod
     def on_update_at_startup_changed(switch_button, gparam):
@@ -222,7 +237,7 @@ class SettingsDialog():
             Settings.get_default().update_at_startup = False
 
     def show_servers_settings(self, button):
-        SettingsServersDialog(self.settings_dialog).open()
+        SettingsServersDialog(self).open()
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_servers_dialog.ui')

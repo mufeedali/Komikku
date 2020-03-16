@@ -21,7 +21,7 @@ class Scantrad(Server):
     name = SERVER_NAME
     lang = 'fr'
 
-    base_url = 'https://www.scantrad.net'
+    base_url = 'https://scantrad.net'
     search_url = base_url + '/mangas'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/mangas/{0}/{1}'
@@ -92,7 +92,7 @@ class Scantrad(Server):
 
         return data
 
-    def get_manga_chapter_data(self, manga_slug, chapter_slug, chapter_url):
+    def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data by scraping chapter HTML page content
 
@@ -104,6 +104,9 @@ class Scantrad(Server):
 
         mime_type = magic.from_buffer(r.content[:128], mime=True)
 
+        if r.url[:-1] == self.base_url:
+            # Chapter page doesn't exist, we have been redirected to homepage
+            return None
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 

@@ -35,7 +35,7 @@ def test_get_manga_data_xkcd(xkcd_server):
 
 def test_get_manga_chapter_data_xkcd(xkcd_server):
     try:
-        response = xkcd_server.get_manga_chapter_data(None, '1', None)
+        response = xkcd_server.get_manga_chapter_data(None, None, '1', None)
         print('xkcd: get manga chapter data', response)
     except Exception as e:
         response = None

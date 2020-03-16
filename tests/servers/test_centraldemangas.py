@@ -45,7 +45,7 @@ def test_get_manga_data_centraldemangas(centraldemangas_server):
 
 def test_get_manga_chapter_data_centraldemangas(centraldemangas_server):
     try:
-        response = centraldemangas_server.get_manga_chapter_data('tales-of-demons-and-gods', None, '001')
+        response = centraldemangas_server.get_manga_chapter_data('tales-of-demons-and-gods', None, None, '001')
         print('Central de mangas: get manga chapter data', response)
     except Exception as e:
         response = None

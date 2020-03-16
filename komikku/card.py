@@ -140,11 +140,15 @@ class Card:
             confirm_callback
         )
 
-    def on_manga_updated(self, updater, manga, nb_recent_chapters):
+    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
         if self.window.page == 'card' and self.manga.id == manga.id:
             self.manga = manga
 
-            if nb_recent_chapters:
+            if nb_recent_chapters > 0 or nb_deleted_chapters > 0:
+                if len(manga.chapters) > 0:
+                    self.window.activity_indicator.start()
+
+                self.chapters_list.clear()
                 self.chapters_list.populate()
 
             self.info_grid.populate()
@@ -206,7 +210,7 @@ class ChaptersList:
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.card.enter_selection_mode)
 
-        self.card.window.downloader.connect('changed', self.update_chapter_row)
+        self.card.window.downloader.connect('download-changed', self.update_chapter_row)
 
         def sort(child1, child2):
             """

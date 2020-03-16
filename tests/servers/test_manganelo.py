@@ -45,7 +45,7 @@ def test_get_manga_data_manganelo(manganelo_server):
 
 def test_get_manga_chapter_data_manganelo(manganelo_server):
     try:
-        response = manganelo_server.get_manga_chapter_data('hyer5231574354229', 'chapter_1', None)
+        response = manganelo_server.get_manga_chapter_data('hyer5231574354229', None, 'chapter_1', None)
         print('Manganelo: get manga chapter data', response)
     except Exception as e:
         response = None

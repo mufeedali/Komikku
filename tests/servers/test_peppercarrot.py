@@ -35,7 +35,7 @@ def test_get_manga_data_peppercarrot(peppercarrot_server):
 
 def test_get_manga_chapter_data_peppercarrot(peppercarrot_server):
     try:
-        response = peppercarrot_server.get_manga_chapter_data(None, 'ep01_Potion-of-Flight', None)
+        response = peppercarrot_server.get_manga_chapter_data(None, None, 'ep01_Potion-of-Flight', None)
         print('Pepper&Carrot: get manga chapter data', response)
     except Exception as e:
         response = None

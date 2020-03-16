@@ -392,10 +392,10 @@ class Manga:
         with db_conn:
             db_conn.execute('DELETE FROM mangas WHERE id = ?', (self.id, ))
 
-            if os.path.exists(self.path):
-                shutil.rmtree(self.path)
-
         db_conn.close()
+
+        if os.path.exists(self.path):
+            shutil.rmtree(self.path)
 
     def get_next_chapter(self, chapter, direction=1):
         """
@@ -448,7 +448,7 @@ class Manga:
         """
         data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
         if data is None:
-            return False, 0
+            return False, 0, 0
 
         db_conn = create_db_connection()
         with db_conn:
@@ -459,7 +459,8 @@ class Manga:
 
             # Update chapters
             chapters_data = data.pop('chapters')
-            nb_recent_chapters = 0
+            recent_chapters_ids = []
+            nb_deleted_chapters = 0
 
             rank = 0
             for chapter_data in chapters_data:
@@ -482,18 +483,19 @@ class Manga:
                     ))
                     id = insert_row(db_conn, 'chapters', chapter_data)
                     if id is not None:
-                        nb_recent_chapters += 1
+                        recent_chapters_ids.append(id)
                         rank += 1
 
-            if nb_recent_chapters > 0:
+            if len(recent_chapters_ids) > 0 or nb_deleted_chapters > 0:
                 data['last_update'] = datetime.datetime.now()
 
-            # Delete chapters that no longer exist
+            # Delete chapters that no longer exist (except downloaded)
             chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
-            rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
+            rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? AND downloaded = 0', (self.id,))
             for row in rows:
                 if row['slug'] not in chapters_slugs:
-                    db_conn.execute('DELETE FROM chapters WHERE id = ?', (row['id'],))
+                    Chapter.get(row['id']).delete(db_conn)
+                    nb_deleted_chapters += 1
 
             self._chapters = None
 
@@ -512,7 +514,7 @@ class Manga:
 
         db_conn.close()
 
-        return True, nb_recent_chapters
+        return True, recent_chapters_ids, nb_deleted_chapters
 
 
 class Chapter:
@@ -562,6 +564,7 @@ class Chapter:
             c.id = insert_row(db_conn, 'chapters', data)
         else:
             db_conn = create_db_connection()
+
             with db_conn:
                 c.id = insert_row(db_conn, 'chapters', data)
 
@@ -581,6 +584,20 @@ class Chapter:
         # BEWARE: self.slug may contain '/' characters
         # os.makedirs() must be used to create chapter's folder
         return os.path.join(self.manga.path, self.slug)
+
+    def delete(self, db_conn=None):
+        if db_conn is not None:
+            db_conn.execute('DELETE FROM chapters WHERE id = ?', (self.id, ))
+        else:
+            db_conn = create_db_connection()
+
+            with db_conn:
+                db_conn.execute('DELETE FROM chapters WHERE id = ?', (self.id, ))
+
+            db_conn.close()
+
+        if os.path.exists(self.path):
+            shutil.rmtree(self.path)
 
     def get_page(self, page_index):
         page_path = self.get_page_path(page_index)
@@ -613,7 +630,7 @@ class Chapter:
         return page_path
 
     def get_page_path(self, page_index):
-        if self.pages[page_index]['image'] is not None:
+        if self.pages and self.pages[page_index]['image'] is not None:
             # self.pages[page_index]['image'] can be an image name or an image url (path + eventually a query string)
 
             # Extract filename
@@ -667,7 +684,7 @@ class Chapter:
         if self.pages:
             return True
 
-        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.slug, self.url)
+        data = self.manga.server.get_manga_chapter_data(self.manga.slug, self.manga.name, self.slug, self.url)
         if data is None or not data['pages']:
             return False
 
