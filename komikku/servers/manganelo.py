@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import magic
 import requests
 
+from komikku.models import Settings
 from komikku.servers import convert_date_string
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
@@ -85,6 +86,13 @@ class Manganelo(Server):
                     data['status'] = 'complete'
                 elif status == 'ongoing':
                     data['status'] = 'ongoing'
+
+        # Long strip detection
+        if 'Webtoons' in data['genres'] and Settings.get_default().long_strip:
+            data.update(dict(
+                reading_direction='vertical',
+                scaling='width',
+            ))
 
         # Synopsis
         div_synopsis = soup.find('div', id='panel-story-info-description')

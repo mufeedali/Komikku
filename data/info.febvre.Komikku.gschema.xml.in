@@ -86,7 +86,7 @@
         <key type="b" name="long-strip">
             <default>false</default>
             <summary>Long Strip Detection</summary>
-            <description>Automatically detect long strip manga when possible. Only MangaDex is supported for now.</description>
+            <description>Automatically detect long strip manga when possible. Only works on supported servers.</description>
         </key>
 
         <key type="ai" name="window-size">
