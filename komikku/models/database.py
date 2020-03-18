@@ -607,7 +607,7 @@ class Chapter:
             return None
 
         if not os.path.exists(self.path):
-            os.makedirs(self.path)
+            os.makedirs(self.path, exist_ok=True)
 
         page_path = os.path.join(self.path, imagename)
 
