@@ -18,6 +18,7 @@ class Unionmangas(Server):
     id = 'unionmangas'
     name = SERVER_NAME
     lang = 'pt'
+    long_strip_genres = ['Webtoon', ]
 
     base_url = 'https://unionmangas.top'
     api_search_url = base_url + '/assets/busca.php?q={0}'
