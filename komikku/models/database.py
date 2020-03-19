@@ -13,6 +13,7 @@ import shutil
 
 from gi.repository import GLib
 
+from komikku.models.settings import Settings
 from komikku.servers import get_server_class_name_by_id
 from komikku.servers import get_server_dir_name_by_id
 from komikku.servers import get_server_module_name_by_id
@@ -268,6 +269,16 @@ class Manga:
         data.update(dict(
             last_read=datetime.datetime.now(),
         ))
+
+        # Long strip detection (Webtoon)
+        if Settings.get_default().long_strip_detection and manga.server.long_strip_genres and data['genres']:
+            for genre in server.long_strip_genres:
+                if genre in data['genres']:
+                    data.update(dict(
+                        reading_direction='vertical',
+                        scaling='width',
+                    ))
+                    break
 
         for key in data:
             setattr(manga, key, data[key])
