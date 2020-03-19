@@ -88,7 +88,7 @@ class Manganelo(Server):
                     data['status'] = 'ongoing'
 
         # Long strip detection
-        if 'Webtoons' in data['genres'] and Settings.get_default().long_strip:
+        if Settings.get_default().long_strip_detection and 'Webtoons' in data['genres']:
             data.update(dict(
                 reading_direction='vertical',
                 scaling='width',

@@ -143,7 +143,7 @@ class Mangadex(Server):
         data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['genres'] if str(genre_id) in GENRES]
 
         # Long strip detection
-        if 36 in resp_data['manga']['genres'] and Settings.get_default().long_strip:
+        if Settings.get_default().long_strip_detection and 36 in resp_data['manga']['genres']:
             data.update(dict(
                 reading_direction='vertical',
                 scaling='width',
@@ -164,7 +164,7 @@ class Mangadex(Server):
             if self.lang_code != chapter['lang_code']:
                 continue
             if chapter['group_id'] == 9097:
-                # Chapters from MANGA Plus can be read from MangaDex
+                # Chapters from MANGA Plus can't be read from MangaDex
                 continue
             if datetime.fromtimestamp(chapter['timestamp']) > datetime.utcnow():
                 # Future chapter

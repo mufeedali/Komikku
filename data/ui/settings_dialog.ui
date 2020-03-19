@@ -622,7 +622,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSwitch" id="long_strip_switch">
+                                          <object class="GtkSwitch" id="long_strip_detection_switch">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="halign">center</property>
