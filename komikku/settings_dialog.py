@@ -32,9 +32,10 @@ class SettingsDialog(Handy.Dialog):
 
     reading_direction_row = Gtk.Template.Child('reading_direction_row')
     scaling_row = Gtk.Template.Child('scaling_row')
-    background_color_row= Gtk.Template.Child('background_color_row')
+    background_color_row = Gtk.Template.Child('background_color_row')
     borders_crop_switch = Gtk.Template.Child('borders_crop_switch')
     fullscreen_switch = Gtk.Template.Child('fullscreen_switch')
+    long_strip_switch = Gtk.Template.Child('long_strip_switch')
 
     def __init__(self, parent):
         super(SettingsDialog, self).__init__(use_header_bar=True)
@@ -150,6 +151,10 @@ class SettingsDialog(Handy.Dialog):
         self.fullscreen_switch.set_active(settings.fullscreen)
         self.fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
+        # Long strip detection
+        self.long_strip_switch.set_active(settings.long_strip)
+        self.long_strip_switch.connect('notify::active', self.on_long_strip_changed)
+
     def on_background_color_changed(self, row, param):
         index = row.get_selected_index()
 
@@ -169,6 +174,10 @@ class SettingsDialog(Handy.Dialog):
 
     def on_fullscreen_changed(self, switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
+
+    @staticmethod
+    def on_long_strip_changed(switch_button, gparam):
+        Settings.get_default().long_strip = switch_button.get_active()
 
     def on_new_chapters_auto_download_changed(self, switch_button, gparam):
         if switch_button.get_active():
