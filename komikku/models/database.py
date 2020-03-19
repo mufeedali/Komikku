@@ -139,7 +139,7 @@ def init_db():
         synopsis text,
         status text,
         background_color text,
-        borders_crop integer DEFAULT -1,
+        borders_crop integer,
         reading_direction text,
         scaling text,
         sort_order text,
@@ -194,7 +194,7 @@ def init_db():
 
         if db_version <= 2:
             # Version 0.12.0
-            if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer DEFAULT -1;'):
+            if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer;'):
                 db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
 
         print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
@@ -264,12 +264,9 @@ class Manga:
         chapters = data.pop('chapters')
         cover_url = data.pop('cover')
 
-        # Fill data with internal data or later scraped values
+        # Fill data with internal data
         data.update(dict(
             last_read=datetime.datetime.now(),
-            sort_order=None,
-            reading_direction=None,
-            last_update=None,
         ))
 
         for key in data:
@@ -541,17 +538,14 @@ class Chapter:
     def new(cls, data, rank, manga_id, db_conn=None):
         c = cls()
 
-        # Fill data with internal usage data or not yet scraped values
+        # Fill data with internal data
         data = data.copy()
         data.update(dict(
             manga_id=manga_id,
-            pages=None,   # later scraped value
-            scrambled=0,  # later scraped value
             rank=rank,
             downloaded=0,
             recent=0,
             read=0,
-            last_page_read_index=None,
         ))
 
         for key in data:
