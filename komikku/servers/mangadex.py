@@ -10,6 +10,7 @@ import html
 import magic
 import requests
 
+from komikku.models import Settings
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.utils import SecretAccountHelper
@@ -140,6 +141,13 @@ class Mangadex(Server):
         data['authors'] += [t.strip() for t in resp_data['manga']['author'].split(',')]
         data['authors'] += [t.strip() for t in resp_data['manga']['artist'].split(',') if t.strip() not in data['authors']]
         data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['genres'] if str(genre_id) in GENRES]
+
+        # Long strip detection
+        if 36 in resp_data['manga']['genres'] and Settings.get_default().long_strip:
+            data.update(dict(
+                reading_direction='vertical',
+                scaling='width',
+            ))
 
         if resp_data['manga']['status'] == 1:
             data['status'] = 'ongoing'

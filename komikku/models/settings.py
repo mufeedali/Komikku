@@ -104,6 +104,14 @@ class Settings(Gio.Settings):
         self.set_boolean('fullscreen', state)
 
     @property
+    def long_strip(self):
+        return self.get_boolean('long-strip')
+
+    @long_strip.setter
+    def long_strip(self, state):
+        self.set_boolean('long-strip', state)
+
+    @property
     def new_chapters_auto_download(self):
         return self.get_boolean('new-chapters-auto-download')
 
