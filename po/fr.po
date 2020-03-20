@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-13 01:41+0100\n"
+"POT-Creation-Date: 2020-03-20 01:18+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -32,15 +32,15 @@ msgstr "Certains mangas sont en cours de mise à jour."
 msgid "Quit?"
 msgstr "Quitter ?"
 
-#: ../komikku/reader/pager/__init__.py:419
+#: ../komikku/reader/pager/__init__.py:412
 msgid "There is no previous chapter."
 msgstr "Il n'y a pas de chapitre précédent."
 
-#: ../komikku/reader/pager/__init__.py:421
+#: ../komikku/reader/pager/__init__.py:414
 msgid "It was the last chapter."
 msgstr "C'était le dernier chapitre."
 
-#: ../komikku/reader/pager/page.py:281
+#: ../komikku/reader/pager/page.py:267
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -73,35 +73,35 @@ msgstr "Mise à jour de la bibliothèque démarrée"
 msgid "Update started"
 msgstr "Mise à jour démarrée"
 
-#: ../komikku/models/database.py:234
+#: ../komikku/models/database.py:235
 msgid "Complete"
 msgstr "Terminé"
 
-#: ../komikku/models/database.py:235
+#: ../komikku/models/database.py:236
 msgid "Ongoing"
 msgstr "En cours"
 
-#: ../komikku/models/database.py:236
+#: ../komikku/models/database.py:237
 msgid "Suspended"
 msgstr "Suspendu"
 
-#: ../komikku/models/database.py:237
+#: ../komikku/models/database.py:238
 msgid "Hiatus"
 msgstr "Hiatus"
 
-#: ../komikku/models/database.py:695
+#: ../komikku/models/database.py:700
 msgid "Download pending"
 msgstr "Téléchargement en attente"
 
-#: ../komikku/models/database.py:696
+#: ../komikku/models/database.py:701
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: ../komikku/models/database.py:697
+#: ../komikku/models/database.py:702
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../komikku/models/database.py:698
+#: ../komikku/models/database.py:703
 msgid "Download error"
 msgstr "Erreur de téléchargement"
 
@@ -195,43 +195,43 @@ msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/settings_dialog.py:44
+#: ../komikku/settings_dialog.py:45
 msgid "Settings"
 msgstr "Préférences"
 
-#: ../komikku/settings_dialog.py:118
+#: ../komikku/settings_dialog.py:123
 msgid "Right to Left ←"
 msgstr "De droite à gauche ←"
 
-#: ../komikku/settings_dialog.py:119
+#: ../komikku/settings_dialog.py:124
 msgid "Left to Right →"
 msgstr "De gauche à droite →"
 
-#: ../komikku/settings_dialog.py:120
+#: ../komikku/settings_dialog.py:125
 msgid "Vertical ↓"
 msgstr "Vertical ↓"
 
-#: ../komikku/settings_dialog.py:128
+#: ../komikku/settings_dialog.py:133
 msgid "Adapt to Screen"
 msgstr "Ajuster à l'écran"
 
-#: ../komikku/settings_dialog.py:129
+#: ../komikku/settings_dialog.py:134
 msgid "Adapt to Width"
 msgstr "Ajuster à la largeur"
 
-#: ../komikku/settings_dialog.py:130
+#: ../komikku/settings_dialog.py:135
 msgid "Adapt to Height"
 msgstr "Ajuster à la hauteur"
 
-#: ../komikku/settings_dialog.py:138
+#: ../komikku/settings_dialog.py:143
 msgid "White"
 msgstr "Blanc"
 
-#: ../komikku/settings_dialog.py:139
+#: ../komikku/settings_dialog.py:144
 msgid "Black"
 msgstr "Noir"
 
-#: ../komikku/settings_dialog.py:244
+#: ../komikku/settings_dialog.py:262
 msgid "Servers Settings"
 msgstr "Paramètres des serveurs"
 
@@ -379,39 +379,47 @@ msgstr "Langues des serveurs"
 msgid "Enable/disable and configure servers"
 msgstr "Activer / désactiver et configurer les serveurs"
 
-#: ../data/ui/settings_dialog.ui:579
+#: ../data/ui/settings_dialog.ui:586
+msgid "Long Strip Detection"
+msgstr "Détection des longues pages verticales"
+
+#: ../data/ui/settings_dialog.ui:602
+msgid "Automatically detect long vertical strip when possible"
+msgstr "Auto-détecter les longues pages verticales lorsque cela est possible"
+
+#: ../data/ui/settings_dialog.ui:661
 msgid "Reader"
 msgstr "Lecteur"
 
-#: ../data/ui/settings_dialog.ui:607
+#: ../data/ui/settings_dialog.ui:689
 msgid "Reading Direction"
 msgstr "Sens de lecture"
 
-#: ../data/ui/settings_dialog.ui:614
+#: ../data/ui/settings_dialog.ui:696
 msgid "Type of scaling to adapt image"
 msgstr "Type de mise à l'échelle pour adapter l'image"
 
-#: ../data/ui/settings_dialog.ui:615
+#: ../data/ui/settings_dialog.ui:697
 msgid "Scaling"
 msgstr "Mise à l'échelle"
 
-#: ../data/ui/settings_dialog.ui:623 ../data/ui/menu/reader.xml:53
+#: ../data/ui/settings_dialog.ui:705 ../data/ui/menu/reader.xml:53
 msgid "Background Color"
 msgstr "Couleur de fond"
 
-#: ../data/ui/settings_dialog.ui:652
+#: ../data/ui/settings_dialog.ui:734
 msgid "Borders Crop"
 msgstr "Rognage des bordures"
 
-#: ../data/ui/settings_dialog.ui:669
+#: ../data/ui/settings_dialog.ui:751
 msgid "Crop white borders of images"
 msgstr "Rogner les bordures blanches des images"
 
-#: ../data/ui/settings_dialog.ui:735
+#: ../data/ui/settings_dialog.ui:817
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: ../data/ui/settings_dialog.ui:752
+#: ../data/ui/settings_dialog.ui:834
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrer automatiquement en mode plein écran"
 

@@ -599,7 +599,7 @@
                                                 <property name="halign">start</property>
                                                 <property name="valign">start</property>
                                                 <property name="vexpand">True</property>
-                                                <property name="label" translatable="yes">Automatically detect long strip manga when possible</property>
+                                                <property name="label" translatable="yes">Automatically detect long vertical strip when possible</property>
                                                 <property name="ellipsize">end</property>
                                                 <attributes>
                                                   <attribute name="size" value="9500"/>

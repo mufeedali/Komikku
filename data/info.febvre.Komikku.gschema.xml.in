@@ -60,7 +60,7 @@
         <key type="b" name="long-strip-detection">
             <default>false</default>
             <summary>Long Strip Detection</summary>
-            <description>Automatically detect long strip manga when possible (only on supported servers)</description>
+            <description>Automatically detect long vertical strip when possible (only on supported servers)</description>
         </key>
 
         <key enum="@appid@.BackgroundColor" name="background-color">
