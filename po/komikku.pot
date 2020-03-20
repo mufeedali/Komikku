@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-13 01:41+0100\n"
+"POT-Creation-Date: 2020-03-20 01:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,15 +37,15 @@ msgstr ""
 msgid "Quit?"
 msgstr ""
 
-#: ../komikku/reader/pager/__init__.py:419
+#: ../komikku/reader/pager/__init__.py:412
 msgid "There is no previous chapter."
 msgstr ""
 
-#: ../komikku/reader/pager/__init__.py:421
+#: ../komikku/reader/pager/__init__.py:414
 msgid "It was the last chapter."
 msgstr ""
 
-#: ../komikku/reader/pager/page.py:281
+#: ../komikku/reader/pager/page.py:267
 msgid "Retry"
 msgstr ""
 
@@ -76,35 +76,35 @@ msgstr ""
 msgid "Update started"
 msgstr ""
 
-#: ../komikku/models/database.py:234
+#: ../komikku/models/database.py:235
 msgid "Complete"
 msgstr ""
 
-#: ../komikku/models/database.py:235
+#: ../komikku/models/database.py:236
 msgid "Ongoing"
 msgstr ""
 
-#: ../komikku/models/database.py:236
+#: ../komikku/models/database.py:237
 msgid "Suspended"
 msgstr ""
 
-#: ../komikku/models/database.py:237
+#: ../komikku/models/database.py:238
 msgid "Hiatus"
 msgstr ""
 
-#: ../komikku/models/database.py:695
+#: ../komikku/models/database.py:700
 msgid "Download pending"
 msgstr ""
 
-#: ../komikku/models/database.py:696
+#: ../komikku/models/database.py:701
 msgid "Downloaded"
 msgstr ""
 
-#: ../komikku/models/database.py:697
+#: ../komikku/models/database.py:702
 msgid "Downloading"
 msgstr ""
 
-#: ../komikku/models/database.py:698
+#: ../komikku/models/database.py:703
 msgid "Download error"
 msgstr ""
 
@@ -195,43 +195,43 @@ msgstr ""
 msgid "Komikku"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:44
+#: ../komikku/settings_dialog.py:45
 msgid "Settings"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:118
+#: ../komikku/settings_dialog.py:123
 msgid "Right to Left ←"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:119
+#: ../komikku/settings_dialog.py:124
 msgid "Left to Right →"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:120
+#: ../komikku/settings_dialog.py:125
 msgid "Vertical ↓"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:128
+#: ../komikku/settings_dialog.py:133
 msgid "Adapt to Screen"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:129
+#: ../komikku/settings_dialog.py:134
 msgid "Adapt to Width"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:130
+#: ../komikku/settings_dialog.py:135
 msgid "Adapt to Height"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:138
+#: ../komikku/settings_dialog.py:143
 msgid "White"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:139
+#: ../komikku/settings_dialog.py:144
 msgid "Black"
 msgstr ""
 
-#: ../komikku/settings_dialog.py:244
+#: ../komikku/settings_dialog.py:262
 msgid "Servers Settings"
 msgstr ""
 
@@ -374,39 +374,47 @@ msgstr ""
 msgid "Enable/disable and configure servers"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:579
+#: ../data/ui/settings_dialog.ui:586
+msgid "Long Strip Detection"
+msgstr ""
+
+#: ../data/ui/settings_dialog.ui:602
+msgid "Automatically detect long vertical strip when possible"
+msgstr ""
+
+#: ../data/ui/settings_dialog.ui:661
 msgid "Reader"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:607
+#: ../data/ui/settings_dialog.ui:689
 msgid "Reading Direction"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:614
+#: ../data/ui/settings_dialog.ui:696
 msgid "Type of scaling to adapt image"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:615
+#: ../data/ui/settings_dialog.ui:697
 msgid "Scaling"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:623 ../data/ui/menu/reader.xml:53
+#: ../data/ui/settings_dialog.ui:705 ../data/ui/menu/reader.xml:53
 msgid "Background Color"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:652
+#: ../data/ui/settings_dialog.ui:734
 msgid "Borders Crop"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:669
+#: ../data/ui/settings_dialog.ui:751
 msgid "Crop white borders of images"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:735
+#: ../data/ui/settings_dialog.ui:817
 msgid "Fullscreen"
 msgstr ""
 
-#: ../data/ui/settings_dialog.ui:752
+#: ../data/ui/settings_dialog.ui:834
 msgid "Automatically enter fullscreen mode"
 msgstr ""
 

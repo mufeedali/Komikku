@@ -69,6 +69,7 @@ class Server:
     lang = NotImplemented
     status = 'enabled'
     logged_in = False
+    long_strip_genres = []
 
     base_url = None
 

@@ -29,13 +29,13 @@ class SettingsDialog(Handy.Dialog):
     new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
     servers_languages_expander_row = Gtk.Template.Child('servers_languages_expander_row')
     servers_settings_action_row = Gtk.Template.Child('servers_settings_action_row')
+    long_strip_detection_switch = Gtk.Template.Child('long_strip_detection_switch')
 
     reading_direction_row = Gtk.Template.Child('reading_direction_row')
     scaling_row = Gtk.Template.Child('scaling_row')
     background_color_row = Gtk.Template.Child('background_color_row')
     borders_crop_switch = Gtk.Template.Child('borders_crop_switch')
     fullscreen_switch = Gtk.Template.Child('fullscreen_switch')
-    long_strip_switch = Gtk.Template.Child('long_strip_switch')
 
     def __init__(self, parent):
         super(SettingsDialog, self).__init__(use_header_bar=True)
@@ -110,6 +110,10 @@ class SettingsDialog(Handy.Dialog):
         self.servers_settings_action_row.add_action(btn)
         btn.connect('clicked', self.show_servers_settings)
 
+        # Long strip detection
+        self.long_strip_detection_switch.set_active(settings.long_strip_detection)
+        self.long_strip_detection_switch.connect('notify::active', self.on_long_strip_detection_changed)
+
         #
         # Reader
         #
@@ -151,10 +155,6 @@ class SettingsDialog(Handy.Dialog):
         self.fullscreen_switch.set_active(settings.fullscreen)
         self.fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
-        # Long strip detection
-        self.long_strip_switch.set_active(settings.long_strip)
-        self.long_strip_switch.connect('notify::active', self.on_long_strip_changed)
-
     @staticmethod
     def on_background_color_changed(row, param):
         index = row.get_selected_index()
@@ -180,8 +180,8 @@ class SettingsDialog(Handy.Dialog):
         Settings.get_default().fullscreen = switch_button.get_active()
 
     @staticmethod
-    def on_long_strip_changed(switch_button, gparam):
-        Settings.get_default().long_strip = switch_button.get_active()
+    def on_long_strip_detection_changed(switch_button, gparam):
+        Settings.get_default().long_strip_detection = switch_button.get_active()
 
     @staticmethod
     def on_new_chapters_auto_download_changed(switch_button, gparam):

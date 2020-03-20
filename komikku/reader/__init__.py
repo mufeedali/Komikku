@@ -31,6 +31,12 @@ class Reader:
         self.pager = Pager(self)
         self.overlay.add(self.pager)
 
+        # Page number indicator
+        self.page_number_label = Gtk.Label()
+        self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
+        self.page_number_label.set_valign(Gtk.Align.END)
+        self.overlay.add_overlay(self.page_number_label)
+
         # Controls
         self.controls = Controls(self)
 
@@ -167,12 +173,27 @@ class Reader:
         # Watch when menu is closed to be able to restore focus to pager
         self.window.menu_button.get_popover().connect('closed', on_menu_popover_closed)
 
+        self.page_number_label.hide()
         self.controls.hide()
 
         if Settings.get_default().fullscreen:
             self.window.set_fullscreen()
 
         self.window.show_page('reader')
+
+    def toggle_controls(self):
+        if self.controls.is_visible:
+            self.controls.hide()
+            self.page_number_label.show()
+        else:
+            self.controls.show()
+            self.page_number_label.hide()
+
+    def update_page_number(self, number, total):
+        self.page_number_label.set_text('{0}/{1}'.format(number, total))
+
+        if not self.controls.is_visible:
+            self.page_number_label.show()
 
     def update_title(self, chapter):
         # Add chapter to list of chapters consulted

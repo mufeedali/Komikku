@@ -21,6 +21,7 @@ class Manganelo(Server):
     id = 'manganelo'
     name = SERVER_NAME
     lang = 'en'
+    long_strip_genres = ['Webtoons', ]
 
     base_url = 'https://manganelo.com'
     search_url = base_url + '/getstorysearchjson'

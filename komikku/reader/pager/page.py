@@ -33,7 +33,7 @@ def compute_borders_crop_bbox(path):
 
 class Page(Gtk.Overlay):
     __gsignals__ = {
-        'render-completed': (GObject.SIGNAL_RUN_FIRST, None, ()),
+        'rendered': (GObject.SIGNAL_RUN_FIRST, None, ()),
     }
 
     def __init__(self, pager, chapter, index):
@@ -70,13 +70,6 @@ class Page(Gtk.Overlay):
         self.activity_indicator = ActivityIndicator()
         self.add_overlay(self.activity_indicator)
         self.set_overlay_pass_through(self.activity_indicator, True)  # Allows scrolling in zoom mode
-
-        # Page number indicator
-        self.page_number_label = Gtk.Label()
-        self.page_number_label.get_style_context().add_class('reader-page-number-indicator-label')
-        self.page_number_label.set_valign(Gtk.Align.END)
-        self.add_overlay(self.page_number_label)
-        self.set_overlay_pass_through(self.page_number_label, True)  # Allows scrolling in zoom mode
 
         self.show_all()
 
@@ -185,16 +178,13 @@ class Page(Gtk.Overlay):
                 # rare case that occurs during a quick navigation
                 return False
 
-            if self.loadable:
-                self.page_number_label.set_text('{0}/{1}'.format(self.index + 1, len(self.chapter.pages)))
-
             if self.loaded:
                 self.set_image()
                 self.status = 'rendered'
 
             self.activity_indicator.stop()
 
-            self.emit('render-completed')
+            self.emit('rendered')
 
             return False
 
@@ -214,15 +204,11 @@ class Page(Gtk.Overlay):
 
         self.status = 'rendering'
 
-        self.toggle_page_number()
         self.activity_indicator.start()
 
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
-
-    def refresh(self):
-        self.toggle_page_number()
 
     def rescale(self):
         if self.status == 'rendered':
@@ -285,9 +271,3 @@ class Page(Gtk.Overlay):
 
         self.add_overlay(button)
         button.show()
-
-    def toggle_page_number(self):
-        if self.reader.controls.is_visible:
-            self.page_number_label.hide()
-        else:
-            self.page_number_label.show()

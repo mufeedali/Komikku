@@ -57,6 +57,11 @@
             <summary>Servers Settings</summary>
             <description>Enable/disable and configure servers</description>
         </key>
+        <key type="b" name="long-strip-detection">
+            <default>false</default>
+            <summary>Long Strip Detection</summary>
+            <description>Automatically detect long vertical strip when possible (only on supported servers)</description>
+        </key>
 
         <key enum="@appid@.BackgroundColor" name="background-color">
             <default>"white"</default>

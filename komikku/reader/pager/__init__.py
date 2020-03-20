@@ -153,7 +153,7 @@ class Pager(Gtk.ScrolledWindow):
         self.adjust_scroll(animate=False)
 
         self.current_page = center_page
-        center_page.connect('render-completed', self.on_first_page_rendered)
+        center_page.connect('rendered', self.on_first_page_rendered)
         center_page.render()
 
     def on_btn_press(self, widget, event):
@@ -234,7 +234,10 @@ class Pager(Gtk.ScrolledWindow):
             self.zoom['active'] = False
 
     def on_first_page_rendered(self, page):
-        GLib.idle_add(self.on_page_switch, page, True)
+        self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
+        self.reader.controls.set_scale_value(page.index + 1)
+
+        GLib.idle_add(self.on_page_switch, page)
 
         self.pages[0].render()
         self.pages[2].render()
@@ -305,41 +308,36 @@ class Pager(Gtk.ScrolledWindow):
 
         return False
 
-    def on_page_switch(self, page, chapter_changed):
-        # Loop until page is loadable or render is ended
-        if not page.loadable and page.status == 'rendering':
+    def on_page_switch(self, page):
+        # Loop as long as the page rendering is not ended
+        if page.status == 'rendering':
             return True
 
-        if not page.loadable or page.status == 'cleaned':
+        if page.status != 'rendered' or page.error is not None:
             return False
 
-        if page.error is None:
-            chapter = page.chapter
+        chapter = page.chapter
 
-            # Update manga last read time
-            self.reader.manga.update(dict(last_read=datetime.datetime.now()))
+        # Update manga last read time
+        self.reader.manga.update(dict(last_read=datetime.datetime.now()))
 
-            # Mark page as read
-            chapter.pages[page.index]['read'] = True
-            # Check if chapter is read
-            chapter_is_read = True
-            for chapter_page in reversed(chapter.pages):
-                if not chapter_page.get('read'):
-                    chapter_is_read = False
-                    break
+        # Mark page as read
+        chapter.pages[page.index]['read'] = True
 
-            # Update chapter
-            chapter.update(dict(
-                pages=chapter.pages,
-                last_page_read_index=page.index,
-                read=chapter_is_read,
-                recent=0,
-            ))
+        # Check if chapter has been fully read
+        chapter_is_read = True
+        for chapter_page in reversed(chapter.pages):
+            if not chapter_page.get('read'):
+                chapter_is_read = False
+                break
 
-        if chapter_changed:
-            self.reader.controls.init()
-
-        self.reader.controls.set_scale_value(page.index + 1)
+        # Update chapter
+        chapter.update(dict(
+            pages=chapter.pages,
+            last_page_read_index=page.index,
+            read=chapter_is_read,
+            recent=0,
+        ))
 
         return False
 
@@ -366,12 +364,7 @@ class Pager(Gtk.ScrolledWindow):
             self.switchto_page('right')
         else:
             # Center part of the page: toggle controls
-            if self.reader.controls.is_visible:
-                self.current_page.page_number_label.show()
-                self.reader.controls.hide()
-            else:
-                self.current_page.page_number_label.hide()
-                self.reader.controls.show()
+            self.reader.toggle_controls()
 
         return False
 
@@ -424,16 +417,24 @@ class Pager(Gtk.ScrolledWindow):
             return
 
         if not page.loadable:
-            # Page is not ready to be shown
+            # Page index and pages of the chapter to which page belongs must be known to be able to move to another page
             return
 
         chapter_changed = self.current_page.chapter != page.chapter
+
+        self.current_page = page
+
+        # Update title and notify if chapter changed
         if chapter_changed:
             self.reader.update_title(page.chapter)
             self.window.show_notification(page.chapter.title, 2)
+            self.reader.controls.init()
 
-        self.current_page = page
-        self.current_page.refresh()
+        # Update page number and controls page slider
+        self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
+        self.reader.controls.set_scale_value(page.index + 1)
+
+        GLib.idle_add(self.on_page_switch, page)
 
         if position == 'left':
             self.adjust_scroll(0)
@@ -455,11 +456,9 @@ class Pager(Gtk.ScrolledWindow):
 
                 self.adjust_scroll(animate=False)
 
-                GLib.idle_add(self.on_page_switch, current_page, chapter_changed)
-
                 return False
 
-            GLib.idle_add(add_page, self.current_page)
+            GLib.idle_add(add_page, page)
 
         elif position == 'right':
             self.adjust_scroll(2)
@@ -480,8 +479,6 @@ class Pager(Gtk.ScrolledWindow):
                 self.box.pack_start(new_page, True, True, 0)
                 new_page.render()
 
-                GLib.idle_add(self.on_page_switch, current_page, chapter_changed)
-
                 return False
 
-            GLib.idle_add(add_page, self.current_page)
+            GLib.idle_add(add_page, page)

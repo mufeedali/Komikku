@@ -100,6 +100,10 @@ class Centraldemangas(Server):
                     data['status'] = 'ongoing'
                 elif value == 'Completo':
                     data['status'] = 'complete'
+                elif value == 'Cancelado':
+                    data['status'] = 'suspended'
+                elif value == 'Pausado':
+                    data['status'] = 'hiatus'
             elif label == 'Capítulos':
                 for tr_element in reversed(value_element.find_all('div', class_='content')[0].table.tbody.find_all('tr')[1:]):
                     tds_elements = tr_element.find_all('td')

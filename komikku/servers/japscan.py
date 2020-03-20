@@ -21,6 +21,7 @@ class Japscan(Server):
     id = 'japscan'
     name = SERVER_NAME
     lang = 'fr'
+    long_strip_genres = ['Webtoon', ]
 
     base_url = 'https://www.japscan.co'
     search_url = base_url + '/manga/'

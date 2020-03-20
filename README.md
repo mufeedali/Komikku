@@ -6,8 +6,7 @@ Basically, don't use this.
 
 Differences right now:
 
-* 'Long Strip' support for MangaDex and MangaNelo. So, any long strip Manhwa or web comics that you add from now should automatically start with the Vertical reading direction and "Adjust to Width" scaling. This may not be ideal for everybody, so it's not the default and should be enabled in the settings.
-* DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
+* Enabled DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
 * Some fixes suggested by DeepSource (I don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402), [c70a97ff](https://gitlab.com/lastweakness/Komikku/-/commit/c70a97ff7b43098225137c1916fb20f3c7c131e5), [7b704451](https://gitlab.com/lastweakness/Komikku/-/commit/7b7044514f32e2f74f3aabce4e26f224db5b96cc) and [ef69144d](https://gitlab.com/lastweakness/Komikku/-/commit/ef69144da658029dfec323ff62deca3721afad82))
 * This README file.
 
