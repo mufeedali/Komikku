@@ -235,6 +235,7 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_first_page_rendered(self, page):
         self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
+        self.reader.controls.init()
         self.reader.controls.set_scale_value(page.index + 1)
 
         GLib.idle_add(self.on_page_switch, page)
