@@ -98,17 +98,6 @@ GENRES = {
 }
 SERVER_NAME = 'MangaDex'
 
-headers = {
-    'User-Agent': USER_AGENT,
-    'Host': 'mangadex.org',
-    'Referer': 'https://mangadex.org',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'fr-FR,en-US;q=0.7,en;q=0.3',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'DNT': '1',
-    'Connection': 'keep-alive',
-}
-
 
 class Mangadex(Server):
     id = 'mangadex'
@@ -116,6 +105,7 @@ class Mangadex(Server):
     lang = 'en'
     lang_code = 'gb'
     long_strip_genres = ['Long Strip', ]
+    has_login = True
 
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
@@ -127,28 +117,19 @@ class Mangadex(Server):
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
 
+    headers = {
+        'User-Agent': USER_AGENT,
+        'Host': 'mangadex.org',
+        'Referer': 'https://mangadex.org',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'fr-FR,en-US;q=0.7,en;q=0.3',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+    }
+
     def __init__(self, login=None, password=None):
-        def on_get_account(attributes, password, name):
-            if not attributes or not password:
-                return
-
-            self.logged_in = self.login(attributes['login'], password)
-
-        if login and password:
-            self.clear_session()
-
-        if self.session is None:
-            if self.load_session():
-                self.logged_in = True
-            else:
-                self.session = requests.Session()
-                self.session.headers = headers
-
-                if login is None and password is None:
-                    helper = SecretAccountHelper()
-                    helper.get(self.id, on_get_account)
-                else:
-                    self.logged_in = self.login(login, password)
+        self.init(login, password)
 
     @staticmethod
     def convert_old_slug(slug):
