@@ -6,11 +6,12 @@ Basically, don't use this.
 
 Differences right now:
 
+* Added a Makefile ([ae0c1731](https://gitlab.com/TAAPArthur/Komikku/-/commit/ae0c17311bf81505431687e1d21b560d76a4eb82) by TAAPArthur)
 * Enabled DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
 * Some fixes suggested by DeepSource (I don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402), [c70a97ff](https://gitlab.com/lastweakness/Komikku/-/commit/c70a97ff7b43098225137c1916fb20f3c7c131e5), [7b704451](https://gitlab.com/lastweakness/Komikku/-/commit/7b7044514f32e2f74f3aabce4e26f224db5b96cc) and [ef69144d](https://gitlab.com/lastweakness/Komikku/-/commit/ef69144da658029dfec323ff62deca3721afad82))
 * This README file.
 
-The official README follows.
+The actual README follows. It's mostly the same as the official README.
 
 # <img height="32" src="data/icons/info.febvre.Komikku.svg" /> Komikku
 
@@ -82,17 +83,20 @@ This is the best practice to test Komikku without installing using meson and nin
 ```bash
 git clone https://gitlab.com/valos/Komikku
 make
-make install
+make local
 ```
 
 #### Later on
 
 ```bash
-make install
+make local
 ```
 
 #### To Run
+
+```bash
 make run
+```
 
 ### Option 3: Build and install systemwide directly with Meson
 
@@ -103,10 +107,16 @@ But if you know what you're doing, here you go:
 ```bash
 git clone https://gitlab.com/valos/Komikku
 cd Komikku
-mkdir _build
-cd _build
-meson ..
-ninja install
+make
+make install
+```
+
+If you've already used Option 2, do:
+
+```bash
+make clean
+make
+make install
 ```
 
 ## Translations
