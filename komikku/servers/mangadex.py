@@ -280,11 +280,11 @@ class Mangadex(Server):
 
         return results
 
-    def login(self, login, password):
+    def login(self, username, password):
         r = self.session_post(
             self.action_url.format('login'),
             data={
-                'login_username': login,
+                'login_username': username,
                 'login_password': password,
                 'remember_me': '1',
             },
