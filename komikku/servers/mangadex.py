@@ -8,12 +8,10 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import html
 import magic
-import requests
 
 from komikku.models import Settings
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
-from komikku.utils import SecretAccountHelper
 
 
 GENRES = {

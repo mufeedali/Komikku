@@ -114,23 +114,17 @@ class Crunchyroll(Server):
         return bytes(b ^ 66 for b in buffer)
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
-        """
-        Returns chapter page scan (image) content
-        """
+        """ Returns chapter page scan (image) content """
         r = self.session_get(page['image'])
 
         return (page["slug"], self.decode_image(r.content))
 
     def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
+        """ Returns manga absolute URL """
         return self.manga_url.format(slug)
 
     def get_most_populars(self):
-        """
-        Returns full list of manga sorted by rank
-        """
+        """ Returns full list of manga sorted by rank """
         r = self.session_get(self.api_series_url)
 
         resp_data = r.json()
@@ -150,9 +144,7 @@ class Crunchyroll(Server):
         return filter(lambda x: term_lower in x['name'].lower(), self.get_most_populars())
 
     def login(self, username, password):
-        """
-        Setup Crunchyroll session and get the auth token
-        """
+        """ Setup Crunchyroll session and get the auth token """
         if not username or not password:
             return False
 
@@ -176,9 +168,7 @@ class Crunchyroll(Server):
         return True
 
     def init_session_token(self):
-        """
-        Initialize session_id
-        """
+        """ Initialize session_id """
         match = re.search(r'sessionId: "(\w*)"', self.session_get('https://www.crunchyroll.com/manga/the-seven-deadly-sins/read/1').text)
         if match:
             Crunchyroll.session_id = match.group(1)

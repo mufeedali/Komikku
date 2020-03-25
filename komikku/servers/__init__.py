@@ -100,7 +100,7 @@ class Server:
                 else:
                     self.logged_in = self.login(login, password)
 
-    def login(self, login, password):
+    def login(self, username, password):
         return False
 
     @property
