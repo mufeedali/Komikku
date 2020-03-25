@@ -46,6 +46,11 @@
                         <attribute name="action">app.reader.scaling</attribute>
                         <attribute name="target">height</attribute>
                     </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Original Size</attribute>
+                        <attribute name="action">app.reader.scaling</attribute>
+                        <attribute name="target">original</attribute>
+                    </item>
                 </section>
             </submenu>
 
