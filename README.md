@@ -6,7 +6,7 @@ Basically, don't use this.
 
 Differences right now:
 
-* Added a Makefile ([ae0c1731](https://gitlab.com/TAAPArthur/Komikku/-/commit/ae0c17311bf81505431687e1d21b560d76a4eb82) by TAAPArthur)
+* Added a Makefile ([ae0c1731](https://gitlab.com/TAAPArthur/Komikku/-/commit/ae0c17311bf81505431687e1d21b560d76a4eb82) by TAAPArthur, improved greatly in [333594e](https://gitlab.com/lastweakness/Komikku/-/commit/333594e1aa5e5cfb8ce29854f3206412404a88ad))
 * Enabled DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/lastweakness/Komikku/?ref=repository-badge))
 * Some fixes suggested by DeepSource (I don't think it really matters much. See [e8b1faa1](https://gitlab.com/lastweakness/Komikku/-/commit/e8b1faa1068bd605a42a72c9afefc1fee7c77402), [c70a97ff](https://gitlab.com/lastweakness/Komikku/-/commit/c70a97ff7b43098225137c1916fb20f3c7c131e5), [7b704451](https://gitlab.com/lastweakness/Komikku/-/commit/7b7044514f32e2f74f3aabce4e26f224db5b96cc) and [ef69144d](https://gitlab.com/lastweakness/Komikku/-/commit/ef69144da658029dfec323ff62deca3721afad82))
 * This README file.
