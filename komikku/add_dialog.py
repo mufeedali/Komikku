@@ -54,6 +54,7 @@ class AddDialog():
 
         # Servers page
         listbox = self.builder.get_object('servers_page_listbox')
+        listbox.get_style_context().add_class('list-bordered')
         listbox.connect('row-activated', self.on_server_clicked)
 
         servers_settings = Settings.get_default().servers_settings
@@ -102,6 +103,7 @@ class AddDialog():
         self.custom_title_search_page_searchentry.connect('activate', self.search)
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
+        self.search_page_listbox.get_style_context().add_class('list-bordered')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
         # Manga page

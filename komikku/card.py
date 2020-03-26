@@ -204,6 +204,7 @@ class ChaptersList:
         self.card = card
 
         self.listbox = self.card.builder.get_object('chapters_listbox')
+        self.listbox.get_style_context().add_class('list-bordered')
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
 
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
