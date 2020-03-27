@@ -23,7 +23,7 @@ from komikku.servers import LANGUAGES
 from komikku.utils import log_error_traceback
 
 
-class AddDialog():
+class AddDialog:
     page = None
     search_lock = False
 
