@@ -7,21 +7,6 @@
     "sources": [
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/e8/74/6e4f91745020f967d09332bb2b8b9b10090957334692eb88ea4afe91b77f/urllib3-1.25.8-py2.py3-none-any.whl",
-            "sha256": "2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b9/63/df50cac98ea0d5b006c55a399c3bf1db9da7b5a24de7890bc9cfd5dd9e99/certifi-2019.11.28-py2.py3-none-any.whl",
-            "sha256": "017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/89/e3/afebe61c546d18fb1709a61bee788254b40e736cff7271c7de5de2dc4128/idna-2.9-py2.py3-none-any.whl",
-            "sha256": "a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"
-        },
-        {
-            "type": "file",
             "url": "https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl",
             "sha256": "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
         },
@@ -32,13 +17,28 @@
         },
         {
             "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b9/63/df50cac98ea0d5b006c55a399c3bf1db9da7b5a24de7890bc9cfd5dd9e99/certifi-2019.11.28-py2.py3-none-any.whl",
+            "sha256": "017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"
+        },
+        {
+            "type": "file",
             "url": "https://files.pythonhosted.org/packages/60/ef/7681134338fc097acef8d9b2f8abe0458e4d87559c689a8c306d0957ece5/requests_toolbelt-0.9.1-py2.py3-none-any.whl",
             "sha256": "380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/dc/47/e631decfbfce696adc72a134fc13d429d6754b4ff88f9b7264dd52147622/cloudscraper-1.2.28-py2.py3-none-any.whl",
-            "sha256": "ebeb5f9adcb52ed6b763688b05c34264942116b01f8f0b7a5b7de7c1d505cd67"
+            "url": "https://files.pythonhosted.org/packages/e8/74/6e4f91745020f967d09332bb2b8b9b10090957334692eb88ea4afe91b77f/urllib3-1.25.8-py2.py3-none-any.whl",
+            "sha256": "2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/dc/b6/26e6602ff767b8c2f2274dc6af1ebd6e3c1d775b71baf9c0a74eb702940f/cloudscraper-1.2.30-py2.py3-none-any.whl",
+            "sha256": "75f978fd2dc10582768c99bcc2dfaab49e099a69ba681b74baaf84e00d198e05"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/89/e3/afebe61c546d18fb1709a61bee788254b40e736cff7271c7de5de2dc4128/idna-2.9-py2.py3-none-any.whl",
+            "sha256": "a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"
         }
     ]
 }

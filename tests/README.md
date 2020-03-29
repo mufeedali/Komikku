@@ -10,7 +10,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Install dependencies
+3. Install dependencies + pytest
 ```
 pip install --upgrade pip setuptools wheel
 pip install PyGObject --no-use-pep517
