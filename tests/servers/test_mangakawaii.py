@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,51 +14,62 @@ def mangakawaii_server():
     return Mangakawaii()
 
 
-def test_search_mangakawaii(mangakawaii_server):
-    try:
-        response = mangakawaii_server.search('tales of demons')
-        print('Mangakawaii: search', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
-def test_most_populars_mangakawaii(mangakawaii_server):
+@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_mangakawaii(mangakawaii_server):
+    # Get most popular
+    print('Get most popular')
     try:
         response = mangakawaii_server.get_most_populars()
-        print('Mangakawaii: get most populars', response)
     except Exception as e:
         response = None
         log_error_traceback(e)
+
     assert response is not None
+    yield
 
-
-def test_get_manga_data_mangakawaii(mangakawaii_server):
+    # Search
+    print('Search')
     try:
-        response = mangakawaii_server.get_manga_data(dict(slug='yaoshenji'))
-        print('Mangakawaii: get manga data', response)
+        response = mangakawaii_server.search('tales of demons and gods')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_chapter_data_mangakawaii(mangakawaii_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = mangakawaii_server.get_manga_chapter_data('yaoshenji', None, '251', None)
-        print('Mangakawaii: get manga chapter data', response)
+        response = mangakawaii_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_page_image_mangakawaii(mangakawaii_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = mangakawaii_server.get_manga_chapter_page_image('yaoshenji', None, '10', dict(slug='01.jpg'))
-        print('Mangakawaii: get manga chapter page image')
+        response = mangakawaii_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = mangakawaii_server.get_manga_chapter_page_image(slug, None, chapter_slug, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

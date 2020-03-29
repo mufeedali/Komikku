@@ -8,18 +8,18 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 @pytest.fixture
-def ninemanga_server():
-    from komikku.servers.ninemanga import Ninemanga
+def readmanga_server():
+    from komikku.servers.readmanga import Readmanga
 
-    return Ninemanga()
+    return Readmanga()
 
 
 @test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_ninemanga(ninemanga_server):
+def test_readmanga(readmanga_server):
     # Get most popular
     print('Get most popular')
     try:
-        response = ninemanga_server.get_most_populars()
+        response = readmanga_server.get_most_populars()
     except Exception as e:
         response = None
         log_error_traceback(e)
@@ -30,7 +30,7 @@ def test_ninemanga(ninemanga_server):
     # Search
     print('Search')
     try:
-        response = ninemanga_server.search('tales of demons and gods')
+        response = readmanga_server.search('Ван Пис')  # One Piece
         slug = response[0]['slug']
     except Exception as e:
         slug = None
@@ -42,7 +42,7 @@ def test_ninemanga(ninemanga_server):
     # Get manga data
     print('Get manga data')
     try:
-        response = ninemanga_server.get_manga_data(dict(slug=slug))
+        response = readmanga_server.get_manga_data(dict(slug=slug))
         chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
         chapter_slug = None
@@ -54,7 +54,7 @@ def test_ninemanga(ninemanga_server):
     # Get chapter data
     print("Get chapter data")
     try:
-        response = ninemanga_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        response = readmanga_server.get_manga_chapter_data(slug, None, chapter_slug, None)
         page = response['pages'][0]
     except Exception as e:
         page = None
@@ -66,7 +66,7 @@ def test_ninemanga(ninemanga_server):
     # Get page image
     print('Get page image')
     try:
-        response = ninemanga_server.get_manga_chapter_page_image(slug, None, None, page)
+        response = readmanga_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)

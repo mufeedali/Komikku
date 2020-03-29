@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,41 +14,51 @@ def xkcd_server():
     return Xkcd()
 
 
-def test_search_xkcd(xkcd_server):
+@test_steps('search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_xkcd(xkcd_server):
+    # Search
+    print('Search')
     try:
         response = xkcd_server.search()
-        print('xkcd: search', response)
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_data_xkcd(xkcd_server):
+    # Get manga data
+    print('Get manga data')
     try:
         response = xkcd_server.get_manga_data(dict())
-        print('xkcd: get manga data', response)
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_data_xkcd(xkcd_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = xkcd_server.get_manga_chapter_data(None, None, '1', None)
-        print('xkcd: get manga chapter data', response)
+        response = xkcd_server.get_manga_chapter_data(None, None, chapter_slug, None)
+        page = response['pages'][0]
     except Exception as e:
-        response = None
+        page = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert page is not None
+    yield
 
-def test_get_manga_chapter_page_image_xkcd(xkcd_server):
+    # Get page image
+    print('Get page image')
     try:
-        response = xkcd_server.get_manga_chapter_page_image(None, None, None, dict(image='barrel_cropped_(1).jpg'))
-        print('xkcd: get manga chapter page image')
+        response = xkcd_server.get_manga_chapter_page_image(None, None, chapter_slug, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield
