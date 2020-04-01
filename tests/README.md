@@ -14,7 +14,6 @@ source .venv/bin/activate
 ```
 pip install --upgrade pip setuptools wheel
 pip install PyGObject --no-use-pep517
-pip install requests
 pip install cloudscraper
 pip install lxml
 pip install beautifulsoup4
