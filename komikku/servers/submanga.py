@@ -19,7 +19,7 @@ class Submanga(Server):
     name = SERVER_NAME
     lang = 'es'
 
-    base_url = 'https://submanga.li'
+    base_url = 'https://submangas.net'
     search_url = base_url + '/search'
     most_populars_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/manga/{0}'
