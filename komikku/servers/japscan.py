@@ -7,8 +7,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 import magic
-import re
-import unicodedata
 from urllib.parse import urlsplit
 
 from komikku.servers import convert_date_string
