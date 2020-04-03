@@ -148,7 +148,10 @@ class Scantrad(Server):
         """
         return self.manga_url.format(slug)
 
-    def search(self, term):
+    def get_most_populars(self):
+        return self.search()
+
+    def search(self, term=None):
         r = self.session_get(self.search_url)
         if r is None:
             return None
@@ -161,11 +164,10 @@ class Scantrad(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        term = unidecode.unidecode(term).lower()
         for a_element in soup.find('div', class_='h-left').find_all('a'):
             name = a_element.find('div', class_='hmi-titre').text.strip()
 
-            if term in unidecode.unidecode(name).lower():
+            if term is None or unidecode.unidecode(term).lower() in unidecode.unidecode(name).lower():
                 results.append(dict(
                     slug=a_element.get('href').split('/')[-1],
                     name=name,
