@@ -11,6 +11,11 @@ import json
 
 from komikku.servers import convert_date_string
 from komikku.servers import Server
+from komikku.servers import USER_AGENT
+
+headers = {
+    'User-Agent': USER_AGENT,
+}
 
 
 class Mangalib(Server):
@@ -23,11 +28,12 @@ class Mangalib(Server):
     most_populars_url = base_url + '/manga-list?sort=views'
     manga_url = base_url + '/{0}'
     chapter_url = manga_url + '/{1}'
-    img_url = 'https://img{0}.mangalib.me{1}'
+    image_url = 'https://img{0}.mangalib.me/{1}'
 
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
+            self.session.headers = headers
 
     def get_manga_data(self, initial_data):
         """
@@ -137,7 +143,10 @@ class Mangalib(Server):
         data = dict(
             pages=[dict(
                 slug=None,
-                image=self.img_url.format(3 if chapter_json['imgServer'] == 'compress' else 2, chapter_json['imgUrl'].replace('\\', '') + page['u'])
+                image=self.image_url.format(
+                    3 if chapter_json['imgServer'] == 'compress' else 2,
+                    chapter_json['imgUrl'].replace('\\', '') + page['u']
+                ),
             ) for page in pages_json]
         )
 
@@ -213,4 +222,4 @@ class Hentailib(Mangalib):
     most_populars_url = base_url + '/manga-list?sort=views'
     manga_url = base_url + '/{0}'
     chapter_url = manga_url + '/{1}'
-    img_url = 'https://img{0}.hentailib.me{1}'
+    image_url = 'https://img{0}.hentailib.me{1}'

@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,41 +14,51 @@ def scantrad_server():
     return Scantrad()
 
 
-def test_search_scantrad(scantrad_server):
+@test_steps('search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_scantrad(scantrad_server):
+    # Search
+    print('Search')
     try:
-        response = scantrad_server.search('burn the witch')
-        print('Scantrad: search', response)
+        response = scantrad_server.search('one punch-man')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_data_scantrad(scantrad_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = scantrad_server.get_manga_data(dict(slug='burn-the-witch'))
-        print('Scantrad: get manga data', response)
+        response = scantrad_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_data_scantrad(scantrad_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = scantrad_server.get_manga_chapter_data('burn-the-witch', None, '1', None)
-        print('Scantrad: get manga chapter data', response)
+        response = scantrad_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
     except Exception as e:
-        response = None
+        page = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert page is not None
+    yield
 
-def test_get_manga_chapter_page_image_scantrad(scantrad_server):
+    # Get page image
+    print('Get page image')
     try:
-        response = scantrad_server.get_manga_chapter_page_image(None, None, None, dict(image='lel/20939.png'))
-        print('Scantrad: get manga chapter page image')
+        response = scantrad_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

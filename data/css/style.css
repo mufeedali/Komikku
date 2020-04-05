@@ -1,4 +1,4 @@
-list {
+.list-bordered {
     border-right: 1px solid @borders;
     border-left: 1px solid @borders;
 }

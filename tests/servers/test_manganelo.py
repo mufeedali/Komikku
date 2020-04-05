@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,51 +14,62 @@ def manganelo_server():
     return Manganelo()
 
 
-def test_search_manganelo(manganelo_server):
-    try:
-        response = manganelo_server.search('tales of demons')
-        print('Manganelo: search', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
-def test_most_populars_manganelo(manganelo_server):
+@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_manganelo(manganelo_server):
+    # Get most popular
+    print('Get most popular')
     try:
         response = manganelo_server.get_most_populars()
-        print('Manganelo: get most populars', response)
     except Exception as e:
         response = None
         log_error_traceback(e)
+
     assert response is not None
+    yield
 
-
-def test_get_manga_data_manganelo(manganelo_server):
+    # Search
+    print('Search')
     try:
-        response = manganelo_server.get_manga_data(dict(slug='hyer5231574354229'))
-        print('Manganelo: get manga data', response)
+        response = manganelo_server.search('tales of demons and gods')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_chapter_data_manganelo(manganelo_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = manganelo_server.get_manga_chapter_data('hyer5231574354229', None, 'chapter_1', None)
-        print('Manganelo: get manga chapter data', response)
+        response = manganelo_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_page_image_manganelo(manganelo_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = manganelo_server.get_manga_chapter_page_image(None, None, None, dict(image='https://s5.mkklcdnv5.com/mangakakalot/t1/tales_of_demons_and_gods/chapter_1_rebirth/15.jpg'))
-        print('Manganelo: get manga chapter page image')
+        response = manganelo_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = manganelo_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

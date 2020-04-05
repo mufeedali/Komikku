@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,42 +14,51 @@ def peppercarrot_server():
     return Peppercarrot()
 
 
-def test_search_peppercarrot(peppercarrot_server):
+@test_steps('search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_peppercarrot(peppercarrot_server):
+    # Search
+    print('Search')
     try:
         response = peppercarrot_server.search()
-        print('Pepper&Carrot: search', response)
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_data_peppercarrot(peppercarrot_server):
+    # Get manga data
+    print('Get manga data')
     try:
         response = peppercarrot_server.get_manga_data({})
-        print('Pepper&Carrot: get manga data', response)
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_data_peppercarrot(peppercarrot_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = peppercarrot_server.get_manga_chapter_data(None, None, 'ep01_Potion-of-Flight', None)
-        print('Pepper&Carrot: get manga chapter data', response)
+        response = peppercarrot_server.get_manga_chapter_data(None, None, chapter_slug, None)
+        page = response['pages'][0]
     except Exception as e:
-        response = None
+        page = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert page is not None
+    yield
 
-def test_get_manga_chapter_page_image_peppercarrot(peppercarrot_server):
+    # Get page image
+    print('Get page image')
     try:
-        response = peppercarrot_server.get_manga_chapter_page_image(
-            None, None, 'ep01_Potion-of-Flight', dict(slug='Pepper-and-Carrot_by-David-Revoy_E01.jpg'))
-        print('Pepper&Carrot: get manga chapter page image')
+        response = peppercarrot_server.get_manga_chapter_page_image(None, None, chapter_slug, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,55 +14,62 @@ def jaiminisbox_server():
     return Jaiminisbox()
 
 
-def test_search_jaiminisbox(jaiminisbox_server):
-    try:
-        response = jaiminisbox_server.search('solo leveling')
-        print('Jaimini\'s Box: search', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
-def test_most_populars_jaiminisbox(jaiminisbox_server):
+@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_jaiminisbox(jaiminisbox_server):
+    # Get most popular
+    print('Get most popular')
     try:
         response = jaiminisbox_server.get_most_populars()
-        print('Jaimini\'s Box: get most populars', response)
     except Exception as e:
         response = None
         log_error_traceback(e)
+
     assert response is not None
+    yield
 
-
-def test_get_manga_data_jaiminisbox(jaiminisbox_server):
+    # Search
+    print('Search')
     try:
-        response = jaiminisbox_server.get_manga_data(dict(slug='solo-leveling'))
-        print('Jaimini\'s Box: get manga data', response)
+        response = jaiminisbox_server.search('solo leveling')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_chapter_data_jaiminisbox(jaiminisbox_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = jaiminisbox_server.get_manga_chapter_data('solo-leveling', None, '0/0', None)
-        print('Jaimini\'s Box: get manga chapter data', response)
+        response = jaiminisbox_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_page_image_jaiminisbox(jaiminisbox_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = jaiminisbox_server.get_manga_chapter_page_image(
-            None, None, None,
-            dict(
-                image='https://i2.wp.com/jaiminisbox.com/reader/content/comics/solo-leveling_5c5b0f9edeb41/0-0_5d046cc814344/001.png?quality=100&strip=all'
-            ))
-        print('Jaimini\'s Box: get manga chapter page image')
+        response = jaiminisbox_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = jaiminisbox_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

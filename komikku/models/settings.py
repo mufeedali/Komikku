@@ -174,6 +174,8 @@ class Settings(Gio.Settings):
             return 'width'
         if value == 2:
             return 'height'
+        if value == 3:
+            return 'original'
 
         return 'screen'
 
@@ -196,6 +198,8 @@ class Settings(Gio.Settings):
             self.set_enum('scaling', 1)
         elif value == 'height':
             self.set_enum('scaling', 2)
+        elif value == 'original':
+            self.set_enum('scaling', 3)
 
     def toggle_server(self, uid, state):
         settings = self.servers_settings

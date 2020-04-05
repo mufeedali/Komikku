@@ -54,7 +54,7 @@ class Controls:
 
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
-        self.scale_handler_id = self.scale.connect('value-changed', self.on_scale_value_changed)
+        self.scale_handler_id = self.scale.connect('change-value', self.on_scale_value_changed)
 
         self.bottom_box.pack_start(self.scale, True, True, 0)
         self.reader.overlay.add_overlay(self.bottom_box)
@@ -84,8 +84,11 @@ class Controls:
         if self.is_visible:
             self.top_box.show_all()
 
-    def on_scale_value_changed(self, scale):
-        self.reader.pager.goto_page(int(scale.get_value()) - 1)
+    def on_scale_value_changed(self, scale, scroll_type, value):
+        if scroll_type != Gtk.ScrollType.JUMP:
+            return
+
+        self.reader.pager.goto_page(int(value) - 1)
 
     def on_unfullscreen(self):
         if self.is_visible:

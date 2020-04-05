@@ -233,26 +233,27 @@ class Page(Gtk.Overlay):
                 pixbuf = Pixbuf.new(Colorspace.RGB, self.pixbuf.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
                 self.pixbuf.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
 
-        width = pixbuf.get_width()
-        height = pixbuf.get_height()
+        if self.reader.scaling != 'original':
+            width = pixbuf.get_width()
+            height = pixbuf.get_height()
 
-        adapt_to_width_height = height / (width / self.reader.size.width)
-        adapt_to_height_width = width / (height / self.reader.size.height)
+            adapt_to_width_height = height / (width / self.reader.size.width)
+            adapt_to_height_width = width / (height / self.reader.size.height)
 
-        if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
-            # Adapt image to width
-            pixbuf = pixbuf.scale_simple(
-                self.reader.size.width,
-                adapt_to_width_height,
-                InterpType.BILINEAR
-            )
-        elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
-            # Adapt image to height
-            pixbuf = pixbuf.scale_simple(
-                adapt_to_height_width,
-                self.reader.size.height,
-                InterpType.BILINEAR
-            )
+            if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
+                # Adapt image to width
+                pixbuf = pixbuf.scale_simple(
+                    self.reader.size.width,
+                    adapt_to_width_height,
+                    InterpType.BILINEAR
+                )
+            elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
+                # Adapt image to height
+                pixbuf = pixbuf.scale_simple(
+                    adapt_to_height_width,
+                    self.reader.size.height,
+                    InterpType.BILINEAR
+                )
 
         self.image.set_from_pixbuf(pixbuf)
 

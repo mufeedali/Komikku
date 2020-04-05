@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,51 +14,62 @@ def scanonepiece_server():
     return Scanonepiece()
 
 
-def test_search_scanonepiece(scanonepiece_server):
-    try:
-        response = scanonepiece_server.search('tales of demons')
-        print('Scanonepiece: search', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
-def test_most_populars_scanonepiece(scanonepiece_server):
+@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_scanonepiece(scanonepiece_server):
+    # Get most popular
+    print('Get most popular')
     try:
         response = scanonepiece_server.get_most_populars()
-        print('Scanonepiece: get most populars', response)
     except Exception as e:
         response = None
         log_error_traceback(e)
+
     assert response is not None
+    yield
 
-
-def test_get_manga_data_scanonepiece(scanonepiece_server):
+    # Search
+    print('Search')
     try:
-        response = scanonepiece_server.get_manga_data(dict(slug='tales-of-demons-and-gods'))
-        print('Scanonepiece: get manga data', response)
+        response = scanonepiece_server.search('tales of demons and gods')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_chapter_data_scanonepiece(scanonepiece_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = scanonepiece_server.get_manga_chapter_data('tales-of-demons-and-gods', None, 'chapitre-1', None)
-        print('Scanonepiece: get manga chapter data', response)
+        response = scanonepiece_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_page_image_scanonepiece(scanonepiece_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = scanonepiece_server.get_manga_chapter_page_image('tales-of-demons-and-gods', None, 'chapitre-1', dict(image='01.jpg'))
-        print('Scanonepiece: get manga chapter page image')
+        response = scanonepiece_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = scanonepiece_server.get_manga_chapter_page_image(slug, None, chapter_slug, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield

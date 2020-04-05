@@ -133,6 +133,7 @@ class SettingsDialog(Handy.Dialog):
         liststore.insert(0, Handy.ValueObject.new(_('Adapt to Screen')))
         liststore.insert(1, Handy.ValueObject.new(_('Adapt to Width')))
         liststore.insert(2, Handy.ValueObject.new(_('Adapt to Height')))
+        liststore.insert(3, Handy.ValueObject.new(_('Original Size')))
 
         self.scaling_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
         self.scaling_row.set_selected_index(settings.scaling_value)
@@ -216,6 +217,8 @@ class SettingsDialog(Handy.Dialog):
             Settings.get_default().scaling = 'width'
         elif index == 2:
             Settings.get_default().scaling = 'height'
+        elif index == 3:
+            Settings.get_default().scaling = 'original'
 
     @staticmethod
     def on_servers_language_activated(switch_button, gparam, code):

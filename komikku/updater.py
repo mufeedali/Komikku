@@ -39,10 +39,6 @@ class Updater(GObject.GObject):
             mangas = [mangas, ]
 
         for manga in mangas:
-            if manga.status not in (None, 'ongoing'):
-                # Suspended, complete, ...
-                continue
-
             if manga.id not in self.queue:
                 self.queue.append(manga.id)
 

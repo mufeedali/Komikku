@@ -43,7 +43,7 @@ class Pager(Gtk.ScrolledWindow):
         )
 
         self.connect('button-press-event', self.on_btn_press)
-        self.connect('key-press-event', self.on_key_press)
+        self.window.connect('key-press-event', self.on_key_press)
         self.connect('motion-notify-event', self.on_motion_notify)
         self.connect('scroll-event', self.on_scroll)
 
@@ -117,6 +117,9 @@ class Pager(Gtk.ScrolledWindow):
             self.switchto_page('right')
         else:
             self.init(self.current_page.chapter, page_index)
+
+    def hide_cursor(self):
+        self.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'))
 
     def init(self, chapter, page_index=None):
         self.reader.update_title(chapter)
@@ -244,48 +247,48 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[2].render()
 
     def on_key_press(self, widget, event):
-        # Note: in case of keys LEFT and RIGHT, this code is never reached when controls are visible
-        # Slider (Gtk.Scale) has already consume the event
-
         modifiers = Gtk.accelerator_get_default_mod_mask()
         if (event.state & modifiers) != 0:
-            return
-
-        # Hide the mouse cursor when using keyboard navigation.
-        self.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), "none"))
+            return Gdk.EVENT_PROPAGATE
 
         if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
+            # Hide mouse cursor when using keyboard navigation
+            self.hide_cursor()
+
             page = self.current_page
             hadj = page.scrolledwindow.get_hadjustment()
 
             if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
                 if hadj.get_value() == 0 and self.zoom['active'] is False:
                     self.switchto_page('left')
-                    return
+                    return Gdk.EVENT_STOP
 
                 page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_LEFT, False)
-                return
+                return Gdk.EVENT_STOP
 
             if hadj.get_value() + self.reader.size.width == hadj.get_upper() and self.zoom['active'] is False:
                 self.switchto_page('right')
-                return
+                return Gdk.EVENT_STOP
 
             page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_RIGHT, False)
-            return
+            return Gdk.EVENT_STOP
 
         if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            # Hide mouse cursor when using keyboard navigation
+            self.hide_cursor()
+
             page = self.current_page
             vadj = page.scrolledwindow.get_vadjustment()
 
             if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
                 if self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
                     self.switchto_page('right')
-                    return
+                    return Gdk.EVENT_STOP
 
                 # If image height is greater than viewport height, arrow keys should scroll page down
                 # Emit scroll signal: one step down
                 page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
-                return
+                return Gdk.EVENT_STOP
 
             if self.reader.reading_direction == 'vertical' and vadj.get_value() == 0:
                 self.switchto_page('left')
@@ -293,19 +296,20 @@ class Pager(Gtk.ScrolledWindow):
                 # After switching pages, go to the end of the page that is now the current page
                 vadj = self.current_page.scrolledwindow.get_vadjustment()
                 vadj.set_value(vadj.get_upper() - self.reader.size.height)
-                return
+                return Gdk.EVENT_STOP
 
             # If image height is greater than viewport height, arrow keys should scroll page up
             # Emit scroll signal: one step up
             page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_motion_notify(self, widget, event):
-        # Hide cursor during keyboard navigation
-        # And make cursor visible again when mouse is moved
-
         if self.get_window().get_cursor():
-            # Show cursor
-            self.get_window().set_cursor(None)
+            # Cursor is hidden during keyboard navigation
+            # Make cursor visible again when mouse is moved
+            self.show_cursor()
 
         return False
 
@@ -398,6 +402,9 @@ class Pager(Gtk.ScrolledWindow):
         else:
             handler_id = self.get_hadjustment().connect('changed', on_adjustment_change)
             self.box.props.orientation = Gtk.Orientation.HORIZONTAL
+
+    def show_cursor(self):
+        self.get_window().set_cursor(None)
 
     def switchto_page(self, position):
         if self.scroll_lock:

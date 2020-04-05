@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-20 01:18+0100\n"
+"POT-Creation-Date: 2020-04-01 21:23+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -12,66 +12,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3\n"
 
-#: ../komikku/main_window.py:227
-msgid "Contributors: Code, Patches, Debugging:"
-msgstr "Contributeurs: Code, correctifs, débogage :"
+#: ../komikku/downloader.py:164
+msgid "Download completed"
+msgstr "Téléchargement terminé"
 
-#: ../komikku/main_window.py:254
-msgid "Are you sure you want to quit?"
-msgstr "Êtes-vous sûr de vouloir quitter ?"
-
-#: ../komikku/main_window.py:257
-msgid "Some chapters are currently being downloaded."
-msgstr "Certains chapitres sont en cours de téléchargement."
-
-#: ../komikku/main_window.py:259
-msgid "Some mangas are currently being updated."
-msgstr "Certains mangas sont en cours de mise à jour."
-
-#: ../komikku/main_window.py:262
-msgid "Quit?"
-msgstr "Quitter ?"
-
-#: ../komikku/reader/pager/__init__.py:412
-msgid "There is no previous chapter."
-msgstr "Il n'y a pas de chapitre précédent."
-
-#: ../komikku/reader/pager/__init__.py:414
-msgid "It was the last chapter."
-msgstr "C'était le dernier chapitre."
-
-#: ../komikku/reader/pager/page.py:267
-msgid "Retry"
-msgstr "Réessayer"
-
-#: ../komikku/updater.py:79
-msgid "Library update completed"
-msgstr "Mise à jour de la bibliothèque terminée"
-
-#: ../komikku/updater.py:81
-msgid "Update completed"
-msgstr "Mise à jour terminée"
-
-#: ../komikku/updater.py:91
-msgid "No new chapter found"
-msgstr "Aucun nouveau chapitre trouvé"
-
-#: ../komikku/updater.py:117
+#: ../komikku/downloader.py:165 ../komikku/downloader.py:194
 #, python-brace-format
-msgid ""
-"{0}\n"
-"Oops, update has failed. Please try again."
-msgstr ""
-"{0}\n"
-"Oups, la mise à jour a échouée. Veuillez réessayer."
+msgid "[{0}] Chapter {1}"
+msgstr "[{0}] Chapitre {1}"
 
-#: ../komikku/updater.py:125
-msgid "Library update started"
-msgstr "Mise à jour de la bibliothèque démarrée"
+#: ../komikku/downloader.py:188
+#, python-brace-format
+msgid "{0}/{1} pages downloaded"
+msgstr "{0}/{1} pages téléchargées"
 
-#: ../komikku/updater.py:127
-msgid "Update started"
-msgstr "Mise à jour démarrée"
+#: ../komikku/downloader.py:190
+msgid "error"
+msgstr "erreur"
+
+#: ../komikku/utils.py:30
+msgid "No Internet connection or server down"
+msgstr "Pas de connexion Internet ou serveur en panne"
+
+#: ../komikku/utils.py:32
+msgid "Failed to load image"
+msgstr "Impossible de charger l'image"
 
 #: ../komikku/models/database.py:235
 msgid "Complete"
@@ -105,95 +70,34 @@ msgstr "Téléchargement en cours"
 msgid "Download error"
 msgstr "Erreur de téléchargement"
 
-#: ../komikku/card.py:87
+#: ../komikku/updater.py:75
+msgid "Library update completed"
+msgstr "Mise à jour de la bibliothèque terminée"
+
+#: ../komikku/updater.py:77
+msgid "Update completed"
+msgstr "Mise à jour terminée"
+
+#: ../komikku/updater.py:87
+msgid "No new chapter found"
+msgstr "Aucun nouveau chapitre trouvé"
+
+#: ../komikku/updater.py:113
 #, python-brace-format
 msgid ""
-"NOTICE\n"
-"{0} server is not longer supported.\n"
-"Please switch to another server."
+"{0}\n"
+"Oops, update has failed. Please try again."
 msgstr ""
-"AVIS\n"
-"Le serveur {0} n'est plus pris en charge.\n"
-"Veuillez basculer vers un autre serveur."
+"{0}\n"
+"Oups, la mise à jour a échouée. Veuillez réessayer."
 
-#: ../komikku/card.py:140 ../komikku/library.py:175
-msgid "Delete?"
-msgstr "Supprimer ?"
+#: ../komikku/updater.py:121
+msgid "Library update started"
+msgstr "Mise à jour de la bibliothèque démarrée"
 
-#: ../komikku/card.py:141
-msgid "Are you sure you want to delete this manga?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
-
-#: ../komikku/card.py:382
-msgid "New"
-msgstr "Nouveau"
-
-#: ../komikku/card.py:398
-msgid "%m/%d/%Y"
-msgstr "%d/%m/%Y"
-
-#: ../komikku/card.py:476
-msgid "Reset"
-msgstr "Réinitialiser"
-
-#: ../komikku/card.py:478
-msgid "Download"
-msgstr "Télécharger"
-
-#: ../komikku/card.py:480
-msgid "Mark as read"
-msgstr "Marquer comme lu"
-
-#: ../komikku/card.py:482
-msgid "Mark as unread"
-msgstr "Marquer comme non lu"
-
-#: ../komikku/card.py:596
-#, python-brace-format
-msgid "Disk space used: {0}"
-msgstr "Utilisation espace disque : {0}"
-
-#: ../komikku/add_dialog.py:135
-#, python-brace-format
-msgid "{0} manga added"
-msgstr "{0} manga ajouté"
-
-#: ../komikku/add_dialog.py:238
-msgid "MOST POPULARS"
-msgstr "LES PLUS POPULAIRES"
-
-#: ../komikku/add_dialog.py:271
-msgid "Oops, search failed. Please try again."
-msgstr "Oups, la recherche a échoué. Veuillez réessayer."
-
-#: ../komikku/add_dialog.py:273
-msgid "No results"
-msgstr "Aucun résultat"
-
-#: ../komikku/add_dialog.py:349
-msgid "Oops, failed to retrieve manga's information."
-msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
-
-#: ../komikku/add_dialog.py:373
-#, python-brace-format
-msgid "Search in {0}…"
-msgstr "Rechercher dans {0}…"
-
-#: ../komikku/utils.py:30
-msgid "No Internet connection or server down"
-msgstr "Pas de connexion Internet ou serveur en panne"
-
-#: ../komikku/utils.py:32
-msgid "Failed to load image"
-msgstr "Impossible de charger l'image"
-
-#: ../komikku/library.py:176
-msgid "Are you sure you want to delete selected mangas?"
-msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
-
-#: ../komikku/application.py:46 ../komikku/application.py:50
-msgid "Komikku"
-msgstr "Komikku"
+#: ../komikku/updater.py:123
+msgid "Update started"
+msgstr "Mise à jour démarrée"
 
 #: ../komikku/settings_dialog.py:45
 msgid "Settings"
@@ -223,81 +127,135 @@ msgstr "Ajuster à la largeur"
 msgid "Adapt to Height"
 msgstr "Ajuster à la hauteur"
 
-#: ../komikku/settings_dialog.py:143
+#: ../komikku/settings_dialog.py:136
+msgid "Original Size"
+msgstr "Taille originale"
+
+#: ../komikku/settings_dialog.py:144
 msgid "White"
 msgstr "Blanc"
 
-#: ../komikku/settings_dialog.py:144
+#: ../komikku/settings_dialog.py:145
 msgid "Black"
 msgstr "Noir"
 
-#: ../komikku/settings_dialog.py:262
+#: ../komikku/settings_dialog.py:265
 msgid "Servers Settings"
 msgstr "Paramètres des serveurs"
 
-#: ../komikku/downloader.py:164
-msgid "Download completed"
-msgstr "Téléchargement terminé"
+#: ../komikku/application.py:46 ../komikku/application.py:50
+msgid "Komikku"
+msgstr "Komikku"
 
-#: ../komikku/downloader.py:165 ../komikku/downloader.py:194
+#: ../komikku/main_window.py:227
+msgid "Contributors: Code, Patches, Debugging:"
+msgstr "Contributeurs: Code, correctifs, débogage :"
+
+#: ../komikku/main_window.py:254
+msgid "Are you sure you want to quit?"
+msgstr "Êtes-vous sûr de vouloir quitter ?"
+
+#: ../komikku/main_window.py:257
+msgid "Some chapters are currently being downloaded."
+msgstr "Certains chapitres sont en cours de téléchargement."
+
+#: ../komikku/main_window.py:259
+msgid "Some mangas are currently being updated."
+msgstr "Certains mangas sont en cours de mise à jour."
+
+#: ../komikku/main_window.py:262
+msgid "Quit?"
+msgstr "Quitter ?"
+
+#: ../komikku/library.py:175 ../komikku/card.py:140
+msgid "Delete?"
+msgstr "Supprimer ?"
+
+#: ../komikku/library.py:176
+msgid "Are you sure you want to delete selected mangas?"
+msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
+
+#: ../komikku/card.py:87
 #, python-brace-format
-msgid "[{0}] Chapter {1}"
-msgstr "[{0}] Chapitre {1}"
-
-#: ../komikku/downloader.py:188
-#, python-brace-format
-msgid "{0}/{1} pages downloaded"
-msgstr "{0}/{1} pages téléchargées"
-
-#: ../komikku/downloader.py:190
-msgid "error"
-msgstr "erreur"
-
-#: ../data/ui/about_dialog.ui.in:11
 msgid ""
-"An online/offline manga reader.\n"
-"\n"
-"Never forget, you can support the authors\n"
-"by buying the official comics when they are\n"
-"available in your region/language."
+"NOTICE\n"
+"{0} server is not longer supported.\n"
+"Please switch to another server."
 msgstr ""
-"Un lecteur de manga en ligne / hors ligne.\n"
-"\n"
-"N'oubliez jamais, vous pouvez soutenir les auteurs\n"
-"en achetant les BD officielles lorsqu'elles sont\n"
-"disponibles dans votre région / langue."
+"AVIS\n"
+"Le serveur {0} n'est plus pris en charge.\n"
+"Veuillez basculer vers un autre serveur."
 
-#: ../data/ui/about_dialog.ui.in:17
-msgid "Learn more about Komikku"
-msgstr "En savoir plus sur Komikku"
+#: ../komikku/card.py:141
+msgid "Are you sure you want to delete this manga?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
 
-#: ../data/ui/add_dialog.ui:47
-msgid "Select a server"
-msgstr "Choisissez un serveur"
+#: ../komikku/card.py:383
+msgid "New"
+msgstr "Nouveau"
 
-#: ../data/ui/add_dialog.ui:270 ../data/ui/main_window.ui:180
-msgid "Authors"
-msgstr "Auteurs"
+#: ../komikku/card.py:399
+msgid "%m/%d/%Y"
+msgstr "%d/%m/%Y"
 
-#: ../data/ui/add_dialog.ui:300 ../data/ui/main_window.ui:210
-msgid "Genres"
-msgstr "Genres"
+#: ../komikku/card.py:477
+msgid "Reset"
+msgstr "Réinitialiser"
 
-#: ../data/ui/add_dialog.ui:330 ../data/ui/main_window.ui:240
-msgid "Status"
-msgstr "Status"
+#: ../komikku/card.py:479
+msgid "Download"
+msgstr "Télécharger"
 
-#: ../data/ui/add_dialog.ui:360 ../data/ui/main_window.ui:270
-msgid "Server"
-msgstr "Serveur"
+#: ../komikku/card.py:481
+msgid "Mark as read"
+msgstr "Marquer comme lu"
 
-#: ../data/ui/add_dialog.ui:391 ../data/ui/main_window.ui:301
-msgid "Synopsis"
-msgstr "Synopsis"
+#: ../komikku/card.py:483
+msgid "Mark as unread"
+msgstr "Marquer comme non lu"
 
-#: ../data/ui/add_dialog.ui:423 ../data/ui/main_window.ui:389
-msgid "Scanlators"
-msgstr "Scantrad"
+#: ../komikku/card.py:597
+#, python-brace-format
+msgid "Disk space used: {0}"
+msgstr "Utilisation espace disque : {0}"
+
+#: ../komikku/add_dialog.py:137
+#, python-brace-format
+msgid "{0} manga added"
+msgstr "{0} manga ajouté"
+
+#: ../komikku/add_dialog.py:240
+msgid "MOST POPULARS"
+msgstr "LES PLUS POPULAIRES"
+
+#: ../komikku/add_dialog.py:273
+msgid "Oops, search failed. Please try again."
+msgstr "Oups, la recherche a échoué. Veuillez réessayer."
+
+#: ../komikku/add_dialog.py:275
+msgid "No results"
+msgstr "Aucun résultat"
+
+#: ../komikku/add_dialog.py:351
+msgid "Oops, failed to retrieve manga's information."
+msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
+
+#: ../komikku/add_dialog.py:375
+#, python-brace-format
+msgid "Search in {0}…"
+msgstr "Rechercher dans {0}…"
+
+#: ../komikku/reader/pager/page.py:268
+msgid "Retry"
+msgstr "Réessayer"
+
+#: ../komikku/reader/pager/__init__.py:420
+msgid "There is no previous chapter."
+msgstr "Il n'y a pas de chapitre précédent."
+
+#: ../komikku/reader/pager/__init__.py:422
+msgid "It was the last chapter."
+msgstr "C'était le dernier chapitre."
 
 #: ../data/ui/shortcuts_overview.ui:14
 msgctxt "Shortcut window description"
@@ -318,6 +276,151 @@ msgstr "Ouvrir préférences"
 msgctxt "Shortcut window description"
 msgid "Toggle Fullscreen mode"
 msgstr "Basculer en mode plein écran"
+
+#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
+#: ../data/ui/main_window.ui:61
+msgid "An online/offline manga reader"
+msgstr "Un lecteur de manga en ligne / hors ligne"
+
+#: ../data/ui/main_window.ui:180 ../data/ui/add_dialog.ui:270
+msgid "Authors"
+msgstr "Auteurs"
+
+#: ../data/ui/main_window.ui:210 ../data/ui/add_dialog.ui:300
+msgid "Genres"
+msgstr "Genres"
+
+#: ../data/ui/main_window.ui:240 ../data/ui/add_dialog.ui:330
+msgid "Status"
+msgstr "Status"
+
+#: ../data/ui/main_window.ui:270 ../data/ui/add_dialog.ui:360
+msgid "Server"
+msgstr "Serveur"
+
+#: ../data/ui/main_window.ui:301 ../data/ui/add_dialog.ui:391
+msgid "Synopsis"
+msgstr "Synopsis"
+
+#: ../data/ui/main_window.ui:333
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
+#: ../data/ui/main_window.ui:389 ../data/ui/add_dialog.ui:423
+msgid "Scanlators"
+msgstr "Scantrad"
+
+#: ../data/ui/main_window.ui:409
+msgid "Info"
+msgstr "Infos"
+
+#: ../data/ui/main_window.ui:440
+msgid "Chapters"
+msgstr "Chapitres"
+
+#: ../data/ui/main_window.ui:588 ../data/ui/settings_dialog.ui:355
+msgid "Library"
+msgstr "Bibliothèque"
+
+#: ../data/ui/menu/reader.xml:7
+msgid "Reading direction"
+msgstr "Sens de lecture"
+
+#: ../data/ui/menu/reader.xml:30
+msgid "Type of Scaling"
+msgstr "Type de mise à l'échelle"
+
+#: ../data/ui/menu/reader.xml:58 ../data/ui/settings_dialog.ui:705
+msgid "Background Color"
+msgstr "Couleur de fond"
+
+#: ../data/ui/menu/reader.xml:76
+msgid "Crop borders"
+msgstr "Rogner les bordures"
+
+#: ../data/ui/menu/download_manager_selection_mode.xml:7
+#: ../data/ui/menu/library_selection_mode.xml:11 ../data/ui/menu/card.xml:7
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../data/ui/menu/download_manager.xml:7
+msgid "Delete All"
+msgstr "Tout supprimer"
+
+#: ../data/ui/menu/card_selection_mode.xml:15
+msgid "Mark as Read"
+msgstr "Marquer comme lu"
+
+#: ../data/ui/menu/card_selection_mode.xml:19
+msgid "Mark as Unread"
+msgstr "Marquer comme non lu"
+
+#: ../data/ui/menu/card_selection_mode.xml:26
+#: ../data/ui/menu/library_selection_mode.xml:18
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+#: ../data/ui/menu/library_selection_mode.xml:7 ../data/ui/menu/card.xml:11
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: ../data/ui/menu/card.xml:18
+msgid "Order of Chapters"
+msgstr "Ordre des chapitres"
+
+#: ../data/ui/menu/card.xml:23
+msgid "By Chapter Number (9-0)"
+msgstr "Par numéro de chapitre (9-0)"
+
+#: ../data/ui/menu/card.xml:28
+msgid "By Chapter Number (0-9)"
+msgstr "Par numéro de chapitre (0-9)"
+
+#: ../data/ui/menu/card.xml:38
+msgid "Open in Browser"
+msgstr "Ouvrir dans le navigateur"
+
+#: ../data/ui/menu/main.xml:7
+msgid "Update Library"
+msgstr "Mettre à jour la bibliothèque"
+
+#: ../data/ui/menu/main.xml:11 ../data/ui/download_manager_dialog.ui:40
+msgid "Download Manager"
+msgstr "Gestionnaire de téléchargement"
+
+#: ../data/ui/menu/main.xml:17
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../data/ui/menu/main.xml:21
+msgid "Keyboard Shortcuts"
+msgstr "Raccourcis clavier"
+
+#: ../data/ui/menu/main.xml:25
+msgid "About Komikku"
+msgstr "À propos de Komikku"
+
+#: ../data/ui/download_manager_dialog.ui:170
+msgid "No downloads"
+msgstr "Aucun téléchargement"
+
+#: ../data/ui/about_dialog.ui.in:11
+msgid ""
+"An online/offline manga reader.\n"
+"\n"
+"Never forget, you can support the authors\n"
+"by buying the official comics when they are\n"
+"available in your region/language."
+msgstr ""
+"Un lecteur de manga en ligne / hors ligne.\n"
+"\n"
+"N'oubliez jamais, vous pouvez soutenir les auteurs\n"
+"en achetant les BD officielles lorsqu'elles sont\n"
+"disponibles dans votre région / langue."
+
+#: ../data/ui/about_dialog.ui.in:17
+msgid "Learn more about Komikku"
+msgstr "En savoir plus sur Komikku"
 
 #: ../data/ui/settings_dialog.ui:64
 msgid "General"
@@ -346,10 +449,6 @@ msgstr "Notifications de bureau"
 #: ../data/ui/settings_dialog.ui:297
 msgid "Use desktop notifications for downloads"
 msgstr "Utiliser les notifications de bureau pour les téléchargements"
-
-#: ../data/ui/settings_dialog.ui:355 ../data/ui/main_window.ui:588
-msgid "Library"
-msgstr "Bibliothèque"
 
 #: ../data/ui/settings_dialog.ui:404
 msgid "Update at Startup"
@@ -403,10 +502,6 @@ msgstr "Type de mise à l'échelle pour adapter l'image"
 msgid "Scaling"
 msgstr "Mise à l'échelle"
 
-#: ../data/ui/settings_dialog.ui:705 ../data/ui/menu/reader.xml:53
-msgid "Background Color"
-msgstr "Couleur de fond"
-
 #: ../data/ui/settings_dialog.ui:734
 msgid "Borders Crop"
 msgstr "Rognage des bordures"
@@ -423,100 +518,9 @@ msgstr "Plein écran"
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrer automatiquement en mode plein écran"
 
-#: ../data/ui/menu/download_manager_selection_mode.xml:7
-#: ../data/ui/menu/library_selection_mode.xml:11 ../data/ui/menu/card.xml:7
-msgid "Delete"
-msgstr "Supprimer"
-
-#: ../data/ui/menu/library_selection_mode.xml:7 ../data/ui/menu/card.xml:11
-msgid "Update"
-msgstr "Mettre à jour"
-
-#: ../data/ui/menu/library_selection_mode.xml:18
-#: ../data/ui/menu/card_selection_mode.xml:26
-msgid "Select All"
-msgstr "Tout sélectionner"
-
-#: ../data/ui/menu/card.xml:18
-msgid "Order of Chapters"
-msgstr "Ordre des chapitres"
-
-#: ../data/ui/menu/card.xml:23
-msgid "By Chapter Number (9-0)"
-msgstr "Par numéro de chapitre (9-0)"
-
-#: ../data/ui/menu/card.xml:28
-msgid "By Chapter Number (0-9)"
-msgstr "Par numéro de chapitre (0-9)"
-
-#: ../data/ui/menu/card.xml:38
-msgid "Open in Browser"
-msgstr "Ouvrir dans le navigateur"
-
-#: ../data/ui/menu/card_selection_mode.xml:15
-msgid "Mark as Read"
-msgstr "Marquer comme lu"
-
-#: ../data/ui/menu/card_selection_mode.xml:19
-msgid "Mark as Unread"
-msgstr "Marquer comme non lu"
-
-#: ../data/ui/menu/reader.xml:7
-msgid "Reading direction"
-msgstr "Sens de lecture"
-
-#: ../data/ui/menu/reader.xml:30
-msgid "Type of Scaling"
-msgstr "Type de mise à l'échelle"
-
-#: ../data/ui/menu/reader.xml:71
-msgid "Crop borders"
-msgstr "Rogner les bordures"
-
-#: ../data/ui/menu/download_manager.xml:7
-msgid "Delete All"
-msgstr "Tout supprimer"
-
-#: ../data/ui/menu/main.xml:7
-msgid "Update Library"
-msgstr "Mettre à jour la bibliothèque"
-
-#: ../data/ui/menu/main.xml:11 ../data/ui/download_manager_dialog.ui:40
-msgid "Download Manager"
-msgstr "Gestionnaire de téléchargement"
-
-#: ../data/ui/menu/main.xml:17
-msgid "Preferences"
-msgstr "Préférences"
-
-#: ../data/ui/menu/main.xml:21
-msgid "Keyboard Shortcuts"
-msgstr "Raccourcis clavier"
-
-#: ../data/ui/menu/main.xml:25
-msgid "About Komikku"
-msgstr "À propos de Komikku"
-
-#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/main_window.ui:61
-msgid "An online/offline manga reader"
-msgstr "Un lecteur de manga en ligne / hors ligne"
-
-#: ../data/ui/main_window.ui:333
-msgid "Last update"
-msgstr "Dernière mise à jour"
-
-#: ../data/ui/main_window.ui:409
-msgid "Info"
-msgstr "Infos"
-
-#: ../data/ui/main_window.ui:440
-msgid "Chapters"
-msgstr "Chapitres"
-
-#: ../data/ui/download_manager_dialog.ui:170
-msgid "No downloads"
-msgstr "Aucun téléchargement"
+#: ../data/ui/add_dialog.ui:47
+msgid "Select a server"
+msgstr "Choisissez un serveur"
 
 #: ../data/info.febvre.Komikku.desktop.in:3
 msgid "@prettyname@"

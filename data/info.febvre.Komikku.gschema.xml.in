@@ -13,6 +13,7 @@
         <value nick="screen" value="0" />
         <value nick="width" value="1" />
         <value nick="height" value="2" />
+        <value nick="original" value="3" />
     </enum>
     <schema path="/@apppath@/" id="@appid@" gettext-domain="@projectname@">
         <key type="b" name="downloader-state">

@@ -1,5 +1,6 @@
 import logging
 import pytest
+from pytest_steps import test_steps
 
 from komikku.utils import log_error_traceback
 
@@ -13,53 +14,62 @@ def centraldemangas_server():
     return Centraldemangas()
 
 
-def test_search_centraldemangas(centraldemangas_server):
-    try:
-        response = centraldemangas_server.search('tales of demons and gods')
-        print('Central de mangas: search', response)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-    assert response is not None
-
-
-def test_most_populars_centraldemangas(centraldemangas_server):
+@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_japscan(centraldemangas_server):
+    # Get most popular
+    print('Get most popular')
     try:
         response = centraldemangas_server.get_most_populars()
-        print('Central de mangas: get most populars', response)
     except Exception as e:
         response = None
         log_error_traceback(e)
+
     assert response is not None
+    yield
 
-
-def test_get_manga_data_centraldemangas(centraldemangas_server):
+    # Search
+    print('Search')
     try:
-        response = centraldemangas_server.get_manga_data(dict(slug='tales-of-demons-and-gods'))
-        print('Central de mangas: get manga data', response)
+        response = centraldemangas_server.search('tales of demons and gods')
+        slug = response[0]['slug']
     except Exception as e:
-        response = None
+        slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert slug is not None
+    yield
 
-def test_get_manga_chapter_data_centraldemangas(centraldemangas_server):
+    # Get manga data
+    print('Get manga data')
     try:
-        response = centraldemangas_server.get_manga_chapter_data('tales-of-demons-and-gods', None, None, '001')
-        print('Central de mangas: get manga chapter data', response)
+        response = centraldemangas_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
-        response = None
+        chapter_slug = None
         log_error_traceback(e)
-    assert response is not None
 
+    assert chapter_slug is not None
+    yield
 
-def test_get_manga_chapter_page_image_centraldemangas(centraldemangas_server):
+    # Get chapter data
+    print("Get chapter data")
     try:
-        response = centraldemangas_server.get_manga_chapter_page_image(
-            'tales-of-demons-and-gods', None, '001',
-            dict(image='http://mangas2016.centraldemangas.com.br/tales_of_demons_and_gods/tales_of_demons_and_gods001-02.jpg'))
-        print('Central de mangas: get manga chapter page image')
+        response = centraldemangas_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = centraldemangas_server.get_manga_chapter_page_image(slug, None, chapter_slug, page)
     except Exception as e:
         response = (None, None)
         log_error_traceback(e)
-    assert response is not (None, None)
+
+    assert response[1] is not None
+    yield
