@@ -64,7 +64,7 @@ class Pager(Gtk.ScrolledWindow):
             now = clock.get_frame_time()
             if now < end_time and adj.get_value() != end:
                 t = (now - start_time) / (end_time - start_time)
-                t = ease_out_cubic(t)
+                # t = ease_out_cubic(t)
 
                 adj.set_value(start + t * (end - start))
 
