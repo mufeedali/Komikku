@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import dateparser
 import datetime
 from functools import lru_cache
+from gi.repository import Gio
 from gi.repository import GLib
 import importlib
 import inspect
@@ -222,7 +223,16 @@ def get_server_dir_name_by_id(id):
 
 
 def get_server_logo_resource_path_by_id(id):
-    return '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
+    path = '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
+    try:
+        res, size, flags = Gio.resources_get_info(path, 0)
+    except Exception:
+        res = None
+
+    if res is None:
+        path = '/info/febvre/Komikku/icons/ui/servers/no_favicon.ico'
+
+    return path
 
 
 def get_server_main_id_by_id(id):
