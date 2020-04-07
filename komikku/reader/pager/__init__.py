@@ -444,7 +444,7 @@ class Pager(Gtk.ScrolledWindow):
         GLib.idle_add(self.on_page_switch, page)
 
         if position == 'left':
-            self.adjust_scroll(0)
+            GLib.idle_add(self.adjust_scroll, 0)
 
             def add_page(current_page):
                 if self.scroll_lock:
@@ -468,7 +468,7 @@ class Pager(Gtk.ScrolledWindow):
             GLib.idle_add(add_page, page)
 
         elif position == 'right':
-            self.adjust_scroll(2)
+            GLib.idle_add(self.adjust_scroll, 2)
 
             def add_page(current_page):
                 if self.scroll_lock:
