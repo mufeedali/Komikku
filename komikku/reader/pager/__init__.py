@@ -160,9 +160,6 @@ class Pager(Gtk.ScrolledWindow):
         center_page.render()
 
     def on_btn_press(self, widget, event):
-        if self.window.page != 'reader':
-            return Gdk.EVENT_PROPAGATE
-
         if event.button == 1:
             if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
@@ -314,9 +311,6 @@ class Pager(Gtk.ScrolledWindow):
         return Gdk.EVENT_PROPAGATE
 
     def on_motion_notify(self, widget, event):
-        if self.window.page != 'reader':
-            return Gdk.EVENT_PROPAGATE
-
         if self.get_window().get_cursor():
             # Cursor is hidden during keyboard navigation
             # Make cursor visible again when mouse is moved
@@ -358,9 +352,6 @@ class Pager(Gtk.ScrolledWindow):
         return False
 
     def on_scroll(self, widget, event):
-        if self.window.page != 'reader':
-            return Gdk.EVENT_PROPAGATE
-
         # Stop GDK_SCROLL_SMOOTH events propagation
         # mouse and touch pad (2 fingers) scrolling
         return Gdk.EVENT_STOP
