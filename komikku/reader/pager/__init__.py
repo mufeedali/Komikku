@@ -160,6 +160,9 @@ class Pager(Gtk.ScrolledWindow):
         center_page.render()
 
     def on_btn_press(self, widget, event):
+        if self.window.page != 'reader':
+            return Gdk.EVENT_PROPAGATE
+
         if event.button == 1:
             if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
@@ -172,6 +175,8 @@ class Pager(Gtk.ScrolledWindow):
                     self.button_press_timeout_id = None
 
                 GLib.idle_add(self.on_double_click, event.copy())
+
+        return Gdk.EVENT_STOP
 
     def on_double_click(self, event):
         # Zoom/unzoom
@@ -247,6 +252,9 @@ class Pager(Gtk.ScrolledWindow):
         self.pages[2].render()
 
     def on_key_press(self, widget, event):
+        if self.window.page != 'reader':
+            return Gdk.EVENT_PROPAGATE
+
         modifiers = Gtk.accelerator_get_default_mod_mask()
         if (event.state & modifiers) != 0:
             return Gdk.EVENT_PROPAGATE
@@ -306,12 +314,15 @@ class Pager(Gtk.ScrolledWindow):
         return Gdk.EVENT_PROPAGATE
 
     def on_motion_notify(self, widget, event):
+        if self.window.page != 'reader':
+            return Gdk.EVENT_PROPAGATE
+
         if self.get_window().get_cursor():
             # Cursor is hidden during keyboard navigation
             # Make cursor visible again when mouse is moved
             self.show_cursor()
 
-        return False
+        return Gdk.EVENT_PROPAGATE
 
     def on_page_switch(self, page):
         # Loop as long as the page rendering is not ended
@@ -347,9 +358,12 @@ class Pager(Gtk.ScrolledWindow):
         return False
 
     def on_scroll(self, widget, event):
+        if self.window.page != 'reader':
+            return Gdk.EVENT_PROPAGATE
+
         # Stop GDK_SCROLL_SMOOTH events propagation
         # mouse and touch pad (2 fingers) scrolling
-        return True
+        return Gdk.EVENT_STOP
 
     def on_single_click(self, event):
         self.button_press_timeout_id = None
