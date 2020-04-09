@@ -14,7 +14,6 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.models import create_db_connection
 from komikku.models import Download
-from komikku.models import Manga
 from komikku.utils import folder_size
 
 
@@ -67,20 +66,11 @@ class Card:
         self.window.titlebar.set_selection_mode(True)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
-    def init(self, manga=None, transition=True):
-        if manga and (self.manga is None or manga.id != self.manga.id):
-            # Default page is Chapters page
-            self.stack.set_visible_child_name('page_card_chapters')
+    def init(self, manga, transition=True):
+        # Default page is Chapters page
+        self.stack.set_visible_child_name('page_card_chapters')
 
-            for child in self.builder.get_object('card_stack').get_children():
-                # Scroll scrolledwindows (of info and chapters pages) to top when manga change
-                child.get_vadjustment().set_value(0)
-
-        # Create a fresh instance of manga
-        if manga:
-            self.manga = Manga.get(manga.id, manga.server)
-        else:
-            self.manga = Manga.get(self.manga.id, self.manga.server)
+        self.manga = manga
 
         if manga.server.status == 'disabled':
             self.window.show_notification(
@@ -311,7 +301,7 @@ class ChaptersList:
             if self.selection_count == 0:
                 self.card.leave_selection_mode()
         else:
-            self.card.window.reader.init(row.chapter)
+            self.card.window.reader.init(self.card.manga, row.chapter)
 
     def populate(self):
         def populate_chapters_rows(rows):

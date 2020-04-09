@@ -88,8 +88,8 @@ class Reader:
         self.window.application.add_action(self.background_color_action)
         self.window.application.add_action(self.borders_crop_action)
 
-    def init(self, chapter):
-        self.manga = chapter.manga
+    def init(self, manga, chapter):
+        self.manga = manga
 
         # Reset list of chapters consulted
         self.chapters_consulted = set()

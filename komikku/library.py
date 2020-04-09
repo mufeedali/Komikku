@@ -42,7 +42,7 @@ class Library():
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
         def _filter(child):
-            manga = Manga.get(child.get_children()[0].manga.id)
+            manga = child.get_children()[0].manga
             term = self.search_entry.get_text().lower()
             return term in manga.name.lower() or term in manga.server.name.lower()
 
@@ -53,8 +53,8 @@ class Library():
             - zero if they are equal
             - a positive integer if the second one should come before the firstone
             """
-            manga1 = Manga.get(child1.get_children()[0].manga.id)
-            manga2 = Manga.get(child2.get_children()[0].manga.id)
+            manga1 = child1.get_children()[0].manga
+            manga2 = child2.get_children()[0].manga
 
             if manga1.last_read > manga2.last_read:
                 return -1
@@ -159,8 +159,7 @@ class Library():
 
             # Safely delete mangas in DB
             for child in self.flowbox.get_selected_children():
-                manga = child.get_children()[0].manga
-                manga.delete()
+                child.get_children()[0].manga.delete()
 
             # Restart Downloader & Updater
             self.window.downloader.start()
@@ -292,8 +291,9 @@ class Library():
             self.add_manga(manga, position=0)
 
     def on_manga_clicked(self, flowbox, child):
+        overlay = child.get_children()[0]
+
         if self.selection_mode:
-            overlay = child.get_children()[0]
             if overlay._selected:
                 self.selection_count -= 1
                 self.flowbox.unselect_child(child)
@@ -304,7 +304,7 @@ class Library():
             if self.selection_count == 0:
                 self.leave_selection_mode()
         else:
-            self.window.card.init(child.get_children()[0].manga)
+            self.window.card.init(overlay.manga)
 
     def on_manga_deleted(self, manga):
         # Remove manga cover in flowbox
@@ -318,17 +318,22 @@ class Library():
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
 
-            if overlay.manga.id == manga.id:
-                # Update cover
-                width, height = self.cover_size
-                self.set_manga_cover_image(overlay, width, height, True)
+            if overlay.manga.id != manga.id:
+                continue
 
-                # Update manga name
-                name_label = overlay.get_children()[1]
-                name_label.set_text(manga.name)
-                break
+            overlay.manga = manga
 
-        # Schedule a redraw. It will update drawing areas (servers logos, badges)
+            # Update cover
+            width, height = self.cover_size
+            self.set_manga_cover_image(overlay, width, height, True)
+
+            # Update manga name
+            name_label = overlay.get_children()[1]
+            name_label.set_text(manga.name)
+
+            break
+
+        # Schedule a redraw. It will update drawing areas (servers logos and badges)
         self.flowbox.queue_draw()
 
     def on_resize(self):

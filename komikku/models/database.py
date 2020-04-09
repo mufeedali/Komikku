@@ -258,9 +258,7 @@ class Manga:
         return manga
 
     @classmethod
-    def new(cls, data, server=None):
-        manga = cls(server=server)
-
+    def new(cls, data, server):
         data = data.copy()
         chapters = data.pop('chapters')
         cover_url = data.pop('cover')
@@ -271,7 +269,7 @@ class Manga:
         ))
 
         # Long strip detection (Webtoon)
-        if Settings.get_default().long_strip_detection and manga.server.long_strip_genres and data['genres']:
+        if Settings.get_default().long_strip_detection and server.long_strip_genres and data['genres']:
             for genre in server.long_strip_genres:
                 if genre in data['genres']:
                     data.update(dict(
@@ -280,22 +278,19 @@ class Manga:
                     ))
                     break
 
-        for key in data:
-            setattr(manga, key, data[key])
-
         db_conn = create_db_connection()
         with db_conn:
-            manga.id = insert_row(db_conn, 'mangas', data)
+            id = insert_row(db_conn, 'mangas', data)
 
-            manga._chapters = []
             rank = 0
             for chapter_data in chapters:
-                chapter = Chapter.new(chapter_data, rank, manga.id, db_conn)
+                chapter = Chapter.new(chapter_data, rank, id, db_conn)
                 if chapter is not None:
-                    manga._chapters = [chapter, ] + manga._chapters
                     rank += 1
 
         db_conn.close()
+
+        manga = cls.get(id, server)
 
         if not os.path.exists(manga.path):
             os.makedirs(manga.path)
@@ -531,10 +526,13 @@ class Chapter:
                 setattr(self, key, row[key])
 
     @classmethod
-    def get(cls, id):
-        db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
-        db_conn.close()
+    def get(cls, id, db_conn=None):
+        if db_conn is not None:
+            row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
+        else:
+            db_conn = create_db_connection()
+            row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
+            db_conn.close()
 
         if row is None:
             return None
@@ -547,8 +545,6 @@ class Chapter:
 
     @classmethod
     def new(cls, data, rank, manga_id, db_conn=None):
-        c = cls()
-
         # Fill data with internal data
         data = data.copy()
         data.update(dict(
@@ -559,20 +555,18 @@ class Chapter:
             read=0,
         ))
 
-        for key in data:
-            setattr(c, key, data[key])
-
         if db_conn is not None:
-            c.id = insert_row(db_conn, 'chapters', data)
+            id = insert_row(db_conn, 'chapters', data)
         else:
             db_conn = create_db_connection()
 
             with db_conn:
-                c.id = insert_row(db_conn, 'chapters', data)
+                id = insert_row(db_conn, 'chapters', data)
 
             db_conn.close()
+            db_conn = None
 
-        return c if c.id is not None else None
+        return cls.get(id, db_conn) if id is not None else None
 
     @property
     def manga(self):
