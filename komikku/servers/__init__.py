@@ -45,7 +45,6 @@ LANGUAGES = dict(
 )
 
 REQUESTS_TIMEOUT = 5
-SESSIONS = dict()
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/60'
 USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
@@ -73,18 +72,23 @@ class Server:
     long_strip_genres = []
 
     base_url = None
+    session = None
+
+    __servers = dict()  # to cache all existing instances
+
+    def __new__(cls, *args, **kwargs):
+        if cls.id not in Server.__servers:
+            Server.__servers[cls.id] = super().__new__(cls)
+
+        return Server.__servers[cls.id]
+
+    @classmethod
+    def from_cache(cls, id):
+        return Server.__servers.get(cls.id)
 
     @property
     def logo_resource_path(self):
         return get_server_logo_resource_path_by_id(self.id)
-
-    @property
-    def session(self):
-        return SESSIONS.get(self.id)
-
-    @session.setter
-    def session(self, value):
-        SESSIONS[self.id] = value
 
     @property
     def sessions_dir(self):
@@ -95,11 +99,17 @@ class Server:
         return dir
 
     def clear_session(self):
-        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
+        main_id = get_server_main_id_by_id(self.id)
+
+        # Remove session from disk
+        file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(main_id))
         if os.path.exists(file_path):
             os.unlink(file_path)
 
-        del SESSIONS[self.id]
+        # Clear cache
+        for id in list(Server.__servers.keys()):
+            if get_server_main_id_by_id(id) == main_id:
+                del Server.__servers[id]
 
     def get_manga_cover_image(self, url):
         """

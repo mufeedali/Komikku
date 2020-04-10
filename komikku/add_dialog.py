@@ -20,6 +20,7 @@ from komikku.servers import get_server_logo_resource_path_by_id
 from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
+from komikku.servers import Server
 from komikku.utils import log_error_traceback
 
 
@@ -175,7 +176,10 @@ class AddDialog:
         self.dialog.close()
 
     def on_server_clicked(self, listbox, row):
-        self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
+        self.server = Server.from_cache(row.server_data['id'])
+        if self.server is None:
+            self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
+
         self.show_page('search')
 
     def open(self, action, param):
