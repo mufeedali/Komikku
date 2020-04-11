@@ -84,7 +84,7 @@ class Server:
 
     @classmethod
     def from_cache(cls, id):
-        return Server.__servers.get(cls.id)
+        return Server.__servers.get(id)
 
     @property
     def logo_resource_path(self):
