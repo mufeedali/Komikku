@@ -80,7 +80,7 @@ class Crunchyroll(Server):
         return data
 
     def get_manga_chapter_url(self, chapter_id):
-        return self.api_chapter_list.format(Crunchyroll.session_id, chapter_id, Crunchyroll.cr_auth)
+        return self.api_chapter_list.format(self.session_id, chapter_id, self.cr_auth)
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
@@ -181,9 +181,9 @@ class Crunchyroll(Server):
         """
         match = re.search(r'sessionId: "(\w*)"', self.session_get('https://www.crunchyroll.com/manga/the-seven-deadly-sins/read/1').text)
         if match:
-            Crunchyroll.session_id = match.group(1)
-            if not Crunchyroll.cr_auth:
-                data = self.session_get(self.cr_auth_url.format(Crunchyroll.session_id)).json()
-                Crunchyroll.cr_auth = ''.join(data['data']['auth'])
+            self.session_id = match.group(1)
+            if not self.cr_auth:
+                data = self.session_get(self.cr_auth_url.format(self.session_id)).json()
+                self.cr_auth = ''.join(data['data']['auth'])
             return True
         return False
