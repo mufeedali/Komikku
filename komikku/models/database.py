@@ -445,9 +445,19 @@ class Manga:
 
         Fetches and saves data available in manga's HTML page on server
 
-        :return: True on success False otherwise, number of recent chapters
+        :return: True on success False otherwise, recent chapters IDs, number of deleted chapters
         :rtype: tuple
         """
+        gone_chapters_ranks = []
+        recent_chapters_ids = []
+        nb_deleted_chapters = 0
+
+        def get_free_rank(rank):
+            if rank not in gone_chapters_ranks:
+                return rank
+
+            return get_free_rank(rank + 1)
+
         data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
         if data is None:
             return False, 0, 0
@@ -461,14 +471,30 @@ class Manga:
 
             # Update chapters
             chapters_data = data.pop('chapters')
-            recent_chapters_ids = []
-            nb_deleted_chapters = 0
 
+            # First, delete chapters that no longer exist on server EXCEPT those marked as downloaded
+            # In case of downloaded, we keep track of ranks because they must not be reused
+            chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
+            rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
+            for row in rows:
+                if row['slug'] not in chapters_slugs:
+                    gone_chapter = Chapter.get(row['id'])
+                    if not gone_chapter.downloaded:
+                        # Delete chapter
+                        gone_chapter.delete(db_conn)
+                        nb_deleted_chapters += 1
+                    else:
+                        # Keep track of rank
+                        gone_chapters_ranks.append(gone_chapter.rank)
+
+            # Then, add or update chapters
             rank = 0
             for chapter_data in chapters_data:
                 row = db_conn.execute(
                     'SELECT * FROM chapters WHERE manga_id = ? AND slug = ?', (self.id, chapter_data['slug'])
                 ).fetchone()
+
+                rank = get_free_rank(rank)
                 if row:
                     # Update chapter
                     chapter_data['rank'] = rank
@@ -490,14 +516,6 @@ class Manga:
 
             if len(recent_chapters_ids) > 0 or nb_deleted_chapters > 0:
                 data['last_update'] = datetime.datetime.now()
-
-            # Delete chapters that no longer exist (except downloaded)
-            chapters_slugs = [chapter_data['slug'] for chapter_data in chapters_data]
-            rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? AND downloaded = 0', (self.id,))
-            for row in rows:
-                if row['slug'] not in chapters_slugs:
-                    Chapter.get(row['id']).delete(db_conn)
-                    nb_deleted_chapters += 1
 
             self._chapters = None
 
