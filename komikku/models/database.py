@@ -340,7 +340,8 @@ class Manga:
     @property
     def nb_downloaded_chapters(self):
         db_conn = create_db_connection()
-        row = db_conn.execute('SELECT count() AS downloaded FROM chapters WHERE manga_id = ? AND downloaded = 1', (self.id,)).fetchone()
+        row = db_conn.execute(
+            'SELECT count() AS downloaded FROM chapters WHERE manga_id = ? AND downloaded = 1 and read = 0', (self.id,)).fetchone()
         db_conn.close()
 
         return row['downloaded']

@@ -346,6 +346,7 @@ class Pager(Gtk.ScrolledWindow):
             pages=chapter.pages,
             last_page_read_index=page.index,
             read=chapter_is_read,
+            downloaded=chapter.downloaded or chapter_is_read,
             recent=0,
         ))
 

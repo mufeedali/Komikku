@@ -376,7 +376,9 @@ class ChaptersList:
         # Date + Download status (text or progress bar)
         download_status = None
         if chapter.downloaded:
-            download_status = 'downloaded'
+            # It's not necessary/useful to display "Downloaded" state if chapter is read
+            if not chapter.read:
+                download_status = 'downloaded'
         else:
             if row.download is None:
                 row.download = Download.get_by_chapter_id(chapter.id)
