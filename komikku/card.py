@@ -58,7 +58,7 @@ class Card:
 
         self.chapters_list.add_actions()
 
-    def enter_selection_mode(self, gesture, x, y):
+    def enter_selection_mode(self):
         self.selection_mode = True
 
         self.chapters_list.enter_selection_mode()
@@ -187,6 +187,8 @@ class Card:
 
 
 class ChaptersList:
+    gestured = False
+    last_selection = None
     populate_count = 0
     selection_count = 0
 
@@ -199,7 +201,7 @@ class ChaptersList:
 
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
         self.gesture.set_touch_only(False)
-        self.gesture.connect('pressed', self.card.enter_selection_mode)
+        self.gesture.connect('pressed', self.on_gesture_activate)
 
         self.card.window.downloader.connect('download-changed', self.update_chapter_row)
 
@@ -280,6 +282,7 @@ class ChaptersList:
 
     def enter_selection_mode(self):
         self.selection_count = 0
+        self.last_selection = None
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -290,18 +293,40 @@ class ChaptersList:
 
     def on_chapter_row_clicked(self, listbox, row):
         if self.card.selection_mode:
+            if self.gestured and self.last_selection:
+                first_index = self.last_selection.get_index()
+                last_index = row.get_index()
+                while first_index != last_index:
+                    rowed = self.listbox.get_row_at_index(first_index)
+                    if rowed and not rowed._selected:
+                        self.selection_count += 1
+                        self.listbox.select_row(rowed)
+                        rowed._selected = True
+                    if first_index < last_index:
+                        first_index += 1
+                    else:
+                        first_index -= 1
+            self.gestured = False
             if row._selected:
                 self.selection_count -= 1
                 self.listbox.unselect_row(row)
+                self.last_selection = None
                 row._selected = False
             else:
                 self.selection_count += 1
                 self.listbox.select_row(row)
+                self.last_selection = row
                 row._selected = True
             if self.selection_count == 0:
                 self.card.leave_selection_mode()
         else:
             self.card.window.reader.init(self.card.manga, row.chapter)
+
+    def on_gesture_activate(self, gesture, x, y):
+        if self.card.selection_mode:
+            self.gestured = True
+        else:
+            self.card.enter_selection_mode()
 
     def populate(self):
         def populate_chapters_rows(rows):
