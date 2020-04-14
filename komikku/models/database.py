@@ -558,11 +558,7 @@ class Chapter:
         if row is None:
             return None
 
-        c = cls()
-        for key in row.keys():
-            setattr(c, key, row[key])
-
-        return c
+        return cls(row)
 
     @classmethod
     def new(cls, data, rank, manga_id, db_conn=None):
@@ -640,9 +636,17 @@ class Chapter:
             with open(page_path, 'wb') as fp:
                 fp.write(data)
 
+        updated_data = dict()
         if self.pages[page_index]['image'] is None:
             self.pages[page_index]['image'] = imagename
-            self.update(dict(pages=self.pages))
+            updated_data['pages'] = self.pages
+
+        downloaded = len(next(os.walk(self.path))[2]) == len(self.pages)
+        if downloaded != self.downloaded:
+            updated_data['downloaded'] = downloaded
+
+        if updated_data:
+            self.update(updated_data)
 
         return page_path
 
