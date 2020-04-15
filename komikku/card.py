@@ -293,7 +293,7 @@ class ChaptersList:
 
     def on_chapter_row_clicked(self, listbox, row):
         if self.card.selection_mode:
-            if self.selection_mode_extended and self.selection_mode_last_row_index:
+            if self.selection_mode_extended and self.selection_mode_last_row_index is not None:
                 # Extended selection mode: select all rows between last selected row and clicked row
                 walk_index = self.selection_mode_last_row_index
                 last_index = row.get_index()
