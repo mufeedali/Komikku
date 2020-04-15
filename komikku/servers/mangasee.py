@@ -5,10 +5,10 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import magic
 import requests
 
 from komikku.servers import convert_date_string
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -43,7 +43,7 @@ class Mangasee(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -113,7 +113,7 @@ class Mangasee(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -139,18 +139,24 @@ class Mangasee(Server):
         """
         r = self.session_get(self.page_url.format(manga_slug, chapter_slug, page['slug']))
         if r is None:
-            return (None, None)
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        image_url = soup.find('img', class_='CurImage').get('src')
-        r = self.session_get(image_url)
-        if r is None:
-            return (None, None)
+        url = soup.find('img', class_='CurImage').get('src')
+        r = self.session_get(url)
+        if r is None or r.status_code != 200:
+            return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
+        if not mime_type.startswith('image'):
+            return None
 
-        return (image_url.split('/')[-1], r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name=url.split('/')[-1],
+        )
 
     def get_manga_url(self, slug, url):
         """
@@ -166,7 +172,7 @@ class Mangasee(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/plain':
             return None

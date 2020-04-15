@@ -5,11 +5,11 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import magic
 import requests
 import unidecode
 
 from komikku.servers import convert_date_string
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -44,7 +44,7 @@ class Scantrad(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -102,7 +102,7 @@ class Scantrad(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.url[:-1] == self.base_url:
             # Chapter page doesn't exist, we have been redirected to homepage
@@ -134,13 +134,18 @@ class Scantrad(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(self.image_url.format(page['image']))
-        if r is None:
-            return (None, None)
+        if r is None or r.status_code != 200:
+            return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-        image_name = page['image'].split('/')[-1]
+        mime_type = get_buffer_mime_type(r.content)
+        if not mime_type.startswith('image'):
+            return None
 
-        return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name=page['image'].split('/')[-1],
+        )
 
     def get_manga_url(self, slug, url):
         """
@@ -156,7 +161,7 @@ class Scantrad(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None

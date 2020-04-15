@@ -7,9 +7,9 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 import html
-import magic
 import requests
 
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.utils import SecretAccountHelper
@@ -262,13 +262,18 @@ class Mangadex(Server):
             'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
             'Referer': self.page_url.format(chapter_slug, 1),
         })
-        if r is None:
-            return (None, None)
+        if r is None or r.status_code != 200:
+            return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-        image_name = page['image'].split('?')[0].split('/')[-1]
+        mime_type = get_buffer_mime_type(r.content)
+        if not mime_type.startswith('image'):
+            return None
 
-        return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name=page['image'].split('?')[0].split('/')[-1],
+        )
 
     def get_manga_url(self, slug, url):
         """
@@ -284,7 +289,7 @@ class Mangadex(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -333,7 +338,7 @@ class Mangadex(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None

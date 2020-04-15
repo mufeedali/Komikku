@@ -75,10 +75,10 @@ def test_mangalib(mangalib_server):
     try:
         response = mangalib_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -136,8 +136,8 @@ def test_hentailib(hentailib_server):
     try:
         response = hentailib_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield

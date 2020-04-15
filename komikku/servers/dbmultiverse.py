@@ -5,9 +5,9 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import magic
 import requests
 
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -39,7 +39,7 @@ class Dbmultiverse(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -91,7 +91,7 @@ class Dbmultiverse(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -115,24 +115,28 @@ class Dbmultiverse(Server):
         """
         r = self.session_get(self.page_url.format(page['slug']))
         if r is None:
-            return (None, None)
+            return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
-            image_url = soup.find('img', id='balloonsimg').get('src')
+            url = soup.find('img', id='balloonsimg').get('src')
         except Exception:
-            image_url = soup.find('div', id='balloonsimg').get('style').split(';')[0].split(':')[1][4:-1]
+            url = soup.find('div', id='balloonsimg').get('style').split(';')[0].split(':')[1][4:-1]
 
-        image_name = '{0}.png'.format(page['slug'])
+        r = self.session_get(self.base_url + url)
+        if r is None or r.status_code != 200:
+            return None
 
-        r = self.session_get(self.base_url + image_url)
-        if r is None:
-            return (None, None)
+        mime_type = get_buffer_mime_type(r.content)
+        if not mime_type.startswith('image'):
+            return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-
-        return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name='{0}.png'.format(page['slug']),
+        )
 
     def get_manga_url(self, slug, url):
         """

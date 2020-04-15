@@ -5,11 +5,11 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import magic
 import requests
 import textwrap
 
 from komikku.servers import convert_date_string
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -40,7 +40,7 @@ class Xkcd(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -111,9 +111,7 @@ class Xkcd(Server):
         """
         if page.get('image'):
             r = self.session_get(self.image_url.format(page['image']))
-            if r is None:
-                return (None, None)
-            image_name = page['image']
+            name = page['image']
         else:
             r = self.session_get(
                 'https://fakeimg.pl/1500x2126/ffffff/000000/',
@@ -123,13 +121,20 @@ class Xkcd(Server):
                     font='museo'
                 )
             )
-            if r is None:
-                return (None, None)
-            image_name = '{0}-alt-text.png'.format(chapter_slug)
+            name = '{0}-alt-text.png'.format(chapter_slug)
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        if r is None or r.status_code != 200:
+            return None
 
-        return (image_name, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        mime_type = get_buffer_mime_type(r.content)
+        if not mime_type.startswith('image'):
+            return None
+
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name=name,
+        )
 
     def get_manga_url(self, slug, url):
         """

@@ -126,7 +126,7 @@ class Server:
             return None
 
         buffer = r.content
-        mime_type = magic.from_buffer(buffer[:128], mime=True)
+        mime_type = get_buffer_mime_type(buffer)
 
         if not mime_type.startswith('image'):
             return None
@@ -222,6 +222,15 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
     image.convert('RGB').save(buffer, format)
 
     return buffer.getvalue()
+
+
+def get_buffer_mime_type(buffer):
+    try:
+        # Using file-magic module: https://github.com/file/file
+        return magic.detect_from_content(bytes(buffer[:128])).mime_type
+    except Exception:
+        # Using python-magic module: https://github.com/ahupp/python-magic
+        return magic.from_buffer(buffer[:128], mime=True)
 
 
 def get_server_class_name_by_id(id):

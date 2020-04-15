@@ -68,8 +68,8 @@ def test_submanga(submanga_server):
     try:
         response = submanga_server.get_manga_chapter_page_image(slug, None, chapter_slug, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield

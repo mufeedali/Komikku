@@ -124,10 +124,10 @@ def test_edelgardescans(edelgardescans_server):
     try:
         response = edelgardescans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -185,10 +185,10 @@ def test_hatigarmscans(hatigarmscans_server):
     try:
         response = hatigarmscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -246,10 +246,10 @@ def test_hunlightscans(hunlightscans_server):
     try:
         response = hunlightscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -307,10 +307,10 @@ def test_leviatanscans(leviatanscans_server):
     try:
         response = leviatanscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -368,10 +368,10 @@ def test_leviatanscans_es(leviatanscans_es_server):
     try:
         response = leviatanscans_es_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -429,10 +429,10 @@ def test_oneshotscans(oneshotscans_server):
     try:
         response = oneshotscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -490,10 +490,10 @@ def test_reaperscans(reaperscans_server):
     try:
         response = reaperscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -551,10 +551,10 @@ def test_thenonamesscans(thenonamesscans_server):
     try:
         response = thenonamesscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield
 
 
@@ -612,8 +612,8 @@ def test_zeroscans(zeroscans_server):
     try:
         response = zeroscans_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield

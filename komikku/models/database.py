@@ -14,6 +14,7 @@ import shutil
 from gi.repository import GLib
 
 from komikku.models.settings import Settings
+from komikku.servers import convert_webp_buffer
 from komikku.servers import get_server_class_name_by_id
 from komikku.servers import get_server_dir_name_by_id
 from komikku.servers import get_server_module_name_by_id
@@ -617,28 +618,32 @@ class Chapter:
         if page_path:
             return page_path
 
-        imagename, data = self.manga.server.get_manga_chapter_page_image(
-            self.manga.slug, self.manga.name, self.slug, self.pages[page_index])
+        data = self.manga.server.get_manga_chapter_page_image(self.manga.slug, self.manga.name, self.slug, self.pages[page_index])
         if data is None:
             return None
 
         if not os.path.exists(self.path):
             os.makedirs(self.path, exist_ok=True)
 
-        page_path = os.path.join(self.path, imagename)
+        page_path = os.path.join(self.path, data['name'])
+
+        if data['mime_type'] == 'image/webp':
+            buffer = convert_webp_buffer(data['buffer'])
+        else:
+            buffer = data['buffer']
 
         if self.scrambled:
             with open(page_path + '_scrambled', 'wb') as fp:
-                fp.write(data)
+                fp.write(buffer)
 
             unscramble_image(page_path + '_scrambled', page_path)
         else:
             with open(page_path, 'wb') as fp:
-                fp.write(data)
+                fp.write(buffer)
 
         updated_data = dict()
         if self.pages[page_index]['image'] is None:
-            self.pages[page_index]['image'] = imagename
+            self.pages[page_index]['image'] = data['name']
             updated_data['pages'] = self.pages
 
         downloaded = len(next(os.walk(self.path))[2]) == len(self.pages)

@@ -6,11 +6,11 @@
 
 from collections import OrderedDict
 from bs4 import BeautifulSoup
-import magic
 import requests
 import unidecode
 
 from komikku.servers import convert_date_string
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -50,7 +50,7 @@ class Centraldemangas(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -126,7 +126,7 @@ class Centraldemangas(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None
@@ -166,13 +166,19 @@ class Centraldemangas(Server):
         url = page['image']
 
         r = self.session_get(url, headers={'Referer': self.chapter_url.format(manga_slug, chapter_slug)})
-        if r is None:
-            return (None, None)
+        if r is None or r.status_code != 200:
+            return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
-        imagename = url.split('/')[-1]
+        mime_type = get_buffer_mime_type(r.content)
 
-        return (imagename, r.content) if r.status_code == 200 and mime_type.startswith('image') else (None, None)
+        if not mime_type.startswith('image'):
+            return None
+
+        return dict(
+            buffer=r.content,
+            mime_type=mime_type,
+            name=url.split('/')[-1],
+        )
 
     def get_manga_url(self, slug, url):
         """
@@ -188,7 +194,7 @@ class Centraldemangas(Server):
         if r is None:
             return None
 
-        mime_type = magic.from_buffer(r.content[:128], mime=True)
+        mime_type = get_buffer_mime_type(r.content)
 
         if r.status_code != 200 or mime_type != 'text/html':
             return None

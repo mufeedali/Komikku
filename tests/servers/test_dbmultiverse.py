@@ -57,8 +57,8 @@ def test_dbmultiverse(dbmultiverse_server):
     try:
         response = dbmultiverse_server.get_manga_chapter_page_image(None, None, None, page)
     except Exception as e:
-        response = (None, None)
+        response = None
         log_error_traceback(e)
 
-    assert response[1] is not None
+    assert response is not None
     yield

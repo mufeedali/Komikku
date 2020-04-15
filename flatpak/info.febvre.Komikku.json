@@ -16,9 +16,9 @@
     ],
     "modules" : [
         "python3-dateparser.json",
+        "python3-file-magic.json",
         "python3-pillow.json",
         "python3-pure-protobuf.json",
-        "python3-python-magic.json",
         "python3-unidecode.json",
         "python3-cloudscraper.json",
         "python3-lxml.json",

@@ -59,7 +59,7 @@ Dependencies:
 * `python-cloudscraper`
 * `python-dateparser`
 * `python-lxml`
-* `python-magic`
+* `python-magic` or `file-magic`
 * `python-pillow`
 * `python-pure-protobuf`
 * `python-unidecode`

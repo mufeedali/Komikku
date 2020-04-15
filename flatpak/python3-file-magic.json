@@ -1,0 +1,14 @@
+{
+    "name": "python3-file-magic",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} file-magic"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/bb/7e/b256e53a6558afd348387c3119dc4a1e3003d36030584a427168c8d72a7a/file_magic-0.4.0-py3-none-any.whl",
+            "sha256": "8ea03da58cf4de5a69909c0e27746cf17fc903356a601967ab01577916a73aed"
+        }
+    ]
+}
