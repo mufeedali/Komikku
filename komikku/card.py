@@ -187,10 +187,10 @@ class Card:
 
 
 class ChaptersList:
-    gestured = False
-    last_selection = None
     populate_count = 0
-    selection_count = 0
+    selection_mode_count = 0
+    selection_mode_extended = False
+    selection_mode_last_row_index = None
 
     def __init__(self, card):
         self.card = card
@@ -201,7 +201,7 @@ class ChaptersList:
 
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
         self.gesture.set_touch_only(False)
-        self.gesture.connect('pressed', self.on_gesture_activate)
+        self.gesture.connect('pressed', self.on_gesture_long_press_activated)
 
         self.card.window.downloader.connect('download-changed', self.update_chapter_row)
 
@@ -281,8 +281,8 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def enter_selection_mode(self):
-        self.selection_count = 0
-        self.last_selection = None
+        self.selection_mode_count = 0
+        self.selection_mode_last_row_index = None
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -293,38 +293,46 @@ class ChaptersList:
 
     def on_chapter_row_clicked(self, listbox, row):
         if self.card.selection_mode:
-            if self.gestured and self.last_selection:
-                first_index = self.last_selection.get_index()
+            if self.selection_mode_extended and self.selection_mode_last_row_index:
+                # Extended selection mode: select all rows between last selected row and clicked row
+                walk_index = self.selection_mode_last_row_index
                 last_index = row.get_index()
-                while first_index != last_index:
-                    rowed = self.listbox.get_row_at_index(first_index)
-                    if rowed and not rowed._selected:
-                        self.selection_count += 1
-                        self.listbox.select_row(rowed)
-                        rowed._selected = True
-                    if first_index < last_index:
-                        first_index += 1
+
+                while walk_index != last_index:
+                    walk_row = self.listbox.get_row_at_index(walk_index)
+                    if walk_row and not walk_row._selected:
+                        self.selection_mode_count += 1
+                        self.listbox.select_row(walk_row)
+                        walk_row._selected = True
+
+                    if walk_index < last_index:
+                        walk_index += 1
                     else:
-                        first_index -= 1
-            self.gestured = False
+                        walk_index -= 1
+
+            self.selection_mode_extended = False
+
             if row._selected:
-                self.selection_count -= 1
                 self.listbox.unselect_row(row)
-                self.last_selection = None
+                self.selection_mode_count -= 1
+                self.selection_mode_last_row_index = None
                 row._selected = False
             else:
-                self.selection_count += 1
                 self.listbox.select_row(row)
-                self.last_selection = row
+                self.selection_mode_count += 1
+                self.selection_mode_last_row_index = row.get_index()
                 row._selected = True
-            if self.selection_count == 0:
+
+            if self.selection_mode_count == 0:
                 self.card.leave_selection_mode()
         else:
             self.card.window.reader.init(self.card.manga, row.chapter)
 
-    def on_gesture_activate(self, gesture, x, y):
+    def on_gesture_long_press_activated(self, gesture, x, y):
         if self.card.selection_mode:
-            self.gestured = True
+            # Enter in 'Extended' selection mode
+            # By using another long press gesture, user can select multiple rows at once
+            self.selection_mode_extended = True
         else:
             self.card.enter_selection_mode()
 
@@ -472,12 +480,12 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def select_all_chapters(self, action, param):
-        self.selection_count = 0
+        self.selection_mode_count = 0
 
         for row in self.listbox.get_children():
             self.listbox.select_row(row)
             row._selected = True
-            self.selection_count += 1
+            self.selection_mode_count += 1
 
     def show_chapter_menu(self, button, row):
         chapter = row.chapter
