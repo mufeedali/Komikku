@@ -16,7 +16,9 @@ from komikku.reader.pager.page import Page
 class Pager(Gtk.ScrolledWindow):
     current_page = None
 
-    button_press_timeout_id = None
+    btn_press_handler_id = None
+    btn_press_timeout_id = None
+    key_press_handler_id = None
     default_double_click_time = Gtk.Settings.get_default().get_property('gtk-double-click-time')
     scroll_lock = False
     zoom = dict(active=False)
@@ -42,8 +44,7 @@ class Pager(Gtk.ScrolledWindow):
             Gdk.EventMask.SMOOTH_SCROLL_MASK
         )
 
-        self.connect('button-press-event', self.on_btn_press)
-        self.window.connect('key-press-event', self.on_key_press)
+        self.enable_navigation()
         self.connect('motion-notify-event', self.on_motion_notify)
         self.connect('scroll-event', self.on_scroll)
 
@@ -71,7 +72,9 @@ class Pager(Gtk.ScrolledWindow):
                 return True
 
             adj.set_value(end)
+
             self.scroll_lock = False
+            self.enable_navigation()
 
             return False
 
@@ -109,6 +112,14 @@ class Pager(Gtk.ScrolledWindow):
         for page in self.pages:
             if page.status == 'rendered' and page.error is None:
                 page.set_image()
+
+    def disable_navigation(self):
+        self.disconnect(self.btn_press_handler_id)
+        self.window.disconnect(self.key_press_handler_id)
+
+    def enable_navigation(self):
+        self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
+        self.key_press_handler_id = self.window.connect('key-press-event', self.on_key_press)
 
     def goto_page(self, page_index):
         if self.pages[0].index == page_index and self.pages[0].chapter == self.current_page.chapter:
@@ -161,15 +172,15 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
-            if self.button_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
+            if self.btn_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
-                self.button_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
+                self.btn_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
 
             elif event.type == Gdk.EventType._2BUTTON_PRESS:
                 # Remove scheduled single click event
-                if self.button_press_timeout_id:
-                    GLib.source_remove(self.button_press_timeout_id)
-                    self.button_press_timeout_id = None
+                if self.btn_press_timeout_id:
+                    GLib.source_remove(self.btn_press_timeout_id)
+                    self.btn_press_timeout_id = None
 
                 GLib.idle_add(self.on_double_click, event.copy())
 
@@ -357,7 +368,7 @@ class Pager(Gtk.ScrolledWindow):
         return Gdk.EVENT_STOP
 
     def on_single_click(self, event):
-        self.button_press_timeout_id = None
+        self.btn_press_timeout_id = None
 
         if event.x < self.reader.size.width / 3:
             # 1st third of the page
@@ -411,13 +422,13 @@ class Pager(Gtk.ScrolledWindow):
         self.get_window().set_cursor(None)
 
     def switchto_page(self, position):
-        if self.scroll_lock:
-            return
-
         if position == 'left':
             page = self.pages[0]
         elif position == 'right':
             page = self.pages[2]
+        if page == self.current_page:
+            # Can occur during a quick keyboard navigation (when holding down an arrow key)
+            return
 
         if page.status == 'offlimit':
             # We reached first or last chapter
@@ -431,6 +442,8 @@ class Pager(Gtk.ScrolledWindow):
         if not page.loadable:
             # Page index and pages of the chapter to which page belongs must be known to be able to move to another page
             return
+
+        self.disable_navigation()
 
         chapter_changed = self.current_page.chapter != page.chapter
 
