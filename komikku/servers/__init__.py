@@ -225,12 +225,28 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
 
 
 def get_buffer_mime_type(buffer):
-    try:
+    if hasattr(magic, 'detect_from_content'):
         # Using file-magic module: https://github.com/file/file
-        return magic.detect_from_content(bytes(buffer[:128])).mime_type
-    except Exception:
+        return magic.detect_from_content(buffer[:128]).mime_type
+    else:
         # Using python-magic module: https://github.com/ahupp/python-magic
         return magic.from_buffer(buffer[:128], mime=True)
+
+
+@lru_cache(maxsize=None)
+def get_cache_dir():
+    cache_dir_path = GLib.get_user_cache_dir()
+
+    # Check if inside flatpak sandbox
+    is_flatpak = os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
+    if is_flatpak:
+        return cache_dir_path
+
+    cache_dir_path = os.path.join(cache_dir_path, 'komikku')
+    if not os.path.exists(cache_dir_path):
+        os.mkdir(cache_dir_path)
+
+    return cache_dir_path
 
 
 def get_server_class_name_by_id(id):
@@ -260,22 +276,6 @@ def get_server_main_id_by_id(id):
 
 def get_server_module_name_by_id(id):
     return id.split(':')[-1].split('_')[0]
-
-
-@lru_cache(maxsize=None)
-def get_cache_dir():
-    cache_dir_path = GLib.get_user_cache_dir()
-
-    # Check if inside flatpak sandbox
-    is_flatpak = os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
-    if is_flatpak:
-        return cache_dir_path
-
-    cache_dir_path = os.path.join(cache_dir_path, 'komikku')
-    if not os.path.exists(cache_dir_path):
-        os.mkdir(cache_dir_path)
-
-    return cache_dir_path
 
 
 @lru_cache(maxsize=None)
