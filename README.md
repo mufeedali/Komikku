@@ -1,14 +1,11 @@
-# <img height="32" src="data/icons/info.febvre.Komikku.svg" /> Komikku
+# <img height="88" src="data/icons/info.febvre.Komikku.svg" /> Komikku
 
 [![pipeline status](https://gitlab.com/valos/Komikku/badges/master/pipeline.svg)](https://gitlab.com/valos/Komikku/commits/master)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 An online/offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
-<a href='https://flathub.org/apps/details/info.febvre.Komikku'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
-
 **PLEASE NOTE**: *Komikku* is still in **an early stage of development**. Some design changes or unexpected errors may lead to data loss (even if everything is done for them not to happen).
-
 
 ## License
 
@@ -27,7 +24,17 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 <img src="screenshots/add-servers.png" width="290">
 <img src="screenshots/preferences.png" width="290">
 
-## Installing
+## Installation
+
+### Flatpak
+
+<a href='https://flathub.org/apps/details/info.febvre.Komikku'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
+### Native package
+
+Komikku is available as native package in the repositories of the following distributions:
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/komikku.svg)](https://repology.org/project/komikku/versions)
 
 ### Flatpak of development version
 
