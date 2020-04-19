@@ -250,6 +250,8 @@ class Pager(Gtk.ScrolledWindow):
             self.zoom['active'] = False
 
     def on_first_page_rendered(self, page):
+        if not page.chapter.pages:
+            return
         self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
         self.reader.controls.init()
         self.reader.controls.set_scale_value(page.index + 1)
