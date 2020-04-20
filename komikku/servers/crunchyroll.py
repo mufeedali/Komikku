@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
 import re
 
+from komikku.servers import convert_date_string
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -32,13 +33,24 @@ class Crunchyroll(Server):
 
     headers = {
         'User-Agent': USER_AGENT,
-        'Origin': 'https://www.crunchyroll.com/',
+        'Origin': 'https://www.crunchyroll.com',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en,en-US;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
     }
 
     def __init__(self, login=None, password=None):
         self.init(login, password)
+
         if self.logged_in:
             self.init_session_token()
+
+    @staticmethod
+    def decode_image(buffer):
+        # Don't know why 66 is special
+        return bytes(b ^ 66 for b in buffer)
 
     def get_manga_data(self, initial_data):
         """
@@ -49,19 +61,19 @@ class Crunchyroll(Server):
         r = self.session_get(self.api_chapters_url.format(initial_data['slug']))
 
         json_data = r.json()
-        resp_data = json_data["series"]
-        chapters = json_data["chapters"]
+        resp_data = json_data['series']
+        chapters = json_data['chapters']
 
         data = initial_data.copy()
         data.update(dict(
-            authors=[resp_data.get("authors", "")],
-            scanlators=[resp_data.get("translator", "")],
-            genres=resp_data.get("genres", ""),
+            authors=[resp_data.get('authors', '')],
+            scanlators=[resp_data.get('translator', '')],
+            genres=resp_data.get('genres', []),
             status=None,
             chapters=[],
-            synopsis=resp_data["locale"][self.locale]["description"],
+            synopsis=resp_data['locale'][self.locale]['description'],
             server_id=self.id,
-            cover=resp_data["locale"][self.locale]["thumb_url"],
+            cover=resp_data['locale'][self.locale]['thumb_url'],
         ))
 
         data['status'] = 'ongoing'
@@ -73,7 +85,7 @@ class Crunchyroll(Server):
                 title=chapter['number'],
             ))
             try:
-                data['chapters'][-1]['date'] = datetime.strptime(chapter['availability_start'], '%Y-%m-%d %H:%M:%S').date()
+                data['chapters'][-1]['date'] = convert_date_string(chapter['availability_start'], '%Y-%m-%d %H:%M:%S')
             except ValueError:
                 pass
 
@@ -89,37 +101,49 @@ class Crunchyroll(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.get_manga_chapter_url(chapter_slug))
-        resp_data = r.json()
-        if resp_data is None or resp_data.get('error', False):
-            return None  # we aren't logged in
-        pages = resp_data["pages"]
-        pages.sort(key=lambda x: int(x["number"]))
+
+        try:
+            resp_data = r.json()
+            if resp_data is None or resp_data.get('error', False):
+                # We aren't logged in
+                return None
+
+            pages = resp_data['pages']
+            pages.sort(key=lambda x: int(x['number']))
+        except Exception:
+            return None
 
         data = dict(
             pages=[],
-            scrambled=0,
         )
 
         for page in pages:
             data['pages'].append(dict(
-                slug=page['page_id'],  # not necessary, we know image URL already
+                slug=page['page_id'],  # used later to forge image name
                 image=page['locale'][self.locale][self.page_url_key],
             ))
 
         return data
-
-    @staticmethod
-    def decode_image(buffer):
-        # Don't know why 66 is special
-        return bytes(b ^ 66 for b in buffer)
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'])
+        if r.status_code != 200:
+            return None
 
-        return (page["slug"], self.decode_image(r.content))
+        buffer = self.decode_image(r.content)
+
+        mime_type = get_buffer_mime_type(buffer)
+        if not mime_type.startswith('image'):
+            return None
+
+        return dict(
+            buffer=buffer,
+            mime_type=mime_type,
+            name='{0}.{1}'.format(page['slug'], mime_type.split('/')[1]),
+        )
 
     def get_manga_url(self, slug, url):
         """
@@ -133,57 +157,74 @@ class Crunchyroll(Server):
         """
         r = self.session_get(self.api_series_url)
 
-        resp_data = r.json()
-        result = []
-        resp_data.sort(key=lambda x: not x['featured'])
-        for item in resp_data:
-            if 'locale' in item:
+        try:
+            result = []
+
+            resp_data = r.json()
+            resp_data.sort(key=lambda x: not x['featured'])
+
+            for item in resp_data:
+                if 'locale' not in item:
+                    continue
+
                 result.append({
                     'slug': item['series_id'],
                     'name': item['locale'][self.locale]['name'],
-                    'synopsis': item['locale'][self.locale]['description']
                 })
+        except Exception:
+            return None
+
         return result
 
-    def search(self, term):
-        term_lower = term.lower()
-        return filter(lambda x: term_lower in x['name'].lower(), self.get_most_populars())
+    def init_session_token(self):
+        """
+        Initialize session ID and get auth token
+        """
+        r = self.session_get('https://www.crunchyroll.com/comics_read/manga?volume_id=273&chapter_num=1')
+        match = re.search(r'session_id=(\w*)&amp;', r.text)
+        if not match:
+            return False
+
+        self.session_id = match.group(1)
+        if not self.cr_auth:
+            r = self.session_get(self.cr_auth_url.format(self.session_id))
+            try:
+                data = r.json()
+                self.cr_auth = ''.join(data['data']['auth'])
+            except Exception:
+                return False
+
+        return True
 
     def login(self, username, password):
         """
-        Setup Crunchyroll session and get the auth token
+        Log in, setup session and get auth token
         """
         if not username or not password:
             return False
 
-        page = BeautifulSoup(self.session_get(self.login_url).text, 'lxml')
-        hidden = page.findAll('input', {u'type': u'hidden'})[1].get('value')
-        login_data = {
-            'formname': 'login_form',
-            'fail_url': self.login_url,
-            'login_form[name]': username,
-            'login_form[password]': password,
-            'login_form[_token]': hidden,
-            'login_form[redirect_url]': '/'
-        }
-        self.session_post(self.login_url, data=login_data)
+        r = self.session_get(self.login_url, headers={'referer': self.login_url})
 
-        html = self.session_get(self.base_url).text
-        if not re.search(username + '(?i)', html) or not self.init_session_token():
+        soup = BeautifulSoup(r.content, 'lxml')
+
+        self.session_post(
+            self.login_url,
+            data={
+                'login_form[name]': username,
+                'login_form[password]': password,
+                'login_form[_token]': soup.findAll('input', {u'type': u'hidden'})[1].get('value'),
+                'login_form[redirect_url]': '/',
+            }
+        )
+
+        r = self.session_get(self.base_url)
+        if not re.search(username + '(?i)', r.text) or not self.init_session_token():
             return False
 
         self.save_session()
+
         return True
 
-    def init_session_token(self):
-        """
-        Initialize session_id
-        """
-        match = re.search(r'sessionId: "(\w*)"', self.session_get('https://www.crunchyroll.com/manga/the-seven-deadly-sins/read/1').text)
-        if match:
-            self.session_id = match.group(1)
-            if not self.cr_auth:
-                data = self.session_get(self.cr_auth_url.format(self.session_id)).json()
-                self.cr_auth = ''.join(data['data']['auth'])
-            return True
-        return False
+    def search(self, term):
+        term_lower = term.lower()
+        return filter(lambda x: term_lower in x['name'].lower(), self.get_most_populars())

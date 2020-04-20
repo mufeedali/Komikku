@@ -68,6 +68,7 @@ class Server:
     id = NotImplemented
     name = NotImplemented
     lang = NotImplemented
+
     status = 'enabled'
     logged_in = False
     long_strip_genres = []
@@ -99,19 +100,18 @@ class Server:
         if login and password:
             self.clear_session()
 
-        if self.session is None:
-            if self.load_session():
-                self.logged_in = True
-            else:
-                self.session = requests.Session()
-                if self.headers:
-                    self.session.headers = self.headers
+        if self.load_session():
+            self.logged_in = True
+        else:
+            self.session = requests.Session()
+            if self.headers:
+                self.session.headers = self.headers
 
-                if login is None and password is None:
-                    helper = SecretAccountHelper()
-                    helper.get(self.id, on_get_account)
-                else:
-                    self.logged_in = self.login(login, password)
+            if login is None and password is None:
+                helper = SecretAccountHelper()
+                helper.get(self.id, on_get_account)
+            else:
+                self.logged_in = self.login(login, password)
 
     def login(self, login, password):
         return False
