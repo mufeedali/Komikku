@@ -7,12 +7,10 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 import html
-import requests
 
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
-from komikku.utils import SecretAccountHelper
 
 
 GENRES = {
