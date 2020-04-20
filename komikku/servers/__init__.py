@@ -76,15 +76,8 @@ class Server:
     headers = None
 
     base_url = None
-    session = None
 
-    __servers = dict()  # to cache all existing instances
-
-    def __new__(cls, *args, **kwargs):
-        if cls.id not in Server.__servers:
-            Server.__servers[cls.id] = super().__new__(cls)
-
-        return Server.__servers[cls.id]
+    __sessions = dict()  # to cache all existing sessions
 
     @classmethod
     def from_cache(cls, id):
@@ -100,18 +93,19 @@ class Server:
         if login and password:
             self.clear_session()
 
-        if self.load_session():
-            self.logged_in = True
-        else:
-            self.session = requests.Session()
-            if self.headers:
-                self.session.headers = self.headers
-
-            if login is None and password is None:
-                helper = SecretAccountHelper()
-                helper.get(self.id, on_get_account)
+        if self.session is None:
+            if self.load_session():
+                self.logged_in = True
             else:
-                self.logged_in = self.login(login, password)
+                self.session = requests.Session()
+                if self.headers:
+                    self.session.headers = self.headers
+
+                if login is None and password is None:
+                    helper = SecretAccountHelper()
+                    helper.get(self.id, on_get_account)
+                else:
+                    self.logged_in = self.login(login, password)
 
     def login(self, login, password):
         return False
@@ -119,6 +113,14 @@ class Server:
     @property
     def logo_resource_path(self):
         return get_server_logo_resource_path_by_id(self.id)
+
+    @property
+    def session(self):
+        return Server.__sessions.get(self.id)
+
+    @session.setter
+    def session(self, value):
+        Server.__sessions[self.id] = value
 
     @property
     def sessions_dir(self):
@@ -136,10 +138,7 @@ class Server:
         if os.path.exists(file_path):
             os.unlink(file_path)
 
-        # Clear cache
-        for id in list(Server.__servers.keys()):
-            if get_server_main_id_by_id(id) == main_id:
-                del Server.__servers[id]
+        del Server.__sessions[self.id]
 
     def get_manga_cover_image(self, url):
         """
@@ -167,6 +166,8 @@ class Server:
         return buffer
 
     def load_session(self):
+        """ Load session from disk """
+
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
         if not os.path.exists(file_path):
             return False
@@ -177,6 +178,12 @@ class Server:
         return True
 
     def save_session(self):
+        """ Save session to disk """
+
+        # Add _extras attribute in serialized atributes list
+        # Useful to store additional/internal data in session
+        self.session.__attrs__.append('_extras')
+
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
         with open(file_path, 'wb') as f:
             pickle.dump(self.session, f)
