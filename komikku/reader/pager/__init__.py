@@ -114,12 +114,24 @@ class Pager(Gtk.ScrolledWindow):
                 page.set_image()
 
     def disable_navigation(self):
-        self.disconnect(self.btn_press_handler_id)
-        self.window.disconnect(self.key_press_handler_id)
+        # Keyboard
+        if self.btn_press_handler_id:
+            self.disconnect(self.btn_press_handler_id)
+            self.btn_press_handler_id = None
+
+        # Mouse
+        if self.key_press_handler_id:
+            self.window.disconnect(self.key_press_handler_id)
+            self.key_press_handler_id = None
 
     def enable_navigation(self):
-        self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
-        self.key_press_handler_id = self.window.connect('key-press-event', self.on_key_press)
+        # Keyboard
+        if self.btn_press_handler_id is None:
+            self.btn_press_handler_id = self.connect('button-press-event', self.on_btn_press)
+
+        # Mouse
+        if self.key_press_handler_id is None:
+            self.key_press_handler_id = self.window.connect('key-press-event', self.on_key_press)
 
     def goto_page(self, page_index):
         if self.pages[0].index == page_index and self.pages[0].chapter == self.current_page.chapter:
@@ -251,7 +263,9 @@ class Pager(Gtk.ScrolledWindow):
 
     def on_first_page_rendered(self, page):
         if not page.chapter.pages:
+            self.window.show_notification(_('This chapter is inaccessible.'), 2)
             return
+
         self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
         self.reader.controls.init()
         self.reader.controls.set_scale_value(page.index + 1)
