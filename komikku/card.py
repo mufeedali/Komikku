@@ -71,6 +71,7 @@ class Card:
         self.stack.set_visible_child_name('page_card_chapters')
 
         self.manga = manga
+        self.manga._chapters = None
 
         if manga.server.status == 'disabled':
             self.window.show_notification(
