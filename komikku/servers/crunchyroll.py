@@ -21,13 +21,11 @@ class Crunchyroll(Server):
     manga_url = base_url + '/comics/manga/{0}'
 
     api_base_url = 'http://api-manga.crunchyroll.com'
+    api_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
     api_chapter_list = api_base_url + '/list_chapter?session_id={}&chapter_id={}&auth={}'
     api_series_url = api_base_url + '/series?sort=popular'
     api_chapters_url = api_base_url + '/chapters?series_id={}'
-    cr_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
 
-    session_id = None
-    cr_auth = None
     possible_page_url_keys = ['encrypted_mobile_image_url', 'encrypted_composed_image_url']
     page_url_key = possible_page_url_keys[0]
 
@@ -44,8 +42,15 @@ class Crunchyroll(Server):
     def __init__(self, login=None, password=None):
         self.init(login, password)
 
-        if self.logged_in:
-            self.init_session_token()
+    @property
+    def api_auth_token(self):
+        extras = getattr(self.session, '_extras', {})
+        return extras.get('api_auth_token', '')
+
+    @property
+    def api_session_id(self):
+        extras = getattr(self.session, '_extras', {})
+        return extras.get('api_session_id', '')
 
     @staticmethod
     def decode_image(buffer):
@@ -84,15 +89,13 @@ class Crunchyroll(Server):
                 slug=chapter['chapter_id'],
                 title=chapter['number'],
             ))
-            try:
+            if chapter['availability_start'] != '0000-00-00 00:00:00':
                 data['chapters'][-1]['date'] = convert_date_string(chapter['availability_start'], '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                pass
 
         return data
 
     def get_manga_chapter_url(self, chapter_id):
-        return self.api_chapter_list.format(self.session_id, chapter_id, self.cr_auth)
+        return self.api_chapter_list.format(self.api_session_id, chapter_id, self.api_auth_token)
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
@@ -176,29 +179,33 @@ class Crunchyroll(Server):
 
         return result
 
-    def init_session_token(self):
+    def init_api(self):
         """
-        Initialize session ID and get auth token
+        Retrieves API session ID and authentication token
+
+        Both are stored in '_extras' session attribute (internal attribute not part of Requests)
         """
         r = self.session_get('https://www.crunchyroll.com/comics_read/manga?volume_id=273&chapter_num=1')
         match = re.search(r'session_id=(\w*)&amp;', r.text)
         if not match:
             return False
 
-        self.session_id = match.group(1)
-        if not self.cr_auth:
-            r = self.session_get(self.cr_auth_url.format(self.session_id))
-            try:
-                data = r.json()
-                self.cr_auth = ''.join(data['data']['auth'])
-            except Exception:
-                return False
+        self.session._extras = dict()
+        self.session._extras['api_session_id'] = match.group(1)
+        r = self.session_get(self.api_auth_url.format(self.session._extras['api_session_id']))
+        try:
+            data = r.json()
+
+            self.session._extras['api_auth_token'] = ''.join(data['data']['auth'])
+            self.session._extras['api_expires'] = data['data']['expires']
+        except Exception:
+            return False
 
         return True
 
     def login(self, username, password):
         """
-        Log in, setup session and get auth token
+        Log in and initializes API
         """
         if not username or not password:
             return False
@@ -218,7 +225,7 @@ class Crunchyroll(Server):
         )
 
         r = self.session_get(self.base_url)
-        if not re.search(username + '(?i)', r.text) or not self.init_session_token():
+        if not re.search(username + '(?i)', r.text) or not self.init_api():
             return False
 
         self.save_session()
