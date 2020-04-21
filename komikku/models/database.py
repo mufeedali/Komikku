@@ -21,7 +21,7 @@ from komikku.servers import get_server_module_name_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import unscramble_image
 
-VERSION = 3
+VERSION = 4
 
 
 def adapt_json(data):
@@ -198,6 +198,13 @@ def init_db():
             # Version 0.12.0
             if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer;'):
                 db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+
+        if db_version <= 3:
+            # Version 0.15.0
+            execute_sql(db_conn, 'CREATE INDEX idx_chapters_downloaded on chapters(manga_id, downloaded);')
+            execute_sql(db_conn, 'CREATE INDEX idx_chapters_recent on chapters(manga_id, recent);')
+            execute_sql(db_conn, 'CREATE INDEX idx_chapters_read on chapters(manga_id, read);')
+            db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
 
         print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
 
