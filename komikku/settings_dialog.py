@@ -382,7 +382,7 @@ class SettingsServersDialog(Handy.Dialog):
 
     def test_account_login(self, button, server_main_id, server_class, login_entry, password_entry):
         def on_account_stored(source, result):
-            server = server_class(login=login, password=password)
+            server = server_class(username=login, password=password)
 
             if server.logged_in:
                 button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
