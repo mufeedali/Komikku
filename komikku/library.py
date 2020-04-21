@@ -19,7 +19,9 @@ from komikku.models import Manga
 
 class Library():
     selection_mode = False
-    selection_count = 0
+    selection_mode_count = 0
+    selection_mode_extended = False
+    selection_mode_last_child_index = None
 
     def __init__(self, window):
         self.window = window
@@ -37,7 +39,7 @@ class Library():
         self.flowbox.connect('child-activated', self.on_manga_clicked)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
         self.gesture.set_touch_only(False)
-        self.gesture.connect('pressed', self.enter_selection_mode)
+        self.gesture.connect('pressed', self.on_gesture_long_press_activated)
 
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
@@ -249,9 +251,9 @@ class Library():
 
         ctx.restore()
 
-    def enter_selection_mode(self, gesture, x, y):
+    def enter_selection_mode(self, x, y):
         self.selection_mode = True
-        self.selection_count = 1
+        self.selection_mode_count = 1
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -259,6 +261,7 @@ class Library():
         selected_overlay = selected_child.get_children()[0]
         self.flowbox.select_child(selected_child)
         selected_overlay._selected = True
+        self.selection_mode_last_child_index = selected_child.get_index()
 
         self.window.titlebar.set_selection_mode(True)
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
@@ -275,6 +278,18 @@ class Library():
         self.window.titlebar.set_selection_mode(False)
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
+
+    def on_gesture_long_press_activated(self, gesture, x, y):
+        if self.selection_mode:
+            # Enter in 'Extended' selection mode
+            # By using another long press gesture, user can select multiple rows at once
+            self.selection_mode_extended = True
+
+            selected_child = self.flowbox.get_child_at_pos(x, y)
+            self.flowbox.select_child(selected_child)
+            self.on_manga_clicked(self.flowbox, selected_child)
+        else:
+            self.enter_selection_mode(x, y)
 
     def on_manga_added(self, manga):
         """
@@ -294,14 +309,36 @@ class Library():
         overlay = child.get_children()[0]
 
         if self.selection_mode:
+            if self.selection_mode_extended and self.selection_mode_last_child_index is not None:
+                # Extended selection mode: select all mangas between last selected cover and clicked cover
+                walk_index = self.selection_mode_last_child_index
+                last_index = child.get_index()
+
+                while walk_index != last_index:
+                    walk_child = self.flowbox.get_child_at_index(walk_index)
+                    walk_overlay = walk_child.get_children()[0]
+                    if walk_child and not walk_overlay._selected:
+                        self.selection_mode_count += 1
+                        self.flowbox.select_child(walk_child)
+                        walk_overlay._selected = True
+
+                    if walk_index < last_index:
+                        walk_index += 1
+                    else:
+                        walk_index -= 1
+
+            self.selection_mode_extended = False
+
             if overlay._selected:
-                self.selection_count -= 1
+                self.selection_mode_count -= 1
+                self.selection_mode_last_child_index = None
                 self.flowbox.unselect_child(child)
                 overlay._selected = False
             else:
-                self.selection_count += 1
+                self.selection_mode_count += 1
+                self.selection_mode_last_child_index = child.get_index()
                 overlay._selected = True
-            if self.selection_count == 0:
+            if self.selection_mode_count == 0:
                 self.leave_selection_mode()
         else:
             self.window.card.init(overlay.manga)
@@ -382,13 +419,13 @@ class Library():
         self.flowbox.invalidate_filter()
 
     def select_all(self, action, param):
-        self.selection_count = 0
+        self.selection_mode_count = 0
 
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
             overlay._selected = True
             self.flowbox.select_child(child)
-            self.selection_count += 1
+            self.selection_mode_count += 1
 
     def set_manga_cover_image(self, overlay, width, height, update=False):
         overlay.set_size_request(width, height)
