@@ -71,26 +71,42 @@ class Crunchyroll(Server):
 
         data = initial_data.copy()
         data.update(dict(
-            authors=[resp_data.get('authors', '')],
-            scanlators=[resp_data.get('translator', '')],
-            genres=resp_data.get('genres', []),
-            status=None,
+            authors=[],
+            scanlators=[],
+            genres=[],
+            status='ongoing',
             chapters=[],
             synopsis=resp_data['locale'][self.locale]['description'],
             server_id=self.id,
             cover=resp_data['locale'][self.locale]['thumb_url'],
         ))
 
-        data['status'] = 'ongoing'
+        if resp_data.get('authors'):
+            data['authors'] += [t.strip() for t in resp_data['authors'].split(',')]
+        if resp_data.get('artist'):
+            data['authors'] += [t.strip() for t in resp_data['artist'].split(',') if t.strip() not in data['authors']]
+        if resp_data.get('translator'):
+            data['scanlators'] += [t.strip() for t in resp_data['translator'].split('|')]
+        if resp_data.get('genres'):
+            data['genres'] = resp_data['genres']
 
         # Chapters
         for chapter in chapters:
+            date = None
+            if chapter.get('availability_start'):
+                date_string = chapter['availability_start'].split(' ')[0]
+                if len(date_string) == 10 and '-00' not in date_string:
+                    date = convert_date_string(date_string, '%Y-%m-%d')
+            if date is None and chapter.get('updated'):
+                date_string = chapter['updated'].split(' ')[0]
+                if len(date_string) == 10 and '-00' not in date_string:
+                    date = convert_date_string(date_string, '%Y-%m-%d')
+
             data['chapters'].append(dict(
                 slug=chapter['chapter_id'],
-                title=chapter['number'],
+                title=chapter['locale'][self.locale]['name'],
+                date=date,
             ))
-            if chapter['availability_start'] != '0000-00-00 00:00:00':
-                data['chapters'][-1]['date'] = convert_date_string(chapter['availability_start'], '%Y-%m-%d %H:%M:%S')
 
         return data
 
