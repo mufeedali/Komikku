@@ -83,14 +83,14 @@ class Server:
     def from_cache(cls, id):
         return Server.__servers.get(id)
 
-    def init(self, login=None, password=None):
+    def init(self, username=None, password=None):
         def on_get_account(attributes, password, name):
             if not attributes or not password:
                 return
 
             self.logged_in = self.login(attributes['login'], password)
 
-        if login and password:
+        if username and password:
             self.clear_session()
 
         if self.session is None:
@@ -101,13 +101,13 @@ class Server:
                 if self.headers:
                     self.session.headers = self.headers
 
-                if login is None and password is None:
+                if username is None and password is None:
                     helper = SecretAccountHelper()
                     helper.get(self.id, on_get_account)
                 else:
-                    self.logged_in = self.login(login, password)
+                    self.logged_in = self.login(username, password)
 
-    def login(self, login, password):
+    def login(self, username, password):
         return False
 
     @property

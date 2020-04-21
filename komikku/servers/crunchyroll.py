@@ -39,8 +39,8 @@ class Crunchyroll(Server):
         'Connection': 'keep-alive',
     }
 
-    def __init__(self, login=None, password=None):
-        self.init(login, password)
+    def __init__(self, username=None, password=None):
+        self.init(username, password)
         if self.logged_in:
             self.init_api()
 

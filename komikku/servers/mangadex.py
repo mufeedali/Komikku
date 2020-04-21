@@ -125,8 +125,8 @@ class Mangadex(Server):
         'Connection': 'keep-alive',
     }
 
-    def __init__(self, login=None, password=None):
-        self.init(login, password)
+    def __init__(self, username=None, password=None):
+        self.init(username, password)
 
     @staticmethod
     def convert_old_slug(slug):
@@ -284,11 +284,11 @@ class Mangadex(Server):
 
         return results
 
-    def login(self, login, password):
+    def login(self, username, password):
         r = self.session_post(
             self.action_url.format('login'),
             data={
-                'login_username': login,
+                'login_username': username,
                 'login_password': password,
                 'remember_me': '1',
             },
