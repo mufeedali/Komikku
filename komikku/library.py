@@ -20,7 +20,7 @@ from komikku.models import Manga
 class Library():
     selection_mode = False
     selection_mode_count = 0
-    selection_mode_extended = False
+    selection_mode_range = False
     selection_mode_last_child_index = None
 
     def __init__(self, window):
@@ -281,9 +281,9 @@ class Library():
 
     def on_gesture_long_press_activated(self, gesture, x, y):
         if self.selection_mode:
-            # Enter in 'Extended' selection mode
-            # By using another long press gesture, user can select multiple rows at once
-            self.selection_mode_extended = True
+            # Enter in 'Range' selection mode
+            # Long press on a manga then long press on another to select everything in between
+            self.selection_mode_range = True
 
             selected_child = self.flowbox.get_child_at_pos(x, y)
             self.flowbox.select_child(selected_child)
@@ -309,8 +309,8 @@ class Library():
         overlay = child.get_children()[0]
 
         if self.selection_mode:
-            if self.selection_mode_extended and self.selection_mode_last_child_index is not None:
-                # Extended selection mode: select all mangas between last selected cover and clicked cover
+            if self.selection_mode_range and self.selection_mode_last_child_index is not None:
+                # Range selection mode: select all mangas between last selected manga and clicked manga
                 walk_index = self.selection_mode_last_child_index
                 last_index = child.get_index()
 
@@ -327,7 +327,7 @@ class Library():
                     else:
                         walk_index -= 1
 
-            self.selection_mode_extended = False
+            self.selection_mode_range = False
 
             if overlay._selected:
                 self.selection_mode_count -= 1

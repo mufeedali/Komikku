@@ -190,7 +190,7 @@ class Card:
 class ChaptersList:
     populate_count = 0
     selection_mode_count = 0
-    selection_mode_extended = False
+    selection_mode_range = False
     selection_mode_last_row_index = None
 
     def __init__(self, card):
@@ -294,8 +294,8 @@ class ChaptersList:
 
     def on_chapter_row_clicked(self, listbox, row):
         if self.card.selection_mode:
-            if self.selection_mode_extended and self.selection_mode_last_row_index is not None:
-                # Extended selection mode: select all rows between last selected row and clicked row
+            if self.selection_mode_range and self.selection_mode_last_row_index is not None:
+                # Range selection mode: select all rows between last selected row and clicked row
                 walk_index = self.selection_mode_last_row_index
                 last_index = row.get_index()
 
@@ -311,7 +311,7 @@ class ChaptersList:
                     else:
                         walk_index -= 1
 
-            self.selection_mode_extended = False
+            self.selection_mode_range = False
 
             if row._selected:
                 self.listbox.unselect_row(row)
@@ -331,9 +331,9 @@ class ChaptersList:
 
     def on_gesture_long_press_activated(self, gesture, x, y):
         if self.card.selection_mode:
-            # Enter in 'Extended' selection mode
-            # By using another long press gesture, user can select multiple rows at once
-            self.selection_mode_extended = True
+            # Enter in 'Range' selection mode
+            # Long press on a chapter row then long press on another to select everything in between
+            self.selection_mode_range = True
         else:
             self.card.enter_selection_mode()
 
