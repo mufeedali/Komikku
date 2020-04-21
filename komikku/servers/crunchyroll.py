@@ -22,8 +22,8 @@ class Crunchyroll(Server):
 
     api_base_url = 'http://api-manga.crunchyroll.com'
     api_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
-    api_chapter_list = api_base_url + '/list_chapter?session_id={}&chapter_id={}&auth={}'
     api_series_url = api_base_url + '/series?sort=popular'
+    api_chapter_url = api_base_url + '/list_chapter?session_id={}&chapter_id={}&auth={}'
     api_chapters_url = api_base_url + '/chapters?series_id={}'
 
     possible_page_url_keys = ['encrypted_mobile_image_url', 'encrypted_composed_image_url']
@@ -41,6 +41,8 @@ class Crunchyroll(Server):
 
     def __init__(self, login=None, password=None):
         self.init(login, password)
+        if self.logged_in:
+            self.init_api()
 
     @property
     def api_auth_token(self):
@@ -116,16 +118,13 @@ class Crunchyroll(Server):
 
         return data
 
-    def get_manga_chapter_url(self, chapter_id):
-        return self.api_chapter_list.format(self.api_session_id, chapter_id, self.api_auth_token)
-
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data
 
         Currently, only pages are expected.
         """
-        r = self.session_get(self.get_manga_chapter_url(chapter_slug))
+        r = self.session_get(self.api_chapter_url.format(self.api_session_id, chapter_slug, self.api_auth_token))
 
         try:
             resp_data = r.json()
