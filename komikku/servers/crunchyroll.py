@@ -18,7 +18,7 @@ class Crunchyroll(Server):
 
     base_url = 'https://www.crunchyroll.com'
     login_url = base_url + '/login'
-    manga_url = base_url + '/comics/manga/{0}'
+    manga_url = base_url + '/comics/manga/{0}/volumes'
 
     api_base_url = 'http://api-manga.crunchyroll.com'
     api_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
@@ -79,16 +79,22 @@ class Crunchyroll(Server):
             synopsis=resp_data['locale'][self.locale]['description'],
             server_id=self.id,
             cover=resp_data['locale'][self.locale]['thumb_url'],
+            url=self.manga_url.format(resp_data['url'][1:]),
         ))
 
         if resp_data.get('authors'):
             data['authors'] += [t.strip() for t in resp_data['authors'].split(',')]
         if resp_data.get('artist'):
             data['authors'] += [t.strip() for t in resp_data['artist'].split(',') if t.strip() not in data['authors']]
+
         if resp_data.get('translator'):
             data['scanlators'] += [t.strip() for t in resp_data['translator'].split('|')]
+
         if resp_data.get('genres'):
             data['genres'] = resp_data['genres']
+
+        if resp_data['locale'][self.locale].get('copyright'):
+            data['synopsis'] += '\n\n' + resp_data['locale'][self.locale]['copyright']
 
         # Chapters
         for chapter in chapters:
@@ -168,7 +174,7 @@ class Crunchyroll(Server):
         """
         Returns manga absolute URL
         """
-        return self.manga_url.format(slug)
+        return url
 
     def get_most_populars(self):
         """
