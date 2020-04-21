@@ -383,7 +383,7 @@ class ChaptersList:
             ctx.add_class('card-chapter-label-started')
         label.set_line_wrap(True)
         title = chapter.title
-        if self.card.manga.name in title:
+        if self.card.manga.name != title and self.card.manga.name in title:
             title = title.replace(self.card.manga.name, '').strip()
         label.set_text(title)
         hbox.pack_start(label, True, True, 0)
