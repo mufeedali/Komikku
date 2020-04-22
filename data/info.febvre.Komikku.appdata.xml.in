@@ -21,6 +21,15 @@
         <screenshot>
             <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/preferences.png</image>
         </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/card-info.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/card-chapters.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/reader.png</image>
+        </screenshot>
     </screenshots>
 
     <developer_name>Valéry Febvre</developer_name>
@@ -31,6 +40,21 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.15.0" date="2020-04-21">
+            <description>
+                <ul>
+                    <li>[Library] Add search by genre (exact match)</li>
+                    <li>[Library/Chapters] Add range selection: long press on an item then long press on another to select everything in between</li>
+                    <li>[Chapters] Fully cached/read chapters are now marked as "Downloaded"</li>
+                    <li>[Reader] Improve keyboard navigation</li>
+                    <li>[Reader] Improve pages transition</li>
+                    <li>[Servers] Add Crunchyroll (EN): a Premium account is required</li>
+                    <li>[Servers] Scantrad France: Add Most populars</li>
+                    <li>Improve manga update</li>
+                    <li>New icon</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.14.0" date="2020-04-01">
             <description>
                 <ul>
