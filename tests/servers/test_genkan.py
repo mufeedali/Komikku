@@ -330,7 +330,7 @@ def test_leviatanscans_es(leviatanscans_es_server):
     # Search
     print('Search')
     try:
-        response = leviatanscans_es_server.search('volcanic age')
+        response = leviatanscans_es_server.search('solo leveling')
         slug = response[0]['slug']
     except Exception as e:
         slug = None

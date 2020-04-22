@@ -43,7 +43,7 @@ def test_japscan(japscan_server):
     print('Get manga data')
     try:
         response = japscan_server.get_manga_data(dict(slug=slug))
-        chapter_slug = response['chapters'][0]['slug']
+        chapter_slug = response['chapters'][1]['slug']
     except Exception as e:
         chapter_slug = None
         log_error_traceback(e)
