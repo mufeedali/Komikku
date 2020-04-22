@@ -12,6 +12,11 @@
         },
         {
             "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e1/e5/df302e8017440f111c11cc41a6b432838672f5a70aa29227bf58149dc72f/urllib3-1.25.9-py2.py3-none-any.whl",
+            "sha256": "88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115"
+        },
+        {
+            "type": "file",
             "url": "https://files.pythonhosted.org/packages/60/ef/7681134338fc097acef8d9b2f8abe0458e4d87559c689a8c306d0957ece5/requests_toolbelt-0.9.1-py2.py3-none-any.whl",
             "sha256": "380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f"
         },
@@ -22,13 +27,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ad/5c/8d9c6f76bebff00bc174cf637c1f87b6abef4275a767ff9a948a123dd548/cloudscraper-1.2.33-py2.py3-none-any.whl",
-            "sha256": "74618cfd55841dd0df959a164ee30b9456ecaddcbc7215cc13f89e7a0e3cadf0"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/e8/74/6e4f91745020f967d09332bb2b8b9b10090957334692eb88ea4afe91b77f/urllib3-1.25.8-py2.py3-none-any.whl",
-            "sha256": "2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"
+            "url": "https://files.pythonhosted.org/packages/da/d4/8f29d0a0a9909db9a7599140f0e5333d18eb0f858c884a2733f9b14014d2/cloudscraper-1.2.34-py2.py3-none-any.whl",
+            "sha256": "478d3cf2044d6b70a8e4f436afff4a8f74cb730cc34841cc9411c80d41d5e9e3"
         },
         {
             "type": "file",
