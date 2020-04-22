@@ -434,17 +434,19 @@ class Manga:
         :param dict data: fields to update
         :return: True on success False otherwise
         """
+        ret = False
+
         # Update
         for key in data:
             setattr(self, key, data[key])
 
         db_conn = create_db_connection()
         with db_conn:
-            update_row(db_conn, 'mangas', self.id, data)
+            ret = update_row(db_conn, 'mangas', self.id, data)
 
         db_conn.close()
 
-        return True
+        return ret
 
     def update_full(self):
         """
@@ -693,16 +695,18 @@ class Chapter:
         :param dict data: fields to update
         :return: True on success False otherwise
         """
+        ret = False
+
         for key in data:
             setattr(self, key, data[key])
 
         db_conn = create_db_connection()
         with db_conn:
-            update_row(db_conn, 'chapters', self.id, data)
+            ret = update_row(db_conn, 'chapters', self.id, data)
 
         db_conn.close()
 
-        return True
+        return ret
 
     def update_full(self):
         """
