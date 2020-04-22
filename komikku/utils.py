@@ -160,7 +160,8 @@ class SecretAccountHelper:
         if self.__secret == -1:
             raise Exception("Error waiting for Secret service")
 
-    def __on_clear_search(self, source, result, callback=None, *args):
+    @staticmethod
+    def __on_clear_search(source, result, callback=None, *args):
         """
             Clear passwords
             @param source as GObject.Object
@@ -176,7 +177,8 @@ class SecretAccountHelper:
         except Exception as e:
             logger.debug("SecretAccountHelper::__on_clear_search(): %s", e)
 
-    def __on_load_secret(self, source, result, service, callback, *args):
+    @staticmethod
+    def __on_load_secret(source, result, service, callback, *args):
         """
             Set userservice/password input
             @param source as GObject.Object

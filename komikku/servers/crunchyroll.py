@@ -169,7 +169,8 @@ class Crunchyroll(Server):
             name='{0}.{1}'.format(page['slug'], mime_type.split('/')[1]),
         )
 
-    def get_manga_url(self, slug, url):
+    @staticmethod
+    def get_manga_url(slug, url):
         """
         Returns manga absolute URL
         """
@@ -211,7 +212,7 @@ class Crunchyroll(Server):
         if not match:
             return False
 
-        self.session._extras = dict()
+        self.session._extras = {}
         self.session._extras['api_session_id'] = match.group(1)
         r = self.session_get(self.api_auth_url.format(self.session._extras['api_session_id']))
         try:

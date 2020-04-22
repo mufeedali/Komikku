@@ -77,11 +77,7 @@ class Server:
 
     base_url = None
 
-    __sessions = dict()  # to cache all existing sessions
-
-    @classmethod
-    def from_cache(cls, id):
-        return Server.__servers.get(id)
+    __sessions = {}  # to cache all existing sessions
 
     def init(self, username=None, password=None):
         def on_get_account(attributes, password, name):
@@ -297,7 +293,7 @@ def get_server_dir_name_by_id(id):
 def get_server_logo_resource_path_by_id(id):
     path = '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
     try:
-        res, size, flags = Gio.resources_get_info(path, 0)
+        res, _size, _flags = Gio.resources_get_info(path, 0)
     except Exception:
         res = None
 
@@ -327,7 +323,7 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
         return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + '.')
 
     servers = []
-    for finder, name, ispkg in iter_namespace(komikku.servers):
+    for _finder, name, _ispkg in iter_namespace(komikku.servers):
         module = importlib.import_module(name)
         for _name, obj in dict(inspect.getmembers(module)).items():
             if not hasattr(obj, 'id') or not hasattr(obj, 'name') or not hasattr(obj, 'lang'):

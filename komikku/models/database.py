@@ -226,7 +226,7 @@ def insert_row(db_conn, table, data):
 def update_row(db_conn, table, id, data):
     try:
         db_conn.execute(
-            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
+            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join(k + ' = ?' for k in data)),
             tuple(data.values()) + (id,)
         )
         return True
@@ -646,7 +646,7 @@ class Chapter:
             with open(page_path, 'wb') as fp:
                 fp.write(buffer)
 
-        updated_data = dict()
+        updated_data = {}
         if self.pages[page_index]['image'] is None:
             self.pages[page_index]['image'] = data['name']
             updated_data['pages'] = self.pages

@@ -31,7 +31,7 @@ def test_peppercarrot(peppercarrot_server):
     # Get manga data
     print('Get manga data')
     try:
-        response = peppercarrot_server.get_manga_data(dict())
+        response = peppercarrot_server.get_manga_data({})
         chapter_slug = response['chapters'][0]['slug']
     except Exception as e:
         chapter_slug = None

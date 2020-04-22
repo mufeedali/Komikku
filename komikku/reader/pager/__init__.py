@@ -57,9 +57,9 @@ class Pager(Gtk.ScrolledWindow):
     def adjust_scroll(self, position=1, animate=True, duration=250):
         """ Scroll to a page """
 
-        def ease_out_cubic(t):
-            t = t - 1
-            return t * t * t + 1
+        # def ease_out_cubic(t):
+        #     t = t - 1
+        #     return t * t * t + 1
 
         def move(scrolledwindow, clock):
             now = clock.get_frame_time()
@@ -378,7 +378,8 @@ class Pager(Gtk.ScrolledWindow):
 
         return False
 
-    def on_scroll(self, widget, event):
+    @staticmethod
+    def on_scroll(widget, event):
         # Stop GDK_SCROLL_SMOOTH events propagation
         # mouse and touch pad (2 fingers) scrolling
         return Gdk.EVENT_STOP
