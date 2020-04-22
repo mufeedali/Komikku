@@ -143,7 +143,7 @@ class Crunchyroll(Server):
 
         for page in pages:
             data['pages'].append(dict(
-                slug=page['page_id'],  # used later to forge image name
+                slug=None,
                 image=page['locale'][self.locale][self.page_url_key],
             ))
 
@@ -166,7 +166,7 @@ class Crunchyroll(Server):
         return dict(
             buffer=buffer,
             mime_type=mime_type,
-            name='{0}.{1}'.format(page['slug'], mime_type.split('/')[1]),
+            name=page['image'].split('/')[-1],
         )
 
     @staticmethod
