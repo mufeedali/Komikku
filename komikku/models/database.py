@@ -226,7 +226,7 @@ def insert_row(db_conn, table, data):
 def update_row(db_conn, table, id, data):
     try:
         db_conn.execute(
-            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join([k + ' = ?' for k in data])),
+            'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join(k + ' = ?' for k in data)),
             tuple(data.values()) + (id,)
         )
         return True

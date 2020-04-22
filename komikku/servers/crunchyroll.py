@@ -169,7 +169,8 @@ class Crunchyroll(Server):
             name='{0}.{1}'.format(page['slug'], mime_type.split('/')[1]),
         )
 
-    def get_manga_url(self, slug, url):
+    @staticmethod
+    def get_manga_url(slug, url):
         """
         Returns manga absolute URL
         """
