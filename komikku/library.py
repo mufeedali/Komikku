@@ -46,7 +46,17 @@ class Library():
         def _filter(child):
             manga = child.get_children()[0].manga
             term = self.search_entry.get_text().lower()
-            return term in manga.name.lower() or term in manga.server.name.lower()
+
+            # Search in name
+            ret = term in manga.name.lower()
+
+            # Search in server name
+            ret = ret or term in manga.server.name.lower()
+
+            # Search in genres (exact match)
+            ret = ret or term in [genre.lower() for genre in manga.genres]
+
+            return ret
 
         def _sort(child1, child2):
             """

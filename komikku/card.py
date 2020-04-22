@@ -71,6 +71,7 @@ class Card:
         self.stack.set_visible_child_name('page_card_chapters')
 
         self.manga = manga
+        # Unref chapters to force a reload
         self.manga._chapters = None
 
         if manga.server.status == 'disabled':
