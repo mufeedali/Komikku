@@ -268,7 +268,7 @@ class SettingsServersDialog(Handy.Dialog):
         settings = Settings.get_default().servers_settings
         languages = Settings.get_default().servers_languages
 
-        servers_data = dict()
+        servers_data = {}
         for server_data in get_servers_list(order_by=('name', 'lang')):
             main_id = get_server_main_id_by_id(server_data['id'])
 
@@ -371,16 +371,19 @@ class SettingsServersDialog(Handy.Dialog):
         if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
             self.destroy()
 
-    def on_server_activated(self, widget, gparam, server_main_id):
+    @staticmethod
+    def on_server_activated(widget, gparam, server_main_id):
         if isinstance(widget, Handy.ExpanderRow):
             Settings.get_default().toggle_server(server_main_id, widget.get_enable_expansion())
         else:
             Settings.get_default().toggle_server(server_main_id, widget.get_active())
 
-    def on_server_language_activated(self, switch_button, gparam, server_main_id, lang):
+    @staticmethod
+    def on_server_language_activated(switch_button, gparam, server_main_id, lang):
         Settings.get_default().toggle_server_lang(server_main_id, lang, switch_button.get_active())
 
-    def test_account_login(self, button, server_main_id, server_class, login_entry, password_entry):
+    @staticmethod
+    def test_account_login(button, server_main_id, server_class, login_entry, password_entry):
         def on_account_stored(source, result):
             server = server_class(username=login, password=password)
 

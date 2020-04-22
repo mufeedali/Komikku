@@ -211,7 +211,7 @@ class Crunchyroll(Server):
         if not match:
             return False
 
-        self.session._extras = dict()
+        self.session._extras = {}
         self.session._extras['api_session_id'] = match.group(1)
         r = self.session_get(self.api_auth_url.format(self.session._extras['api_session_id']))
         try:
