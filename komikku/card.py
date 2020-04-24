@@ -575,6 +575,10 @@ class InfoGrid:
     def __init__(self, card):
         self.card = card
 
+        grid = self.card.builder.get_object('card_page_grid')
+        grid.set_margin_start(6)
+        grid.set_margin_end(6)
+
         self.cover_image = self.card.builder.get_object('cover_image')
         self.authors_value_label = self.card.builder.get_object('authors_value_label')
         self.genres_value_label = self.card.builder.get_object('genres_value_label')

@@ -44,6 +44,9 @@ class AddDialog:
         self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
         self.custom_title_stack = self.builder.get_object('custom_title_stack')
 
+        # Make title centered
+        self.builder.get_object('custom_title_servers_page_label').set_margin_end(38)
+
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
 
@@ -76,7 +79,7 @@ class AddDialog:
 
             # Server logo
             pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server_data['id']), 24, 24, True)
-            logo = Gtk.Image(xalign=0)
+            logo = Gtk.Image()
             logo.set_from_pixbuf(pixbuf)
             box.pack_start(logo, False, True, 0)
 
@@ -86,7 +89,7 @@ class AddDialog:
             box.pack_start(label, True, True, 0)
 
             # Server language
-            label = Gtk.Label(xalign=0)
+            label = Gtk.Label()
             label.set_text(LANGUAGES[server_data['lang']])
             label.get_style_context().add_class('add-dialog-server-language-label')
             box.pack_start(label, False, True, 0)
@@ -104,6 +107,11 @@ class AddDialog:
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
         # Manga page
+        grid = self.builder.get_object('manga_page_grid')
+        grid.set_margin_top(6)
+        grid.set_margin_end(6)
+        grid.set_margin_bottom(6)
+        grid.set_margin_start(6)
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
         self.add_button = self.builder.get_object('add_button')
         self.add_button.connect('clicked', self.on_add_button_clicked)

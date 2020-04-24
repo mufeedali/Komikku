@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libhandy" version="0.0"/>
@@ -42,8 +42,6 @@
                   <object class="GtkLabel" id="custom_title_servers_page_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_right">38</property>
-                    <property name="hexpand">True</property>
                     <property name="label" translatable="yes">Select a server</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -245,7 +243,7 @@
                               <object class="GtkGrid" id="manga_page_grid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_left">4</property>
+                                <property name="row_spacing">6</property>
                                 <property name="column_spacing">6</property>
                                 <property name="column_homogeneous">True</property>
                                 <child>
@@ -254,7 +252,6 @@
                                     <property name="can_focus">False</property>
                                     <property name="halign">center</property>
                                     <property name="valign">start</property>
-                                    <property name="stock">gtk-missing-image</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -266,7 +263,6 @@
                                   <object class="GtkLabel" id="authors_label_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label" translatable="yes">Authors</property>
                                     <property name="xalign">0</property>
                                     <attributes>
@@ -282,7 +278,6 @@
                                   <object class="GtkLabel" id="authors_value_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label">authors value</property>
                                     <property name="wrap">True</property>
                                     <property name="xalign">0</property>
@@ -296,7 +291,6 @@
                                   <object class="GtkLabel" id="genres_label_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label" translatable="yes">Genres</property>
                                     <property name="xalign">0</property>
                                     <attributes>
@@ -312,7 +306,6 @@
                                   <object class="GtkLabel" id="genres_value_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label">genres value</property>
                                     <property name="wrap">True</property>
                                     <property name="xalign">0</property>
@@ -326,7 +319,6 @@
                                   <object class="GtkLabel" id="status_label_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label" translatable="yes">Status</property>
                                     <property name="xalign">0</property>
                                     <attributes>
@@ -342,7 +334,6 @@
                                   <object class="GtkLabel" id="status_value_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label">status value</property>
                                     <property name="single_line_mode">True</property>
                                     <property name="xalign">0</property>
@@ -356,7 +347,6 @@
                                   <object class="GtkLabel" id="server_label_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label" translatable="yes">Server</property>
                                     <property name="xalign">0</property>
                                     <attributes>
@@ -372,7 +362,6 @@
                                   <object class="GtkLabel" id="server_value_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label">server value</property>
                                     <property name="wrap">True</property>
                                     <property name="xalign">0</property>
@@ -386,8 +375,6 @@
                                   <object class="GtkLabel" id="synopsis_label_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
-                                    <property name="margin_top">6</property>
                                     <property name="label" translatable="yes">Synopsis</property>
                                     <property name="xalign">0</property>
                                     <attributes>
@@ -404,7 +391,6 @@
                                   <object class="GtkLabel" id="synopsis_value_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_right">4</property>
                                     <property name="label">synopsis value</property>
                                     <property name="wrap">True</property>
                                     <property name="wrap_mode">word-char</property>
