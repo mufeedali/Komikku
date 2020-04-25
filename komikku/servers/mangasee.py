@@ -5,6 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
+import re
 import requests
 
 from komikku.servers import convert_date_string
@@ -31,6 +32,37 @@ class Mangasee(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+    @staticmethod
+    def decode_chapter_slug(chapter_slug):
+        if len(chapter_slug) != 6:
+            # Do nothing: old chapter slug format
+            return chapter_slug
+
+        slug = int(chapter_slug[1:-1])
+        if chapter_slug[-1] != '0':
+            slug = f'{slug}.{chapter_slug[-1]}'
+        if chapter_slug[0] != '0':
+            slug = f'{slug}-index-{chapter_slug[0]}'
+
+        return slug
+
+    @staticmethod
+    def encode_chapter_slug(slug, title):
+        if '.' in slug:
+            slug = slug.replace('.', '')
+        else:
+            slug = slug + '0'
+
+        slug = '{0:05d}'.format(int(slug))
+
+        match = re.search(r'S(\d) - ', title)
+        if match:
+            slug = match.group(1) + slug
+        else:
+            slug = '0' + slug
+
+        return slug
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
@@ -40,12 +72,11 @@ class Mangasee(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -79,25 +110,31 @@ class Mangasee(Server):
                 links_elements = div_element.find_all('a')
                 for link_element in links_elements:
                     data['authors'].append(link_element.text.strip())
+
             elif label.startswith('Genre'):
                 links_elements = div_element.find_all('a')
                 for link_element in links_elements:
                     data['genres'].append(link_element.text.strip())
+
             elif label.startswith('Status'):
-                value = div_element.find_all('a')[0].text.strip()
-                if value.startswith('Complete'):
-                    data['status'] = 'complete'
-                elif value.startswith('Ongoing'):
-                    data['status'] = 'ongoing'
+                value = div_element.find_all('a')[0].text.replace('(Scan)', '').strip().lower()
+                if value in ('complete', 'hiatus', 'ongoing', ):
+                    data['status'] = value
+                elif value in ('cancelled', 'discontinued', ):
+                    data['status'] = 'suspended'
+
             elif label.startswith('Description'):
                 data['synopsis'] = div_element.div.text.strip()
 
         # Chapters
         elements = soup.find('div', class_='chapter-list').find_all('a', recursive=False)
         for link_element in reversed(elements):
+            title = link_element.span.text.strip()
+            slug = link_element.get('chapter')
+
             data['chapters'].append(dict(
-                slug=link_element.get('chapter'),
-                title=link_element.span.text.strip(),
+                slug=self.encode_chapter_slug(slug, title),
+                title=title,
                 date=convert_date_string(link_element.time.get('datestring').strip(), format='%Y%m%d'),
             ))
 
@@ -109,13 +146,12 @@ class Mangasee(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        r = self.session_get(self.chapter_url.format(manga_slug, self.decode_chapter_slug(chapter_slug)))
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -137,15 +173,15 @@ class Mangasee(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(self.page_url.format(manga_slug, chapter_slug, page['slug']))
-        if r is None:
+        r = self.session_get(self.page_url.format(manga_slug, self.decode_chapter_slug(chapter_slug), page['slug']))
+        if r.status_code != 200:
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         url = soup.find('img', class_='CurImage').get('src')
         r = self.session_get(url)
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -169,12 +205,11 @@ class Mangasee(Server):
         Returns most popular manga list
         """
         r = self.session_post(self.search_url, data=dict(page=1, sortBy='popularity', sortOrder='descending'))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/plain':
+        if mime_type != 'text/plain':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -190,9 +225,6 @@ class Mangasee(Server):
 
     def search(self, term):
         r = self.session_post(self.search_url, data=dict(keyword=term, page=1))
-        if r is None:
-            return None
-
         if r.status_code != 200:
             return None
 
