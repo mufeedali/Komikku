@@ -20,6 +20,8 @@ import pkgutil
 import requests
 from requests.adapters import TimeoutSauce
 import struct
+import time
+
 from komikku.utils import SecretAccountHelper
 
 # https://www.localeplanet.com/icu/
@@ -74,6 +76,7 @@ class Server:
     long_strip_genres = []
     has_login = False
     headers = None
+    session_expiration_cookies = []  # Session cookies for which validity (not expired) must be checked
 
     base_url = None
 
@@ -126,7 +129,7 @@ class Server:
 
         return dir
 
-    def clear_session(self):
+    def clear_session(self, all=False):
         main_id = get_server_main_id_by_id(self.id)
 
         # Remove session from disk
@@ -134,7 +137,12 @@ class Server:
         if os.path.exists(file_path):
             os.unlink(file_path)
 
-        del Server.__sessions[self.id]
+        if all:
+            for id in Server.__sessions:
+                if id.startswith(main_id):
+                    del Server.__sessions[id]
+        else:
+            del Server.__sessions[self.id]
 
     def get_manga_cover_image(self, url):
         """
@@ -169,7 +177,21 @@ class Server:
             return False
 
         with open(file_path, 'rb') as f:
-            self.session = pickle.load(f)
+            session = pickle.load(f)
+
+        # Check session validity
+        if self.session_expiration_cookies:
+            # One or more cookies for which the expiration date must be checked are defined
+            # If one of them has expired, session must be cleared
+            for cookie in session.cookies:
+                if cookie.name not in self.session_expiration_cookies:
+                    continue
+
+                if time.time() > cookie.expires - 86400:
+                    self.clear_session(all=True)
+                    return False
+
+        self.session = session
 
         return True
 

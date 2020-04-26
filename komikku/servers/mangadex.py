@@ -103,6 +103,7 @@ class Mangadex(Server):
     lang_code = 'gb'
     long_strip_genres = ['Long Strip', ]
     has_login = True
+    session_expiration_cookies = ['mangadex_rememberme_token', ]
 
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
