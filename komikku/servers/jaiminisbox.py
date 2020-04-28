@@ -34,6 +34,26 @@ class Jaiminisbox(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+    @staticmethod
+    def decrypt(value):
+        """
+        Decrypt a string with a circular shift of 13 of [a-zA-Z] characters
+
+        nopqrstuvwxyzabcdefghijklm => abcdefghijklmnopqrstuvwxyz
+        """
+        dvalue = ''
+
+        for char in value:
+            code = ord(char)
+            if (code >= 65 and code <= 77) or (code >= 97 and code <= 109):
+                dvalue += chr(code + 13)
+            elif (code >= 78 and code <= 90) or (code >= 110 and code <= 122):
+                dvalue += chr(code - 13)
+            else:
+                dvalue += char
+
+        return dvalue
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
@@ -126,7 +146,7 @@ class Jaiminisbox(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        # List of pages is available in JavaScript variable 'pages'
+        # List of pages is available in JavaScript variable '_0x3320' or 'pages'
         # Walk in all scripts to find it
         pages = None
         scripts = soup.find_all('script')
@@ -134,29 +154,35 @@ class Jaiminisbox(Server):
             lines = script.text.split('\n')
             for line in lines:
                 line = line.strip()
-                if line.startswith('var pages = '):
-                    pages = line
+                if line.startswith('var _0x3320'):
+                    #
+                    # Jaimini's Box
+                    #
+                    pages = line.split(';')[0].split('=')[1].strip()[17:-2]
+                    # String is encrypted with a circular shift of 13 for [a-zA-Z] characters
+                    pages = self.decrypt(pages)
+                    # String is BASE64 encoded
+                    pages = base64.b64decode(pages)
+                    break
+                elif line.startswith('var pages'):
+                    #
+                    # Kirei Cake
+                    #
+                    pages = line.split('=')[1][:-1]
                     break
             if pages is not None:
+                pages = json.loads(pages)
                 break
 
         if pages is None:
             return None
-
-        if 'JSON.parse' in pages:
-            # List of pages is BASE64 encoded
-            # Ex: var pages = JSON.parse(atob("W3siaWQiOjcwNDU0..."));
-            pages = json.loads(base64.b64decode(pages[29:-4]))
-        else:
-            # Ex: var pages = [{"id":69879,"chapter_id":"2769","filename":"01.jpg",...}];
-            pages = json.loads(pages[12:-1])
 
         data = dict(
             pages=[],
         )
         for page in pages:
             data['pages'].append(dict(
-                slug=None,  # slug can't be used to forge image URL
+                slug=None,
                 image=page['url'],
             ))
 
