@@ -96,7 +96,8 @@ class Jaiminisbox(Server):
         ))
 
         data['name'] = soup.find('h1', class_='title').text.strip()
-        data['cover'] = soup.find('div', class_='thumbnail').img.get('src')
+        if soup.find('div', class_='thumbnail'):
+            data['cover'] = soup.find('div', class_='thumbnail').img.get('src')
 
         # Details
         for element in soup.find('div', class_='info').find_all('b'):
