@@ -105,6 +105,8 @@ class Server:
                     helper.get(self.id, on_get_account)
                 else:
                     self.logged_in = self.login(username, password)
+        else:
+            self.logged_in = True
 
     def login(self, username, password):
         return False
@@ -197,10 +199,6 @@ class Server:
 
     def save_session(self):
         """ Save session to disk """
-
-        # Add _extras attribute in serialized atributes list
-        # Useful to store additional/internal data in session
-        self.session.__attrs__.append('_extras')
 
         file_path = os.path.join(self.sessions_dir, '{0}.pickle'.format(get_server_main_id_by_id(self.id)))
         with open(file_path, 'wb') as f:

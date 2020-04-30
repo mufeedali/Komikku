@@ -26,6 +26,8 @@ class Crunchyroll(Server):
     api_chapter_url = api_base_url + '/list_chapter?session_id={}&chapter_id={}&auth={}'
     api_chapters_url = api_base_url + '/chapters?series_id={}'
 
+    api_auth_token = None
+    api_session_id = None
     possible_page_url_keys = ['encrypted_mobile_image_url', 'encrypted_composed_image_url']
     page_url_key = possible_page_url_keys[0]
 
@@ -41,18 +43,6 @@ class Crunchyroll(Server):
 
     def __init__(self, username=None, password=None):
         self.init(username, password)
-        if self.logged_in:
-            self.init_api()
-
-    @property
-    def api_auth_token(self):
-        extras = getattr(self.session, '_extras', {})
-        return extras.get('api_auth_token', '')
-
-    @property
-    def api_session_id(self):
-        extras = getattr(self.session, '_extras', {})
-        return extras.get('api_session_id', '')
 
     @staticmethod
     def decode_image(buffer):
@@ -124,6 +114,10 @@ class Crunchyroll(Server):
 
         Currently, only pages are expected.
         """
+        if self.logged_in and (self.api_session_id is None or self.api_auth_token is None):
+            if not self.init_api():
+                return None
+
         r = self.session_get(self.api_chapter_url.format(self.api_session_id, chapter_slug, self.api_auth_token))
 
         try:
@@ -212,14 +206,12 @@ class Crunchyroll(Server):
         if not match:
             return False
 
-        self.session._extras = {}
-        self.session._extras['api_session_id'] = match.group(1)
-        r = self.session_get(self.api_auth_url.format(self.session._extras['api_session_id']))
+        self.api_session_id = match.group(1)
+        r = self.session_get(self.api_auth_url.format(self.api_session_id))
         try:
             data = r.json()
 
-            self.session._extras['api_auth_token'] = ''.join(data['data']['auth'])
-            self.session._extras['api_expires'] = data['data']['expires']
+            self.api_auth_token = ''.join(data['data']['auth'])
         except Exception:
             return False
 
