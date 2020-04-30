@@ -318,7 +318,7 @@ class Manga:
 
             self._chapters = []
             for row in rows:
-                self._chapters.append(Chapter(row=row))
+                self._chapters.append(Chapter(row=row, manga=self))
 
             db_conn.close()
 
@@ -425,7 +425,7 @@ class Manga:
         if not row:
             return None
 
-        return Chapter(row=row)
+        return Chapter(row=row, manga=self)
 
     def update(self, data):
         """
@@ -487,7 +487,7 @@ class Manga:
             rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ?', (self.id,))
             for row in rows:
                 if row['slug'] not in chapters_slugs:
-                    gone_chapter = Chapter.get(row['id'])
+                    gone_chapter = Chapter.get(row['id'], manga=self, db_conn=db_conn)
                     if not gone_chapter.downloaded:
                         # Delete chapter
                         gone_chapter.delete(db_conn)
@@ -549,13 +549,15 @@ class Manga:
 class Chapter:
     _manga = None
 
-    def __init__(self, row=None):
+    def __init__(self, row=None, manga=None):
         if row is not None:
+            if manga:
+                self._manga = manga
             for key in row.keys():
                 setattr(self, key, row[key])
 
     @classmethod
-    def get(cls, id, db_conn=None):
+    def get(cls, id, manga=None, db_conn=None):
         if db_conn is not None:
             row = db_conn.execute('SELECT * FROM chapters WHERE id = ?', (id,)).fetchone()
         else:
@@ -566,7 +568,7 @@ class Chapter:
         if row is None:
             return None
 
-        return cls(row)
+        return cls(row, manga)
 
     @classmethod
     def new(cls, data, rank, manga_id, db_conn=None):
@@ -589,7 +591,6 @@ class Chapter:
                 id = insert_row(db_conn, 'chapters', data)
 
             db_conn.close()
-            db_conn = None
 
         return cls.get(id, db_conn) if id is not None else None
 
