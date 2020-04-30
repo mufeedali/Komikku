@@ -159,7 +159,7 @@ class Jaiminisbox(Server):
                     #
                     # Jaimini's Box
                     #
-                    pages = line.split(';')[0].split('=')[1].strip()[17:-2]
+                    pages = line.split(';')[0].split(',')[1][1:-2]
                     # String is encrypted with a circular shift of 13 for [a-zA-Z] characters
                     pages = self.decrypt(pages)
                     # String is BASE64 encoded
@@ -169,7 +169,7 @@ class Jaiminisbox(Server):
                     #
                     # Kirei Cake
                     #
-                    pages = line.split('=')[1][:-1]
+                    pages = line.replace('var pages = ', '')[:-1]
                     break
             if pages is not None:
                 pages = json.loads(pages)
