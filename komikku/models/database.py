@@ -607,7 +607,7 @@ class Chapter:
 
             db_conn.close()
 
-        return cls.get(id, db_conn) if id is not None else None
+        return cls.get(id, db_conn=db_conn) if id is not None else None
 
     @property
     def manga(self):
