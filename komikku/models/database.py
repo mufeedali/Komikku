@@ -235,6 +235,21 @@ def update_row(db_conn, table, id, data):
         return False
 
 
+def update_rows(db_conn, table, ids, data):
+    sql = 'UPDATE {0} SET {1} WHERE id = ?'.format(table, ', '.join(k + ' = ?' for k in data[0]))
+
+    seq = []
+    for i in range(len(ids)):
+        seq.append(tuple(data[i].values()) + (ids[i], ))
+
+    try:
+        db_conn.executemany(sql, seq)
+        return True
+    except Exception as e:
+        print('SQLite-error:', e, data)
+        return False
+
+
 class Manga:
     _chapters = None
     _server = None

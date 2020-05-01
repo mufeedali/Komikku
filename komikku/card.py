@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from copy import deepcopy
 from gettext import gettext as _
 import html
 import threading
@@ -14,6 +15,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.models import create_db_connection
 from komikku.models import Download
+from komikku.models import update_rows
 from komikku.utils import folder_size
 
 
@@ -86,7 +88,7 @@ class Card:
 
         self.show(transition)
 
-        GLib.timeout_add(400, self.populate)
+        self.populate()
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -189,7 +191,7 @@ class Card:
 
 
 class ChaptersList:
-    populate_count = 0
+    populate_countdown = 0
     selection_mode_count = 0
     selection_mode_range = False
     selection_mode_last_row_index = None
@@ -339,12 +341,14 @@ class ChaptersList:
             self.card.enter_selection_mode()
 
     def populate(self):
-        def populate_chapters_rows(rows):
-            for row in rows:
+        def run():
+            for row in self.listbox.get_children():
                 GLib.idle_add(self.populate_chapter_row, row)
+                time.sleep(0.0025)
 
-        rows = []
-        self.populate_count = 0
+        # Use countdown to stop activity indicator
+        self.populate_countdown = len(self.card.manga.chapters)
+
         for chapter in self.card.manga.chapters:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('card-chapter-listboxrow')
@@ -353,16 +357,19 @@ class ChaptersList:
             row._selected = False
             self.listbox.add(row)
 
-            rows.append(row)
-            self.populate_count += 1
-
-        thread = threading.Thread(target=populate_chapters_rows, args=(rows,))
-        thread.daemon = True
-        thread.start()
+        if self.card.manga.chapters:
+            thread = threading.Thread(target=run)
+            thread.daemon = True
+            thread.start()
 
     def populate_chapter_row(self, row):
-        for child in row.get_children():
-            child.destroy()
+        children = row.get_children()
+        if children:
+            update = True
+            for child in children:
+                child.destroy()
+        else:
+            update = False
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         row.add(box)
@@ -452,13 +459,19 @@ class ChaptersList:
 
         box.pack_start(hbox, True, True, 0)
 
-        self.populate_count -= 1
-        if self.populate_count == 0:
-            # All rows have been populated in chapters list
-            self.card.window.activity_indicator.stop()
-            self.listbox.show_all()
-        else:
+        if update:
             box.show_all()
+        else:
+            row.show_all()
+
+        if self.populate_countdown:
+            self.populate_countdown -= 1
+            if self.populate_countdown == 0:
+                # All rows have been populated/updated
+                self.card.window.activity_indicator.stop()
+
+                if self.card.selection_mode:
+                    self.card.leave_selection_mode()
 
     def refresh(self, chapters):
         for chapter in chapters:
@@ -511,26 +524,64 @@ class ChaptersList:
         popover.popup()
 
     def toggle_selected_chapters_read_status(self, action, param, read):
+        chapters_ids = []
+        chapters_data = []
+
+        self.card.window.activity_indicator.start()
+
+        # First, update DB
         for row in self.listbox.get_selected_rows():
             chapter = row.chapter
 
             if chapter.pages:
-                for chapter_page in chapter.pages:
-                    chapter_page['read'] = read
+                pages = deepcopy(chapter.pages)
+                for page in pages:
+                    page['read'] = read
+            else:
+                pages = None
+            last_page_read_index = None if chapter.read == read == 0 else chapter.last_page_read_index
 
-            data = dict(
-                pages=chapter.pages,
+            chapters_ids.append(chapter.id)
+            chapters_data.append(dict(
+                pages=pages,
                 read=read,
                 recent=False,
-            )
-            if chapter.read == read == 0:
-                data['last_page_read_index'] = None
+                last_page_read_index=last_page_read_index,
+            ))
 
-            chapter.update(data)
+        db_conn = create_db_connection()
 
-            self.populate_chapter_row(row)
+        with db_conn:
+            res = update_rows(db_conn, 'chapters', chapters_ids, chapters_data)
 
-        self.card.leave_selection_mode()
+        db_conn.close()
+
+        # Then, if DB update succeeded, refresh chapters rows
+        def run():
+            # Use countdown to stop activity indicator and leave selection mode
+            self.populate_countdown = len(self.listbox.get_selected_rows())
+
+            for row in self.listbox.get_selected_rows():
+                chapter = row.chapter
+
+                if chapter.pages:
+                    for chapter_page in chapter.pages:
+                        chapter_page['read'] = read
+                if chapter.read == read == 0:
+                    chapter.last_page_read_index = None
+                chapter.read = read
+                chapter.recent = False
+
+                GLib.idle_add(self.populate_chapter_row, row)
+                time.sleep(0.0025)
+
+        if res:
+            thread = threading.Thread(target=run)
+            thread.daemon = True
+            thread.start()
+        else:
+            self.card.window.activity_indicator.stop()
+            self.card.leave_selection_mode()
 
     def toggle_chapter_read_status(self, action, param, read):
         chapter = self.action_row.chapter
@@ -547,9 +598,8 @@ class ChaptersList:
         if chapter.read == read == 0:
             data['last_page_read_index'] = None
 
-        chapter.update(data)
-
-        self.populate_chapter_row(self.action_row)
+        if chapter.update(data):
+            self.populate_chapter_row(self.action_row)
 
     def update_chapter_row(self, downloader=None, download=None, chapter=None):
         """
