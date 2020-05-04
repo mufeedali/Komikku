@@ -27,8 +27,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/da/d4/8f29d0a0a9909db9a7599140f0e5333d18eb0f858c884a2733f9b14014d2/cloudscraper-1.2.34-py2.py3-none-any.whl",
-            "sha256": "478d3cf2044d6b70a8e4f436afff4a8f74cb730cc34841cc9411c80d41d5e9e3"
+            "url": "https://files.pythonhosted.org/packages/8a/bb/488841f56197b13700afd5658fc279a2025a39e22449b7cf29864669b15d/pyparsing-2.4.7-py2.py3-none-any.whl",
+            "sha256": "ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/33/f4/c9026b17a0752fc4d32ce51a2d99865534ee52410c03b322ccb07f06439e/cloudscraper-1.2.36-py2.py3-none-any.whl",
+            "sha256": "06eb4fd7462dc08a193228830f45097993efc8af4fd75a74815ba16a05c6a0fd"
         },
         {
             "type": "file",
