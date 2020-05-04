@@ -65,7 +65,7 @@ Dependencies:
 * `python` >= 3.6
 * `gtk` >= 3.24.1
 * `libhandy` >= 0.0.10
-* `python-beautifulsoup4`
+* `python-beautifulsoup4` <= 4.8.2
 * `python-cloudscraper`
 * `python-dateparser`
 * `python-lxml`
