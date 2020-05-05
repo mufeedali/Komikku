@@ -129,14 +129,12 @@ class Mangakawaii(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        script_elements = soup.find_all('script')
-
         data = dict(
             pages=[],
         )
-        for script_element in reversed(script_elements):
-            script = script_element.text.strip()
-            if not script.startswith('var $Imagesrc'):
+        for script_element in reversed(soup.find_all('script')):
+            script = script_element.string
+            if not script or not script.strip().startswith('var $Imagesrc'):
                 continue
 
             for line in script.split('\n'):

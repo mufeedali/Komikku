@@ -132,9 +132,12 @@ class Mangalib(Server):
 
         soup = BeautifulSoup(r.text, 'lxml')
 
-        scripts = soup.find_all('script')
-        for script_element in scripts:
-            script = script_element.text.strip()
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if not script:
+                continue
+
+            script = script.strip()
             if script.startswith('window.__info'):
                 chapter_json = json.loads(script[16:-1])
             elif script.startswith('window.__pg'):

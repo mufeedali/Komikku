@@ -150,10 +150,12 @@ class Jaiminisbox(Server):
         # List of pages is available in JavaScript variable '_0x3320' or 'pages'
         # Walk in all scripts to find it
         pages = None
-        scripts = soup.find_all('script')
-        for script in scripts:
-            lines = script.text.split('\n')
-            for line in lines:
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if script is None:
+                continue
+
+            for line in script.split('\n'):
                 line = line.strip()
                 if line.startswith('var _0x3320'):
                     #

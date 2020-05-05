@@ -134,21 +134,22 @@ class Mangaeden(Server):
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
-        scripts_elements = soup.find_all('script')
 
         data = dict(
             pages=[],
         )
-        for script_element in scripts_elements:
-            script = script_element.text.strip()
-            if script.startswith('var pages'):
-                pages = json.loads(script.split('\n')[0].split('=')[1][:-1])
-                for page in pages:
-                    data['pages'].append(dict(
-                        slug=None,  # not necessary, we know image url already
-                        image='https:{0}'.format(page['fs']),
-                    ))
-                break
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if not script or not script.strip().startswith('var pages'):
+                continue
+
+            pages = json.loads(script.strip().split('\n')[0].split('=')[1][:-1])
+            for page in pages:
+                data['pages'].append(dict(
+                    slug=None,  # not necessary, we know image url already
+                    image='https:{0}'.format(page['fs']),
+                ))
+            break
 
         return data
 

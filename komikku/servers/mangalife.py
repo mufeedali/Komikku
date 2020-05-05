@@ -109,13 +109,15 @@ class Mangalife(Server):
         # Chapters
         chapters = None
         try:
-            for line in soup.find_all('script')[-1].text.split('\n'):
-                line = line.strip()
-                if not line.startswith('vm.Chapters'):
-                    continue
+            script = soup.find_all('script')[-1].string
+            if script:
+                for line in script.split('\n'):
+                    line = line.strip()
+                    if not line.startswith('vm.Chapters'):
+                        continue
 
-                chapters = json.loads(line.split('=')[1].strip()[:-1])
-                break
+                    chapters = json.loads(line.split('=')[1].strip()[:-1])
+                    break
         except Exception as e:
             log_error_traceback(e)
             return None
@@ -163,18 +165,20 @@ class Mangalife(Server):
         chapter = None
         domain = None
         try:
-            for line in soup.find_all('script')[-1].text.split('\n'):
-                line = line.strip()
-                if not line.startswith('vm.CurChapter') and not line.startswith('vm.CurPathName'):
-                    continue
+            script = soup.find_all('script')[-1].string
+            if script:
+                for line in script.split('\n'):
+                    line = line.strip()
+                    if not line.startswith('vm.CurChapter') and not line.startswith('vm.CurPathName'):
+                        continue
 
-                if line.startswith('vm.CurChapter'):
-                    chapter = json.loads(line.split('=')[1].strip()[:-1])
-                elif line.startswith('vm.CurPathName'):
-                    domain = line.split('=')[1].strip()[1:-2]
+                    if line.startswith('vm.CurChapter'):
+                        chapter = json.loads(line.split('=')[1].strip()[:-1])
+                    elif line.startswith('vm.CurPathName'):
+                        domain = line.split('=')[1].strip()[1:-2]
 
-                if chapter is not None and domain is not None:
-                    break
+                    if chapter is not None and domain is not None:
+                        break
         except Exception as e:
             log_error_traceback(e)
             return None
@@ -237,13 +241,15 @@ class Mangalife(Server):
             soup = BeautifulSoup(r.content, 'lxml')
 
             try:
-                for line in soup.find_all('script')[-1].text.split('\n'):
-                    line = line.strip()
-                    if not line.startswith('vm.Directory'):
-                        continue
+                script = soup.find_all('script')[-1].string
+                if script:
+                    for line in script.split('\n'):
+                        line = line.strip()
+                        if not line.startswith('vm.Directory'):
+                            continue
 
-                    self.mangas = json.loads(line.split('vm.Directory = ')[1].strip()[:-1])
-                    break
+                        self.mangas = json.loads(line.split('vm.Directory = ')[1].strip()[:-1])
+                        break
             except Exception as e:
                 log_error_traceback(e)
                 return None

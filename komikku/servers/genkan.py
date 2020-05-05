@@ -97,10 +97,11 @@ class Genkan(Server):
             pages=[],
         )
         for script_element in soup.find_all('script'):
-            if script_element.string is None or not script_element.string.startswith('window.disqusName'):
+            script = script_element.string
+            if script is None or not script.strip().startswith('window.disqusName'):
                 continue
 
-            for line in script_element.string.split(';'):
+            for line in script.split(';'):
                 line = line.strip()
                 if not line.startswith('window.chapterPages'):
                     continue

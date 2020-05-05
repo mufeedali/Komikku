@@ -127,19 +127,18 @@ class Readmanga(Server):
 
         soup = BeautifulSoup(r.text, 'lxml')
 
-        script_elements = soup.find_all('script')
-
         data = dict(
             pages=[],
         )
 
-        for script_element in script_elements:
-            script = script_element.text.strip()
-            if not script.startswith('var prevLink'):
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if not script or not script.strip().startswith('var prevLink'):
                 continue
 
             for line in script.split('\n'):
-                if not line.strip().startswith('rm_h.init'):
+                line = line.strip()
+                if not line.startswith('rm_h.init'):
                     continue
 
                 pattern = re.compile('\'.*?\',\'.*?\',".*?"')

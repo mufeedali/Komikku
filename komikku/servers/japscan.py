@@ -190,8 +190,7 @@ class Japscan(Server):
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # Scrambled ?
-        scripts = soup.find('head').find_all('script')
-        for script in scripts:
+        for script in soup.find('head').find_all('script'):
             src = script.get('src')
             if src and src.startswith('/js/iYFbYi_U'):
                 data['scrambled'] = 1

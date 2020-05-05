@@ -136,25 +136,30 @@ class Centraldemangas(Server):
         # Pages URLs infos are located in the last JS script at the bottom of document
         pages_slugs = None
         pages_url_start = None
-        for line in soup.find_all('script')[-1].text.split('\n'):
-            line = line.strip()[:-1]
+        script = soup.find_all('script')[-1].string
+        if script:
+            for line in script.split('\n'):
+                line = line.strip()[:-1]
 
-            if line.startswith('var pages'):
-                # Ex: var pages = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14',]
-                pages_slugs = line.split('=')[1].strip().replace('[', '').replace(']', '').replace("'", '')[:-1].split(',')
-            elif line.startswith('var urlSulfix'):
-                # Ex: var urlSulfix = 'http://mangas2016.centraldemangas.com.br/tales_of_demons_and_gods/tales_of_demons_and_gods002-'
-                pages_url_start = line.split('=')[1].strip().replace("'", '')
+                if line.startswith('var pages'):
+                    # Ex: var pages = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14',]
+                    pages_slugs = line.split('=')[1].strip().replace('[', '').replace(']', '').replace("'", '')[:-1].split(',')
+                elif line.startswith('var urlSulfix'):
+                    # Ex: var urlSulfix = 'http://mangas2016.centraldemangas.com.br/tales_of_demons_and_gods/tales_of_demons_and_gods002-'
+                    pages_url_start = line.split('=')[1].strip().replace("'", '')
 
-        data = dict(
-            pages=[],
-        )
         if pages_slugs is not None and pages_url_start is not None:
+            data = dict(
+                pages=[],
+            )
+
             for page_slug in pages_slugs:
                 data['pages'].append(dict(
                     slug=None,
                     image='{0}{1}.jpg'.format(pages_url_start, page_slug),
                 ))
+        else:
+            return None
 
         return data
 
