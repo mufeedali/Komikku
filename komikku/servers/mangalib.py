@@ -103,8 +103,13 @@ class Mangalib(Server):
         # Chapters
         for element in reversed(soup.find_all('div', class_='chapter-item')):
             a_element = element.find('a')
-            slug = a_element.get('href')[8:].split('/', 2)[2]
-            title = ' '.join(a_element.text.split())
+            if a_element:
+                slug = a_element.get('href')[8:].split('/', 2)[2]
+            else:
+                teams = json.loads(element.get('data-teams'))
+                slug = 'v{}/c{}/{}'.format(element.get('data-volume'), element.get('data-number'), teams[0]['slug'])
+
+            title = ' '.join(element.find('div', class_='chapter-item__name').text.split())
             date = element.find('div', class_='chapter-item__date').text.strip()
 
             data['chapters'].append(dict(
@@ -147,8 +152,8 @@ class Mangalib(Server):
             pages=[dict(
                 slug=None,
                 image=self.image_url.format(
-                    3 if chapter_json['imgServer'] == 'compress' else 2,
-                    chapter_json['imgUrl'].replace('\\', '') + page['u']
+                    3 if chapter_json['img']['server'] == 'compress' else 2,
+                    chapter_json['img']['url'] + page['u']
                 ),
             ) for page in pages_json]
         )
