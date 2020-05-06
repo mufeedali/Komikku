@@ -40,6 +40,18 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.15.1" date="2020-05-07">
+            <description>
+                <ul>
+                    <li>[Library] Faster chapters list rendering</li>
+                    <li>[Library] Faster read/unread state toggling with long chapters selections</li>
+                    <li>[Library] Reduce memory used by covers</li>
+                    <li>[Servers] MangaSee: Fix manga with chapters grouped by seasons</li>
+                    <li>[Servers] Jaimini's Box: Several fixes</li>
+                    <li>[Servers] MangaLib: Several fixes</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.15.0" date="2020-04-21">
             <description>
                 <ul>
