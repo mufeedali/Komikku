@@ -171,11 +171,6 @@ class Pager(Gtk.ScrolledWindow):
         right_page = Page(self, chapter, page_index - direction)
         self.box.pack_start(right_page, True, True, 0)
 
-        # Force immediate rendering
-        self.queue_draw()
-        while Gtk.events_pending():
-            Gtk.main_iteration()
-
         self.adjust_scroll(animate=False)
 
         self.current_page = center_page
