@@ -35,7 +35,6 @@ class Mangasee(Server):
     @staticmethod
     def decode_chapter_slug(chapter_slug):
         if len(chapter_slug) != 6:
-            # Do nothing: old chapter slug format
             return chapter_slug
 
         slug = int(chapter_slug[1:-1])
@@ -48,6 +47,24 @@ class Mangasee(Server):
 
     @staticmethod
     def encode_chapter_slug(slug, title):
+        """Returns an encoded slug when chapter belongs to a season
+
+        We used a special format of 6 digits.
+        For example:
+        S3 - Chapter 100   => 301000
+        S2 - Chapter 101.5 => 201015
+
+        :param slug: Chapter slug
+        :param title: Chapter title
+        :return: Encoded slug if chapter belongs to a season else slug unchanged
+        """
+
+        match = re.search(r'S(\d) - ', title)
+        if not match:
+            return slug
+
+        season = match.group(1)
+
         if '.' in slug:
             slug = slug.replace('.', '')
         else:
@@ -55,13 +72,7 @@ class Mangasee(Server):
 
         slug = '{0:05d}'.format(int(slug))
 
-        match = re.search(r'S(\d) - ', title)
-        if match:
-            slug = match.group(1) + slug
-        else:
-            slug = '0' + slug
-
-        return slug
+        return season + slug
 
     def get_manga_data(self, initial_data):
         """
