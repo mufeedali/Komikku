@@ -12,11 +12,14 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.models import create_db_connection
 from komikku.models import Download
 from komikku.models import update_rows
+from komikku.servers import get_file_mime_type
 from komikku.utils import folder_size
+from komikku.utils import scale_pixbuf_animation
 
 
 class Card:
@@ -642,11 +645,18 @@ class InfoGrid:
     def populate(self):
         manga = self.card.manga
 
-        if manga.cover_fs_path is not None:
-            pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
-        else:
+        if manga.cover_fs_path is None:
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
-        self.cover_image.set_from_pixbuf(pixbuf)
+        else:
+            if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
+                pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
+            else:
+                pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 174, -1, True, True)
+
+        if isinstance(pixbuf, PixbufAnimation):
+            self.cover_image.set_from_animation(pixbuf)
+        else:
+            self.cover_image.set_from_pixbuf(pixbuf)
 
         self.authors_value_label.set_markup(
             '<span size="small">{0}</span>'.format(', '.join(manga.authors) if manga.authors else '-'))

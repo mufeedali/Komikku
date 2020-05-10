@@ -302,6 +302,15 @@ def get_cache_dir():
     return cache_dir_path
 
 
+def get_file_mime_type(path):
+    if hasattr(magic, 'detect_from_filename'):
+        # Using file-magic module: https://github.com/file/file
+        return magic.detect_from_filename(path).mime_type
+    else:
+        # Using python-magic module: https://github.com/ahupp/python-magic
+        return magic.from_file(path, mime=True)
+
+
 def get_server_class_name_by_id(id):
     return id.split(':')[0].capitalize()
 

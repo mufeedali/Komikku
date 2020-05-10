@@ -11,10 +11,13 @@ from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.downloader import DownloadManagerDialog
 from komikku.models import create_db_connection
 from komikku.models import Manga
+from komikku.servers import get_file_mime_type
+from komikku.utils import scale_pixbuf_animation
 
 
 class Library():
@@ -440,18 +443,23 @@ class Library():
 
     @staticmethod
     def set_manga_cover_image(overlay, width, height, update=False):
-        overlay.set_size_request(width, height)
-
         if overlay._pixbuf is None or update:
             manga = overlay.manga
-            if manga.cover_fs_path is not None:
-                overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
-            else:
-                overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
-        pixbuf = overlay._pixbuf.scale_simple(width, height, InterpType.BILINEAR)
+            if manga.cover_fs_path is None:
+                overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+            else:
+                if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
+                    overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
+                else:
+                    overlay._pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 200, -1, True)
+
+        overlay.set_size_request(width, height)
         image = overlay.get_children()[0]
-        image.set_from_pixbuf(pixbuf)
+        if isinstance(overlay._pixbuf, PixbufAnimation):
+            image.set_from_animation(scale_pixbuf_animation(overlay._pixbuf, width, height, False, loop=True))
+        else:
+            image.set_from_pixbuf(overlay._pixbuf.scale_simple(width, height, InterpType.BILINEAR))
 
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)

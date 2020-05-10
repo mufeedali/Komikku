@@ -10,17 +10,20 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository.GdkPixbuf import PixbufAnimation
 from gi.repository import Pango
 
 from komikku.activity_indicator import ActivityIndicator
 from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
+from komikku.servers import get_buffer_mime_type
 from komikku.servers import get_server_logo_resource_path_by_id
 from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
 from komikku.utils import log_error_traceback
+from komikku.utils import scale_pixbuf_animation
 
 
 class AddDialog:
@@ -315,13 +318,19 @@ class AddDialog:
                 if user_error_message:
                     self.show_notification(user_error_message)
 
-            if cover_data is not None:
-                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
-                pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
-            else:
+            if cover_data is None:
                 pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+            else:
+                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
+                if get_buffer_mime_type(cover_data) != 'image/gif':
+                    pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
+                else:
+                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_stream(cover_stream), 174, -1, True, True)
 
-            self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
+            if isinstance(pixbuf, PixbufAnimation):
+                self.builder.get_object('cover_image').set_from_animation(pixbuf)
+            else:
+                self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
             self.builder.get_object('authors_value_label').set_markup(
                 '<span size="small">{0}</span>'.format(', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-'))

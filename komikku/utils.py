@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import datetime
 from gettext import gettext as _
 import gi
 import logging
@@ -13,6 +14,8 @@ gi.require_version('Secret', '1')
 
 from gi.repository import GLib
 from gi.repository import Secret
+from gi.repository.GdkPixbuf import InterpType
+from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
 SECRET_SCHEMA_NAME = 'info.febvre.Komikku'
 
@@ -34,6 +37,34 @@ def log_error_traceback(e):
     logger.info(traceback.format_exc())
 
     return None
+
+
+def scale_pixbuf_animation(pixbuf, width, height, preserve_aspect_ratio, loop=False, rate=15):
+    if preserve_aspect_ratio:
+        if width == -1:
+            ratio = pixbuf.get_height() / height
+            width = pixbuf.get_width() / ratio
+        elif height == -1:
+            ratio = pixbuf.get_width() / width
+            height = pixbuf.get_height() / ratio
+
+    if pixbuf.is_static_image():
+        # Unanimated image
+        return pixbuf.get_static_image().scale_simple(width, height, InterpType.BILINEAR)
+
+    pixbuf_scaled = PixbufSimpleAnim.new(width, height, rate)
+    pixbuf_scaled.set_loop(loop)
+
+    _res, timeval = GLib.TimeVal.from_iso8601(datetime.datetime.utcnow().isoformat())
+    iter = pixbuf.get_iter(timeval)
+
+    pixbuf_scaled.add_frame(iter.get_pixbuf().scale_simple(width, height, InterpType.BILINEAR))
+    while not iter.on_currently_loading_frame():
+        timeval.add(iter.get_delay_time() * 1000)
+        iter.advance(timeval)
+        pixbuf_scaled.add_frame(iter.get_pixbuf().scale_simple(width, height, InterpType.BILINEAR))
+
+    return pixbuf_scaled
 
 
 # Heavily adapted from PasswordsHelper class of Lollypop music player

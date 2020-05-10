@@ -21,7 +21,7 @@ from komikku.main_window import MainWindow
 
 CREDITS = dict(
     developers=('Valéry Febvre (valos)', ),
-    contributors=('Gerben Droogers (Tijder)', 'GrownNed', 'Mufeed Ali (lastweakness)', 'Romain Vaudois', 'TAAPArthur', ),
+    contributors=('Gerben Droogers (Tijder)', 'GrownNed', 'Mufeed Ali (lastweakness)', 'Romain Vaudois', 'Arthur Williams (TAAPArthur)', ),
     translators=('GrownNed (Russian)', 'Heimen Stoffels (Dutch)', 'VaGNaroK (Brazilian Portuguese)', 'Valéry Febvre (French)', ),
 )
 
