@@ -279,11 +279,9 @@ class MainWindow(Gtk.ApplicationWindow):
             - Exit selection mode (Library and Manga chapters)
         """
         modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
-        control_mask = Gdk.ModifierType.CONTROL_MASK
-        shift_mask = Gdk.ModifierType.SHIFT_MASK
 
         # <Control>+Key
-        if control_mask == modifiers:
+        if modifiers == Gdk.ModifierType.CONTROL_MASK:
             # <Control>+A (select all)
             if event.keyval in (Gdk.KEY_a, Gdk.KEY_A):
                 self.select_all()
@@ -311,7 +309,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # If the key is a printable character and not space
         key_unicode = Gdk.keyval_to_unicode(event.keyval)
         if (self.page == 'library' and not event.keyval == Gdk.KEY_space and GLib.unichar_isprint(chr(key_unicode)) and
-                modifiers in (shift_mask, 0)):
+                modifiers in (Gdk.ModifierType.SHIFT_MASK, 0)):
             if not self.library.search_entry.is_focus():
                 self.library.search_entry.grab_focus_without_selecting()
             if not self.library.search_button.get_active():

@@ -6,6 +6,7 @@ from gettext import gettext as _
 import threading
 import time
 
+from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import GObject
@@ -231,8 +232,10 @@ class DownloadManagerDialog(Handy.Dialog):
     __gtype_name__ = 'DownloadManagerDialog'
     __gsignals_handlers_ids__ = None
 
-    selection_count = 0
     selection_mode = False
+    selection_mode_count = 0
+    selection_mode_range = False
+    selection_mode_last_row_index = None
 
     titlebar = Gtk.Template.Child('titlebar')
     back_button = Gtk.Template.Child('back_button')
@@ -254,6 +257,7 @@ class DownloadManagerDialog(Handy.Dialog):
 
         self.downloader = window.downloader
 
+        self.connect('key-press-event', self.on_key_press_event)
         self.back_button.connect('clicked', self.on_back_button_clicked)
         self.start_stop_button.connect('clicked', self.on_start_stop_button_clicked)
         self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
@@ -262,7 +266,7 @@ class DownloadManagerDialog(Handy.Dialog):
         # Gesture for multi-selection mode
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
         self.gesture.set_touch_only(False)
-        self.gesture.connect('pressed', self.enter_selection_mode)
+        self.gesture.connect('pressed', self.on_gesture_long_press_activated)
 
         self.__gsignals_handlers_ids__ = [
             self.downloader.connect('download-changed', self.update_row),
@@ -295,9 +299,9 @@ class DownloadManagerDialog(Handy.Dialog):
 
         self.destroy()
 
-    def enter_selection_mode(self, gesture, x, y):
+    def enter_selection_mode(self):
         self.selection_mode = True
-        self.selection_count = 0
+        self.selection_mode_count = 0
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -321,20 +325,77 @@ class DownloadManagerDialog(Handy.Dialog):
             self.close()
 
     def on_download_row_clicked(self, listbox, row):
+        _, state = Gtk.get_current_event_state()
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+
+        # Enter selection mode if <Control>+Click or <Shift>+Click is done
+        if state & modifiers in (Gdk.ModifierType.CONTROL_MASK, Gdk.ModifierType.SHIFT_MASK) and not self.selection_mode:
+            self.enter_selection_mode()
+
         if not self.selection_mode:
             return
 
+        if state & modifiers == Gdk.ModifierType.SHIFT_MASK:
+            # Enter range selection mode if <Shift>+Click is done
+            self.selection_mode_range = True
+
+        if self.selection_mode_range and self.selection_mode_last_row_index is not None:
+            # Range selection mode: select all rows between last selected row and clicked row
+            walk_index = self.selection_mode_last_row_index
+            last_index = row.get_index()
+
+            while walk_index != last_index:
+                walk_row = self.listbox.get_row_at_index(walk_index)
+                if walk_row and not walk_row._selected:
+                    self.selection_mode_count += 1
+                    self.listbox.select_row(walk_row)
+                    walk_row._selected = True
+
+                if walk_index < last_index:
+                    walk_index += 1
+                else:
+                    walk_index -= 1
+
+        self.selection_mode_range = False
+
         if row._selected:
-            self.selection_count -= 1
+            self.selection_mode_count -= 1
             self.listbox.unselect_row(row)
+            self.selection_mode_last_row_index = None
             row._selected = False
         else:
-            self.selection_count += 1
+            self.selection_mode_count += 1
             self.listbox.select_row(row)
+            self.selection_mode_last_row_index = row.get_index()
             row._selected = True
 
-        if self.selection_count == 0:
+        if self.selection_mode_count == 0:
             self.leave_selection_mode()
+
+    def on_gesture_long_press_activated(self, gesture, x, y):
+        if self.selection_mode:
+            # Enter in 'Range' selection mode
+            # Long press on a download row then long press on another to select everything in between
+            self.selection_mode_range = True
+        else:
+            self.enter_selection_mode()
+
+    def on_key_press_event(self, widget, event):
+        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
+
+        # <Control>+Key
+        if modifiers == Gdk.ModifierType.CONTROL_MASK:
+            # <Control>+A (select all)
+            if event.keyval in (Gdk.KEY_a, Gdk.KEY_A):
+                self.select_all_downloads()
+                return Gdk.EVENT_STOP
+
+        # <Escape> key
+        if event.keyval == Gdk.KEY_Escape:
+            self.on_back_button_clicked(None)
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_menu_delete_all_clicked(self, action, param):
         chapters = []
@@ -393,6 +454,17 @@ class DownloadManagerDialog(Handy.Dialog):
             self.stack.set_visible_child_name('list')
         else:
             self.stack.set_visible_child_name('empty')
+
+    def select_all_downloads(self):
+        if not self.selection_mode:
+            self.enter_selection_mode()
+
+        selection_mode_count = 0
+
+        for row in self.listbox.get_children():
+            self.listbox.select_row(row)
+            selection_mode_count += 1
+            row._selected = True
 
     def update_headerbar(self, *args):
         if self.rows:

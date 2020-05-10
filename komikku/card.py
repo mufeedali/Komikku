@@ -8,6 +8,7 @@ import html
 import threading
 import time
 
+from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
@@ -296,7 +297,17 @@ class ChaptersList:
             row._selected = False
 
     def on_chapter_row_clicked(self, listbox, row):
+        _, state = Gtk.get_current_event_state()
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+
+        # Enter selection mode if <Control>+Click or <Shift>+Click is done
+        if state & modifiers in (Gdk.ModifierType.CONTROL_MASK, Gdk.ModifierType.SHIFT_MASK) and not self.card.selection_mode:
+            self.card.enter_selection_mode()
+
         if self.card.selection_mode:
+            if state & modifiers == Gdk.ModifierType.SHIFT_MASK:
+                # Enter range selection mode if <Shift>+Click is done
+                self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_row_index is not None:
                 # Range selection mode: select all rows between last selected row and clicked row
                 walk_index = self.selection_mode_last_row_index

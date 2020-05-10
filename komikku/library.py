@@ -318,8 +318,13 @@ class Library():
 
     def on_manga_clicked(self, flowbox, child):
         overlay = child.get_children()[0]
+        _, state = Gtk.get_current_event_state()
+        modifiers = Gtk.accelerator_get_default_mod_mask()
 
         if self.selection_mode:
+            if state & modifiers == Gdk.ModifierType.SHIFT_MASK:
+                # Enter range selection mode if <Shift>+Click is done
+                self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
                 # Range selection mode: select all mangas between last selected manga and clicked manga
                 walk_index = self.selection_mode_last_child_index
@@ -448,7 +453,7 @@ class Library():
         if overlay._pixbuf is None or update:
             manga = overlay.manga
             if manga.cover_fs_path is not None:
-                overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
+                    overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
             else:
                 overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
