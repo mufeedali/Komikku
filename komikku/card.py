@@ -495,6 +495,9 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def select_all_chapters(self, action, param):
+        if not self.card.selection_mode:
+            self.card.enter_selection_mode()
+
         self.selection_mode_count = 0
 
         for row in self.listbox.get_children():
