@@ -453,7 +453,7 @@ class Library():
         if overlay._pixbuf is None or update:
             manga = overlay.manga
             if manga.cover_fs_path is not None:
-                    overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
+                overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
             else:
                 overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
