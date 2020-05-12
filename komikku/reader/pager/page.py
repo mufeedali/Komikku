@@ -3,32 +3,17 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
-from PIL import Image
-from PIL import ImageChops
 import threading
 
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
-from gi.repository.GdkPixbuf import Colorspace
-from gi.repository.GdkPixbuf import InterpType
-from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.activity_indicator import ActivityIndicator
+from komikku.utils import Imagebuf
 from komikku.utils import log_error_traceback
 
-
-def compute_borders_crop_bbox(path):
-    # TODO: Add a slider in settings
-    threshold = 225
-
-    def lookup(x):
-        return 255 if x > threshold else 0
-
-    im = Image.open(path).convert('L').point(lookup, mode='1')
-    bg = Image.new(im.mode, im.size, 255)
-
-    return ImageChops.difference(im, bg).getbbox()
 
 
 class Page(Gtk.Overlay):
@@ -45,6 +30,7 @@ class Page(Gtk.Overlay):
 
         self.chapter = chapter
         self.index = index
+        self.path = None
 
         self.status = None     # rendering, rendered, offlimit, cleaned
         self.error = None      # connection error, server error or corrupt file error
@@ -62,7 +48,7 @@ class Page(Gtk.Overlay):
 
         viewport = Gtk.Viewport()
         self.image = Gtk.Image()
-        self.pixbuf = None
+        self.imagebuf = None
         viewport.add(self.image)
         self.scrolledwindow.add(viewport)
 
@@ -72,6 +58,11 @@ class Page(Gtk.Overlay):
         self.set_overlay_pass_through(self.activity_indicator, True)  # Allows scrolling in zoom mode
 
         self.show_all()
+
+
+    @property
+    def animated(self):
+        return self.imagebuf.animated
 
     @property
     def loaded(self):
@@ -87,8 +78,7 @@ class Page(Gtk.Overlay):
     def clean(self):
         self.status = 'cleaned'
         self.loadable = False
-        self.error = None
-        self.pixbuf = None
+        self.imagebuf = None
         self.image.clear()
 
     def on_button_retry_clicked(self, button):
@@ -156,19 +146,14 @@ class Page(Gtk.Overlay):
                 try:
                     page_path = self.chapter.get_page(self.index)
                     if page_path:
-                        self.pixbuf = Pixbuf.new_from_file(page_path)
+                        self.path = page_path
                     else:
                         on_error('server')
                 except Exception as e:
                     user_error_message = log_error_traceback(e)
                     on_error('connection', user_error_message)
             else:
-                try:
-                    self.pixbuf = Pixbuf.new_from_file(page_path)
-                except GLib.GError as e:
-                    user_error_message = log_error_traceback(e)
-                    on_error('corrupt_file', user_error_message)
-                    GLib.unlink(page_path)
+                self.path = page_path
 
             GLib.idle_add(complete)
 
@@ -178,7 +163,7 @@ class Page(Gtk.Overlay):
                 # rare case that occurs during a quick navigation
                 return False
 
-            if self.loaded:
+            if self.status != 'offlimit':
                 self.set_image()
                 self.status = 'rendered'
 
@@ -189,19 +174,19 @@ class Page(Gtk.Overlay):
             return False
 
         def on_error(kind, message=None):
-            assert kind in ('connection', 'server', 'corrupt_file'), 'Invalid error kind'
+            assert kind in ('connection', 'server', ), 'Invalid error kind'
 
             if message is not None:
                 self.window.show_notification(message, 2)
 
             self.error = kind
-            self.pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
             self.show_retry_button()
 
         if self.status is not None and self.error is None:
             return
 
+        self.imagebuf = None
         self.status = 'rendering'
 
         self.activity_indicator.start()
@@ -221,41 +206,41 @@ class Page(Gtk.Overlay):
             self.set_image()
 
     def set_image(self):
-        pixbuf = self.pixbuf
+        if self.imagebuf is None:
+            if self.path is None:
+                self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+            else:
+                self.imagebuf = Imagebuf.new_from_file(self.path)
+                if self.imagebuf is None:
+                    GLib.unlink(self.path)
+
+                    self.show_retry_button()
+                    self.window.show_notification(_('Failed to load image'), 2)
+
+                    self.error = 'corrupt_file'
+                    self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
         # Crop image borders
-        path = self.chapter.get_page_path(self.index)
-        if path is not None and self.reader.manga.borders_crop == 1:
-            bbox = compute_borders_crop_bbox(path)
+        imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
 
-            # Crop is possible if computed bbox is included in pixbuf
-            if bbox[2] - bbox[0] < pixbuf.get_width() or bbox[3] - bbox[1] < pixbuf.get_height():
-                pixbuf = Pixbuf.new(Colorspace.RGB, self.pixbuf.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
-                self.pixbuf.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
-
+        # Adjust image
         if self.reader.scaling != 'original':
-            width = pixbuf.get_width()
-            height = pixbuf.get_height()
-
-            adapt_to_width_height = height / (width / self.reader.size.width)
-            adapt_to_height_width = width / (height / self.reader.size.height)
+            adapt_to_width_height = imagebuf.height / (imagebuf.width / self.reader.size.width)
+            adapt_to_height_width = imagebuf.width / (imagebuf.height / self.reader.size.height)
 
             if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
                 # Adapt image to width
-                pixbuf = pixbuf.scale_simple(
-                    self.reader.size.width,
-                    adapt_to_width_height,
-                    InterpType.BILINEAR
-                )
+                pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
             elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
                 # Adapt image to height
-                pixbuf = pixbuf.scale_simple(
-                    adapt_to_height_width,
-                    self.reader.size.height,
-                    InterpType.BILINEAR
-                )
+                pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
+        else:
+            pixbuf = imagebuf.get_pixbuf()
 
-        self.image.set_from_pixbuf(pixbuf)
+        if isinstance(pixbuf, PixbufAnimation):
+            self.image.set_from_animation(pixbuf)
+        else:
+            self.image.set_from_pixbuf(pixbuf)
 
     def set_size(self):
         self.set_size_request(self.reader.size.width, self.reader.size.height)

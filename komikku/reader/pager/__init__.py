@@ -207,7 +207,7 @@ class Pager(Gtk.ScrolledWindow):
 
         page = self.current_page
 
-        if page.status != 'rendered' or page.error is not None:
+        if page.status != 'rendered' or page.error is not None or page.animated:
             return
 
         hadj = page.scrolledwindow.get_hadjustment()
@@ -215,7 +215,7 @@ class Pager(Gtk.ScrolledWindow):
 
         if self.zoom['active'] is False:
             image = page.image
-            pixbuf = page.pixbuf
+            pixbuf = page.imagebuf.get_pixbuf()
 
             # Record hadjustment and vadjustment values
             self.zoom['orig_hadj_value'] = hadj.get_value()
@@ -401,10 +401,14 @@ class Pager(Gtk.ScrolledWindow):
         return False
 
     def rescale_pages(self):
+        self.zoom['active'] = False
+
         for page in self.pages:
             page.rescale()
 
     def resize_pages(self):
+        self.zoom['active'] = False
+
         for page in self.pages:
             page.resize()
 

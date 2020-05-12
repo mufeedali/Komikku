@@ -6,6 +6,8 @@ import datetime
 from gettext import gettext as _
 import gi
 import logging
+from PIL import Image
+from PIL import ImageChops
 import requests
 import subprocess
 import traceback
@@ -14,7 +16,10 @@ gi.require_version('Secret', '1')
 
 from gi.repository import GLib
 from gi.repository import Secret
+from gi.repository.GdkPixbuf import Colorspace
 from gi.repository.GdkPixbuf import InterpType
+from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
 SECRET_SCHEMA_NAME = 'info.febvre.Komikku'
@@ -65,6 +70,102 @@ def scale_pixbuf_animation(pixbuf, width, height, preserve_aspect_ratio, loop=Fa
         pixbuf_scaled.add_frame(iter.get_pixbuf().scale_simple(width, height, InterpType.BILINEAR))
 
     return pixbuf_scaled
+
+
+class Imagebuf:
+    def __init__(self, path, buffer, width, height):
+        self._buffer = buffer
+        self.path = path
+        self.width = width
+        self.height = height
+        self.animated = False
+
+    @classmethod
+    def new_from_file(cls, path):
+        try:
+            pixbuf = Pixbuf.new_from_file(path)
+        except GLib.GError:
+            return None
+
+        format, width, height = Pixbuf.get_file_info(path)
+
+        if 'image/gif' in format.get_mime_types():
+            # In case of GIF images, buffer is image raw data
+            with open(path, 'rb') as fp:
+                buffer = fp.read()
+        else:
+            buffer = pixbuf
+
+        return cls(path, buffer, width, height)
+
+    @classmethod
+    def new_from_resource(cls, path):
+        buffer = Pixbuf.new_from_resource(path)
+        width = buffer.get_width()
+        height = buffer.get_height()
+
+        return cls(None, buffer, width, height)
+
+    def _compute_borders_crop_bbox(self):
+        # TODO: Add a slider in settings
+        threshold = 225
+
+        def lookup(x):
+            return 255 if x > threshold else 0
+
+        im = Image.open(self.path).convert('L').point(lookup, mode='1')
+        bg = Image.new(im.mode, im.size, 255)
+
+        return ImageChops.difference(im, bg).getbbox()
+
+    def _get_pixbuf_from_bytes(self, width, height):
+        loader = PixbufLoader.new()
+        loader.set_size(width, height)
+        loader.write(self._buffer)
+        loader.close()
+
+        animation = loader.get_animation()
+        if animation.is_static_image():
+            return animation.get_static_image()
+
+        self.animated = True
+
+        return animation
+
+    def crop_borders(self):
+        if not isinstance(self._buffer, Pixbuf) or self.path is None:
+            return self
+
+        bbox = self._compute_borders_crop_bbox()
+
+        # Crop is possible if computed bbox is included in pixbuf
+        if bbox[2] - bbox[0] < self.width or bbox[3] - bbox[1] < self.height:
+            pixbuf = Pixbuf.new(Colorspace.RGB, self._buffer.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
+            self._buffer.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
+
+            return Imagebuf(self.path, pixbuf, pixbuf.get_width(), pixbuf.get_height())
+
+        return self
+
+    def get_pixbuf(self):
+        if isinstance(self._buffer, bytes):
+            return self._get_pixbuf_from_bytes(self.width, self.height)
+
+        return self._buffer
+
+    def get_scaled_pixbuf(self, width, height, preserve_aspect_ratio):
+        if preserve_aspect_ratio:
+            if width == -1:
+                ratio = self.height / height
+                width = self.width / ratio
+            elif height == -1:
+                ratio = self.width / width
+                height = self.height / ratio
+
+        if isinstance(self._buffer, bytes):
+            return self._get_pixbuf_from_bytes(width, height)
+
+        return self._buffer.scale_simple(width, height, InterpType.BILINEAR)
 
 
 # Heavily adapted from PasswordsHelper class of Lollypop music player
