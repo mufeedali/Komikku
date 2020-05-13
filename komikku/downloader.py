@@ -318,14 +318,14 @@ class DownloadManagerDialog(Handy.Dialog):
         self.titlebar.set_selection_mode(False)
         self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
 
-    def on_back_button_clicked(self, button):
+    def on_back_button_clicked(self, button=None):
         if self.selection_mode:
             self.leave_selection_mode()
         else:
             self.close()
 
     def on_download_row_clicked(self, listbox, row):
-        _, state = Gtk.get_current_event_state()
+        _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
         # Enter selection mode if <Control>+Click or <Shift>+Click is done
@@ -387,13 +387,8 @@ class DownloadManagerDialog(Handy.Dialog):
         if modifiers == Gdk.ModifierType.CONTROL_MASK:
             # <Control>+A (select all)
             if event.keyval in (Gdk.KEY_a, Gdk.KEY_A):
-                self.select_all_downloads()
+                self.select_all()
                 return Gdk.EVENT_STOP
-
-        # <Escape> key
-        if event.keyval == Gdk.KEY_Escape:
-            self.on_back_button_clicked(None)
-            return Gdk.EVENT_STOP
 
         return Gdk.EVENT_PROPAGATE
 
@@ -436,7 +431,7 @@ class DownloadManagerDialog(Handy.Dialog):
         self.update_headerbar()
 
         if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
-            self.on_back_button_clicked(None)
+            self.on_back_button_clicked()
 
     def populate(self):
         db_conn = create_db_connection()
@@ -455,15 +450,15 @@ class DownloadManagerDialog(Handy.Dialog):
         else:
             self.stack.set_visible_child_name('empty')
 
-    def select_all_downloads(self):
+    def select_all(self):
         if not self.selection_mode:
             self.enter_selection_mode()
 
-        selection_mode_count = 0
+        self.selection_mode_count = 0
 
         for row in self.listbox.get_children():
             self.listbox.select_row(row)
-            selection_mode_count += 1
+            self.selection_mode_count += 1
             row._selected = True
 
     def update_headerbar(self, *args):
