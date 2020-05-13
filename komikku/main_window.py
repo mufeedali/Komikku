@@ -270,21 +270,52 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_key_press_event(self, widget, event):
         """
-        Go back navigation with <Escape> key:
-        - Library <- Manga <- Reader
-        - Exit selection mode (Library and Manga chapters)
+        Shortcuts and actions with keyboard:
+        - <Control>+A for Select All
+        - <Control>+F for Search
+        - Search can also be triggered by simply typing a printable character
+        - Go back navigation with <Escape> key:
+            - Library <- Manga <- Reader
+            - Exit selection mode (Library and Manga chapters)
         """
+        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
 
-        if event.keyval != Gdk.KEY_Escape:
-            # Propagate the event further
-            return False
+        # <Control>+Key
+        if modifiers == Gdk.ModifierType.CONTROL_MASK:
+            # <Control>+A (select all)
+            if event.keyval in (Gdk.KEY_a, Gdk.KEY_A):
+                self.select_all()
+            # <Control>+F (search)
+            if event.keyval in (Gdk.KEY_f, Gdk.KEY_F) and self.page == 'library':
+                if not self.library.search_entry.is_focus():
+                    self.library.search_entry.grab_focus_without_selecting()
+                if not self.library.search_button.get_active():
+                    self.library.search_button.set_active(True)
+            return Gdk.EVENT_STOP
 
-        if self.page == 'library' and not self.library.selection_mode:
-            return True
+        # <Escape> key
+        if event.keyval == Gdk.KEY_Escape:
+            if self.library.search_button.get_active():
+                self.library.search_button.set_active(False)
+                return Gdk.EVENT_STOP
 
-        self.on_left_button_clicked(None, None)
+            if self.page == 'library' and not self.library.selection_mode:
+                return Gdk.EVENT_STOP
 
-        return True
+            self.on_left_button_clicked(None, None)
+
+            return Gdk.EVENT_STOP
+
+        # If the key is a printable character and not space
+        key_unicode = Gdk.keyval_to_unicode(event.keyval)
+        if (self.page == 'library' and not event.keyval == Gdk.KEY_space and GLib.unichar_isprint(chr(key_unicode)) and
+                modifiers in (Gdk.ModifierType.SHIFT_MASK, 0)):
+            if not self.library.search_entry.is_focus():
+                self.library.search_entry.grab_focus_without_selecting()
+            if not self.library.search_button.get_active():
+                self.library.search_button.set_active(True)
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_left_button_clicked(self, action, param):
         if self.page == 'library':
@@ -347,6 +378,15 @@ class MainWindow(Gtk.ApplicationWindow):
         if not self.is_maximized and not self.is_fullscreen:
             size = self.get_size()
             Settings.get_default().window_size = [size.width, size.height]
+
+    def select_all(self):
+        if self.library.search_entry.is_focus():
+            # Easiest way to maintain focus while selecting all text in a GtkEntry is to simply grab focus
+            self.library.search_entry.grab_focus()
+        elif self.page == 'library':
+            self.library.select_all(None, None)
+        elif self.page == 'card':
+            self.card.chapters_list.select_all_chapters(None, None)
 
     def set_fullscreen(self):
         if not self.is_fullscreen:

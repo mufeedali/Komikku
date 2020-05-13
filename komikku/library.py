@@ -265,7 +265,7 @@ class Library():
 
         ctx.restore()
 
-    def enter_selection_mode(self, x, y):
+    def enter_selection_mode(self, x=0, y=0):
         self.selection_mode = True
         self.selection_mode_count = 1
 
@@ -321,8 +321,13 @@ class Library():
 
     def on_manga_clicked(self, flowbox, child):
         overlay = child.get_children()[0]
+        _, state = Gtk.get_current_event_state()
+        modifiers = Gtk.accelerator_get_default_mod_mask()
 
         if self.selection_mode:
+            if state & modifiers == Gdk.ModifierType.SHIFT_MASK:
+                # Enter range selection mode if <Shift>+Click is done
+                self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
                 # Range selection mode: select all mangas between last selected manga and clicked manga
                 walk_index = self.selection_mode_last_child_index
@@ -433,6 +438,9 @@ class Library():
         self.flowbox.invalidate_filter()
 
     def select_all(self, action, param):
+        if not self.selection_mode:
+            self.enter_selection_mode()
+
         self.selection_mode_count = 0
 
         for child in self.flowbox.get_children():
