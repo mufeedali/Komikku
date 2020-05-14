@@ -390,6 +390,9 @@ class ChaptersList:
 
         chapter = row.chapter
 
+        #
+        # Title, scanlators, action button
+        #
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
 
         # Title
@@ -407,8 +410,29 @@ class ChaptersList:
         title = chapter.title
         if self.card.manga.name != title and self.card.manga.name in title:
             title = title.replace(self.card.manga.name, '').strip()
-        label.set_text(title)
-        hbox.pack_start(label, True, True, 0)
+        label.set_markup(title)
+
+        if chapter.scanlators:
+            # Vertical box for title and scanlators
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+
+            # Add title
+            vbox.pack_start(label, True, True, 0)
+
+            # Scanlators
+            label = Gtk.Label(xalign=0)
+            label.set_valign(Gtk.Align.CENTER)
+            ctx = label.get_style_context()
+            ctx.add_class('dim-label')
+            ctx.add_class('card-chapter-sublabel')
+            label.set_line_wrap(True)
+            label.set_markup(', '.join(chapter.scanlators))
+            vbox.pack_start(label, True, True, 0)
+
+            hbox.pack_start(vbox, True, True, 0)
+        else:
+            # Title only
+            hbox.pack_start(label, True, True, 0)
 
         # Action button
         button = Gtk.Button.new_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
@@ -418,14 +442,18 @@ class ChaptersList:
 
         box.pack_start(hbox, True, True, 0)
 
+        #
+        # Recent badge, date, download status, page counter
+        #
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
 
         # Recent badge
         if chapter.recent == 1:
             label = Gtk.Label(xalign=0, yalign=1)
             label.set_valign(Gtk.Align.CENTER)
-            label.get_style_context().add_class('card-chapter-sublabel')
-            label.get_style_context().add_class('badge')
+            ctx = label.get_style_context()
+            ctx.add_class('card-chapter-sublabel')
+            ctx.add_class('badge')
             label.set_text(_('New'))
             hbox.pack_start(label, False, True, 0)
 
