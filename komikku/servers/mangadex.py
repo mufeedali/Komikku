@@ -199,6 +199,7 @@ class Mangadex(Server):
                 slug=slug,
                 title='#{0} - {1}'.format(chapter['chapter'], chapter['title']),
                 date=datetime.fromtimestamp(chapter['timestamp']).date(),
+                scanlators=[value for key, value in chapter.items() if key.startswith('group_name') and value],
             ))
 
         data['chapters'].reverse()
