@@ -249,7 +249,7 @@ class ChaptersList:
         self.card.window.application.add_action(reset_selected_chapters_action)
 
         select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
-        select_all_chapters_action.connect('activate', self.select_all_chapters)
+        select_all_chapters_action.connect('activate', self.select_all)
         self.card.window.application.add_action(select_all_chapters_action)
 
         # Chapters menu actions
@@ -300,7 +300,7 @@ class ChaptersList:
             row._selected = False
 
     def on_chapter_row_clicked(self, listbox, row):
-        _, state = Gtk.get_current_event_state()
+        _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
         # Enter selection mode if <Control>+Click or <Shift>+Click is done
@@ -508,7 +508,7 @@ class ChaptersList:
 
         self.card.leave_selection_mode()
 
-    def select_all_chapters(self, action, param):
+    def select_all(self, action=None, param=None):
         if not self.card.selection_mode:
             self.card.enter_selection_mode()
 

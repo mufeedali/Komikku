@@ -15,13 +15,6 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="Shortcut window description">Add manga</property>
-                <property name="accelerator">&lt;Primary&gt;plus</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">True</property>
                 <property name="title" translatable="yes" context="Shortcut window description">Open preferences</property>
                 <property name="accelerator">&lt;Primary&gt;P</property>
               </object>
@@ -29,8 +22,68 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="Shortcut window description">Toggle Fullscreen mode</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Toggle fullscreen mode</property>
                 <property name="accelerator">F11</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Shortcuts</property>
+                <property name="accelerator">&lt;Primary&gt;question</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">True</property>
+            <property name="title" translatable="yes" context="Shortcut window description">Library</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Add manga</property>
+                <property name="accelerator">&lt;Primary&gt;plus</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Select all</property>
+                <property name="accelerator">&lt;Primary&gt;A</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Search</property>
+                <property name="accelerator">&lt;Primary&gt;F</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">True</property>
+            <property name="title" translatable="yes" context="Shortcut window description">Manga Card</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Select all chapters</property>
+                <property name="accelerator">&lt;Primary&gt;A</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">True</property>
+            <property name="title" translatable="yes" context="Shortcut window description">Download Manager</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Select all downloads</property>
+                <property name="accelerator">&lt;Primary&gt;A</property>
               </object>
             </child>
           </object>

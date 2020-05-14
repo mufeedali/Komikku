@@ -64,31 +64,41 @@ class MainWindow(Gtk.ApplicationWindow):
         self.assemble_window()
 
     def add_accelerators(self):
-        self.application.set_accels_for_action('app.settings', ['<Control>p'])
         self.application.set_accels_for_action('app.add', ['<Control>plus'])
+        self.application.set_accels_for_action('app.enter-search-mode', ['<Control>f'])
         self.application.set_accels_for_action('app.fullscreen', ['F11'])
+        self.application.set_accels_for_action('app.select-all', ['<Control>a'])
+        self.application.set_accels_for_action('app.settings', ['<Control>p'])
+        self.application.set_accels_for_action('app.shortcuts', ['<Control>question'])
 
     def add_actions(self):
-        add_action = Gio.SimpleAction.new('add', None)
-        add_action.connect('activate', self.on_left_button_clicked)
-
-        settings_action = Gio.SimpleAction.new('settings', None)
-        settings_action.connect('activate', self.on_settings_menu_clicked)
-
         about_action = Gio.SimpleAction.new('about', None)
         about_action.connect('activate', self.on_about_menu_clicked)
+        self.application.add_action(about_action)
 
-        shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
-        shortcuts_action.connect('activate', self.on_shortcuts_menu_clicked)
+        add_action = Gio.SimpleAction.new('add', None)
+        add_action.connect('activate', self.on_left_button_clicked)
+        self.application.add_action(add_action)
+
+        enter_search_mode_action = Gio.SimpleAction.new('enter-search-mode', None)
+        enter_search_mode_action.connect('activate', self.enter_search_mode)
+        self.application.add_action(enter_search_mode_action)
 
         fullscreen_action = Gio.SimpleAction.new('fullscreen', None)
         fullscreen_action.connect('activate', self.toggle_fullscreen)
-
-        self.application.add_action(add_action)
-        self.application.add_action(settings_action)
-        self.application.add_action(about_action)
-        self.application.add_action(shortcuts_action)
         self.application.add_action(fullscreen_action)
+
+        self.select_all_action = Gio.SimpleAction.new('select-all', None)
+        self.select_all_action.connect('activate', self.select_all)
+        self.application.add_action(self.select_all_action)
+
+        settings_action = Gio.SimpleAction.new('settings', None)
+        settings_action.connect('activate', self.on_settings_menu_clicked)
+        self.application.add_action(settings_action)
+
+        shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
+        shortcuts_action.connect('activate', self.on_shortcuts_menu_clicked)
+        self.application.add_action(shortcuts_action)
 
         self.library.add_actions()
         self.card.add_actions()
@@ -129,7 +139,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # Window
         self.connect('check-resize', self.on_resize)
         self.connect('delete-event', self.on_application_quit)
-        self.connect('key-press-event', self.on_key_press_event)
+        self.connect('key-press-event', self.on_key_press)
         self.connect('window-state-event', self.on_window_state_event)
 
         # Custom CSS
@@ -177,6 +187,10 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.get_content_area().add(label)
 
         dialog.show_all()
+
+    def enter_search_mode(self, action, param):
+        if self.page == 'library':
+            self.library.enter_search_mode()
 
     def hide_notification(self):
         self.builder.get_object('notification_revealer').set_reveal_child(False)
@@ -268,60 +282,25 @@ class MainWindow(Gtk.ApplicationWindow):
         before_quit()
         return False
 
-    def on_key_press_event(self, widget, event):
+    def on_key_press(self, widget, event):
         """
-        Shortcuts and actions with keyboard:
-        - <Control>+A for Select All
-        - <Control>+F for Search
-        - Search can also be triggered by simply typing a printable character
-        - Go back navigation with <Escape> key:
-            - Library <- Manga <- Reader
-            - Exit selection mode (Library and Manga chapters)
+        Go back navigation with <Escape> key:
+        - Library <- Manga <- Reader
+        - Exit selection mode (Library and Manga chapters)
         """
-        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
-
-        # <Control>+Key
-        if modifiers == Gdk.ModifierType.CONTROL_MASK:
-            # <Control>+A (select all)
-            if event.keyval in (Gdk.KEY_a, Gdk.KEY_A):
-                self.select_all()
-            # <Control>+F (search)
-            if event.keyval in (Gdk.KEY_f, Gdk.KEY_F) and self.page == 'library':
-                if not self.library.search_entry.is_focus():
-                    self.library.search_entry.grab_focus_without_selecting()
-                if not self.library.search_button.get_active():
-                    self.library.search_button.set_active(True)
-            return Gdk.EVENT_STOP
-
-        # <Escape> key
         if event.keyval == Gdk.KEY_Escape:
-            if self.library.search_button.get_active():
-                self.library.search_button.set_active(False)
-                return Gdk.EVENT_STOP
-
-            if self.page == 'library' and not self.library.selection_mode:
-                return Gdk.EVENT_STOP
-
-            self.on_left_button_clicked(None, None)
-
+            self.on_left_button_clicked()
             return Gdk.EVENT_STOP
-
-        # If the key is a printable character and not space
-        key_unicode = Gdk.keyval_to_unicode(event.keyval)
-        if (self.page == 'library' and not event.keyval == Gdk.KEY_space and GLib.unichar_isprint(chr(key_unicode)) and
-                modifiers in (Gdk.ModifierType.SHIFT_MASK, 0)):
-            if not self.library.search_entry.is_focus():
-                self.library.search_entry.grab_focus_without_selecting()
-            if not self.library.search_button.get_active():
-                self.library.search_button.set_active(True)
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_left_button_clicked(self, action, param):
+    def on_left_button_clicked(self, action=None, param=None):
         if self.page == 'library':
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            else:
+            elif self.library.search_mode:
+                self.library.leave_search_mode()
+            elif action:
                 AddDialog(self).open(action, param)
         elif self.page == 'card':
             if self.card.selection_mode:
@@ -379,14 +358,11 @@ class MainWindow(Gtk.ApplicationWindow):
             size = self.get_size()
             Settings.get_default().window_size = [size.width, size.height]
 
-    def select_all(self):
-        if self.library.search_entry.is_focus():
-            # Easiest way to maintain focus while selecting all text in a GtkEntry is to simply grab focus
-            self.library.search_entry.grab_focus()
-        elif self.page == 'library':
-            self.library.select_all(None, None)
+    def select_all(self, action, param):
+        if self.page == 'library':
+            self.library.select_all()
         elif self.page == 'card':
-            self.card.chapters_list.select_all_chapters(None, None)
+            self.card.chapters_list.select_all()
 
     def set_fullscreen(self):
         if not self.is_fullscreen:

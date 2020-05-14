@@ -8,6 +8,7 @@ import time
 
 from gi.repository import Gdk
 from gi.repository import Gio
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
@@ -21,6 +22,7 @@ from komikku.utils import scale_pixbuf_animation
 
 
 class Library():
+    search_mode = False
     selection_mode = False
     selection_mode_count = 0
     selection_mode_range = False
@@ -36,7 +38,7 @@ class Library():
         self.search_entry = self.builder.get_object('library_page_search_searchentry')
         self.search_entry.connect('changed', self.search)
         self.search_button = self.builder.get_object('library_page_search_button')
-        self.search_button.connect('clicked', self.toggle_search_entry)
+        self.search_button.connect('clicked', self.toggle_search_mode)
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
@@ -44,6 +46,7 @@ class Library():
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.on_gesture_long_press_activated)
 
+        self.window.connect('key-press-event', self.on_key_press)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
         def _filter(child):
@@ -265,13 +268,25 @@ class Library():
 
         ctx.restore()
 
-    def enter_selection_mode(self, x=0, y=0):
+    def enter_search_mode(self):
+        self.search_mode = True
+
+        # Disable <Control>+A (select all)
+        self.window.select_all_action.set_enabled(False)
+
+        self.title_stack.set_visible_child_name('searchentry')
+        self.search_entry.grab_focus()
+
+    def enter_selection_mode(self, x=None, y=None):
         self.selection_mode = True
         self.selection_mode_count = 1
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
-        selected_child = self.flowbox.get_child_at_pos(x, y)
+        if x is not None and y is not None:
+            selected_child = self.flowbox.get_child_at_pos(x, y)
+        else:
+            selected_child = self.flowbox.get_child_at_index(0)
         selected_overlay = selected_child.get_children()[0]
         self.flowbox.select_child(selected_child)
         selected_overlay._selected = True
@@ -280,6 +295,16 @@ class Library():
         self.window.titlebar.set_selection_mode(True)
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
+
+    def leave_search_mode(self):
+        self.search_mode = False
+
+        # Re-enable <Control>+A (select all)
+        self.window.select_all_action.set_enabled(True)
+
+        self.title_stack.set_visible_child_name('title')
+        self.search_entry.set_text('')
+        self.search_entry.grab_remove()
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -305,10 +330,21 @@ class Library():
         else:
             self.enter_selection_mode(x, y)
 
+    def on_key_press(self, widget, event):
+        """Search can be triggered by simply typing a printable character"""
+
+        if self.window.page != 'library':
+            return Gdk.EVENT_PROPAGATE
+
+        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
+        is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
+        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0) and not self.search_mode:
+            self.enter_search_mode()
+
+        return Gdk.EVENT_PROPAGATE
+
     def on_manga_added(self, manga):
-        """
-        Called from 'Add dialog' when user clicks on [+] button
-        """
+        """Called from 'Add dialog' when user clicks on [+] button"""
         db_conn = create_db_connection()
         nb_mangas = db_conn.execute('SELECT count(*) FROM mangas').fetchone()[0]
         db_conn.close()
@@ -321,7 +357,7 @@ class Library():
 
     def on_manga_clicked(self, flowbox, child):
         overlay = child.get_children()[0]
-        _, state = Gtk.get_current_event_state()
+        _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
         if self.selection_mode:
@@ -437,7 +473,7 @@ class Library():
     def search(self, search_entry):
         self.flowbox.invalidate_filter()
 
-    def select_all(self, action, param):
+    def select_all(self, action=None, param=None):
         if not self.selection_mode:
             self.enter_selection_mode()
 
@@ -482,14 +518,11 @@ class Library():
 
         self.window.show_page('library')
 
-    def toggle_search_entry(self, button):
+    def toggle_search_mode(self, button):
         if button.get_active():
-            self.title_stack.set_visible_child_name('searchentry')
-            self.search_entry.grab_focus()
+            self.enter_search_mode()
         else:
-            self.title_stack.set_visible_child_name('title')
-            self.search_entry.set_text('')
-            self.search_entry.grab_remove()
+            self.leave_search_mode()
 
     def update_all(self, action, param):
         self.window.updater.update_library()
