@@ -38,7 +38,7 @@ class Library():
         self.search_entry = self.builder.get_object('library_page_search_searchentry')
         self.search_entry.connect('changed', self.search)
         self.search_button = self.builder.get_object('library_page_search_button')
-        self.search_button.connect('clicked', self.toggle_search_mode)
+        self.search_button.connect('toggled', self.toggle_search_mode)
 
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
@@ -269,13 +269,7 @@ class Library():
         ctx.restore()
 
     def enter_search_mode(self):
-        self.search_mode = True
-
-        # Disable <Control>+A (select all)
-        self.window.select_all_action.set_enabled(False)
-
-        self.title_stack.set_visible_child_name('searchentry')
-        self.search_entry.grab_focus()
+        self.search_button.set_active(True)
 
     def enter_selection_mode(self, x=None, y=None):
         self.selection_mode = True
@@ -297,14 +291,7 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
 
     def leave_search_mode(self):
-        self.search_mode = False
-
-        # Re-enable <Control>+A (select all)
-        self.window.select_all_action.set_enabled(True)
-
-        self.title_stack.set_visible_child_name('title')
-        self.search_entry.set_text('')
-        self.search_entry.grab_remove()
+        self.search_button.set_active(False)
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -513,6 +500,9 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
 
+        if self.search_mode:
+            self.search_entry.grab_focus_without_selecting()
+
         if invalidate_sort:
             self.flowbox.invalidate_sort()
 
@@ -520,9 +510,22 @@ class Library():
 
     def toggle_search_mode(self, button):
         if button.get_active():
-            self.enter_search_mode()
+            self.search_mode = True
+
+            # Disable <Control>+A (select all)
+            self.window.select_all_action.set_enabled(False)
+
+            self.title_stack.set_visible_child_name('searchentry')
+            self.search_entry.grab_focus()
         else:
-            self.leave_search_mode()
+            self.search_mode = False
+
+            # Re-enable <Control>+A (select all)
+            self.window.select_all_action.set_enabled(True)
+
+            self.title_stack.set_visible_child_name('title')
+            self.search_entry.set_text('')
+            self.search_entry.grab_remove()
 
     def update_all(self, action, param):
         self.window.updater.update_library()

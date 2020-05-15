@@ -296,12 +296,12 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_left_button_clicked(self, action=None, param=None):
         if self.page == 'library':
+            if action and not self.library.selection_mode:
+                AddDialog(self).open(action, param)
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            elif self.library.search_mode:
+            if self.library.search_mode and action is None:
                 self.library.leave_search_mode()
-            elif action:
-                AddDialog(self).open(action, param)
         elif self.page == 'card':
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
