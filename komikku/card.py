@@ -540,12 +540,13 @@ class ChaptersList:
         if not self.card.selection_mode:
             self.card.enter_selection_mode()
 
-        self.selection_mode_count = 0
+        self.selection_mode_count = len(self.listbox.get_children())
 
         for row in self.listbox.get_children():
+            if row._selected:
+                continue
             self.listbox.select_row(row)
             row._selected = True
-            self.selection_mode_count += 1
 
     def show_chapter_menu(self, button, row):
         chapter = row.chapter

@@ -464,13 +464,14 @@ class Library():
         if not self.selection_mode:
             self.enter_selection_mode()
 
-        self.selection_mode_count = 0
+        self.selection_mode_count = len(self.flowbox.get_children())
 
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
+            if overlay._selected:
+                continue
             overlay._selected = True
             self.flowbox.select_child(child)
-            self.selection_mode_count += 1
 
     @staticmethod
     def set_manga_cover_image(overlay, width, height, update=False):

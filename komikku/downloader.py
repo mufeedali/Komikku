@@ -454,11 +454,12 @@ class DownloadManagerDialog(Handy.Dialog):
         if not self.selection_mode:
             self.enter_selection_mode()
 
-        self.selection_mode_count = 0
+        self.selection_mode_count = len(self.listbox.get_children())
 
         for row in self.listbox.get_children():
+            if row._selected:
+                continue
             self.listbox.select_row(row)
-            self.selection_mode_count += 1
             row._selected = True
 
     def update_headerbar(self, *args):
