@@ -85,10 +85,11 @@ class Controls:
             self.top_box.show_all()
 
     def on_scale_value_changed(self, scale, scroll_type, value):
-        if scroll_type != Gtk.ScrollType.JUMP:
+        value = round(value)
+        if scroll_type != Gtk.ScrollType.JUMP or self.scale.get_value() == value:
             return
 
-        self.reader.pager.goto_page(int(value) - 1)
+        self.reader.pager.goto_page(value - 1)
 
     def on_unfullscreen(self):
         if self.is_visible:
