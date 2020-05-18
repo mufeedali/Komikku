@@ -48,7 +48,7 @@ class Mangarock(Server):
 
     def get_manga_data(self, initial_data):
         """
-        Returns manga data
+        Returns manga data from API
 
         Initial data should contain at least manga's slug (provided by search)
         """

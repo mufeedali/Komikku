@@ -17,6 +17,7 @@ class Izneo(Server):
     name = 'Izneo'
     lang = 'en'
     has_login = True
+    session_expiration_cookies = ['remember_me', ]
 
     base_url = 'https://yieha.izneo.com'
     base_reader_url = 'https://reader.izneo.com'
@@ -32,7 +33,8 @@ class Izneo(Server):
 
     def get_manga_data(self, initial_data):
         """
-        Returns manga data
+        Returns manga data from API
+
         Initial data should contain at least manga's slug (provided by search)
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial_data'
@@ -210,6 +212,18 @@ class Izneo(Server):
                 ))
 
         return results
+
+
+class Izneo_de(Izneo):
+    id = 'izneo_de'
+    name = 'Izneo'
+    lang = 'de'
+
+
+class Izneo_fr(Izneo):
+    id = 'izneo_fr'
+    name = 'Izneo'
+    lang = 'fr'
 
 
 class Yieha(Izneo):
