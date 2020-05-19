@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from gi.repository import Gdk
 from gi.repository import Gtk
 
 
@@ -54,6 +55,7 @@ class Controls:
 
         # Chapter's pages slider: current / nb
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 2, 1)
+        self.scale.set_increments(1, 0)  # Disable scrolling with mouse wheel
         self.scale_handler_id = self.scale.connect('change-value', self.on_scale_value_changed)
 
         self.bottom_box.pack_start(self.scale, True, True, 0)
@@ -87,7 +89,7 @@ class Controls:
     def on_scale_value_changed(self, scale, scroll_type, value):
         value = round(value)
         if scroll_type != Gtk.ScrollType.JUMP or self.scale.get_value() == value:
-            return
+            return Gdk.EVENT_STOP
 
         self.reader.pager.goto_page(value - 1)
 
