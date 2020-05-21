@@ -1,7 +1,7 @@
 {
     "app-id" : "info.febvre.Komikku",
     "runtime" : "org.gnome.Platform",
-    "runtime-version" : "3.34",
+    "runtime-version" : "3.36",
     "sdk" : "org.gnome.Sdk",
     "command" : "komikku",
     "finish-args" : [
@@ -27,6 +27,9 @@
             "name" : "libhandy",
             "buildsystem" : "meson",
             "config-opts" : [
+                "--buildtype=release",
+                "-Dprofiling=false",
+                "-Dintrospection=enabled",
                 "-Dtests=false",
                 "-Dexamples=false",
                 "-Dgtk_doc=false",
@@ -41,7 +44,7 @@
                 {
                     "type" : "git",
                     "url" : "https://source.puri.sm/Librem5/libhandy.git",
-                    "tag" : "v0.0.13"
+                    "tag" : "v0.80.0"
                 }
             ]
         },

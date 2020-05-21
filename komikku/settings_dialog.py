@@ -16,7 +16,7 @@ from komikku.utils import SecretAccountHelper
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_dialog.ui')
-class SettingsDialog(Handy.Dialog):
+class SettingsDialog(Gtk.Dialog):
     __gtype_name__ = 'SettingsDialog'
 
     parent = NotImplemented
@@ -107,7 +107,7 @@ class SettingsDialog(Handy.Dialog):
         btn.add(Gtk.Image.new_from_icon_name('emblem-system-symbolic', Gtk.IconSize.BUTTON))
         btn.set_valign(Gtk.Align.CENTER)
         btn.show_all()
-        self.servers_settings_action_row.add_action(btn)
+        self.servers_settings_action_row.add(btn)
         btn.connect('clicked', self.show_servers_settings)
 
         # Long strip detection
@@ -244,14 +244,14 @@ class SettingsDialog(Handy.Dialog):
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_servers_dialog.ui')
-class SettingsServersDialog(Handy.Dialog):
+class SettingsServersDialog(Gtk.Dialog):
     __gtype_name__ = 'SettingsServersDialog'
 
     listbox = Gtk.Template.Child('listbox')
     parent = NotImplemented
 
     def __init__(self, parent):
-        super(SettingsServersDialog, self).__init__(use_header_bar=True)
+        super().__init__(use_header_bar=True)
         self.parent = parent
 
     def open(self):
@@ -362,7 +362,7 @@ class SettingsServersDialog(Handy.Dialog):
                 switch.set_active(server_enabled)
                 switch.set_valign(Gtk.Align.CENTER)
                 switch.connect('notify::active', self.on_server_activated, server_main_id)
-                action_row.add_action(switch)
+                action_row.add(switch)
 
                 self.listbox.add(action_row)
 

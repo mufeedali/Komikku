@@ -8,7 +8,7 @@ import logging
 import sys
 
 gi.require_version('Gtk', '3.0')
-gi.require_version('Handy', '0.0')
+gi.require_version('Handy', '1')
 gi.require_version('Notify', '0.7')
 
 from gi.repository import Gio
@@ -46,7 +46,7 @@ class Application(Gtk.Application):
         GLib.set_application_name(_('Komikku'))
         GLib.set_prgname(self.application_id)
 
-        Handy.init()
+        Handy.Column()  # Init Handy
         Notify.init(_('Komikku'))
 
     def do_activate(self):
