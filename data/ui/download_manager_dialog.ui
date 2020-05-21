@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libhandy" version="0.0"/>
-  <template class="DownloadManagerDialog" parent="HdyDialog">
+  <template class="DownloadManagerDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
@@ -15,9 +15,20 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkHeaderBar">
+          <object class="HdyHeaderBar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="centering_policy">strict</property>
+            <child type="title">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Download Manager</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
             <child>
               <object class="GtkButton" id="back_button">
                 <property name="visible">True</property>
@@ -31,16 +42,6 @@
                     <property name="icon_size">1</property>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child type="title">
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Download Manager</property>
-                <style>
-                  <class name="title"/>
-                </style>
               </object>
             </child>
             <child>

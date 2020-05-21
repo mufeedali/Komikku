@@ -228,7 +228,7 @@ class Downloader(GObject.GObject):
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/download_manager_dialog.ui')
-class DownloadManagerDialog(Handy.Dialog):
+class DownloadManagerDialog(Gtk.Dialog):
     __gtype_name__ = 'DownloadManagerDialog'
     __gsignals_handlers_ids__ = None
 
@@ -246,7 +246,7 @@ class DownloadManagerDialog(Handy.Dialog):
     listbox = Gtk.Template.Child('listbox')
 
     def __init__(self, window):
-        Handy.Dialog.__init__(self)
+        Gtk.Dialog.__init__(self)
 
         self.set_titlebar(self.titlebar)
         self.set_transient_for(window)

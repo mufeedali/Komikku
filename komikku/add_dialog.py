@@ -40,7 +40,7 @@ class AddDialog:
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/add_dialog.ui')
 
-        self.dialog = self.builder.get_object('search_dialog')
+        self.dialog = self.builder.get_object('dialog')
         self.dialog.get_children()[0].set_border_width(0)
 
         # Header bar
