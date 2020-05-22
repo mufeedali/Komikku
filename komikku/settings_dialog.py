@@ -333,7 +333,7 @@ class SettingsServersDialog(Gtk.Dialog):
                     box.set_margin_left(6)
                     frame.add(box)
 
-                    label = Gtk.Label('User Account')
+                    label = Gtk.Label(_('User Account'))
                     label.set_valign(Gtk.Align.CENTER)
                     box.pack_start(label, True, True, 0)
 
@@ -347,7 +347,7 @@ class SettingsServersDialog(Gtk.Dialog):
                     password_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'dialog-password-symbolic')
                     box.pack_start(password_entry, True, True, 0)
 
-                    btn = Gtk.Button('Test')
+                    btn = Gtk.Button(_('Test'))
                     btn.connect('clicked', self.test_account_login, server_main_id, server_class, login_entry, password_entry)
                     btn.set_always_show_image(True)
                     box.pack_start(btn, False, False, 0)
