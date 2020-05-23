@@ -40,6 +40,19 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.16.0" date="2020-05-24">
+            <description>
+                <ul>
+                    <li>[Library/Readers] Add support of animated GIFs</li>
+                    <li>[Library] Add &lt;Control&gt;+F shortcut: Enter search mode</li>
+                    <li>[Library/Manga/Download Manager] Add &lt;Control&gt;+A shortcut: Select all</li>
+                    <li>[Library/Manga/Download Manger] Add &lt;Control&gt;+Click and &lt;Shift&gt;+Click shortcuts: Enter selection mode</li>
+                    <li>[Download Manager] Add range selection: long press on an item then long press on another to select everything in between</li>
+                    <li>[Manga] Add chapters scanlators support (MangaDex only)</li>
+                    <li>[Servers] Add Izneo (DE, EN and FR) and Yieha (NL): a account is required</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.15.1" date="2020-05-07">
             <description>
                 <ul>
