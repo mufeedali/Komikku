@@ -271,16 +271,17 @@ class Library():
     def enter_search_mode(self):
         self.search_button.set_active(True)
 
-    def enter_selection_mode(self, x=None, y=None):
+    def enter_selection_mode(self, x=None, y=None, selected_child=None):
         self.selection_mode = True
         self.selection_mode_count = 1
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
-        if x is not None and y is not None:
-            selected_child = self.flowbox.get_child_at_pos(x, y)
-        else:
-            selected_child = self.flowbox.get_child_at_index(0)
+        if selected_child is None:
+            if x is not None and y is not None:
+                selected_child = self.flowbox.get_child_at_pos(x, y)
+            else:
+                selected_child = self.flowbox.get_child_at_index(0)
         selected_overlay = selected_child.get_children()[0]
         self.flowbox.select_child(selected_child)
         selected_overlay._selected = True
@@ -345,10 +346,15 @@ class Library():
     def on_manga_clicked(self, flowbox, child):
         overlay = child.get_children()[0]
         _ret, state = Gtk.get_current_event_state()
-        modifiers = Gtk.accelerator_get_default_mod_mask()
+        modifiers = state & Gtk.accelerator_get_default_mod_mask()
+
+        # Enter selection mode if <Control>+Click or <Shift>+Click is done
+        if modifiers in (Gdk.ModifierType.CONTROL_MASK, Gdk.ModifierType.SHIFT_MASK) and not self.selection_mode:
+            self.enter_selection_mode(selected_child=child)
+            return Gdk.EVENT_PROPAGATE
 
         if self.selection_mode:
-            if state & modifiers == Gdk.ModifierType.SHIFT_MASK:
+            if modifiers == Gdk.ModifierType.SHIFT_MASK:
                 # Enter range selection mode if <Shift>+Click is done
                 self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
