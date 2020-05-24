@@ -40,6 +40,11 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.16.1" date="2020-05-24">
+            <description>
+                <p>Fix 2 critical bugs (app crashs)</p>
+            </description>
+        </release>
         <release version="0.16.0" date="2020-05-24">
             <description>
                 <ul>
