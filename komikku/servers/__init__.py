@@ -143,7 +143,7 @@ class Server:
             for id in Server.__sessions:
                 if id.startswith(main_id):
                     del Server.__sessions[id]
-        else:
+        elif self.id in Server.__sessions:
             del Server.__sessions[self.id]
 
     def get_manga_cover_image(self, url):
