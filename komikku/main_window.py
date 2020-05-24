@@ -169,7 +169,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
             dialog.destroy()
 
-        dialog = Handy.Dialog.new(self)
+        dialog = Gtk.Dialog.new()
+        dialog.set_transient_for(self)
+        dialog.set_modal(True)
         dialog.get_style_context().add_class('solid-csd')
         dialog.connect('response', on_response)
         dialog.set_title(title)
