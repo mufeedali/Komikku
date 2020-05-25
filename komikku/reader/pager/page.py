@@ -15,7 +15,6 @@ from komikku.utils import Imagebuf
 from komikku.utils import log_error_traceback
 
 
-
 class Page(Gtk.Overlay):
     __gsignals__ = {
         'rendered': (GObject.SIGNAL_RUN_FIRST, None, ()),
@@ -58,7 +57,6 @@ class Page(Gtk.Overlay):
         self.set_overlay_pass_through(self.activity_indicator, True)  # Allows scrolling in zoom mode
 
         self.show_all()
-
 
     @property
     def animated(self):

@@ -4,6 +4,7 @@
 
 from gettext import gettext as _
 
+from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Handy
@@ -15,9 +16,9 @@ from komikku.servers import LANGUAGES
 from komikku.utils import SecretAccountHelper
 
 
-@Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_dialog.ui')
-class SettingsDialog(Gtk.Dialog):
-    __gtype_name__ = 'SettingsDialog'
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/preferences_window.ui')
+class PreferencesWindow(Handy.PreferencesWindow):
+    __gtype_name__ = 'PreferencesWindow'
 
     parent = NotImplemented
 
@@ -28,7 +29,7 @@ class SettingsDialog(Gtk.Dialog):
     update_at_startup_switch = Gtk.Template.Child('update_at_startup_switch')
     new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
     servers_languages_expander_row = Gtk.Template.Child('servers_languages_expander_row')
-    servers_settings_action_row = Gtk.Template.Child('servers_settings_action_row')
+    servers_settings_button = Gtk.Template.Child('servers_settings_button')
     long_strip_detection_switch = Gtk.Template.Child('long_strip_detection_switch')
 
     reading_direction_row = Gtk.Template.Child('reading_direction_row')
@@ -38,16 +39,14 @@ class SettingsDialog(Gtk.Dialog):
     fullscreen_switch = Gtk.Template.Child('fullscreen_switch')
 
     def __init__(self, parent):
-        super(SettingsDialog, self).__init__(use_header_bar=True)
+        super().__init__()
         self.parent = parent
+        self.connect('key-press-event', self.on_key_press)
 
     def open(self, action, param):
-        self.get_header_bar().set_title(_('Settings'))
         self.set_transient_for(self.parent)
         self.set_config_values()
-
-        if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
-            self.destroy()
+        self.present()
 
     def set_config_values(self):
         settings = Settings.get_default()
@@ -99,16 +98,11 @@ class SettingsDialog(Gtk.Dialog):
 
             vbox.pack_start(hbox, True, True, 0)
 
-        vbox.show_all()
         self.servers_languages_expander_row.add(vbox)
+        vbox.show_all()
 
         # Servers settings
-        btn = Gtk.Button()
-        btn.add(Gtk.Image.new_from_icon_name('emblem-system-symbolic', Gtk.IconSize.BUTTON))
-        btn.set_valign(Gtk.Align.CENTER)
-        btn.show_all()
-        self.servers_settings_action_row.add(btn)
-        btn.connect('clicked', self.show_servers_settings)
+        self.servers_settings_button.connect('clicked', self.open_servers_settings)
 
         # Long strip detection
         self.long_strip_detection_switch.set_active(settings.long_strip_detection)
@@ -180,6 +174,10 @@ class SettingsDialog(Gtk.Dialog):
     def on_fullscreen_changed(switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
 
+    def on_key_press(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.destroy()
+
     @staticmethod
     def on_long_strip_detection_changed(switch_button, gparam):
         Settings.get_default().long_strip_detection = switch_button.get_active()
@@ -239,20 +237,25 @@ class SettingsDialog(Gtk.Dialog):
         else:
             Settings.get_default().update_at_startup = False
 
-    def show_servers_settings(self, button):
-        SettingsServersDialog(self).open()
+    def open_servers_settings(self, button):
+        PreferencesServersWindow(self).open()
 
 
-@Gtk.Template.from_resource('/info/febvre/Komikku/ui/settings_servers_dialog.ui')
-class SettingsServersDialog(Gtk.Dialog):
-    __gtype_name__ = 'SettingsServersDialog'
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/preferences_servers_window.ui')
+class PreferencesServersWindow(Handy.PreferencesWindow):
+    __gtype_name__ = 'PreferencesServersWindow'
 
-    listbox = Gtk.Template.Child('listbox')
+    group = Gtk.Template.Child('preferences_group')
     parent = NotImplemented
 
     def __init__(self, parent):
-        super().__init__(use_header_bar=True)
+        super().__init__()
         self.parent = parent
+        self.connect('key-press-event', self.on_key_press)
+
+    def on_key_press(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.destroy()
 
     def open(self):
         def on_get_password(attributes, password, name, login_entry, password_entry):
@@ -262,7 +265,7 @@ class SettingsServersDialog(Gtk.Dialog):
             login_entry.set_text(attributes['login'])
             password_entry.set_text(password)
 
-        self.get_header_bar().set_title(_('Servers Settings'))
+        self.set_title(_('Servers Settings'))
         self.set_transient_for(self.parent)
 
         settings = Settings.get_default().servers_settings
@@ -303,7 +306,7 @@ class SettingsServersDialog(Gtk.Dialog):
                 expander_row.connect('notify::enable-expansion', self.on_server_activated, server_main_id)
                 expander_row.add(vbox)
 
-                self.listbox.add(expander_row)
+                self.group.add(expander_row)
 
                 if len(server_data['langs']) > 1:
                     for lang in server_data['langs']:
@@ -320,11 +323,11 @@ class SettingsServersDialog(Gtk.Dialog):
                         switch.connect('notify::active', self.on_server_language_activated, server_main_id, lang)
                         hbox.pack_start(switch, False, False, 0)
 
-                        vbox.pack_start(hbox, True, True, 0)
+                        vbox.add(hbox)
 
                 if has_login:
                     frame = Gtk.Frame()
-                    vbox.pack_start(frame, True, True, 0)
+                    vbox.add(frame)
 
                     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
                     box.set_margin_top(6)
@@ -364,12 +367,10 @@ class SettingsServersDialog(Gtk.Dialog):
                 switch.connect('notify::active', self.on_server_activated, server_main_id)
                 action_row.add(switch)
 
-                self.listbox.add(action_row)
+                self.group.add(action_row)
 
-        self.listbox.show_all()
-
-        if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
-            self.destroy()
+        self.group.show_all()
+        self.present()
 
     @staticmethod
     def on_server_activated(widget, gparam, server_main_id):

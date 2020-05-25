@@ -11,7 +11,6 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
-from gi.repository import Handy
 
 from komikku.add_dialog import AddDialog
 from komikku.card import Card
@@ -20,8 +19,8 @@ from komikku.downloader import Downloader
 from komikku.library import Library
 from komikku.models import backup_db
 from komikku.models import Settings
+from komikku.preferences_window import PreferencesWindow
 from komikku.reader import Reader
-from komikku.settings_dialog import SettingsDialog
 from komikku.updater import Updater
 
 
@@ -68,7 +67,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.application.set_accels_for_action('app.enter-search-mode', ['<Control>f'])
         self.application.set_accels_for_action('app.fullscreen', ['F11'])
         self.application.set_accels_for_action('app.select-all', ['<Control>a'])
-        self.application.set_accels_for_action('app.settings', ['<Control>p'])
+        self.application.set_accels_for_action('app.preferences', ['<Control>p'])
         self.application.set_accels_for_action('app.shortcuts', ['<Control>question'])
 
     def add_actions(self):
@@ -92,9 +91,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.select_all_action.connect('activate', self.select_all)
         self.application.add_action(self.select_all_action)
 
-        settings_action = Gio.SimpleAction.new('settings', None)
-        settings_action.connect('activate', self.on_settings_menu_clicked)
-        self.application.add_action(settings_action)
+        preferences_action = Gio.SimpleAction.new('preferences', None)
+        preferences_action.connect('activate', self.on_preferences_menu_clicked)
+        self.application.add_action(preferences_action)
 
         shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
         shortcuts_action.connect('activate', self.on_shortcuts_menu_clicked)
@@ -339,8 +338,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 self.mobile_width = False
                 self.change_layout()
 
-    def on_settings_menu_clicked(self, action, param):
-        SettingsDialog(self).open(action, param)
+    def on_preferences_menu_clicked(self, action, param):
+        PreferencesWindow(self).open(action, param)
 
     def on_shortcuts_menu_clicked(self, action, param):
         builder = Gtk.Builder()

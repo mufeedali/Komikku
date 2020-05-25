@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.2 -->
+<interface>
+  <requires lib="gtk+" version="3.22"/>
+  <requires lib="libhandy" version="0.0"/>
+  <template class="PreferencesWindow" parent="HdyPreferencesWindow">
+    <property name="width_request">300</property>
+    <property name="can_focus">False</property>
+    <property name="modal">True</property>
+    <property name="default_width">640</property>
+    <property name="default_height">700</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="search_enabled">False</property>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon_name">emblem-system-symbolic</property>
+        <property name="title">General</property>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Use dark GTK theme</property>
+                <property name="title" translatable="yes">Dark Theme</property>
+                <child>
+                  <object class="GtkSwitch" id="theme_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Automatically enable dark theme at night</property>
+                <property name="title" translatable="yes">Night Light</property>
+                <child>
+                  <object class="GtkSwitch" id="night_light_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Use desktop notifications for downloads</property>
+                <property name="title" translatable="yes">Desktop Notifications</property>
+                <child>
+                  <object class="GtkSwitch" id="desktop_notifications_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon_name">preferences-desktop-apps</property>
+        <property name="title">Library</property>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Automatically update library at startup</property>
+                <property name="title" translatable="yes">Update at Startup</property>
+                <child>
+                  <object class="GtkSwitch" id="update_at_startup_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Automatically download new chapters</property>
+                <property name="title" translatable="yes">Auto Download of New Chapters</property>
+                <child>
+                  <object class="GtkSwitch" id="new_chapters_auto_download_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyExpanderRow" id="servers_languages_expander_row">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="title">Servers Languages</property>
+                <property name="subtitle">Restrict servers to selected languages</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Enable/disable and configure servers</property>
+                <property name="title" translatable="yes">Servers Settings</property>
+                <child>
+                  <object class="GtkButton" id="servers_settings_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkImage" id="left_button_image">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="icon_name">emblem-system-symbolic</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Automatically detect long vertical strip when possible</property>
+                <property name="title" translatable="yes">Long Strip Detection</property>
+                <child>
+                  <object class="GtkSwitch" id="long_strip_detection_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon_name">view-paged-symbolic</property>
+        <property name="title" translatable="yes">Reader</property>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="HdyComboRow" id="reading_direction_row">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Reading Direction</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyComboRow" id="scaling_row">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Type of scaling to adapt image</property>
+                <property name="title" translatable="yes">Scaling</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyComboRow" id="background_color_row">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Background Color</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Crop white borders of images</property>
+                <property name="title" translatable="yes">Borders Crop</property>
+                <child>
+                  <object class="GtkSwitch" id="borders_crop_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="subtitle" translatable="yes">Automatically enter fullscreen mode</property>
+                <property name="title" translatable="yes">Fullscreen</property>
+                <child>
+                  <object class="GtkSwitch" id="fullscreen_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
