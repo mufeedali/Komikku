@@ -11,7 +11,7 @@ data/ui/menu/download_manager.xml
 data/ui/menu/library_selection_mode.xml
 data/ui/menu/main.xml
 data/ui/menu/reader.xml
-data/ui/settings_dialog.ui
+data/ui/preferences_window.ui
 data/ui/shortcuts_overview.ui
 komikku/add_dialog.py
 komikku/application.py
@@ -20,8 +20,8 @@ komikku/downloader.py
 komikku/library.py
 komikku/main_window.py
 komikku/models/database.py
+komikku/preferences_window.py
 komikku/reader/pager/__init__.py
 komikku/reader/pager/page.py
-komikku/settings_dialog.py
 komikku/updater.py
 komikku/utils.py
