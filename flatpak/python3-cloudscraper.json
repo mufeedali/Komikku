@@ -32,6 +32,11 @@
         },
         {
             "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8d/7b/11120ccfdd3f3eb919bed96d7f4a688f568a8d1c26834c24fd7b658d5da4/cloudscraper-1.2.40-py2.py3-none-any.whl",
+            "sha256": "30289d0f98413fe3c3b74c9f7547b8e6fff6aca698c23445996cf6bf80a8bad0"
+        },
+        {
+            "type": "file",
             "url": "https://files.pythonhosted.org/packages/89/e3/afebe61c546d18fb1709a61bee788254b40e736cff7271c7de5de2dc4128/idna-2.9-py2.py3-none-any.whl",
             "sha256": "a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"
         },
@@ -39,11 +44,6 @@
             "type": "file",
             "url": "https://files.pythonhosted.org/packages/1a/70/1935c770cb3be6e3a8b78ced23d7e0f3b187f5cbfab4749523ed65d7c9b1/requests-2.23.0-py2.py3-none-any.whl",
             "sha256": "43999036bfa82904b6af1d99e4882b560e5e2c68e5c4b0aa03b655f3d7d73fee"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/41/b2/5f65cd1906afbfb8db88529dfe2e5921ec3afb93ce607e98036a88fe6349/cloudscraper-1.2.38-py2.py3-none-any.whl",
-            "sha256": "3893be3c281ddb7a39bf35e558da19247a39a408ef48078fdabf5058b7659d6c"
         }
     ]
 }
