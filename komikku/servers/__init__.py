@@ -278,12 +278,15 @@ def convert_webp_buffer(webp_buffer, format='JPEG'):
 
 
 def get_buffer_mime_type(buffer):
-    if hasattr(magic, 'detect_from_content'):
-        # Using file-magic module: https://github.com/file/file
-        return magic.detect_from_content(buffer[:128]).mime_type
-    else:
-        # Using python-magic module: https://github.com/ahupp/python-magic
-        return magic.from_buffer(buffer[:128], mime=True)
+    try:
+        if hasattr(magic, 'detect_from_content'):
+            # Using file-magic module: https://github.com/file/file
+            return magic.detect_from_content(buffer[:128]).mime_type
+        else:
+            # Using python-magic module: https://github.com/ahupp/python-magic
+            return magic.from_buffer(buffer[:128], mime=True)
+    except Exception:
+        return ''
 
 
 @lru_cache(maxsize=None)
@@ -303,12 +306,15 @@ def get_cache_dir():
 
 
 def get_file_mime_type(path):
-    if hasattr(magic, 'detect_from_filename'):
-        # Using file-magic module: https://github.com/file/file
-        return magic.detect_from_filename(path).mime_type
-    else:
-        # Using python-magic module: https://github.com/ahupp/python-magic
-        return magic.from_file(path, mime=True)
+    try:
+        if hasattr(magic, 'detect_from_filename'):
+            # Using file-magic module: https://github.com/file/file
+            return magic.detect_from_filename(path).mime_type
+        else:
+            # Using python-magic module: https://github.com/ahupp/python-magic
+            return magic.from_file(path, mime=True)
+    except Exception:
+        return ''
 
 
 def get_server_class_name_by_id(id):
