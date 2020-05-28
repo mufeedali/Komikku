@@ -5,7 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import requests
+import cloudscraper
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
@@ -31,7 +31,7 @@ class Manganelo(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = requests.Session()
+            self.session = cloudscraper.create_scraper()
             self.session.headers.update({'user-agent': USER_AGENT})
 
     def get_manga_data(self, initial_data):
@@ -43,12 +43,11 @@ class Manganelo(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -116,12 +115,11 @@ class Manganelo(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -143,8 +141,8 @@ class Manganelo(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(page['image'])
-        if r is None or r.status_code != 200:
+        r = self.session_get(page['image'], headers={'referer': self.chapter_url.format(manga_slug, chapter_slug)})
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -168,12 +166,11 @@ class Manganelo(Server):
         Returns hot manga list
         """
         r = self.session_get(self.most_populars_url)
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -189,8 +186,6 @@ class Manganelo(Server):
 
     def search(self, term):
         r = self.session_post(self.search_url, data=dict(searchword=term))
-        if r is None:
-            return None
 
         if r.status_code == 200:
             # Returned data for each manga:
