@@ -40,6 +40,15 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.17.0" date="2020-05-29">
+            <description>
+                <ul>
+                    <li>[Preferences] New UI</li>
+                    <li>[Servers] MangaNelo: Fix images loading</li>
+                    <li>[Servers] Disable Jaimini's Box</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.16.1" date="2020-05-24">
             <description>
                 <p>Fix 2 critical bugs (app crashs)</p>
