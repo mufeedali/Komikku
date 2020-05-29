@@ -4,6 +4,7 @@
 
 import datetime
 from gettext import gettext as _
+import html
 import gi
 import logging
 from PIL import Image
@@ -31,6 +32,10 @@ def folder_size(path):
     res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE, check=False)
 
     return res.stdout.split()[0].decode()
+
+
+def html_escape(s):
+    return html.escape(html.unescape(s), quote=False)
 
 
 def log_error_traceback(e):

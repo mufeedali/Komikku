@@ -3,7 +3,6 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
-import html
 import threading
 
 from gi.repository import Gio
@@ -22,6 +21,7 @@ from komikku.servers import get_server_logo_resource_path_by_id
 from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
+from komikku.utils import html_escape
 from komikku.utils import log_error_traceback
 from komikku.utils import scale_pixbuf_animation
 
@@ -332,18 +332,22 @@ class AddDialog:
             else:
                 self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
 
-            self.builder.get_object('authors_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['authors']) if self.manga_data['authors'] else '-'))
-            self.builder.get_object('genres_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['genres']) if self.manga_data['genres'] else '-'))
-            self.builder.get_object('status_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(_(Manga.STATUSES[self.manga_data['status']])) if self.manga_data['status'] else '-')
-            self.builder.get_object('scanlators_value_label').set_markup(
-                '<span size="small">{0}</span>'.format(', '.join(self.manga_data['scanlators']) if self.manga_data['scanlators'] else '-'))
+            authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
+            self.builder.get_object('authors_value_label').set_markup('<span size="small">{0}</span>'.format(authors))
+
+            genres = html_escape(', '.join(self.manga_data['genres'])) if self.manga_data['genres'] else '-'
+            self.builder.get_object('genres_value_label').set_markup('<span size="small">{0}</span>'.format(genres))
+
+            status = _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-'
+            self.builder.get_object('status_value_label').set_markup('<span size="small">{0}</span>'.format(status))
+
+            scanlators = html_escape(', '.join(self.manga_data['scanlators'])) if self.manga_data['scanlators'] else '-'
+            self.builder.get_object('scanlators_value_label').set_markup('<span size="small">{0}</span>'.format(scanlators))
+
             self.builder.get_object('server_value_label').set_markup(
                 '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
-                    html.escape(self.server.name),
+                    html_escape(self.server.name),
                     self.server.lang.upper(),
                     len(self.manga_data['chapters'])
                 )

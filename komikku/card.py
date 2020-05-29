@@ -4,7 +4,6 @@
 
 from copy import deepcopy
 from gettext import gettext as _
-import html
 import threading
 import time
 
@@ -20,6 +19,7 @@ from komikku.models import Download
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
 from komikku.utils import folder_size
+from komikku.utils import html_escape
 from komikku.utils import scale_pixbuf_animation
 
 
@@ -410,7 +410,7 @@ class ChaptersList:
         title = chapter.title
         if self.card.manga.name != title and self.card.manga.name in title:
             title = title.replace(self.card.manga.name, '').strip()
-        label.set_markup(title)
+        label.set_markup(html_escape(title))
 
         if chapter.scanlators:
             # Vertical box for title and scanlators
@@ -426,7 +426,7 @@ class ChaptersList:
             ctx.add_class('dim-label')
             ctx.add_class('card-chapter-sublabel')
             label.set_line_wrap(True)
-            label.set_markup(', '.join(chapter.scanlators))
+            label.set_markup(html_escape(', '.join(chapter.scanlators)))
             vbox.pack_start(label, True, True, 0)
 
             hbox.pack_start(vbox, True, True, 0)
@@ -701,17 +701,21 @@ class InfoGrid:
         else:
             self.cover_image.set_from_pixbuf(pixbuf)
 
-        self.authors_value_label.set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(manga.authors) if manga.authors else '-'))
-        self.genres_value_label.set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(manga.genres) if manga.genres else '-'))
-        self.status_value_label.set_markup(
-            '<span size="small">{0}</span>'.format(_(manga.STATUSES[manga.status])) if manga.status else '-')
-        self.scanlators_value_label.set_markup(
-            '<span size="small">{0}</span>'.format(', '.join(manga.scanlators) if manga.scanlators else '-'))
+        authors = html_escape(', '.join(manga.authors)) if manga.authors else '-'
+        self.authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))
+
+        genres = html_escape(', '.join(manga.genres)) if manga.genres else '-'
+        self.genres_value_label.set_markup('<span size="small">{0}</span>'.format(genres))
+
+        status = _(manga.STATUSES[manga.status]) if manga.status else '-'
+        self.status_value_label.set_markup('<span size="small">{0}</span>'.format(status))
+
+        scanlators = html_escape(', '.join(manga.scanlators)) if manga.scanlators else '-'
+        self.scanlators_value_label.set_markup('<span size="small">{0}</span>'.format(scanlators))
+
         self.server_value_label.set_markup(
             '<span size="small">{0} [{1}] - {2} chapters</span>'.format(
-                html.escape(manga.server.name), manga.server.lang.upper(), len(manga.chapters)
+                html_escape(manga.server.name), manga.server.lang.upper(), len(manga.chapters)
             )
         )
 
