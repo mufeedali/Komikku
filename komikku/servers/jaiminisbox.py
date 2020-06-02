@@ -51,9 +51,9 @@ class Jaiminisbox(Server):
 
         for char in value:
             code = ord(char)
-            if (code >= 65 and code <= 77) or (code >= 97 and code <= 109):
+            if 65 <= code <= 77 or 97 <= code <= 109:
                 dvalue += chr(code + 13)
-            elif (code >= 78 and code <= 90) or (code >= 110 and code <= 122):
+            elif 78 <= code <= 90 or 110 <= code <= 122:
                 dvalue += chr(code - 13)
             else:
                 dvalue += char
