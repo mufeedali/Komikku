@@ -37,6 +37,7 @@ class Library():
         self.title_stack = self.builder.get_object('library_page_title_stack')
         self.search_entry = self.builder.get_object('library_page_search_searchentry')
         self.search_entry.connect('changed', self.search)
+        self.search_entry.connect('activate', self.on_search_activate)
         self.search_button = self.builder.get_object('library_page_search_button')
         self.search_button.connect('toggled', self.toggle_search_mode)
 
@@ -307,7 +308,7 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_gesture_long_press_activated(self, gesture, x, y):
-        if self.selection_mode:
+        if self.selection_mode and not self.search_mode:
             # Enter in 'Range' selection mode
             # Long press on a manga then long press on another to select everything in between
             self.selection_mode_range = True
@@ -430,6 +431,11 @@ class Library():
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
             self.set_manga_cover_image(overlay, width, height)
+
+    def on_search_activate(self, _entry):
+        child = self.flowbox.get_child_at_pos(0, 0)
+        if child:
+            self.on_manga_clicked(self.flowbox, child)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
