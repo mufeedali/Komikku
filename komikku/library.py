@@ -308,10 +308,11 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_gesture_long_press_activated(self, gesture, x, y):
-        if self.selection_mode and not self.search_mode:
+        if self.selection_mode:
             # Enter in 'Range' selection mode
             # Long press on a manga then long press on another to select everything in between
-            self.selection_mode_range = True
+            if not self.search_mode:
+                self.selection_mode_range = True
 
             selected_child = self.flowbox.get_child_at_pos(x, y)
             self.flowbox.select_child(selected_child)
@@ -355,7 +356,7 @@ class Library():
             return Gdk.EVENT_PROPAGATE
 
         if self.selection_mode:
-            if modifiers == Gdk.ModifierType.SHIFT_MASK:
+            if modifiers == Gdk.ModifierType.SHIFT_MASK and not self.search_mode:
                 # Enter range selection mode if <Shift>+Click is done
                 self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
