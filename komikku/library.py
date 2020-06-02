@@ -390,6 +390,7 @@ class Library():
             if self.selection_mode_count == 0:
                 self.leave_selection_mode()
         else:
+            self.window.select_all_action.set_enabled(True)
             self.window.card.init(overlay.manga)
 
     def on_manga_deleted(self, manga):
