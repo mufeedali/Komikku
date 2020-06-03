@@ -537,6 +537,9 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def select_all(self, action=None, param=None):
+        if self.card.stack.get_visible_child_name() != 'page_card_chapters':
+            return
+
         if not self.card.selection_mode:
             self.card.enter_selection_mode()
 

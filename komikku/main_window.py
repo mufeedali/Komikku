@@ -364,7 +364,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def select_all(self, action, param):
         if self.page == 'library':
             self.library.select_all()
-        elif self.page == 'card' and self.card.stack.get_visible_child_name() == 'page_card_chapters':
+        elif self.page == 'card':
             self.card.chapters_list.select_all()
 
     def set_fullscreen(self):
