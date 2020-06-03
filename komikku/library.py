@@ -37,6 +37,7 @@ class Library():
         self.title_stack = self.builder.get_object('library_page_title_stack')
         self.search_entry = self.builder.get_object('library_page_search_searchentry')
         self.search_entry.connect('changed', self.search)
+        self.search_entry.connect('activate', self.on_search_activate)
         self.search_button = self.builder.get_object('library_page_search_button')
         self.search_button.connect('toggled', self.toggle_search_mode)
 
@@ -310,7 +311,8 @@ class Library():
         if self.selection_mode:
             # Enter in 'Range' selection mode
             # Long press on a manga then long press on another to select everything in between
-            self.selection_mode_range = True
+            if not self.search_mode:
+                self.selection_mode_range = True
 
             selected_child = self.flowbox.get_child_at_pos(x, y)
             self.flowbox.select_child(selected_child)
@@ -354,7 +356,7 @@ class Library():
             return Gdk.EVENT_PROPAGATE
 
         if self.selection_mode:
-            if modifiers == Gdk.ModifierType.SHIFT_MASK:
+            if modifiers == Gdk.ModifierType.SHIFT_MASK and not self.search_mode:
                 # Enter range selection mode if <Shift>+Click is done
                 self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
@@ -389,6 +391,7 @@ class Library():
             if self.selection_mode_count == 0:
                 self.leave_selection_mode()
         else:
+            self.window.select_all_action.set_enabled(True)
             self.window.card.init(overlay.manga)
 
     def on_manga_deleted(self, manga):
@@ -430,6 +433,11 @@ class Library():
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
             self.set_manga_cover_image(overlay, width, height)
+
+    def on_search_activate(self, _entry):
+        child = self.flowbox.get_child_at_pos(0, 0)
+        if child:
+            self.on_manga_clicked(self.flowbox, child)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)

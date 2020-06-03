@@ -307,6 +307,8 @@ class MainWindow(Gtk.ApplicationWindow):
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
+                if self.library.search_mode:
+                    self.select_all_action.set_enabled(False)
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
             self.set_unfullscreen()
@@ -362,7 +364,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def select_all(self, action, param):
         if self.page == 'library':
             self.library.select_all()
-        elif self.page == 'card':
+        elif self.page == 'card' and self.card.stack.get_visible_child_name() == 'page_card_chapters':
             self.card.chapters_list.select_all()
 
     def set_fullscreen(self):

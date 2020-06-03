@@ -125,7 +125,8 @@ class Desu(Server):
             name=page['image'].split('/')[-1],
         )
 
-    def get_manga_url(self, slug, url):
+    @staticmethod
+    def get_manga_url(slug, url):
         """
         Returns manga absolute URL
         """
