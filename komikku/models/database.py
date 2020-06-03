@@ -670,9 +670,6 @@ class Chapter:
             with open(page_path, 'wb') as fp:
                 fp.write(buffer)
 
-        if not self.pages:
-            return None
-
         updated_data = {}
         if self.pages[page_index]['image'] is None:
             self.pages[page_index]['image'] = data['name']
