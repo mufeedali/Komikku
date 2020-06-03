@@ -270,9 +270,20 @@ class Library():
         ctx.restore()
 
     def enter_search_mode(self):
+        if self.selection_mode:
+            # 'Search mode' is not allowed in 'Selection mode'
+            return
+
         self.search_button.set_active(True)
 
     def enter_selection_mode(self, x=None, y=None, selected_child=None):
+        if self.search_mode:
+            # 'Selection mode' is not allowed in 'Search mode'
+            return
+
+        # Set search button insensitive: disable search
+        self.search_button.set_sensitive(False)
+
         self.selection_mode = True
         self.selection_mode_count = 1
 
@@ -298,6 +309,9 @@ class Library():
     def leave_selection_mode(self):
         self.selection_mode = False
 
+        # Set search button sensitive: re-enable search
+        self.search_button.set_sensitive(True)
+
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
@@ -311,8 +325,7 @@ class Library():
         if self.selection_mode:
             # Enter in 'Range' selection mode
             # Long press on a manga then long press on another to select everything in between
-            if not self.search_mode:
-                self.selection_mode_range = True
+            self.selection_mode_range = True
 
             selected_child = self.flowbox.get_child_at_pos(x, y)
             self.flowbox.select_child(selected_child)
@@ -356,7 +369,7 @@ class Library():
             return Gdk.EVENT_PROPAGATE
 
         if self.selection_mode:
-            if modifiers == Gdk.ModifierType.SHIFT_MASK and not self.search_mode:
+            if modifiers == Gdk.ModifierType.SHIFT_MASK:
                 # Enter range selection mode if <Shift>+Click is done
                 self.selection_mode_range = True
             if self.selection_mode_range and self.selection_mode_last_child_index is not None:
@@ -391,7 +404,6 @@ class Library():
             if self.selection_mode_count == 0:
                 self.leave_selection_mode()
         else:
-            self.window.select_all_action.set_enabled(True)
             self.window.card.init(overlay.manga)
 
     def on_manga_deleted(self, manga):
@@ -478,6 +490,8 @@ class Library():
     def select_all(self, action=None, param=None):
         if not self.selection_mode:
             self.enter_selection_mode()
+        if not self.selection_mode:
+            return
 
         self.selection_mode_count = len(self.flowbox.get_children())
 
@@ -528,16 +542,10 @@ class Library():
         if button.get_active():
             self.search_mode = True
 
-            # Disable <Control>+A (select all)
-            self.window.select_all_action.set_enabled(False)
-
             self.title_stack.set_visible_child_name('searchentry')
             self.search_entry.grab_focus()
         else:
             self.search_mode = False
-
-            # Re-enable <Control>+A (select all)
-            self.window.select_all_action.set_enabled(True)
 
             self.title_stack.set_visible_child_name('title')
             self.search_entry.set_text('')

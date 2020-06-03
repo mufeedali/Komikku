@@ -307,8 +307,6 @@ class MainWindow(Gtk.ApplicationWindow):
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
-                if self.library.search_mode:
-                    self.select_all_action.set_enabled(False)
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
             self.set_unfullscreen()
