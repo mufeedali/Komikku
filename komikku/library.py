@@ -36,8 +36,8 @@ class Library():
         # Search
         self.title_stack = self.builder.get_object('library_page_title_stack')
         self.search_entry = self.builder.get_object('library_page_search_searchentry')
+        self.search_entry.connect('activate', self.on_search_entry_activate)
         self.search_entry.connect('changed', self.search)
-        self.search_entry.connect('activate', self.on_search_activate)
         self.search_button = self.builder.get_object('library_page_search_button')
         self.search_button.connect('toggled', self.toggle_search_mode)
 
@@ -434,7 +434,8 @@ class Library():
             overlay = child.get_children()[0]
             self.set_manga_cover_image(overlay, width, height)
 
-    def on_search_activate(self, _entry):
+    def on_search_entry_activate(self, _entry):
+        """Open first manga in search when <Enter> is pressed"""
         child = self.flowbox.get_child_at_pos(0, 0)
         if child:
             self.on_manga_clicked(self.flowbox, child)
