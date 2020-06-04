@@ -318,7 +318,7 @@ msgstr "Tüm bölümleri seç"
 #: ../data/ui/shortcuts_overview.ui:81
 msgctxt "Shortcut window description"
 msgid "Download Manager"
-msgstr İndirme Yöneticisi"
+msgstr "İndirme Yöneticisi"
 
 #: ../data/ui/shortcuts_overview.ui:85
 msgctxt "Shortcut window description"
@@ -340,7 +340,7 @@ msgstr "Türler"
 
 #: ../data/ui/main_window.ui:230 ../data/ui/add_dialog.ui:323
 msgid "Status"
-msgstr "Durum
+msgstr "Durum"
 
 #: ../data/ui/main_window.ui:258 ../data/ui/add_dialog.ui:351
 msgid "Server"
