@@ -4,6 +4,7 @@
 
 import cairo
 from gettext import gettext as _
+from gettext import ngettext as n_
 import time
 
 from gi.repository import Gdk
@@ -41,8 +42,11 @@ class Library():
         self.search_button = self.builder.get_object('library_page_search_button')
         self.search_button.connect('toggled', self.toggle_search_mode)
 
+        self.subtitle_label = self.builder.get_object('library_page_subtitle_label')
+
         self.flowbox = self.builder.get_object('library_page_flowbox')
         self.flowbox.connect('child-activated', self.on_manga_clicked)
+        self.flowbox.connect('selected-children-changed', self.on_selection_changed)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.on_gesture_long_press_activated)
@@ -435,6 +439,13 @@ class Library():
 
         # Schedule a redraw. It will update drawing areas (servers logos and badges)
         self.flowbox.queue_draw()
+
+    def on_selection_changed(self, _flowbox):
+        number = len(self.flowbox.get_selected_children())
+        if number:
+            self.subtitle_label.set_label(n_('{0} selected', '{0} selected', number).format(number))
+        else:
+            self.subtitle_label.set_label(_('Library'))
 
     def on_resize(self):
         if self.window.first_start_grid.is_ancestor(self.window):
