@@ -17,17 +17,11 @@ from komikku.servers import USER_AGENT
 # All theses servers use FoOlSlide Open Source online comic management software (NO LONGER MAINTAINED)
 # https://github.com/FoolCode/FoOlSlide or https://github.com/chocolatkey/FoOlSlide2 (fork)
 
-#
-# BEWARE: Jaimini's Box server is disabled
-# Dead since 05/2020
-#
-
 
 class Jaiminisbox(Server):
     id = 'jaiminisbox'
     name = "Jaimini's Box"
     lang = 'en'
-    status = 'disabled'
 
     base_url = 'https://jaiminisbox.com/reader'
     search_url = base_url + '/search'
@@ -293,7 +287,6 @@ class Kireicake(Jaiminisbox):
     id = 'kireicake:jaiminisbox'
     name = 'Kirei Cake'
     lang = 'en'
-    status = 'enabled'
 
     base_url = 'https://reader.kireicake.com'
     search_url = base_url + '/search'
