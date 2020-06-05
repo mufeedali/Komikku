@@ -25,7 +25,6 @@ from komikku.utils import scale_pixbuf_animation
 class Library():
     search_mode = False
     selection_mode = False
-    selection_mode_count = 0
     selection_mode_range = False
     selection_mode_last_child_index = None
 
@@ -289,7 +288,6 @@ class Library():
         self.search_button.set_sensitive(False)
 
         self.selection_mode = True
-        self.selection_mode_count = 1
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
@@ -385,7 +383,6 @@ class Library():
                     walk_child = self.flowbox.get_child_at_index(walk_index)
                     walk_overlay = walk_child.get_children()[0]
                     if walk_child and not walk_overlay._selected:
-                        self.selection_mode_count += 1
                         self.flowbox.select_child(walk_child)
                         walk_overlay._selected = True
 
@@ -397,15 +394,14 @@ class Library():
             self.selection_mode_range = False
 
             if overlay._selected:
-                self.selection_mode_count -= 1
                 self.selection_mode_last_child_index = None
                 self.flowbox.unselect_child(child)
                 overlay._selected = False
             else:
-                self.selection_mode_count += 1
                 self.selection_mode_last_child_index = child.get_index()
                 overlay._selected = True
-            if self.selection_mode_count == 0:
+
+            if len(self.flowbox.get_selected_children()) == 0:
                 self.leave_selection_mode()
         else:
             self.window.card.init(overlay.manga)
@@ -503,8 +499,6 @@ class Library():
             self.enter_selection_mode()
         if not self.selection_mode:
             return
-
-        self.selection_mode_count = len(self.flowbox.get_children())
 
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
