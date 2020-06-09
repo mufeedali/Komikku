@@ -184,7 +184,7 @@ class Server:
                 if cookie.name not in self.session_expiration_cookies:
                     continue
 
-                if time.time() > cookie.expires - 86400:
+                if cookie.is_expired():
                     self.clear_session(all=True)
                     return False
 
