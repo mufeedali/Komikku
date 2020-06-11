@@ -14,7 +14,6 @@ gi.require_version('Notify', '0.7')
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
-from gi.repository import Handy
 from gi.repository import Notify
 
 from komikku.main_window import MainWindow
@@ -22,7 +21,7 @@ from komikku.main_window import MainWindow
 CREDITS = dict(
     developers=('Valéry Febvre (valos)', ),
     contributors=('Gerben Droogers (Tijder)', 'GrownNed', 'Mufeed Ali (lastweakness)', 'Romain Vaudois', 'Arthur Williams (TAAPArthur)', ),
-    translators=('GrownNed (Russian)', 'Heimen Stoffels (Dutch)', 'VaGNaroK (Brazilian Portuguese)', 'Valéry Febvre (French)', ),
+    translators=('Ege Çelikçi (Turkish)', 'GrownNed (Russian)', 'Heimen Stoffels (Dutch)', 'VaGNaroK (Brazilian Portuguese)', 'Valéry Febvre (French)', ),
 )
 
 
@@ -46,7 +45,6 @@ class Application(Gtk.Application):
         GLib.set_application_name(_('Komikku'))
         GLib.set_prgname(self.application_id)
 
-        Handy.Column()  # Init Handy
         Notify.init(_('Komikku'))
 
     def do_activate(self):

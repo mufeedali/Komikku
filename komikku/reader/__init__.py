@@ -28,8 +28,10 @@ class Reader:
         self.subtitle_label = self.builder.get_object('reader_page_subtitle_label')
 
         # Pager
+        self.scrolledwindow = self.builder.get_object('reader_scrolledwindow')
+        viewport = self.builder.get_object('reader_viewport')
         self.pager = Pager(self)
-        self.overlay.add(self.pager)
+        viewport.add(self.pager)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
@@ -148,9 +150,9 @@ class Reader:
     def set_background_color(self):
         self.background_color_action.set_state(GLib.Variant('s', self.background_color))
         if self.background_color == 'white':
-            self.pager.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            self.pager.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         else:
-            self.pager.viewport.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
+            self.pager.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
 
     def set_borders_crop(self):
         self.borders_crop_action.set_state(GLib.Variant('b', self.borders_crop))
