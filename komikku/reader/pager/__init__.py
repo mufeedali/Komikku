@@ -17,7 +17,6 @@ from komikku.reader.pager.page import Page
 class Pager(Handy.Carousel):
     current_page = None
 
-    overshot = False
     btn_press_handler_id = None
     btn_press_timeout_id = None
     key_press_handler_id = None

@@ -4,6 +4,7 @@
 
 from gi.repository import Gdk
 from gi.repository import Gtk
+from gi.repository import Handy
 
 
 class Controls:
@@ -20,7 +21,7 @@ class Controls:
         self.top_box.set_valign(Gtk.Align.START)
 
         # Headerbar
-        self.headerbar = Gtk.HeaderBar()
+        self.headerbar = Handy.HeaderBar()
 
         # Back button
         self.back_button = Gtk.Button.new_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
