@@ -225,7 +225,7 @@ class Pager(Handy.Carousel):
             return
 
         self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
-        self.reader.controls.init()
+        self.reader.controls.init(page.chapter)
         self.reader.controls.set_scale_value(page.index + 1)
 
         GLib.idle_add(self.save_state, page)
@@ -328,7 +328,7 @@ class Pager(Handy.Carousel):
         if self.current_page.chapter != page.chapter:
             self.reader.update_title(page.chapter)
             self.window.show_notification(page.chapter.title, 2)
-            self.reader.controls.init()
+            self.reader.controls.init(page.chapter)
 
         # Update page number and controls page slider
         self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
@@ -341,7 +341,7 @@ class Pager(Handy.Carousel):
         self.current_page = page
 
     def on_scroll(self, widget_, event):
-        if self.zoom['active']:
+        if self.window.page != 'reader' or self.zoom['active']:
             return Gdk.EVENT_PROPAGATE
 
         hadj = self.current_page.scrolledwindow.get_hadjustment()

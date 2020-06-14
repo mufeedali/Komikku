@@ -4,7 +4,6 @@
 
 from gi.repository import Gdk
 from gi.repository import Gtk
-from gi.repository import Handy
 
 
 class Controls:
@@ -13,38 +12,8 @@ class Controls:
 
     def __init__(self, reader):
         self.reader = reader
+        self.window = reader.window
 
-        #
-        # Top box (visible in fullscreen mode only)
-        #
-        self.top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.top_box.set_valign(Gtk.Align.START)
-
-        # Headerbar
-        self.headerbar = Handy.HeaderBar()
-
-        # Back button
-        self.back_button = Gtk.Button.new_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
-        self.back_button.connect('clicked', self.reader.window.on_left_button_clicked, None)
-        self.headerbar.pack_start(self.back_button)
-
-        # Menu button
-        self.menu_button = Gtk.MenuButton.new()
-        self.menu_button.get_children()[0].set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
-        self.menu_button.set_menu_model(self.reader.builder.get_object('menu-reader'))
-        self.headerbar.pack_end(self.menu_button)
-
-        # Unfullscreen button
-        self.unfullscreen_button = Gtk.Button.new_from_icon_name('view-restore-symbolic', Gtk.IconSize.BUTTON)
-        self.unfullscreen_button.connect('clicked', self.reader.window.toggle_fullscreen)
-        self.headerbar.pack_end(self.unfullscreen_button)
-
-        self.top_box.pack_start(self.headerbar, True, True, 0)
-        self.reader.overlay.add_overlay(self.top_box)
-
-        #
-        # Bottom box
-        #
         self.bottom_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.bottom_box.get_style_context().add_class('reader-controls-bottom-box')
         self.bottom_box.set_valign(Gtk.Align.END)
@@ -64,19 +33,11 @@ class Controls:
 
     def hide(self):
         self.is_visible = False
-        self.top_box.hide()
+        if self.window.is_fullscreen:
+            self.window.titlebar_revealer.set_reveal_child(False)
         self.bottom_box.hide()
 
-    def init(self):
-        chapter = self.reader.pager.current_page.chapter
-
-        # Set title & subtitle
-        self.headerbar.set_title(chapter.manga.name)
-        subtitle = chapter.title
-        if chapter.manga.name in subtitle:
-            subtitle = subtitle.replace(chapter.manga.name, '').strip()
-        self.headerbar.set_subtitle(subtitle)
-
+    def init(self, chapter):
         # Set slider range
         with self.scale.handler_block(self.scale_handler_id):
             self.scale.set_range(1, len(chapter.pages))
@@ -84,8 +45,7 @@ class Controls:
         self.pages_count_label.set_text(str(len(chapter.pages)))
 
     def on_fullscreen(self):
-        if self.is_visible:
-            self.top_box.show_all()
+        self.window.titlebar_revealer.set_reveal_child(self.is_visible)
 
     def on_scale_value_changed(self, scale, scroll_type, value):
         value = round(value)
@@ -95,8 +55,7 @@ class Controls:
         self.reader.pager.goto_page(value - 1)
 
     def on_unfullscreen(self):
-        if self.is_visible:
-            self.top_box.hide()
+        self.window.titlebar_revealer.set_reveal_child(True)
 
     def set_scale_value(self, index):
         with self.scale.handler_block(self.scale_handler_id):
@@ -113,7 +72,7 @@ class Controls:
     def show(self):
         self.is_visible = True
 
-        if self.reader.window.is_fullscreen:
-            self.top_box.show_all()
+        if self.window.is_fullscreen:
+            self.window.titlebar_revealer.set_reveal_child(True)
 
         self.bottom_box.show_all()

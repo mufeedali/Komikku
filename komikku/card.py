@@ -33,9 +33,9 @@ class Card:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card_selection_mode.xml')
 
-        self.title_label = self.builder.get_object('card_page_title_label')
+        self.title_label = self.window.card_title_label
 
-        self.stack = self.builder.get_object('card_stack')
+        self.stack = self.window.card_stack
         self.info_grid = InfoGrid(self)
         self.chapters_list = ChaptersList(self)
 
@@ -182,7 +182,8 @@ class Card:
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 
-        self.builder.get_object('fullscreen_button').hide()
+        self.window.search_button.hide()
+        self.window.fullscreen_button.hide()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
@@ -202,8 +203,9 @@ class ChaptersList:
 
     def __init__(self, card):
         self.card = card
+        self.window = card.window
 
-        self.listbox = self.card.builder.get_object('chapters_listbox')
+        self.listbox = self.window.card_chapters_listbox
         self.listbox.get_style_context().add_class('list-bordered')
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
 
@@ -211,7 +213,7 @@ class ChaptersList:
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.on_gesture_long_press_activated)
 
-        self.card.window.downloader.connect('download-changed', self.update_chapter_row)
+        self.window.downloader.connect('download-changed', self.update_chapter_row)
 
         def sort(child1, child2):
             """
@@ -234,40 +236,40 @@ class ChaptersList:
         # Menu actions in selection mode
         download_selected_chapters_action = Gio.SimpleAction.new('card.download-selected-chapters', None)
         download_selected_chapters_action.connect('activate', self.download_selected_chapters)
-        self.card.window.application.add_action(download_selected_chapters_action)
+        self.window.application.add_action(download_selected_chapters_action)
 
         mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
         mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
-        self.card.window.application.add_action(mark_selected_chapters_as_read_action)
+        self.window.application.add_action(mark_selected_chapters_as_read_action)
 
         mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-unread', None)
         mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
-        self.card.window.application.add_action(mark_selected_chapters_as_unread_action)
+        self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
         reset_selected_chapters_action = Gio.SimpleAction.new('card.reset-selected-chapters', None)
         reset_selected_chapters_action.connect('activate', self.reset_selected_chapters)
-        self.card.window.application.add_action(reset_selected_chapters_action)
+        self.window.application.add_action(reset_selected_chapters_action)
 
         select_all_chapters_action = Gio.SimpleAction.new('card.select-all-chapters', None)
         select_all_chapters_action.connect('activate', self.select_all)
-        self.card.window.application.add_action(select_all_chapters_action)
+        self.window.application.add_action(select_all_chapters_action)
 
         # Chapters menu actions
         download_chapter_action = Gio.SimpleAction.new('card.download-chapter', None)
         download_chapter_action.connect('activate', self.download_chapter)
-        self.card.window.application.add_action(download_chapter_action)
+        self.window.application.add_action(download_chapter_action)
 
         mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
         mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
-        self.card.window.application.add_action(mark_chapter_as_read_action)
+        self.window.application.add_action(mark_chapter_as_read_action)
 
         mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-as-unread', None)
         mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
-        self.card.window.application.add_action(mark_chapter_as_unread_action)
+        self.window.application.add_action(mark_chapter_as_unread_action)
 
         reset_chapter_action = Gio.SimpleAction.new('card.reset-chapter', None)
         reset_chapter_action.connect('activate', self.reset_chapter)
-        self.card.window.application.add_action(reset_chapter_action)
+        self.window.application.add_action(reset_chapter_action)
 
     def clear(self):
         for row in self.listbox.get_children():
@@ -275,16 +277,16 @@ class ChaptersList:
 
     def download_chapter(self, action, param):
         # Add chapter in download queue
-        self.card.window.downloader.add(self.action_row.chapter)
+        self.window.downloader.add(self.action_row.chapter)
 
-        self.card.window.downloader.start()
+        self.window.downloader.start()
 
     def download_selected_chapters(self, action, param):
         for row in self.listbox.get_selected_rows():
             # Add chapter in download queue
-            self.card.window.downloader.add(row.chapter)
+            self.window.downloader.add(row.chapter)
 
-        self.card.window.downloader.start()
+        self.window.downloader.start()
 
         self.card.leave_selection_mode()
 
@@ -344,7 +346,7 @@ class ChaptersList:
             if self.selection_mode_count == 0:
                 self.card.leave_selection_mode()
         else:
-            self.card.window.reader.init(self.card.manga, row.chapter)
+            self.window.reader.init(self.card.manga, row.chapter)
 
     def on_gesture_long_press_activated(self, gesture, x, y):
         if self.card.selection_mode:
@@ -485,7 +487,7 @@ class ChaptersList:
             hbox.pack_start(progressbar, True, True, 0)
 
             stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
-            stop_button.connect('clicked', lambda button, chapter: self.card.window.downloader.remove(chapter), chapter)
+            stop_button.connect('clicked', lambda button, chapter: self.window.downloader.remove(chapter), chapter)
             hbox.pack_start(stop_button, False, False, 0)
         else:
             hbox.pack_start(label, True, True, 0)
@@ -510,7 +512,7 @@ class ChaptersList:
             self.populate_countdown -= 1
             if self.populate_countdown == 0:
                 # All rows have been populated/updated
-                self.card.window.activity_indicator.stop()
+                self.window.activity_indicator.stop()
 
                 if self.card.selection_mode:
                     self.card.leave_selection_mode()
@@ -576,7 +578,7 @@ class ChaptersList:
         chapters_ids = []
         chapters_data = []
 
-        self.card.window.activity_indicator.start()
+        self.window.activity_indicator.start()
 
         # First, update DB
         for row in self.listbox.get_selected_rows():
@@ -629,7 +631,7 @@ class ChaptersList:
             thread.daemon = True
             thread.start()
         else:
-            self.card.window.activity_indicator.stop()
+            self.window.activity_indicator.stop()
             self.card.leave_selection_mode()
 
     def toggle_chapter_read_status(self, action, param, read):
@@ -673,20 +675,20 @@ class ChaptersList:
 class InfoGrid:
     def __init__(self, card):
         self.card = card
+        self.window = card.window
 
-        grid = self.card.builder.get_object('card_page_grid')
-        grid.set_margin_start(6)
-        grid.set_margin_end(6)
+        self.window.card_info_grid.set_margin_start(6)
+        self.window.card_info_grid.set_margin_end(6)
 
-        self.cover_image = self.card.builder.get_object('cover_image')
-        self.authors_value_label = self.card.builder.get_object('authors_value_label')
-        self.genres_value_label = self.card.builder.get_object('genres_value_label')
-        self.status_value_label = self.card.builder.get_object('status_value_label')
-        self.scanlators_value_label = self.card.builder.get_object('scanlators_value_label')
-        self.server_value_label = self.card.builder.get_object('server_value_label')
-        self.last_update_value_label = self.card.builder.get_object('last_update_value_label')
-        self.synopsis_value_label = self.card.builder.get_object('synopsis_value_label')
-        self.more_label = self.card.builder.get_object('more_label')
+        self.cover_image = self.window.card_cover_image
+        self.authors_value_label = self.window.card_authors_value_label
+        self.genres_value_label = self.window.card_genres_value_label
+        self.status_value_label = self.window.card_status_value_label
+        self.scanlators_value_label = self.window.card_scanlators_value_label
+        self.server_value_label = self.window.card_server_value_label
+        self.last_update_value_label = self.window.card_last_update_value_label
+        self.synopsis_value_label = self.window.card_synopsis_value_label
+        self.more_label = self.window.card_more_label
 
     def populate(self):
         manga = self.card.manga

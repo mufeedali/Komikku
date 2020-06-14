@@ -21,17 +21,15 @@ class Reader:
         self.builder = window.builder
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/reader.xml')
 
-        self.overlay = self.builder.get_object('reader_overlay')
+        self.overlay = self.window.reader_overlay
 
         # Headerbar
-        self.title_label = self.builder.get_object('reader_page_title_label')
-        self.subtitle_label = self.builder.get_object('reader_page_subtitle_label')
+        self.title_label = self.window.reader_title_label
+        self.subtitle_label = self.window.reader_subtitle_label
 
         # Pager
-        self.scrolledwindow = self.builder.get_object('reader_scrolledwindow')
-        viewport = self.builder.get_object('reader_viewport')
         self.pager = Pager(self)
-        viewport.add(self.pager)
+        self.window.reader_viewport.add(self.pager)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
@@ -63,7 +61,16 @@ class Reader:
 
     @property
     def size(self):
-        return self.window.get_size()
+        window_size = self.window.get_size()
+
+        size = Gtk.Requisition.new()
+        size.width = window_size.width
+        size.height = window_size.height
+
+        if self.window.titlebar_revealer.get_child_revealed():
+            size.height -= self.window.titlebar.get_preferred_size()[1].height
+
+        return size
 
     def add_actions(self):
         # Reading direction
@@ -168,7 +175,8 @@ class Reader:
         def on_menu_popover_closed(menu_button):
             self.pager.grab_focus()
 
-        self.builder.get_object('fullscreen_button').show()
+        self.window.search_button.hide()
+        self.window.fullscreen_button.show()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-reader'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)

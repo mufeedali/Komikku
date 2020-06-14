@@ -34,16 +34,16 @@ class Library():
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_selection_mode.xml')
 
         # Search
-        self.title_stack = self.builder.get_object('library_page_title_stack')
-        self.search_entry = self.builder.get_object('library_page_search_searchentry')
+        self.title_stack = self.window.library_title_stack
+        self.search_entry = self.window.library_searchentry
         self.search_entry.connect('activate', self.on_search_entry_activate)
         self.search_entry.connect('changed', self.search)
-        self.search_button = self.builder.get_object('library_page_search_button')
+        self.search_button = self.window.search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
 
-        self.subtitle_label = self.builder.get_object('library_page_subtitle_label')
+        self.subtitle_label = self.window.library_subtitle_label
 
-        self.flowbox = self.builder.get_object('library_page_flowbox')
+        self.flowbox = self.window.library_flowbox
         self.flowbox.connect('child-activated', self.on_manga_clicked)
         self.flowbox.connect('selected-children-changed', self.on_selection_changed)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
@@ -444,7 +444,7 @@ class Library():
             self.subtitle_label.set_label(_('Library'))
 
     def on_resize(self):
-        if self.window.first_start_grid.is_ancestor(self.window):
+        if self.window.first_start_grid.is_ancestor(self.window.box):
             return
 
         width, height = self.cover_size
@@ -467,19 +467,19 @@ class Library():
         mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
         if len(mangas_rows) == 0:
-            if self.window.overlay.is_ancestor(self.window):
-                self.window.remove(self.window.overlay)
+            if self.window.overlay.is_ancestor(self.window.box):
+                self.window.box.remove(self.window.overlay)
 
             # Display first start message
-            self.window.add(self.window.first_start_grid)
+            self.window.box.add(self.window.first_start_grid)
 
             return
 
         if self.window.first_start_grid.is_ancestor(self.window):
-            self.window.remove(self.window.first_start_grid)
+            self.window.box.remove(self.window.first_start_grid)
 
         if not self.window.overlay.is_ancestor(self.window):
-            self.window.add(self.window.overlay)
+            self.window.box.add(self.window.overlay)
 
         # Clear library flowbox
         for child in self.flowbox.get_children():
@@ -530,7 +530,8 @@ class Library():
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
-        self.builder.get_object('fullscreen_button').hide()
+        self.window.search_button.show()
+        self.window.fullscreen_button.hide()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
