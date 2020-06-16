@@ -23,8 +23,6 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
-SECRET_SCHEMA_NAME = 'info.febvre.Komikku'
-
 logger = logging.getLogger()
 
 
@@ -171,205 +169,126 @@ class Imagebuf:
         return self._buffer.scale_simple(width, height, InterpType.BILINEAR)
 
 
-# Heavily adapted from PasswordsHelper class of Lollypop music player
-# https://gitlab.gnome.org/World/lollypop/-/blob/master/lollypop/helper_passwords.py
 class SecretAccountHelper:
-    """
-        Simple helper to store servers accounts credentials using libsecret
-    """
+    """Simple helper to store servers accounts credentials using libsecret"""
+
+    schema_name = 'info.febvre.Komikku'
 
     def __init__(self):
-        """
-            Init helper
-        """
-        self.__secret = None
-        Secret.Service.get(Secret.ServiceFlags.NONE, None, self.__on_get_secret)
+        self.__secret_service = None
+        Secret.Service.get(Secret.ServiceFlags.NONE, None, self.__on_get_secret_service)
 
-    def get(self, service, callback, *args):
-        """
-        Call function
-        @param service as str
-        @param callback as function
-        @param args
+    def __on_get_secret_service(self, source, result):
+        """Store secret service
+
+        :param GObject.Object source: the source object
+        :param Gio.AsyncResult result: the result
         """
         try:
-            self.__wait_for_secret(self.get, service, callback, *args)
-            SecretSchema = {
-                "service": Secret.SchemaAttributeType.STRING
-            }
-            attributes = {
-                "service": service
-            }
-            schema = Secret.Schema.new(SECRET_SCHEMA_NAME, Secret.SchemaFlags.NONE, SecretSchema)
-            self.__secret.search(
-                schema,
-                attributes,
-                Secret.SearchFlags.ALL,
-                None,
-                self.__on_secret_search,
-                service,
-                callback,
-                *args
-            )
+            self.__secret_service = source.get_finish(result)
         except Exception as e:
-            logger.debug("SecretAccountHelper::get(): %s", e)
+            self.__secret_service = -1
+            logger.error('SecretAccountHelper::__on_get_secret_service(): %s', e)
 
-    def store(self, service, login, password, callback, *args):
+    def __wait_for_secret_service(self, callback, *args):
+        """Wait for secret service
+
+        :param callable callback: called when the waiting ends
+        :param args: params to be passed to the callback
+        :raises exception: if waiting fails
         """
-            Store password
-            @param service as str
-            @param login as str
-            @param password as str
-            @param callback as function
-        """
-        try:
-            self.__wait_for_secret(self.store,
-                                   service,
-                                   login,
-                                   password,
-                                   callback,
-                                   *args)
-            schema_string = f'{SECRET_SCHEMA_NAME}: {service}@{login}'
-            SecretSchema = {
-                "service": Secret.SchemaAttributeType.STRING,
-                "login": Secret.SchemaAttributeType.STRING,
-            }
-            attributes = {
-                "service": service,
-                "login": login
-            }
-            schema = Secret.Schema.new(SECRET_SCHEMA_NAME,
-                                       Secret.SchemaFlags.NONE,
-                                       SecretSchema)
-            Secret.password_store(schema, attributes,
-                                  Secret.COLLECTION_DEFAULT,
-                                  schema_string,
-                                  password,
-                                  None,
-                                  callback,
-                                  *args)
-        except Exception as e:
-            logger.debug("SecretAccountHelper::store(): %s", e)
+        if self.__secret_service is None:
+            GLib.timeout_add(250, callback, *args)
+        if self.__secret_service == -1:
+            raise Exception('Error waiting for Secret service')
 
     def clear(self, service, callback=None, *args):
-        """
-            Clear password
-            @param service as str
-            @param callback as function
+        """Clear password
+
+        :param str service: the service
+        :param callable callback: called when the operation completes
+        :param args: params to be passed to the callback
         """
         try:
-            self.__wait_for_secret(self.clear, service, callback, *args)
-            SecretSchema = {
-                "service": Secret.SchemaAttributeType.STRING
+            self.__wait_for_secret_service(self.clear, service, callback, *args)
+            if self.__secret_service is None:
+                return
+
+            def on_password_clear(source, result):
+                Secret.password_clear_finish(result)
+                if callback is not None:
+                    callback(*args)
+
+            attributes_names_and_types = {
+                'service': Secret.SchemaAttributeType.STRING
             }
             attributes = {
-                "service": service
+                'service': service
             }
-            schema = Secret.Schema.new(SECRET_SCHEMA_NAME,
-                                       Secret.SchemaFlags.NONE,
-                                       SecretSchema)
-            self.__secret.search(schema,
-                                 attributes,
-                                 Secret.SearchFlags.ALL,
-                                 None,
-                                 self.__on_clear_search,
-                                 callback,
-                                 *args)
+            schema = Secret.Schema.new(self.schema_name, Secret.SchemaFlags.NONE, attributes_names_and_types)
+            Secret.password_clear(schema, attributes, None, on_password_clear)
         except Exception as e:
-            logger.debug("SecretAccountHelper::clear(): %s", e)
+            logger.debug('SecretAccountHelper::clear(): %s', e)
 
-    #######################
-    # PRIVATE             #
-    #######################
-    def __wait_for_secret(self, call, *args):
-        """
-            Wait for secret
-            @param call as function to call
-            @param args
-            @raise exception if waiting
-        """
-        # Wait for secret
-        if self.__secret is None:
-            GLib.timeout_add(250, call, *args)
-            raise Exception("Waiting Secret service")
-        if self.__secret == -1:
-            raise Exception("Error waiting for Secret service")
+    def get(self, service, callback, *args):
+        """Get password
 
-    @staticmethod
-    def __on_clear_search(source, result, callback=None, *args):
-        """
-            Clear passwords
-            @param source as GObject.Object
-            @param result as Gio.AsyncResult
+        :param str service: the service
+        :param callable callback: called when the operation completes
+        :param args: params to be passed to the callback
         """
         try:
-            if result is not None:
-                items = source.search_finish(result)
-                for item in items:
-                    item.delete(None, None)
-            if callback is not None:
-                callback(*args)
+            self.__wait_for_secret_service(self.get, service, callback, *args)
+            if self.__secret_service is None:
+                return
+
+            def on_password_search(source, result):
+                items = Secret.password_search_finish(result)
+                if items:
+                    def on_retrieve_secret(item, result):
+                        secret = item.retrieve_secret_finish(result)
+                        callback(item.get_attributes(), secret.get_text(), service, *args)
+
+                    item = items[0]
+                    item.retrieve_secret(None, on_retrieve_secret)
+
+            attributes_names_and_types = {
+                'service': Secret.SchemaAttributeType.STRING
+            }
+            attributes = {
+                'service': service
+            }
+            schema = Secret.Schema.new(self.schema_name, Secret.SchemaFlags.NONE, attributes_names_and_types)
+            Secret.password_search(schema, attributes, Secret.SearchFlags.ALL, None, on_password_search)
         except Exception as e:
-            logger.debug("SecretAccountHelper::__on_clear_search(): %s", e)
+            logger.debug('SecretAccountHelper::get(): %s', e)
 
-    @staticmethod
-    def __on_load_secret(source, result, service, callback, *args):
-        """
-            Set userservice/password input
-            @param source as GObject.Object
-            @param result as Gio.AsyncResult
-            @param service as str
-            @param index as int
-            @param count as int
-            @param callback as function
-            @param args
-        """
-        secret = source.get_secret()
-        if secret is not None:
-            callback(source.get_attributes(),
-                     secret.get().decode('utf-8'),
-                     service,
-                     *args)
-        else:
-            logger.debug("SecretAccountHelper: no secret!")
-            callback(None, None, service, *args)
+    def store(self, service, login, password, callback):
+        """Store password
 
-    def __on_secret_search(self, source, result, service, callback, *args):
-        """
-            Set userservice/password input
-            @param source as GObject.Object
-            @param result as Gio.AsyncResult
-            @param service as str/None
-            @param callback as function
-            @param args
+        :param str service: the service
+        :param str login: the login
+        :param str password: the password
+        :param callable callback: called when the operation completes
         """
         try:
-            if result is not None:
-                items = source.search_finish(result)
-                for item in items:
-                    item.load_secret(None,
-                                     self.__on_load_secret,
-                                     service,
-                                     callback,
-                                     *args)
-                if not items:
-                    logger.debug("SecretAccountHelper: no items!")
-                    callback(None, None, service, *args)
-            else:
-                logger.debug("SecretAccountHelper: no result!")
-                callback(None, None, service, *args)
-        except Exception as e:
-            logger.debug("SecretAccountHelper::__on_secret_search(): %s", e)
-            callback(None, None, service, *args)
+            self.__wait_for_secret_service(self.store, callback, service, login, password, callback)
+            if self.__secret_service is None:
+                return
 
-    def __on_get_secret(self, source, result):
-        """
-            Store secret proxy
-            @param source as GObject.Object
-            @param result as Gio.AsyncResult
-        """
-        try:
-            self.__secret = source.get_finish(result)
+            def on_password_store(source, result):
+                callback(source, result)
+
+            label = f'{self.schema_name}: {service}@{login}'
+            attributes_names_and_types = {
+                'service': Secret.SchemaAttributeType.STRING,
+                'login': Secret.SchemaAttributeType.STRING
+            }
+            attributes = {
+                'service': service,
+                'login': login
+            }
+            schema = Secret.Schema.new(self.schema_name, Secret.SchemaFlags.NONE, attributes_names_and_types)
+            Secret.password_store(schema, attributes, Secret.COLLECTION_DEFAULT, label, password, None, on_password_store)
         except Exception as e:
-            self.__secret = -1
-            logger.debug("SecretAccountHelper::__on_get_secret(): %s", e)
+            logger.debug('SecretAccountHelper::store(): %s', e)

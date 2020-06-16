@@ -258,7 +258,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
             self.destroy()
 
     def open(self):
-        def on_get_password(attributes, password, name, login_entry, password_entry):
+        def on_get_password(attributes, password, _server_main_id, login_entry, password_entry):
             if not attributes or not password:
                 return
 
@@ -268,6 +268,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
         self.set_title(_('Servers Settings'))
         self.set_transient_for(self.parent)
 
+        helper = SecretAccountHelper()
         settings = Settings.get_default().servers_settings
         languages = Settings.get_default().servers_languages
 
@@ -355,7 +356,6 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                     btn.set_always_show_image(True)
                     box.pack_start(btn, False, False, 0)
 
-                    helper = SecretAccountHelper()
                     helper.get(server_main_id, on_get_password, login_entry, password_entry)
             else:
                 action_row = Handy.ActionRow()
@@ -385,7 +385,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
 
     @staticmethod
     def test_account_login(button, server_main_id, server_class, login_entry, password_entry):
-        def on_account_stored(source, result):
+        def on_account_stored(_source, _result):
             server = server_class(username=login, password=password)
 
             if server.logged_in:
