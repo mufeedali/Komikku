@@ -318,8 +318,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
             Gtk.Settings.get_default().set_property('gtk-application-prefer-dark-theme', Settings.get_default().dark_theme)
 
     def on_about_menu_clicked(self, action, param):
-        from komikku.application import CREDITS
-
         builder = Gtk.Builder()
         builder.add_from_resource('/info/febvre/Komikku/about_dialog.ui')
 
