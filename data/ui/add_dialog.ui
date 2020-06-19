@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <requires lib="libhandy" version="0.0"/>
+  <requires lib="libhandy" version="1.0"/>
   <object class="GtkDialog" id="dialog">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
@@ -173,10 +173,10 @@
                         <property name="can_focus">False</property>
                         <property name="shadow_type">none</property>
                         <child>
-                          <object class="HdyColumn">
+                          <object class="HdyClamp">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="maximum_width">720</property>
+                            <property name="maximum_size">720</property>
                             <child>
                               <object class="GtkListBox" id="servers_page_listbox">
                                 <property name="visible">True</property>
@@ -204,10 +204,10 @@
                         <property name="can_focus">False</property>
                         <property name="shadow_type">none</property>
                         <child>
-                          <object class="HdyColumn">
+                          <object class="HdyClamp">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="maximum_width">720</property>
+                            <property name="maximum_size">720</property>
                             <child>
                               <object class="GtkListBox" id="search_page_listbox">
                                 <property name="visible">True</property>
@@ -236,10 +236,10 @@
                         <property name="can_focus">False</property>
                         <property name="shadow_type">none</property>
                         <child>
-                          <object class="HdyColumn">
+                          <object class="HdyClamp">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="maximum_width">720</property>
+                            <property name="maximum_size">720</property>
                             <child>
                               <object class="GtkGrid" id="manga_page_grid">
                                 <property name="visible">True</property>

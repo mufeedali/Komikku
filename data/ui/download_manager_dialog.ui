@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <requires lib="libhandy" version="0.0"/>
+  <requires lib="libhandy" version="1.0"/>
   <template class="DownloadManagerDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
@@ -118,10 +118,10 @@
                 <property name="can_focus">False</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="HdyColumn">
+                  <object class="HdyClamp">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="maximum_width">700</property>
+                    <property name="maximum_size">700</property>
                     <child>
                       <object class="GtkStack" id="stack">
                         <property name="visible">True</property>

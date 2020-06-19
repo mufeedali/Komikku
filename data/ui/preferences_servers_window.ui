@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <requires lib="libhandy" version="0.0"/>
+  <requires lib="libhandy" version="1.0"/>
   <template class="PreferencesServersWindow" parent="HdyPreferencesWindow">
     <property name="can_focus">False</property>
     <property name="default_width">640</property>
