@@ -1,0 +1,19 @@
+{
+    "name": "python3-importlib-metadata",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} importlib-metadata"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b2/34/bfcb43cc0ba81f527bc4f40ef41ba2ff4080e047acb0586b56b3d017ace4/zipp-3.1.0-py3-none-any.whl",
+            "sha256": "aa36550ff0c0b7ef7fa639055d797116ee891440eac1a56f378e2d3179e0320b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/98/13/a1d703ec396ade42c1d33df0e1cb691a28b7c08b336a5683912c87e04cd7/importlib_metadata-1.6.1-py2.py3-none-any.whl",
+            "sha256": "15ec6c0fd909e893e3a08b3a7c76ecb149122fb14b7efe1199ddd4c7c57ea958"
+        }
+    ]
+}

@@ -15,14 +15,18 @@
         "--talk-name=org.gnome.SettingsDaemon.Color"
     ],
     "modules" : [
+        "python3-wheel.json",
+        "python3-cffi.json",
+        "python3-importlib-metadata.json",
+        "python3-keyring.json",
         "python3-dateparser.json",
         "python3-file-magic.json",
         "python3-pillow.json",
         "python3-pure-protobuf.json",
         "python3-unidecode.json",
-        "python3-cloudscraper.json",
         "python3-lxml.json",
         "python3-beautifulsoup4.json",
+        "python3-cloudscraper.json",
         {
             "name" : "libhandy",
             "buildsystem" : "meson",

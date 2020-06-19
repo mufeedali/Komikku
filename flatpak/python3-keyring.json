@@ -1,0 +1,29 @@
+{
+    "name": "python3-keyring",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --exists-action=i --no-index --no-build-isolation --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} keyring"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/79/31/2e8d42727595faf224c6dbb748c32b192e212f25495fe841fb7ce8e168b8/jeepney-0.4.3-py3-none-any.whl",
+            "sha256": "d6c6b49683446d2407d2fe3acb7a368a77ff063f9182fe427da15d622adc24cf"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c3/50/8a02cad020e949e6d7105f5f4530d41e3febcaa5b73f8f2148aacb3aeba5/SecretStorage-3.1.2-py3-none-any.whl",
+            "sha256": "b5ec909dde94d4ae2fa26af7c089036997030f0cf0a5cb372b4cccabd81c143b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/56/3b/78c6816918fdf2405d62c98e48589112669f36711e50158a0c15d804c30d/cryptography-2.9.2.tar.gz",
+            "sha256": "a0c30272fb4ddda5f5ffc1089d7405b7a71b0b0f51993cb4e5dbb4590b2fc229"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a8/5e/d13b9feb235d042321a239ac8bc85e90cf3bbe49090c6f1383ac3fd53e0e/keyring-21.2.1-py3-none-any.whl",
+            "sha256": "3401234209015144a5d75701e71cb47239e552b0882313e9f51e8976f9e27843"
+        }
+    ]
+}
