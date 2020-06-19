@@ -361,6 +361,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                 switch.set_active(server_enabled)
                 switch.set_valign(Gtk.Align.CENTER)
                 switch.connect('notify::active', self.on_server_activated, server_main_id)
+                action_row.set_activatable_widget(switch)
                 action_row.add(switch)
 
                 self.group.add(action_row)

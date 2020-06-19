@@ -24,6 +24,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">theme_switch</property>
                 <property name="subtitle" translatable="yes">Use dark GTK theme</property>
                 <property name="title" translatable="yes">Dark Theme</property>
                 <child>
@@ -40,6 +41,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">night_light_switch</property>
                 <property name="subtitle" translatable="yes">Automatically enable dark theme at night</property>
                 <property name="title" translatable="yes">Night Light</property>
                 <child>
@@ -56,6 +58,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">desktop_notifications_switch</property>
                 <property name="subtitle" translatable="yes">Use desktop notifications for downloads</property>
                 <property name="title" translatable="yes">Desktop Notifications</property>
                 <child>
@@ -86,6 +89,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">update_at_startup_switch</property>
                 <property name="subtitle" translatable="yes">Automatically update library at startup</property>
                 <property name="title" translatable="yes">Update at Startup</property>
                 <child>
@@ -103,6 +107,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">new_chapters_auto_download_switch</property>
                 <property name="subtitle" translatable="yes">Automatically download new chapters</property>
                 <property name="title" translatable="yes">Auto Download of New Chapters</property>
                 <child>
@@ -128,6 +133,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">servers_settings_button</property>
                 <property name="subtitle" translatable="yes">Enable/disable and configure servers</property>
                 <property name="title" translatable="yes">Servers Settings</property>
                 <child>
@@ -152,6 +158,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">long_strip_detection_switch</property>
                 <property name="subtitle" translatable="yes">Automatically detect long vertical strip when possible</property>
                 <property name="title" translatable="yes">Long Strip Detection</property>
                 <child>
@@ -205,6 +212,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">borders_crop_switch</property>
                 <property name="subtitle" translatable="yes">Crop white borders of images</property>
                 <property name="title" translatable="yes">Borders Crop</property>
                 <child>
@@ -222,6 +230,7 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="activatable_widget">fullscreen_switch</property>
                 <property name="subtitle" translatable="yes">Automatically enter fullscreen mode</property>
                 <property name="title" translatable="yes">Fullscreen</property>
                 <child>
