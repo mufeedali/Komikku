@@ -64,10 +64,11 @@ Dependencies:
 * `meson` >= 0.50.0
 * `python` >= 3.6
 * `gtk` >= 3.24.1
-* `libhandy` >= 0.80.0
+* `libhandy` >= 0.81.0
 * `python-beautifulsoup4`
 * `python-cloudscraper`
 * `python-dateparser`
+* `python-keyring` >= 21.2.1
 * `python-lxml`
 * `python-magic` or `file-magic`
 * `python-pillow`

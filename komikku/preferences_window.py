@@ -13,7 +13,7 @@ from komikku.models import Settings
 from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
-from komikku.utils import SecretAccountHelper
+from komikku.utils import KeyringHelper
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/preferences_window.ui')
@@ -251,6 +251,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.keyring_helper = KeyringHelper()
         self.connect('key-press-event', self.on_key_press)
 
     def on_key_press(self, widget, event):
@@ -258,17 +259,9 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
             self.destroy()
 
     def open(self):
-        def on_get_password(attributes, password, _server_main_id, login_entry, password_entry):
-            if not attributes or not password:
-                return
-
-            login_entry.set_text(attributes['login'])
-            password_entry.set_text(password)
-
         self.set_title(_('Servers Settings'))
         self.set_transient_for(self.parent)
 
-        helper = SecretAccountHelper()
         settings = Settings.get_default().servers_settings
         languages = Settings.get_default().servers_languages
 
@@ -341,9 +334,9 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                     label.set_valign(Gtk.Align.CENTER)
                     box.pack_start(label, True, True, 0)
 
-                    login_entry = Gtk.Entry()
-                    login_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'avatar-default-symbolic')
-                    box.pack_start(login_entry, True, True, 0)
+                    username_entry = Gtk.Entry()
+                    username_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'avatar-default-symbolic')
+                    box.pack_start(username_entry, True, True, 0)
 
                     password_entry = Gtk.Entry()
                     password_entry.set_input_purpose(Gtk.InputPurpose.PASSWORD)
@@ -352,11 +345,14 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                     box.pack_start(password_entry, True, True, 0)
 
                     btn = Gtk.Button(_('Test'))
-                    btn.connect('clicked', self.test_account_login, server_main_id, server_class, login_entry, password_entry)
+                    btn.connect('clicked', self.save_credential, server_main_id, server_class, username_entry, password_entry)
                     btn.set_always_show_image(True)
                     box.pack_start(btn, False, False, 0)
 
-                    helper.get(server_main_id, on_get_password, login_entry, password_entry)
+                    credential = self.keyring_helper.get(server_main_id)
+                    if credential:
+                        username_entry.set_text(credential.username)
+                        password_entry.set_text(credential.password)
             else:
                 action_row = Handy.ActionRow()
                 action_row.set_title(server_data['name'])
@@ -383,18 +379,13 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
     def on_server_language_activated(switch_button, gparam, server_main_id, lang):
         Settings.get_default().toggle_server_lang(server_main_id, lang, switch_button.get_active())
 
-    @staticmethod
-    def test_account_login(button, server_main_id, server_class, login_entry, password_entry):
-        def on_account_stored(_source, _result):
-            server = server_class(username=login, password=password)
-
-            if server.logged_in:
-                button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
-            else:
-                button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.MENU))
-
-        login = login_entry.get_text()
+    def save_credential(self, button, server_main_id, server_class, username_entry, password_entry):
+        username = username_entry.get_text()
         password = password_entry.get_text()
+        server = server_class(username=username, password=password)
 
-        helper = SecretAccountHelper()
-        helper.clear(server_main_id, helper.store, server_main_id, login, password, on_account_stored)
+        if server.logged_in:
+            button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
+            self.keyring_helper.store(server_main_id, username, password)
+        else:
+            button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.MENU))

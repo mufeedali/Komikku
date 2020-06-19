@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from contextlib import closing
 import datetime
 from gettext import gettext as _
-import html
 import gi
+import html
+import keyring
+from keyring.credentials import SimpleCredential
 import logging
 from PIL import Image
 from PIL import ImageChops
@@ -167,6 +170,49 @@ class Imagebuf:
             return self._get_pixbuf_from_bytes(width, height)
 
         return self._buffer.scale_simple(width, height, InterpType.BILINEAR)
+
+
+class KeyringHelper:
+    """Simple helper to store servers accounts credentials using Python keyring library"""
+
+    def __init__(self):
+        self.keyring = keyring.get_keyring()
+        self.keyring.appid = 'info.febvre.Komikku'
+
+    def get(self, service):
+        credential = self.keyring.get_credential(service, None)
+
+        if isinstance(self.keyring, keyring.backends.SecretService.Keyring) and credential and credential.username is None:
+            # Try to find username in 'login' attribute instead of 'username'
+            # Backward compatibility with the previous implementation which used libsecret
+            collection = self.keyring.get_preferred_collection()
+
+            with closing(collection.connection):
+                items = collection.search_items({'service': service})
+                for item in items:
+                    self.keyring.unlock(item)
+                    username = item.get_attributes().get('login')
+                    if username:
+                        credential = SimpleCredential(username, item.get_secret().decode('utf-8'))
+
+        if credential is None or credential.username is None:
+            return None
+
+        return credential
+
+    def store(self, service, username, password):
+        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
+            collection = self.keyring.get_preferred_collection()
+            label = f'{self.keyring.appid}: {username}@{service}'
+            attributes = {
+                'application': self.keyring.appid,
+                'service': service,
+                'username': username,
+            }
+            with closing(collection.connection):
+                collection.create_item(label, attributes, password, replace=True)
+        else:
+            keyring.set_password(service, username, password)
 
 
 class SecretAccountHelper:

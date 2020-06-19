@@ -22,7 +22,7 @@ from requests.adapters import TimeoutSauce
 import struct
 import time
 
-from komikku.utils import SecretAccountHelper
+from komikku.utils import KeyringHelper
 
 # https://www.localeplanet.com/icu/
 LANGUAGES = dict(
@@ -83,12 +83,6 @@ class Server:
     __sessions = {}  # to cache all existing sessions
 
     def init(self, username=None, password=None):
-        def on_get_account(attributes, password, name):
-            if not attributes or not password:
-                return
-
-            self.logged_in = self.login(attributes['login'], password)
-
         if username and password:
             self.clear_session()
 
@@ -101,8 +95,9 @@ class Server:
                     self.session.headers = self.headers
 
                 if username is None and password is None:
-                    helper = SecretAccountHelper()
-                    helper.get(self.id, on_get_account)
+                    credential = KeyringHelper().get(get_server_main_id_by_id(self.id))
+                    if credential:
+                        self.logged_in = self.login(credential.username, credential.password)
                 else:
                     self.logged_in = self.login(username, password)
         else:
