@@ -11,8 +11,8 @@ from komikku.models import Settings
 from komikku.reader.controls import Controls
 from komikku.reader.pager import Pager
 import shutil
-import os
 import magic
+import os
 
 class Reader:
     manga = None
@@ -226,16 +226,31 @@ class Reader:
 
         #get page number, chapter name and manga name
         page_name=str(page.index+1)
-        chapter_name=self.chapter.title.replace(" ","_")
-        manga_name=self.manga.name.replace(" ","_")
+        chapter_name=self.chapter.title
+        manga_name=self.manga.name
 
-        #get original file path and copy to ~/Pictures/Komikku/
+        #get original file path and file name
         original=page.path
-        filetype=magic.from_file(original,mime=True).split("/")[-1]
+        filemime=magic.from_file(original,mime=True)
+        filetype=filemime.split("/")[-1]
         filename="_".join([manga_name,chapter_name,page_name])
-        destination=os.getenv("HOME")+"/Pictures/Komikku/"
-        if not os.path.exists(destination):
-            os.mkdir(destination)
-        destinationfile=destination+filename+"."+filetype
-        shutil.copy(original,destinationfile)
+        destinationfile=filename+"."+filetype
+
+        #get file path and name to be saved
+        dialog=Gtk.FileChooserDialog("Please choose a file",self.window,Gtk.FileChooserAction.SAVE,(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE,Gtk.ResponseType.OK))
+        dialog.set_do_overwrite_confirmation(True)
+        dialog.set_current_name(destinationfile)
+        folder=os.getenv("HOME")+"/Pictures"
+        dialog.set_current_folder(folder)
+        typefilter=Gtk.FileFilter()
+        typefilter.set_name(filetype)
+        typefilter.add_mime_type(filemime)
+        dialog.add_filter(typefilter)
+        response=dialog.run()
+        if response==Gtk.ResponseType.OK:
+            destination=dialog.get_filename()
+            shutil.copy(original,destination)
+            message='File Saved'
+            self.window.show_notification(message)
+        dialog.destroy()
 
