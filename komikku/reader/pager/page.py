@@ -11,6 +11,7 @@ from gi.repository import Gtk
 from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.activity_indicator import ActivityIndicator
+from komikku.utils import crop_pixbuf
 from komikku.utils import Imagebuf
 from komikku.utils import log_error_traceback
 
@@ -35,21 +36,28 @@ class Page(Gtk.Overlay):
         self.error = None      # connection error, server error or corrupt file error
         self.loadable = False  # loadable from disk or downloadable from server (chapter pages are known)
 
+        self.cropped = False
+        self.last_hadj_value = None
+        self.last_vadj_value = None
+
         self.set_size()
 
         self.scrolledwindow = Gtk.ScrolledWindow()
-        if self.reader.reading_direction == 'vertical':
-            self.scrolledwindow.get_vadjustment().connect('changed', self.adjust_scroll)
-        else:
-            self.scrolledwindow.get_hadjustment().connect('changed', self.adjust_scroll)
-
-        self.add(self.scrolledwindow)
-
-        viewport = Gtk.Viewport()
+        self.viewport = Gtk.Viewport()
         self.image = Gtk.Image()
         self.imagebuf = None
-        viewport.add(self.image)
-        self.scrolledwindow.add(viewport)
+        self.viewport.add(self.image)
+        self.scrolledwindow.add(self.viewport)
+        self.add(self.scrolledwindow)
+
+        if self.reader.reading_direction == 'vertical':
+            self.scrolledwindow.get_vadjustment().connect('changed', self.on_scroll_changed, 'vertical')
+            self.scrolledwindow.get_vadjustment().connect('value-changed', self.on_scroll_value_changed, 'vertical')
+        else:
+            self.scrolledwindow.get_hadjustment().connect('changed', self.on_scroll_changed, 'horizontal')
+            self.scrolledwindow.get_hadjustment().connect('value-changed', self.on_scroll_value_changed, 'horizontal')
+
+        self.scrolledwindow.connect('edge-overshot', self.on_edge_overshotted)
 
         # Activity indicator
         self.activity_indicator = ActivityIndicator()
@@ -66,13 +74,6 @@ class Page(Gtk.Overlay):
     def loaded(self):
         return self.pixbuf is not None
 
-    def adjust_scroll(self, hadj):
-        """ Update page horizontal scrollbar value according to reading direction """
-        if self.reader.pager.zoom['active']:
-            return
-
-        hadj.set_value(hadj.get_upper() if self.reader.reading_direction == 'right-to-left' else 0)
-
     def clean(self):
         self.status = 'cleaned'
         self.loadable = False
@@ -82,6 +83,52 @@ class Page(Gtk.Overlay):
     def on_button_retry_clicked(self, button):
         button.destroy()
         self.render()
+
+    def on_edge_overshotted(self, widget_, position):
+        """During scrolling, a lower or upper limit has been surpassed.
+
+        To allow 2-fingers swipe gesture, we crop image to disable scrolling (otherwise, Gtk.ScrolledWindow consumes scroll events)
+        Full image must be restored at end of swipe
+        """
+
+        if self.pager.zoom['active']:
+            return
+
+        if self.reader.reading_direction == 'vertical':
+            if position == Gtk.PositionType.BOTTOM:
+                self.set_image(crop='top')
+            elif position == Gtk.PositionType.TOP:
+                self.set_image(crop='bottom')
+        else:
+            if position == Gtk.PositionType.LEFT:
+                self.set_image(crop='right')
+            elif position == Gtk.PositionType.RIGHT:
+                self.set_image(crop='left')
+
+    def on_scroll_changed(self, adj, type):
+        """Set/restore page scrollbar position when image is set or updated"""
+
+        if self.pager.zoom['active']:
+            return
+
+        if type == 'horizontal':
+            adj.set_value(self.last_hadj_value if self.last_hadj_value is not None else adj.get_upper())
+        else:
+            adj.set_value(self.last_vadj_value if self.last_vadj_value is not None else 0)
+
+    def on_scroll_value_changed(self, adj_, type):
+        """Store last horizontal or vertical scroll value"""
+
+        if self.pager.zoom['active']:
+            return
+
+        hadj = self.scrolledwindow.get_hadjustment()
+        vadj = self.scrolledwindow.get_vadjustment()
+
+        if type == 'horizontal' and hadj.get_upper() > self.reader.size.width:
+            self.last_hadj_value = hadj.get_value()
+        elif type == 'vertical' and vadj.get_upper() > self.reader.size.height:
+            self.last_vadj_value = vadj.get_value()
 
     def render(self):
         def run():
@@ -203,7 +250,7 @@ class Page(Gtk.Overlay):
         if self.status == 'rendered':
             self.set_image()
 
-    def set_image(self):
+    def set_image(self, crop=None):
         if self.imagebuf is None:
             if self.path is None:
                 self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
@@ -226,14 +273,37 @@ class Page(Gtk.Overlay):
             adapt_to_width_height = imagebuf.height / (imagebuf.width / self.reader.size.width)
             adapt_to_height_width = imagebuf.width / (imagebuf.height / self.reader.size.height)
 
-            if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
-                # Adapt image to width
-                pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
-            elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
-                # Adapt image to height
-                pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
+            if not self.animated:
+                if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
+                    # Adapt image to width
+                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
+                elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
+                    # Adapt image to height
+                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
+            else:
+                # NOTE: Special case of animated images (GIF)
+                # They cannot be cropped, which would prevent navigation by 2-finger swipe gesture
+                # Moreover, it's more comfortable to view them in full (fit viewport)
+
+                if adapt_to_width_height <= self.reader.size.height:
+                    # Adapt image to width
+                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
+                elif adapt_to_height_width <= self.reader.size.width:
+                    # Adapt image to height
+                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
         else:
             pixbuf = imagebuf.get_pixbuf()
+
+        if crop is not None:
+            if crop in ('right', 'bottom'):
+                pixbuf = crop_pixbuf(pixbuf, 0, 0, self.reader.size.width, self.reader.size.height)
+            elif crop == 'left':
+                pixbuf = crop_pixbuf(pixbuf, pixbuf.get_width() - self.reader.size.width, 0, self.reader.size.width, self.reader.size.height)
+            elif crop == 'top':
+                pixbuf = crop_pixbuf(pixbuf, 0, pixbuf.get_height() - self.reader.size.height, self.reader.size.width, self.reader.size.height)
+            self.cropped = True
+        else:
+            self.cropped = False
 
         if isinstance(pixbuf, PixbufAnimation):
             self.image.set_from_animation(pixbuf)

@@ -34,7 +34,6 @@ class Pager(Handy.Carousel):
         self.connect('motion-notify-event', self.on_motion_notify)
         self.connect('page-changed', self.on_page_changed)
         self.window.connect('scroll-event', self.on_scroll)
-        self.enable_keyboard_and_mouse_click_navigation()
 
     @property
     def pages(self):
@@ -305,7 +304,13 @@ class Pager(Handy.Carousel):
 
     def on_page_changed(self, carousel, index):
         self.enable_keyboard_and_mouse_click_navigation()
+
+        # Set Hdy.Carousel non-interactive by default to be able to detect scrolling in pages (with scroll-event event)
         self.set_interactive(False)
+
+        if self.current_page.cropped:
+            # Previous page's image has been cropped to allow 2-fingers swipe gesture, it must be restored
+            self.current_page.set_image()
 
         if index == 1:
             # Partial swipe
@@ -341,21 +346,9 @@ class Pager(Handy.Carousel):
         self.current_page = page
 
     def on_scroll(self, widget_, event):
-        if self.window.page != 'reader' or self.zoom['active']:
-            return Gdk.EVENT_PROPAGATE
-
-        hadj = self.current_page.scrolledwindow.get_hadjustment()
-        vadj = self.current_page.scrolledwindow.get_vadjustment()
-
-        if event.direction == Gdk.ScrollDirection.DOWN and vadj.get_value() == vadj.get_upper() - self.reader.size.height:
-            self.set_interactive(True)
-        elif event.direction == Gdk.ScrollDirection.UP and vadj.get_value() == 0:
-            self.set_interactive(True)
-        elif event.direction == Gdk.ScrollDirection.LEFT and hadj.get_value() == 0:
-            self.set_interactive(True)
-        elif event.direction == Gdk.ScrollDirection.RIGHT and hadj.get_value() == hadj.get_upper() - self.reader.size.width:
-            self.set_interactive(True)
-
+        # A scroll event emitted means that page's image is not scrollable (otherwise, Gtk.ScrolledWindow consumes scroll events)
+        # Hdy.Carousel must be set interactive to allow 2-fingers swipe gesture
+        self.set_interactive(True)
         return Gdk.EVENT_PROPAGATE
 
     def on_single_click(self, event):
@@ -392,8 +385,8 @@ class Pager(Handy.Carousel):
             page.resize()
 
     def reverse_pages(self):
-        self.reorder(self.pages[0], 2)
-        self.reorder(self.pages[1], 0)
+        self.reorder(self.pages[0], -1)
+        self.reorder(self.pages[0], 1)
 
     def save_state(self, page):
         # Loop as long as the page rendering is not ended

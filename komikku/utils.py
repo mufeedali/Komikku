@@ -48,6 +48,13 @@ def log_error_traceback(e):
     return None
 
 
+def crop_pixbuf(pixbuf, src_x, src_y, width, height):
+    pixbuf_cropped = Pixbuf.new(Colorspace.RGB, pixbuf.get_has_alpha(), 8, width, height)
+    pixbuf.copy_area(src_x, src_y, width, height, pixbuf_cropped, 0, 0)
+
+    return pixbuf_cropped
+
+
 def scale_pixbuf_animation(pixbuf, width, height, preserve_aspect_ratio, loop=False, rate=15):
     if preserve_aspect_ratio:
         if width == -1:
@@ -82,7 +89,7 @@ class Imagebuf:
         self.path = path
         self.width = width
         self.height = height
-        self.animated = False
+        self.animated = isinstance(buffer, bytes)
 
     @classmethod
     def new_from_file(cls, path):
@@ -94,7 +101,7 @@ class Imagebuf:
         format, width, height = Pixbuf.get_file_info(path)
 
         if 'image/gif' in format.get_mime_types():
-            # In case of GIF images, buffer is image raw data
+            # In case of GIF images (probably animated), buffer is image raw data
             with open(path, 'rb') as fp:
                 buffer = fp.read()
         else:
@@ -130,22 +137,24 @@ class Imagebuf:
 
         animation = loader.get_animation()
         if animation.is_static_image():
+            self.animated = False
             return animation.get_static_image()
-
-        self.animated = True
 
         return animation
 
     def crop_borders(self):
-        if not isinstance(self._buffer, Pixbuf) or self.path is None:
+        """"Crop white borders
+
+        :return: New cropped Imagebuf or self if it can't be cropped
+        """
+        if self.animated or self.path is None:
             return self
 
         bbox = self._compute_borders_crop_bbox()
 
         # Crop is possible if computed bbox is included in pixbuf
         if bbox[2] - bbox[0] < self.width or bbox[3] - bbox[1] < self.height:
-            pixbuf = Pixbuf.new(Colorspace.RGB, self._buffer.get_has_alpha(), 8, bbox[2] - bbox[0], bbox[3] - bbox[1])
-            self._buffer.copy_area(bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1], pixbuf, 0, 0)
+            pixbuf = crop_pixbuf(self._buffer, bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1])
 
             return Imagebuf(self.path, pixbuf, pixbuf.get_width(), pixbuf.get_height())
 
