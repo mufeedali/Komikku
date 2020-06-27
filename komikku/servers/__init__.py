@@ -22,6 +22,7 @@ from requests.adapters import TimeoutSauce
 import struct
 import time
 
+from komikku.utils import is_flatpak
 from komikku.utils import KeyringHelper
 
 # https://www.localeplanet.com/icu/
@@ -289,8 +290,7 @@ def get_cache_dir():
     cache_dir_path = GLib.get_user_cache_dir()
 
     # Check if inside flatpak sandbox
-    is_flatpak = os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
-    if is_flatpak:
+    if is_flatpak():
         return cache_dir_path
 
     cache_dir_path = os.path.join(cache_dir_path, 'komikku')

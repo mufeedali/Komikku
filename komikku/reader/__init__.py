@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from gettext import gettext as _
+import os
+import shutil
+
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
@@ -10,14 +14,13 @@ from gi.repository import Gtk
 from komikku.models import Settings
 from komikku.reader.controls import Controls
 from komikku.reader.pager import Pager
-import shutil
-import magic
-import os
+from komikku.servers import get_file_mime_type
+from komikku.utils import is_flatpak
+
 
 class Reader:
     manga = None
     chapters_consulted = None
-    chapter=None
 
     def __init__(self, window):
         self.window = window
@@ -76,41 +79,39 @@ class Reader:
         return size
 
     def add_accelerators(self):
-        self.window.application.set_accels_for_action('app.reader.take_screenshot',['<Control>s'])
+        self.window.application.set_accels_for_action('app.reader.save-page', ['<Control>s'])
 
     def add_actions(self):
-        # Screenshot
-        self.take_screenshot=Gio.SimpleAction.new('reader.take_screenshot',None)
-        self.take_screenshot.connect('activate',self.screenshot_taken)
-
         # Reading direction
         self.reading_direction_action = Gio.SimpleAction.new_stateful(
             'reader.reading-direction', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
         self.reading_direction_action.connect('change-state', self.on_reading_direction_changed)
+        self.window.application.add_action(self.reading_direction_action)
 
         # Scaling
         self.scaling_action = Gio.SimpleAction.new_stateful(
             'reader.scaling', GLib.VariantType.new('s'), GLib.Variant('s', 'screen'))
         self.scaling_action.connect('change-state', self.on_scaling_changed)
+        self.window.application.add_action(self.scaling_action)
 
         # Background color
         self.background_color_action = Gio.SimpleAction.new_stateful(
             'reader.background-color', GLib.VariantType.new('s'), GLib.Variant('s', 'white'))
         self.background_color_action.connect('change-state', self.on_background_color_changed)
+        self.window.application.add_action(self.background_color_action)
 
         # Borders crop
         self.borders_crop_action = Gio.SimpleAction.new_stateful('reader.borders-crop', None, GLib.Variant('b', False))
         self.borders_crop_action.connect('change-state', self.on_borders_crop_changed)
-
-        self.window.application.add_action(self.reading_direction_action)
-        self.window.application.add_action(self.scaling_action)
-        self.window.application.add_action(self.background_color_action)
         self.window.application.add_action(self.borders_crop_action)
-        self.window.application.add_action(self.take_screenshot)
+
+        # Save page
+        self.save_page_action = Gio.SimpleAction.new('reader.save-page', None)
+        self.save_page_action.connect('activate', self.save_page)
+        self.window.application.add_action(self.save_page_action)
 
     def init(self, manga, chapter):
         self.manga = manga
-        self.chapter=chapter
 
         # Reset list of chapters consulted
         self.chapters_consulted = set()
@@ -124,7 +125,6 @@ class Reader:
         self.show()
 
         self.pager.init(chapter)
-
 
     def on_background_color_changed(self, action, variant):
         value = variant.get_string()
@@ -166,6 +166,48 @@ class Reader:
         self.set_scaling()
 
         self.pager.rescale_pages()
+
+    def save_page(self, action, param):
+        page = self.pager.current_page
+        if page.status != 'rendered' or page.error is not None:
+            return
+
+        extension = get_file_mime_type(page.path).split('/')[-1]
+        filename = f'{self.manga.name}_{page.chapter.title}_{str(page.index + 1)}.{extension}'
+
+        success = False
+        if not is_flatpak():
+            chooser = Gtk.FileChooserDialog(
+                _('Please choose a file'),
+                self.window,
+                Gtk.FileChooserAction.SAVE,
+                (
+                    '_Cancel',
+                    Gtk.ResponseType.CANCEL,
+                    '_Save',
+                    Gtk.ResponseType.ACCEPT
+                )
+            )
+            chooser.set_do_overwrite_confirmation(True)
+            chooser.set_current_name(filename)
+            chooser.set_current_folder(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES))
+
+            response = chooser.run()
+            if response == Gtk.ResponseType.ACCEPT:
+                dest_path = chooser.get_filename()
+                success = True
+            chooser.destroy()
+        else:
+            destdir_path = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
+            if destdir_path:
+                dest_path = os.path.join(destdir_path, filename)
+                success = True
+            else:
+                self.window.show_notification(_('Failed to save page: Missing permission to access the XDG pictures directory'))
+
+        if success:
+            shutil.copy(page.path, dest_path)
+            self.window.show_notification(_('Page successfully saved to {0}').format(dest_path.replace(os.path.expanduser('~'), '~')))
 
     def set_background_color(self):
         self.background_color_action.set_state(GLib.Variant('s', self.background_color))
@@ -229,38 +271,3 @@ class Reader:
         if chapter.manga.name in subtitle:
             subtitle = subtitle.replace(chapter.manga.name, '').strip()
         self.subtitle_label.set_text(subtitle)
-       
-    def screenshot_taken(self,action,param):
-        #get current page
-        page=self.pager.current_page
-
-        #get page number, chapter name and manga name
-        page_name=str(page.index+1)
-        chapter_name=self.chapter.title
-        manga_name=self.manga.name
-
-        #get original file path and file name
-        original=page.path
-        filemime=magic.from_file(original,mime=True)
-        filetype=filemime.split("/")[-1]
-        filename="_".join([manga_name,chapter_name,page_name])
-        destinationfile=filename+"."+filetype
-
-        #get file path and name to be saved
-        dialog=Gtk.FileChooserDialog("Please choose a file",self.window,Gtk.FileChooserAction.SAVE,(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE,Gtk.ResponseType.OK))
-        dialog.set_do_overwrite_confirmation(True)
-        dialog.set_current_name(destinationfile)
-        folder=os.getenv("HOME")+"/Pictures"
-        dialog.set_current_folder(folder)
-        typefilter=Gtk.FileFilter()
-        typefilter.set_name(filetype)
-        typefilter.add_mime_type(filemime)
-        dialog.add_filter(typefilter)
-        response=dialog.run()
-        if response==Gtk.ResponseType.OK:
-            destination=dialog.get_filename()
-            shutil.copy(original,destination)
-            message='File Saved'
-            self.window.show_notification(message)
-        dialog.destroy()
-

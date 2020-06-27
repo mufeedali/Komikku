@@ -20,6 +20,7 @@ from komikku.servers import get_server_dir_name_by_id
 from komikku.servers import get_server_module_name_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import unscramble_image
+from komikku.utils import is_flatpak
 
 VERSION = 5
 
@@ -89,8 +90,7 @@ def get_data_dir():
     data_dir_path = GLib.get_user_data_dir()
 
     # Check if inside flatpak sandbox
-    is_flatpak = os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
-    if is_flatpak:
+    if is_flatpak():
         return data_dir_path
 
     base_path = data_dir_path

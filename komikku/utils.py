@@ -10,6 +10,7 @@ import html
 import keyring
 from keyring.credentials import SimpleCredential
 import logging
+import os
 from PIL import Image
 from PIL import ImageChops
 import requests
@@ -37,6 +38,10 @@ def folder_size(path):
 
 def html_escape(s):
     return html.escape(html.unescape(s), quote=False)
+
+
+def is_flatpak():
+    return os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
 
 
 def log_error_traceback(e):
