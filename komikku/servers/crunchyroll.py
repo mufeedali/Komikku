@@ -17,8 +17,10 @@ class Crunchyroll(Server):
     has_login = True
 
     base_url = 'https://www.crunchyroll.com'
-    login_url = base_url + '/login'
     manga_url = base_url + '/comics/manga/{0}/volumes'
+
+    start_session_url = 'https://api.crunchyroll.com/start_session.0.json'
+    login_url = 'https://api.crunchyroll.com/login.0.json'
 
     api_base_url = 'http://api-manga.crunchyroll.com'
     api_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
@@ -31,6 +33,9 @@ class Crunchyroll(Server):
     possible_page_url_keys = ['encrypted_mobile_image_url', 'encrypted_composed_image_url']
     page_url_key = possible_page_url_keys[0]
 
+    _access_token = 'WveH9VkPLrXvuNm'
+    _access_type = 'com.crunchyroll.crunchyroid'
+
     headers = {
         'User-Agent': USER_AGENT,
         'Origin': 'https://www.crunchyroll.com',
@@ -42,6 +47,7 @@ class Crunchyroll(Server):
     }
 
     def __init__(self, username=None, password=None):
+        self.session_expiration_cookies = ['session_id']
         self.init(username, password)
 
     @staticmethod
@@ -121,16 +127,13 @@ class Crunchyroll(Server):
 
         r = self.session_get(self.api_chapter_url.format(self.api_session_id, chapter_slug, self.api_auth_token))
 
-        try:
-            resp_data = r.json()
-            if resp_data is None or resp_data.get('error', False):
-                # We aren't logged in
-                return None
-
-            pages = resp_data['pages']
-            pages.sort(key=lambda x: int(x['number']))
-        except Exception:
+        resp_data = r.json()
+        if resp_data is None or resp_data.get('error', False):
+            # We aren't logged in
             return None
+
+        pages = resp_data['pages']
+        pages.sort(key=lambda x: int(x['number']))
 
         data = dict(
             pages=[],
@@ -177,22 +180,19 @@ class Crunchyroll(Server):
         """
         r = self.session_get(self.api_series_url)
 
-        try:
-            result = []
+        result = []
 
-            resp_data = r.json()
-            resp_data.sort(key=lambda x: not x['featured'])
+        resp_data = r.json()
+        resp_data.sort(key=lambda x: not x['featured'])
 
-            for item in resp_data:
-                if 'locale' not in item:
-                    continue
+        for item in resp_data:
+            if 'locale' not in item:
+                continue
 
-                result.append({
-                    'slug': item['series_id'],
-                    'name': item['locale'][self.locale]['name'],
-                })
-        except Exception:
-            return None
+            result.append({
+                'slug': item['series_id'],
+                'name': item['locale'][self.locale]['name'],
+            })
 
         return result
 
@@ -202,21 +202,27 @@ class Crunchyroll(Server):
 
         Both are stored in '_extras' session attribute (internal attribute not part of Requests)
         """
-        r = self.session_get('https://www.crunchyroll.com/comics_read/manga?volume_id=273&chapter_num=1')
-        match = re.search(r'session_id=(\w*)&amp;', r.text)
-        if not match:
-            return False
-
-        self.api_session_id = match.group(1)
+        self._get_session_id()
         r = self.session_get(self.api_auth_url.format(self.api_session_id))
-        try:
-            data = r.json()
+        data = r.json()
 
+        if 'data' in data:
             self.api_auth_token = ''.join(data['data']['auth'])
-        except Exception:
-            return False
+            return True
 
-        return True
+        return False
+
+    def _get_session_id(self):
+        if 'session_id' in self.session.cookies:
+            self.api_session_id = self.session.cookies['session_id']
+            return
+        data = self.session_post(self.start_session_url,
+                                 data={
+                                     'device_id': '1234567',
+                                     'device_type': self._access_type,
+                                     'access_token': self._access_token,
+                                 }).json()['data']
+        self.api_session_id = data['session_id']
 
     def login(self, username, password):
         """
@@ -224,28 +230,19 @@ class Crunchyroll(Server):
         """
         if not username or not password:
             return False
+        self._get_session_id()
 
-        r = self.session_get(self.login_url, headers={'referer': self.login_url})
-
-        soup = BeautifulSoup(r.content, 'lxml')
-
-        self.session_post(
-            self.login_url,
-            data={
-                'login_form[name]': username,
-                'login_form[password]': password,
-                'login_form[_token]': soup.findAll('input', {u'type': u'hidden'})[1].get('value'),
-                'login_form[redirect_url]': '/',
-            }
-        )
-
-        r = self.session_get(self.base_url)
-        if not re.search(username + '(?i)', r.text) or not self.init_api():
-            return False
-
-        self.save_session()
-
-        return True
+        login = self.session_post(self.login_url,
+                                  data={
+                                      'session_id': self.api_session_id,
+                                      'account': username,
+                                      'password': password
+                                  }).json()
+        if 'data' in login:
+            self.api_auth_token = login['data']['auth']
+            self.save_session()
+            return True
+        return False
 
     def search(self, term):
         term_lower = term.lower()
