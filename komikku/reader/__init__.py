@@ -203,7 +203,7 @@ class Reader:
                 dest_path = os.path.join(destdir_path, filename)
                 success = True
             else:
-                self.window.show_notification(_('Failed to save page: Missing permission to access the XDG pictures directory'))
+                self.window.show_notification(_('Failed to save page: missing permission to access the XDG pictures directory'))
 
         if success:
             shutil.copy(page.path, dest_path)
