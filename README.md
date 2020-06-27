@@ -16,6 +16,12 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 * Online reading from servers
 * Offline reading of downloaded mangas
 * RTL, LTR and vertical reading directions
+* Five types of navigation:
+    - Keyboard arrow keys
+    - Mouse click
+    - Mouse drag
+    - Mouse wheel
+    - 2-fingers swipe gesture
 * Light and dark themes
 
 ## Screenshots
@@ -87,6 +93,7 @@ cd _build
 meson ..
 meson configure -Dprefix=$(pwd)/testdir
 ninja install # This will actually install in _build/testdir
+export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0/
 ninja run
 ```
 
