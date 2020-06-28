@@ -1,6 +1,3 @@
-from bs4 import BeautifulSoup
-import re
-
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
@@ -15,6 +12,7 @@ class Crunchyroll(Server):
     lang = 'en'
     locale = 'enUS'
     has_login = True
+    session_expiration_cookies = ['session_id', ]
 
     base_url = 'https://www.crunchyroll.com'
     manga_url = base_url + '/comics/manga/{0}/volumes'
@@ -47,8 +45,22 @@ class Crunchyroll(Server):
     }
 
     def __init__(self, username=None, password=None):
-        self.session_expiration_cookies = ['session_id']
         self.init(username, password)
+
+    def _get_session_id(self):
+        if 'session_id' in self.session.cookies:
+            self.api_session_id = self.session.cookies['session_id']
+            return
+
+        data = self.session_post(
+            self.start_session_url,
+            data={
+                'device_id': '1234567',
+                'device_type': self._access_type,
+                'access_token': self._access_token,
+            }
+        ).json()['data']
+        self.api_session_id = data['session_id']
 
     @staticmethod
     def decode_image(buffer):
@@ -199,8 +211,6 @@ class Crunchyroll(Server):
     def init_api(self):
         """
         Retrieves API session ID and authentication token
-
-        Both are stored in '_extras' session attribute (internal attribute not part of Requests)
         """
         self._get_session_id()
         r = self.session_get(self.api_auth_url.format(self.api_session_id))
@@ -211,18 +221,6 @@ class Crunchyroll(Server):
             return True
 
         return False
-
-    def _get_session_id(self):
-        if 'session_id' in self.session.cookies:
-            self.api_session_id = self.session.cookies['session_id']
-            return
-        data = self.session_post(self.start_session_url,
-                                 data={
-                                     'device_id': '1234567',
-                                     'device_type': self._access_type,
-                                     'access_token': self._access_token,
-                                 }).json()['data']
-        self.api_session_id = data['session_id']
 
     def login(self, username, password):
         """
