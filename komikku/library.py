@@ -97,9 +97,7 @@ class Library():
         default_height = 250
 
         box_width = self.window.get_size().width
-        # Padding of flowbox children is 4px
-        # https://pastebin.com/Q4ahCcgu
-        padding = 4
+        padding = 6  # Set via CSS
         child_width = default_width + padding * 2
         if box_width / child_width != box_width // child_width:
             nb = box_width // child_width + 1

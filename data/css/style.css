@@ -3,7 +3,11 @@
     border-left: 1px solid @borders;
 }
 
-/* Main window - library page - manga cover */
+/* Library page - manga cover */
+flowbox flowboxchild {
+    padding: 6px; /* default is 4px */
+}
+
 .library-manga-name-label {
     font-size: 12px;
     font-weight: bold;
@@ -13,7 +17,7 @@
     padding: 20px 8px 4px 8px;
 }
 
-/* Main window - manga card page - chapters list */
+/* Manga card page - chapters list */
 .card-chapter-listboxrow {
     border-bottom: 1px solid @borders;
     padding: 6px 6px 12px 6px;
@@ -36,7 +40,7 @@
     border-radius: .25rem;
 }
 
-/* Main window - reader page */
+/* Reader page */
 .reader-controls-bottom-box {
     background: rgba(0, 0, 0, .75);
     color: #fff;
