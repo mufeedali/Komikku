@@ -229,7 +229,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.connect('delete-event', self.on_application_quit)
         self.connect('key-press-event', self.on_key_press)
         self.connect('window-state-event', self.on_window_state_event)
-        self.headerbar_revealer.connect('notify::child-revealed', self.on_titlebar_toggle)
+        self.headerbar_revealer.connect('notify::child-revealed', self.on_headerbar_toggle)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()
@@ -371,6 +371,10 @@ class ApplicationWindow(Handy.ApplicationWindow):
         before_quit()
         return False
 
+    def on_headerbar_toggle(self, *args):
+        if self.page == 'reader':
+            self.reader.pager.resize_pages()
+
     def on_key_press(self, widget, event):
         """
         Go back navigation with <Escape> key:
@@ -437,10 +441,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
         shortcuts_overview.set_modal(True)
         shortcuts_overview.set_transient_for(self)
         shortcuts_overview.present()
-
-    def on_titlebar_toggle(self, *args):
-        if self.page == 'reader':
-            self.reader.pager.resize_pages()
 
     def on_window_state_event(self, widget, event):
         self.is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
