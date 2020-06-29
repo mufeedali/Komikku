@@ -73,8 +73,8 @@ class Reader:
         size.width = window_size.width
         size.height = window_size.height
 
-        if self.window.titlebar_revealer.get_child_revealed():
-            size.height -= self.window.titlebar.get_preferred_size()[1].height
+        if self.window.headerbar_revealer.get_child_revealed():
+            size.height -= self.window.headerbar.get_preferred_size()[1].height
 
         return size
 

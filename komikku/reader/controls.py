@@ -34,7 +34,7 @@ class Controls:
     def hide(self):
         self.is_visible = False
         if self.window.is_fullscreen:
-            self.window.titlebar_revealer.set_reveal_child(False)
+            self.window.headerbar_revealer.set_reveal_child(False)
         self.bottom_box.hide()
 
     def init(self, chapter):
@@ -45,7 +45,7 @@ class Controls:
         self.pages_count_label.set_text(str(len(chapter.pages)))
 
     def on_fullscreen(self):
-        self.window.titlebar_revealer.set_reveal_child(self.is_visible)
+        self.window.headerbar_revealer.set_reveal_child(self.is_visible)
 
     def on_scale_value_changed(self, scale, scroll_type, value):
         value = round(value)
@@ -55,7 +55,7 @@ class Controls:
         self.reader.pager.goto_page(value - 1)
 
     def on_unfullscreen(self):
-        self.window.titlebar_revealer.set_reveal_child(True)
+        self.window.headerbar_revealer.set_reveal_child(True)
 
     def set_scale_value(self, index):
         with self.scale.handler_block(self.scale_handler_id):
@@ -73,6 +73,6 @@ class Controls:
         self.is_visible = True
 
         if self.window.is_fullscreen:
-            self.window.titlebar_revealer.set_reveal_child(True)
+            self.window.headerbar_revealer.set_reveal_child(True)
 
         self.bottom_box.show_all()

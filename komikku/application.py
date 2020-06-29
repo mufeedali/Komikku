@@ -91,8 +91,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     is_fullscreen = False
     _prev_size = None
 
-    titlebar = Gtk.Template.Child('titlebar')
-    titlebar_revealer = Gtk.Template.Child('titlebar_revealer')
+    headerbar_revealer = Gtk.Template.Child('headerbar_revealer')
     headerbar = Gtk.Template.Child('headerbar')
     title_stack = Gtk.Template.Child('title_stack')
     left_button = Gtk.Template.Child('left_button')
@@ -230,7 +229,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.connect('delete-event', self.on_application_quit)
         self.connect('key-press-event', self.on_key_press)
         self.connect('window-state-event', self.on_window_state_event)
-        self.titlebar_revealer.connect('notify::child-revealed', self.on_titlebar_toggle)
+        self.headerbar_revealer.connect('notify::child-revealed', self.on_titlebar_toggle)
 
         # Custom CSS
         screen = Gdk.Screen.get_default()

@@ -301,7 +301,7 @@ class Library():
         selected_overlay._selected = True
         self.selection_mode_last_child_index = selected_child.get_index()
 
-        self.window.titlebar.set_selection_mode(True)
+        self.window.headerbar.get_style_context().add_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
 
@@ -319,7 +319,7 @@ class Library():
             overlay = child.get_children()[0]
             overlay._selected = False
 
-        self.window.titlebar.set_selection_mode(False)
+        self.window.headerbar.get_style_context().remove_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 

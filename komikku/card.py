@@ -69,7 +69,7 @@ class Card:
 
         self.chapters_list.enter_selection_mode()
 
-        self.window.titlebar.set_selection_mode(True)
+        self.window.headerbar.get_style_context().add_class('selection-mode')
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
     def init(self, manga, transition=True):
@@ -99,7 +99,7 @@ class Card:
 
         self.chapters_list.leave_selection_mode()
 
-        self.window.titlebar.set_selection_mode(False)
+        self.window.headerbar.get_style_context().remove_class('selection-mode')
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
 
     def on_delete_menu_clicked(self, action, param):
