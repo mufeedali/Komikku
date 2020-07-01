@@ -284,7 +284,7 @@ class Library():
             # 'Selection mode' is not allowed in 'Search mode'
             return
 
-        # Set search button insensitive: disable search
+        # Hide search button: disable search
         self.search_button.hide()
 
         self.selection_mode = True
@@ -311,7 +311,7 @@ class Library():
     def leave_selection_mode(self, _param=None):
         self.selection_mode = False
 
-        # Set search button sensitive: re-enable search
+        # Show search button: re-enable search
         self.search_button.show()
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -324,9 +324,10 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_button_pressed(self, _widget, event):
-        if (event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3):
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
             self.on_gesture_long_press_activated(None, event.x, event.y)
             return Gdk.EVENT_STOP
+
         return Gdk.EVENT_PROPAGATE
 
     def on_gesture_long_press_activated(self, gesture, x, y):
