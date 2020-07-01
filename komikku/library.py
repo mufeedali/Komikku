@@ -285,7 +285,7 @@ class Library():
             return
 
         # Set search button insensitive: disable search
-        self.search_button.set_sensitive(False)
+        self.search_button.hide()
 
         self.selection_mode = True
 
@@ -312,7 +312,7 @@ class Library():
         self.selection_mode = False
 
         # Set search button sensitive: re-enable search
-        self.search_button.set_sensitive(True)
+        self.search_button.show()
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for child in self.flowbox.get_children():
