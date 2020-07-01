@@ -15,7 +15,8 @@ from komikku.reader.pager.page import Page
 
 
 class Pager(Handy.Carousel):
-    current_page = None
+    current_chapter_id = None
+    init_flag = False
 
     btn_press_handler_id = None
     btn_press_timeout_id = None
@@ -33,15 +34,37 @@ class Pager(Handy.Carousel):
 
         self.connect('motion-notify-event', self.on_motion_notify)
         self.connect('page-changed', self.on_page_changed)
-        self.window.connect('scroll-event', self.on_scroll)
+
+    @property
+    def current_page(self):
+        return self.pages[int(self.get_position())] if len(self.pages) == 3 else None
 
     @property
     def pages(self):
         return self.get_children()
 
-    def clear(self):
-        self.current_page = None
+    def add_page(self, position):
+        if position == 'start':
+            self.pages[2].clean()
+            self.pages[2].destroy()  # will remove it from carousel
 
+            page = self.pages[0]
+            direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
+            new_page = Page(self, page.chapter, page.index + direction)
+            self.prepend(new_page)
+        else:
+            self.pages[0].clean()
+            self.pages[0].destroy()  # will remove it from carousel
+
+            page = self.pages[-1]
+            direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
+            new_page = Page(self, page.chapter, page.index + direction)
+            self.insert(new_page, 2)
+
+        new_page.connect('rendered', self.on_page_rendered)
+        new_page.render()
+
+    def clear(self):
         for page in self.pages:
             page.clean()
             page.destroy()
@@ -83,7 +106,11 @@ class Pager(Handy.Carousel):
         self.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'))
 
     def init(self, chapter, page_index=None):
+        self.init_flag = True
+
         self.reader.update_title(chapter)
+        self.clear()
+        self.set_orientation()
 
         if page_index is None:
             if chapter.read:
@@ -93,47 +120,28 @@ class Pager(Handy.Carousel):
             else:
                 page_index = 0
 
-        self.clear()
-        self.set_orientation()
-
         direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
-
-        # Center page
-        center_page = Page(self, chapter, page_index)
-        self.prepend(center_page)
-        self.current_page = center_page
-        self.scroll_to(center_page)
 
         # Left page
         left_page = Page(self, chapter, page_index + direction)
-        self.prepend(left_page)
+        left_page.connect('rendered', self.on_page_rendered)
+        self.insert(left_page, 0)
+
+        # Center page
+        center_page = Page(self, chapter, page_index)
+        center_page.connect('rendered', self.on_page_rendered)
+        self.insert(center_page, 1)
+        center_page.render()
 
         # Right page
         right_page = Page(self, chapter, page_index - direction)
-        self.insert(right_page, -1)
+        right_page.connect('rendered', self.on_page_rendered)
+        self.insert(right_page, 2)
 
-        center_page.connect('rendered', self.on_first_page_rendered)
-        center_page.render()
+        left_page.render()
+        right_page.render()
 
-    def add_page(self, position):
-        if position == 'start':
-            self.pages[2].clean()
-            self.pages[2].destroy()  # will remove it from carousel
-
-            page = self.pages[0]
-            direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
-            new_page = Page(self, page.chapter, page.index + direction)
-            self.prepend(new_page)
-        else:
-            self.pages[0].clean()
-            self.pages[0].destroy()  # will remove it from carousel
-
-            page = self.pages[-1]
-            direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
-            new_page = Page(self, page.chapter, page.index + direction)
-            self.insert(new_page, 2)
-
-        new_page.render()
+        self.scroll_to(center_page)
 
     def on_btn_press(self, widget, event):
         if event.button == 1:
@@ -218,20 +226,6 @@ class Pager(Handy.Carousel):
 
             self.zoom['active'] = False
 
-    def on_first_page_rendered(self, page):
-        if not page.chapter.pages:
-            self.window.show_notification(_('This chapter is inaccessible.'), 2)
-            return
-
-        self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
-        self.reader.controls.init(page.chapter)
-        self.reader.controls.set_scale_value(page.index + 1)
-
-        GLib.idle_add(self.save_state, page)
-
-        self.pages[0].render()
-        self.pages[2].render()
-
     def on_key_press(self, widget, event):
         if self.window.page != 'reader':
             return Gdk.EVENT_PROPAGATE
@@ -244,7 +238,7 @@ class Pager(Handy.Carousel):
             # Hide mouse cursor when using keyboard navigation
             self.hide_cursor()
 
-            page = self.pages[1]
+            page = self.current_page
             hadj = page.scrolledwindow.get_hadjustment()
 
             if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
@@ -266,7 +260,7 @@ class Pager(Handy.Carousel):
             # Hide mouse cursor when using keyboard navigation
             self.hide_cursor()
 
-            page = self.pages[1]
+            page = self.current_page
             vadj = page.scrolledwindow.get_vadjustment()
 
             if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
@@ -303,19 +297,15 @@ class Pager(Handy.Carousel):
         return Gdk.EVENT_PROPAGATE
 
     def on_page_changed(self, carousel, index):
-        self.enable_keyboard_and_mouse_click_navigation()
-
-        # Set Hdy.Carousel non-interactive by default to be able to detect scrolling in pages (with scroll-event event)
-        self.set_interactive(False)
-
-        if self.current_page.cropped:
+        if self.pages[1].cropped:
             # Previous page's image has been cropped to allow 2-fingers swipe gesture, it must be restored
-            self.current_page.set_image()
+            self.pages[1].set_image()
 
-        if index == 1:
-            # Partial swipe
+        if index == 1 and not self.init_flag:
+            # Partial swipe gesture
             return
 
+        self.init_flag = False
         page = self.pages[index]
 
         if page.status == 'offlimit':
@@ -329,27 +319,19 @@ class Pager(Handy.Carousel):
 
             return
 
-        # Update title and notify if chapter changed
-        if self.current_page.chapter != page.chapter:
-            self.reader.update_title(page.chapter)
-            self.window.show_notification(page.chapter.title, 2)
-            self.reader.controls.init(page.chapter)
+        # Disable navigation: will be re-enabled if page is loadable
+        self.disable_keyboard_and_mouse_click_navigation()
+        self.set_interactive(False)
 
-        # Update page number and controls page slider
-        self.reader.update_page_number(page.index + 1, len(page.chapter.pages))
-        self.reader.controls.set_scale_value(page.index + 1)
+        GLib.idle_add(self.update, page, index)
+        GLib.idle_add(self.save_progress, page)
 
-        GLib.idle_add(self.save_state, page)
+    def on_page_rendered(self, page, retry):
+        if not retry:
+            return
 
-        self.add_page('start' if index == 0 else 'end')
-
-        self.current_page = page
-
-    def on_scroll(self, widget_, event):
-        # A scroll event emitted means that page's image is not scrollable (otherwise, Gtk.ScrolledWindow consumes scroll events)
-        # Hdy.Carousel must be set interactive to allow 2-fingers swipe gesture
-        self.set_interactive(True)
-        return Gdk.EVENT_PROPAGATE
+        GLib.idle_add(self.update, page, 1)
+        GLib.idle_add(self.save_progress, page)
 
     def on_single_click(self, event):
         self.btn_press_timeout_id = None
@@ -388,7 +370,9 @@ class Pager(Handy.Carousel):
         self.reorder(self.pages[0], -1)
         self.reorder(self.pages[0], 1)
 
-    def save_state(self, page):
+    def save_progress(self, page):
+        """Save reading progress"""
+
         # Loop as long as the page rendering is not ended
         if page.status == 'rendering':
             return True
@@ -441,12 +425,8 @@ class Pager(Handy.Carousel):
             # Can occur during a quick keyboard navigation (when holding down an arrow key)
             return
 
-        if not page.loadable:
-            # Page index and pages of the chapter to which page belongs must be known to be able to move to another page
-            return
-
+        # Disable keyboard and mouse navigation: will be re-enabled if page is loadable
         self.disable_keyboard_and_mouse_click_navigation()
-        self.set_interactive(True)
 
         self.scroll_to(page)
 
@@ -458,3 +438,31 @@ class Pager(Handy.Carousel):
 
     def show_cursor(self):
         self.get_window().set_cursor(None)
+
+    def update(self, page, index):
+        if not page.loadable and page.error is None:
+            # Loop until page is loadable or page is on error
+            return True
+
+        if page.loadable:
+            self.enable_keyboard_and_mouse_click_navigation()
+            self.set_interactive(True)
+
+            if index != 1:
+                # Add next page depending of navigation direction
+                self.add_page('start' if index == 0 else 'end')
+        elif page.index == 0:
+            self.window.show_notification(_('This chapter is inaccessible.'), 2)
+
+        # Update title, initialize controls and notify user if chapter changed
+        if self.current_chapter_id != page.chapter.id:
+            self.current_chapter_id = page.chapter.id
+            self.reader.update_title(page.chapter)
+            self.window.show_notification(page.chapter.title, 2)
+            self.reader.controls.init(page.chapter)
+
+        # Update page number and controls page slider
+        self.reader.update_page_number(page.index + 1, len(page.chapter.pages) if page.loadable else None)
+        self.reader.controls.set_scale_value(page.index + 1)
+
+        return False

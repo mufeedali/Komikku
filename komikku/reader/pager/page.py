@@ -18,7 +18,7 @@ from komikku.utils import log_error_traceback
 
 class Page(Gtk.Overlay):
     __gsignals__ = {
-        'rendered': (GObject.SIGNAL_RUN_FIRST, None, ()),
+        'rendered': (GObject.SIGNAL_RUN_FIRST, None, (bool, )),
     }
 
     def __init__(self, pager, chapter, index):
@@ -82,7 +82,7 @@ class Page(Gtk.Overlay):
 
     def on_button_retry_clicked(self, button):
         button.destroy()
-        self.render()
+        self.render(retry=True)
 
     def on_edge_overshotted(self, widget_, position):
         """During scrolling, a lower or upper limit has been surpassed.
@@ -130,7 +130,7 @@ class Page(Gtk.Overlay):
         elif type == 'vertical' and vadj.get_upper() > self.reader.size.height:
             self.last_vadj_value = vadj.get_value()
 
-    def render(self):
+    def render(self, retry=False):
         def run():
             # First, we ensure that chapter's list of pages is known
             if self.chapter.pages is None:
@@ -214,7 +214,7 @@ class Page(Gtk.Overlay):
 
             self.activity_indicator.stop()
 
-            self.emit('rendered')
+            self.emit('rendered', retry)
 
             return False
 
@@ -233,6 +233,7 @@ class Page(Gtk.Overlay):
 
         self.imagebuf = None
         self.status = 'rendering'
+        self.error = None
 
         self.activity_indicator.start()
 

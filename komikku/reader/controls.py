@@ -7,6 +7,7 @@ from gi.repository import Gtk
 
 
 class Controls:
+    active = False
     is_visible = False
     reader = None
 
@@ -38,6 +39,10 @@ class Controls:
         self.bottom_box.hide()
 
     def init(self, chapter):
+        self.active = chapter.pages is not None
+        if not self.active:
+            return
+
         # Set slider range
         with self.scale.handler_block(self.scale_handler_id):
             self.scale.set_range(1, len(chapter.pages))
@@ -58,6 +63,9 @@ class Controls:
         self.window.headerbar_revealer.set_reveal_child(True)
 
     def set_scale_value(self, index):
+        if not self.active:
+            return
+
         with self.scale.handler_block(self.scale_handler_id):
             if self.scale.get_value() == index:
                 self.scale.emit('value-changed')
@@ -70,6 +78,9 @@ class Controls:
         self.bottom_box.set_child_packing(self.pages_count_label, False, True, 4, Gtk.PackType.START if inverted else Gtk.PackType.END)
 
     def show(self):
+        if not self.active:
+            return
+
         self.is_visible = True
 
         if self.window.is_fullscreen:

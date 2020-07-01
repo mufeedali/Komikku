@@ -255,10 +255,13 @@ class Reader:
             self.page_number_label.hide()
 
     def update_page_number(self, number, total):
-        self.page_number_label.set_text('{0}/{1}'.format(number, total))
+        if total is not None:
+            self.page_number_label.set_text('{0}/{1}'.format(number, total))
 
-        if not self.controls.is_visible:
+        if not self.controls.is_visible and total is not None:
             self.page_number_label.show()
+        else:
+            self.page_number_label.hide()
 
     def update_title(self, chapter):
         # Add chapter to list of chapters consulted
