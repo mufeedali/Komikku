@@ -522,10 +522,14 @@ class Library():
             if manga.cover_fs_path is None:
                 overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
             else:
-                if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
-                    overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
-                else:
-                    overlay._pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 200, -1, True)
+                try:
+                    if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
+                        overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
+                    else:
+                        overlay._pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 200, -1, True)
+                except Exception:
+                    # Invalid image, corrupted image, unsupported image format,...
+                    overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
         overlay.set_size_request(width, height)
         image = overlay.get_children()[0]

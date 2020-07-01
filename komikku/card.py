@@ -697,10 +697,14 @@ class InfoGrid:
         if manga.cover_fs_path is None:
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
         else:
-            if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
-                pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
-            else:
-                pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 174, -1, True, True)
+            try:
+                if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
+                    pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
+                else:
+                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 174, -1, True, True)
+            except Exception:
+                # Invalid image, corrupted image, unsupported image format,...
+                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
 
         if isinstance(pixbuf, PixbufAnimation):
             self.cover_image.set_from_animation(pixbuf)
