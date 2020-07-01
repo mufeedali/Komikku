@@ -44,8 +44,10 @@ class Library():
         self.subtitle_label = self.window.library_subtitle_label
 
         self.flowbox = self.window.library_flowbox
+        self.flowbox.connect('button-press-event', self.on_button_pressed)
         self.flowbox.connect('child-activated', self.on_manga_clicked)
         self.flowbox.connect('selected-children-changed', self.on_selection_changed)
+        self.flowbox.connect('unselect-all', self.leave_selection_mode)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
         self.gesture.set_touch_only(False)
         self.gesture.connect('pressed', self.on_gesture_long_press_activated)
@@ -283,7 +285,7 @@ class Library():
             return
 
         # Set search button insensitive: disable search
-        self.search_button.set_sensitive(False)
+        self.search_button.hide()
 
         self.selection_mode = True
 
@@ -306,11 +308,11 @@ class Library():
     def leave_search_mode(self):
         self.search_button.set_active(False)
 
-    def leave_selection_mode(self):
+    def leave_selection_mode(self, _param=None):
         self.selection_mode = False
 
         # Set search button sensitive: re-enable search
-        self.search_button.set_sensitive(True)
+        self.search_button.show()
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for child in self.flowbox.get_children():
@@ -320,6 +322,12 @@ class Library():
         self.window.headerbar.get_style_context().remove_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
+
+    def on_button_pressed(self, _widget, event):
+        if (event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3):
+            self.on_gesture_long_press_activated(None, event.x, event.y)
+            return Gdk.EVENT_STOP
+        return Gdk.EVENT_PROPAGATE
 
     def on_gesture_long_press_activated(self, gesture, x, y):
         if self.selection_mode:

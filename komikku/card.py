@@ -94,7 +94,7 @@ class Card:
 
         self.populate()
 
-    def leave_selection_mode(self):
+    def leave_selection_mode(self, _param=None):
         self.selection_mode = False
 
         self.chapters_list.leave_selection_mode()
@@ -208,6 +208,7 @@ class ChaptersList:
         self.listbox = self.window.card_chapters_listbox
         self.listbox.get_style_context().add_class('list-bordered')
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
+        self.listbox.connect('unselect-all', self.card.leave_selection_mode)
 
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
         self.gesture.set_touch_only(False)
