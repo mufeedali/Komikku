@@ -168,6 +168,9 @@ class Reader:
         self.pager.rescale_pages()
 
     def save_page(self, action, param):
+        if self.window.page != 'reader':
+            return
+
         page = self.pager.current_page
         if page.status != 'rendered' or page.error is not None:
             return
