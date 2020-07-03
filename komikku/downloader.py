@@ -3,6 +3,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from gettext import gettext as _
+from gettext import ngettext as n_
 import threading
 import time
 
@@ -238,6 +239,7 @@ class DownloadManagerDialog(Gtk.Dialog):
 
     titlebar = Gtk.Template.Child('titlebar')
     back_button = Gtk.Template.Child('back_button')
+    subtitle_label = Gtk.Template.Child('subtitle_label')
     start_stop_button = Gtk.Template.Child('start_stop_button')
     start_stop_button_image = Gtk.Template.Child('start_stop_button_image')
     menu_button = Gtk.Template.Child('menu_button')
@@ -260,7 +262,9 @@ class DownloadManagerDialog(Gtk.Dialog):
         self.back_button.connect('clicked', self.on_back_button_clicked)
         self.start_stop_button.connect('clicked', self.on_start_stop_button_clicked)
         self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
+        self.listbox.connect('button-press-event', self.on_button_pressed)
         self.listbox.connect('row-activated', self.on_download_row_clicked)
+        self.listbox.connect('selected-rows-changed', self.on_selection_changed)
 
         # Gesture for multi-selection mode
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
@@ -322,6 +326,14 @@ class DownloadManagerDialog(Gtk.Dialog):
             self.leave_selection_mode()
         else:
             self.close()
+
+    def on_button_pressed(self, _widget, event):
+        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+            self.on_gesture_long_press_activated(None, event.x, event.y)
+            self.on_download_row_clicked(None, self.listbox.get_row_at_y(event.y))
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_download_row_clicked(self, listbox, row):
         _ret, state = Gtk.get_current_event_state()
@@ -416,6 +428,14 @@ class DownloadManagerDialog(Gtk.Dialog):
         self.update_headerbar()
         if not self.rows:
             GLib.idle_add(self.stack.set_visible_child_name, 'empty')
+
+    def on_selection_changed(self, _flowbox):
+        number = len(self.listbox.get_selected_rows())
+        if number:
+            self.subtitle_label.set_label(n_('{0} selected', '{0} selected', number).format(number))
+            self.subtitle_label.show()
+        else:
+            self.subtitle_label.hide()
 
     def on_start_stop_button_clicked(self, button):
         self.start_stop_button.set_sensitive(False)
