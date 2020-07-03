@@ -307,9 +307,10 @@ class ChaptersList:
             row._selected = False
 
     def on_button_pressed(self, _widget, event):
-        if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
-            self.on_gesture_long_press_activated(None, event.x, event.y)
-            self.on_chapter_row_clicked(None, self.listbox.get_row_at_y(event.y))
+        pressed_on_child = self.listbox.get_row_at_y(event.y)
+        if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and pressed_on_child:
+            self.card.enter_selection_mode()
+            self.on_chapter_row_clicked(None, pressed_on_child)
             return Gdk.EVENT_STOP
 
         return Gdk.EVENT_PROPAGATE
