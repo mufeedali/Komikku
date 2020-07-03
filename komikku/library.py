@@ -324,9 +324,9 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_button_pressed(self, _widget, event):
-        pressed_on_child = self.flowbox.get_child_at_pos(event.x, event.y)
-        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and pressed_on_child:
-            self.enter_selection_mode(selected_child=pressed_on_child)
+        child = self.flowbox.get_child_at_pos(event.x, event.y)
+        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and child is not None:
+            self.enter_selection_mode(selected_child=child)
             return Gdk.EVENT_STOP
 
         return Gdk.EVENT_PROPAGATE
