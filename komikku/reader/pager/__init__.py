@@ -31,6 +31,7 @@ class Pager(Handy.Carousel):
         self.window = reader.window
 
         self.set_animation_duration(500)
+        self.set_allow_mouse_drag(False)
 
         self.connect('motion-notify-event', self.on_motion_notify)
         self.connect('page-changed', self.on_page_changed)
