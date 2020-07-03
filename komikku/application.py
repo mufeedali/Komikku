@@ -111,6 +111,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     library_flowbox = Gtk.Template.Child('library_flowbox')
 
     card_title_label = Gtk.Template.Child('card_title_label')
+    card_subtitle_label = Gtk.Template.Child('card_subtitle_label')
     card_stack = Gtk.Template.Child('card_stack')
     card_chapters_listbox = Gtk.Template.Child('card_chapters_listbox')
     card_info_grid = Gtk.Template.Child('card_info_grid')

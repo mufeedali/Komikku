@@ -4,6 +4,7 @@
 
 from copy import deepcopy
 from gettext import gettext as _
+from gettext import ngettext as n_
 import threading
 import time
 
@@ -34,6 +35,7 @@ class Card:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card_selection_mode.xml')
 
         self.title_label = self.window.card_title_label
+        self.subtitle_label = self.window.card_subtitle_label
 
         self.stack = self.window.card_stack
         self.info_grid = InfoGrid(self)
@@ -207,7 +209,9 @@ class ChaptersList:
 
         self.listbox = self.window.card_chapters_listbox
         self.listbox.get_style_context().add_class('list-bordered')
+        self.listbox.connect('button-press-event', self.on_button_pressed)
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
+        self.listbox.connect('selected-rows-changed', self.on_selection_changed)
         self.listbox.connect('unselect-all', self.card.leave_selection_mode)
 
         self.gesture = Gtk.GestureLongPress.new(self.listbox)
@@ -302,7 +306,15 @@ class ChaptersList:
         for row in self.listbox.get_children():
             row._selected = False
 
-    def on_chapter_row_clicked(self, listbox, row):
+    def on_button_pressed(self, _widget, event):
+        if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+            self.on_gesture_long_press_activated(None, event.x, event.y)
+            self.on_chapter_row_clicked(None, self.listbox.get_row_at_y(event.y))
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
+
+    def on_chapter_row_clicked(self, _listbox, row):
         _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
@@ -356,6 +368,14 @@ class ChaptersList:
             self.selection_mode_range = True
         else:
             self.card.enter_selection_mode()
+
+    def on_selection_changed(self, _flowbox):
+        number = len(self.listbox.get_selected_rows())
+        if number:
+            self.card.subtitle_label.set_label(n_('{0} selected', '{0} selected', number).format(number))
+            self.card.subtitle_label.show()
+        else:
+            self.card.subtitle_label.hide()
 
     def populate(self):
         def run():

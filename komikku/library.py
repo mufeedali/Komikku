@@ -324,7 +324,7 @@ class Library():
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_button_pressed(self, _widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
             self.on_gesture_long_press_activated(None, event.x, event.y)
             return Gdk.EVENT_STOP
 
