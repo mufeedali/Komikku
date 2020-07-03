@@ -59,6 +59,7 @@ class Application(Gtk.Application):
         GLib.set_application_name(_('Komikku'))
         GLib.set_prgname(self.application_id)
 
+        Handy.init()
         Notify.init(_('Komikku'))
 
     def do_activate(self):
