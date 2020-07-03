@@ -20,7 +20,6 @@ import pkgutil
 import requests
 from requests.adapters import TimeoutSauce
 import struct
-import time
 
 from komikku.utils import is_flatpak
 from komikku.utils import KeyringHelper
