@@ -89,6 +89,13 @@ class Mangaplus(Server):
             cover=resp_data.title.portrait_image_url,
         ))
 
+        # Status
+        if 'completed' in resp_data.non_appearance_info or 'completado' in resp_data.non_appearance_info:
+            data['status'] = 'complete'
+        else:
+            data['status'] = 'ongoing'
+
+        # Chapters
         for chapters in (resp_data.first_chapters, resp_data.last_chapters):
             for chapter in chapters:
                 data['chapters'].append(dict(
@@ -332,6 +339,7 @@ class TitleDetail:
     next_timestamp: int32 = field(5, default=0)
     update_timimg: UpdateTimingEnum = field(6, default=UpdateTimingEnum.DAY)
     viewing_period_description: str = field(7, default=None)
+    non_appearance_info: str = field(8, default='')
     first_chapters: List[Chapter] = field(9, default_factory=list)
     last_chapters: List[Chapter] = field(10, default_factory=list)
     is_simul_related: bool = field(14, default=True)
