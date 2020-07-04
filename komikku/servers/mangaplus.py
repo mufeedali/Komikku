@@ -25,7 +25,7 @@ LANGUAGES_CODES = dict(
     es=1,
 )
 RE_ENCRYPTION_KEY = re.compile('.{1,2}')
-SERVER_NAME = 'MANGA Plus'
+SERVER_NAME = 'MANGA Plus by SHUEISHA'
 
 headers = {
     'User-Agent': USER_AGENT,
@@ -296,7 +296,7 @@ class Page:
 @message
 @dataclass
 class MangaViewer:
-    pages: List[Page] = field(1, default_factory=[])
+    pages: List[Page] = field(1, default_factory=list)
 
 
 @message
@@ -332,8 +332,8 @@ class TitleDetail:
     next_timestamp: int32 = field(5, default=0)
     update_timimg: UpdateTimingEnum = field(6, default=UpdateTimingEnum.DAY)
     viewing_period_description: str = field(7, default=None)
-    first_chapters: List[Chapter] = field(9, default_factory=[])
-    last_chapters: List[Chapter] = field(10, default_factory=[])
+    first_chapters: List[Chapter] = field(9, default_factory=list)
+    last_chapters: List[Chapter] = field(10, default_factory=list)
     is_simul_related: bool = field(14, default=True)
     chapters_descending: bool = field(17, default=True)
 
