@@ -15,11 +15,18 @@ from komikku.servers import USER_AGENT
 
 SERVER_NAME = 'MangaSee'
 
+#
+# BEWARE: This server is disabled
+# Dead since 07/2020
+# It was moved (new url, new site) and is now a clone of MangaLife
+#
+
 
 class Mangasee(Server):
     id = 'mangasee'
     name = SERVER_NAME
     lang = 'en'
+    status = 'disabled'
 
     base_url = 'https://mangaseeonline.us'
     search_url = base_url + '/search/request.php'
