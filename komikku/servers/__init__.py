@@ -7,7 +7,6 @@ import dateparser
 import datetime
 from functools import lru_cache
 from gi.repository import Gio
-from gi.repository import GLib
 import importlib
 import inspect
 import io
@@ -21,7 +20,7 @@ import requests
 from requests.adapters import TimeoutSauce
 import struct
 
-from komikku.utils import is_flatpak
+from komikku.utils import get_cache_dir
 from komikku.utils import KeyringHelper
 
 # https://www.localeplanet.com/icu/
@@ -282,21 +281,6 @@ def get_buffer_mime_type(buffer):
             return magic.from_buffer(buffer[:128], mime=True)
     except Exception:
         return ''
-
-
-@lru_cache(maxsize=None)
-def get_cache_dir():
-    cache_dir_path = GLib.get_user_cache_dir()
-
-    # Check if inside flatpak sandbox
-    if is_flatpak():
-        return cache_dir_path
-
-    cache_dir_path = os.path.join(cache_dir_path, 'komikku')
-    if not os.path.exists(cache_dir_path):
-        os.mkdir(cache_dir_path)
-
-    return cache_dir_path
 
 
 def get_file_mime_type(path):

@@ -4,9 +4,11 @@
 
 from contextlib import closing
 import datetime
+from functools import lru_cache
 from gettext import gettext as _
 import gi
 import html
+import json
 import keyring
 from keyring.credentials import SimpleCredential
 import logging
@@ -34,6 +36,49 @@ def folder_size(path):
     res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE, check=False)
 
     return res.stdout.split()[0].decode()
+
+
+@lru_cache(maxsize=None)
+def get_cache_dir():
+    cache_dir_path = GLib.get_user_cache_dir()
+
+    # Check if inside flatpak sandbox
+    if is_flatpak():
+        return cache_dir_path
+
+    cache_dir_path = os.path.join(cache_dir_path, 'komikku')
+    if not os.path.exists(cache_dir_path):
+        os.mkdir(cache_dir_path)
+
+    return cache_dir_path
+
+
+@lru_cache(maxsize=None)
+def get_data_dir():
+    data_dir_path = GLib.get_user_data_dir()
+
+    # Check if inside flatpak sandbox
+    if is_flatpak():
+        return data_dir_path
+
+    base_path = data_dir_path
+    data_dir_path = os.path.join(base_path, 'komikku')
+    if not os.path.exists(data_dir_path):
+        os.mkdir(data_dir_path)
+
+        # Until version 0.11.0, data files (chapters, database) were stored in a wrong place
+        from komikku.servers import get_servers_list
+
+        must_be_moved = ['komikku.db', 'komikku_backup.db', ]
+        for server in get_servers_list(include_disabled=True):
+            must_be_moved.append(server['id'])
+
+        for name in must_be_moved:
+            data_path = os.path.join(base_path, name)
+            if os.path.exists(data_path):
+                os.rename(data_path, os.path.join(data_dir_path, name))
+
+    return data_dir_path
 
 
 def html_escape(s):
@@ -189,9 +234,13 @@ class Imagebuf:
 class KeyringHelper:
     """Simple helper to store servers accounts credentials using Python keyring library"""
 
-    def __init__(self):
+    def __init__(self, fallback_backend='plaintext'):
         self.keyring = keyring.get_keyring()
         self.keyring.appid = 'info.febvre.Komikku'
+
+        if isinstance(self.keyring, keyring.backends.fail.Keyring):
+            if fallback_backend == 'plaintext':
+                keyring.set_keyring(PlaintextKeyring())
 
     def get(self, service):
         credential = self.keyring.get_credential(service, None)
@@ -227,6 +276,49 @@ class KeyringHelper:
                 collection.create_item(label, attributes, password, replace=True)
         else:
             keyring.set_password(service, username, password)
+
+
+class PlaintextKeyring(keyring.backend.KeyringBackend):
+    """Simple File Keyring with no encryption
+
+    Used as fallback when no Keyring backend is found
+    """
+
+    folder = os.path.join(get_data_dir(), 'keyrings')
+    filename = os.path.join(folder, 'plaintext.keyring')
+    priority = 1
+
+    def _read(self):
+        if not os.path.exists(self.filename):
+            return {}
+
+        with open(self.filename, 'r') as fp:
+            return json.load(fp)
+
+    def _save(self, data):
+        if not os.path.exists(self.folder):
+            os.mkdir(self.folder)
+
+        with open(self.filename, 'w+') as fp:
+            return json.dump(data, fp, indent=2)
+
+    def get_credential(self, service, username):
+        data = self._read()
+        if service in data:
+            return SimpleCredential(data[service]['username'], data[service]['password'])
+        else:
+            return None
+
+    def get_password(self, service, username):
+        pass
+
+    def set_password(self, service, username, password):
+        data = self._read()
+        data[service] = dict(
+            username=username,
+            password=password,
+        )
+        self._save(data)
 
 
 class SecretAccountHelper:
