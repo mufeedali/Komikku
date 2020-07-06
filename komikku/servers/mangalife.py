@@ -14,11 +14,8 @@ from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.utils import log_error_traceback
 
-SERVER_NAME = 'MangaLife'
-
 #
-# BEWARE: This server is disabled
-# It has same content as MangaSee. No really interest except as backup
+# MangaLife and MangaSee seems to share exact same content
 #
 
 headers = {
@@ -29,9 +26,8 @@ headers = {
 
 class Mangalife(Server):
     id = 'mangalife'
-    name = SERVER_NAME
+    name = 'MangaLife'
     lang = 'en'
-    status = 'disabled'
 
     base_url = 'https://manga4life.com'
     search_url = base_url + '/search/'
@@ -109,7 +105,7 @@ class Mangalife(Server):
         # Chapters
         chapters = None
         try:
-            script = soup.find_all('script')[-1].string
+            script = soup.find_all('script')[-2].string
             if script:
                 for line in script.split('\n'):
                     line = line.strip()
@@ -165,7 +161,7 @@ class Mangalife(Server):
         chapter = None
         domain = None
         try:
-            script = soup.find_all('script')[-1].string
+            script = soup.find_all('script')[-2].string
             if script:
                 for line in script.split('\n'):
                     line = line.strip()
@@ -241,7 +237,7 @@ class Mangalife(Server):
             soup = BeautifulSoup(r.content, 'lxml')
 
             try:
-                script = soup.find_all('script')[-1].string
+                script = soup.find_all('script')[-2].string
                 if script:
                     for line in script.split('\n'):
                         line = line.strip()
@@ -286,3 +282,15 @@ class Mangalife(Server):
             ))
 
         return results
+
+
+class Mangasee(Mangalife):
+    id = 'mangasee:mangalife'
+    name = 'MangaSee'
+    lang = 'en'
+
+    base_url = 'https://mangasee123.com'
+    search_url = base_url + '/search/'
+    manga_url = base_url + '/manga/{0}'
+    chapter_url = base_url + '/read-online/{0}-chapter-{1}-page-1.html'
+    cover_url = 'https://static.mangaboss.net/cover/{0}.jpg'
