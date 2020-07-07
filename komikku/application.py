@@ -266,7 +266,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         dialog.get_style_context().add_class('solid-csd')
         dialog.connect('response', on_response)
         dialog.set_title(title)
-        dialog.add_buttons('Yes', Gtk.ResponseType.YES, 'Cancel', Gtk.ResponseType.CANCEL)
+        dialog.add_buttons(_('Yes'), Gtk.ResponseType.YES, _('Cancel'), Gtk.ResponseType.CANCEL)
         dialog.set_default_response(Gtk.ResponseType.YES)
 
         label = Gtk.Label()
