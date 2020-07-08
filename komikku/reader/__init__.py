@@ -185,9 +185,9 @@ class Reader:
                 self.window,
                 Gtk.FileChooserAction.SAVE,
                 (
-                    '_Cancel',
+                    _('Cancel'),
                     Gtk.ResponseType.CANCEL,
-                    '_Save',
+                    _('Save'),
                     Gtk.ResponseType.ACCEPT
                 )
             )
