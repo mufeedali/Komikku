@@ -627,7 +627,7 @@ msgstr "[Serveurs] Jailini's Box a été désactivé"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:54
 msgid "Fix 2 critical bugs (app crashs)"
-msgstr "2 bugs critiques ont été corrigés (crash de l'application"
+msgstr "2 bugs critiques ont été corrigés (crash de l'application)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:60
 msgid "[Library/Readers] Add support of animated GIFs"
@@ -744,12 +744,12 @@ msgstr "[Lecteur] Ajout de l'échelle 'Taille Originale'"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:101
 msgid "[Reader] Several fixes in keyboard navigation"
-msgstr "[Lecteur] Nombreuses correction dans la navigation via le clavier"
+msgstr "[Lecteur] Nombreuses corrections dans la navigation via le clavier"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:102
 msgid "[Settings] Library: Add new option 'Auto Download of New Chapters'"
 msgstr "[Paramètres] Bibliothèque : Ajout d'une nouvelle option 'Téléchargement "
-"automatique des nouveaux chapitres"
+"automatique des nouveaux chapitres'"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:103
 msgid ""
@@ -773,7 +773,7 @@ msgstr "[Serveurs] Submanga : mise à jour du domaine"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:112
 msgid "[Reader] Fix crash with corrupt or empty images"
-msgstr "[Lecteur] Correction d'un crash dû à des images corrompus ou vides"
+msgstr "[Lecteur] Correction d'un crash dû à des images corrompues ou vides"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:113
 msgid "[Settings] Add servers settings"
@@ -805,7 +805,7 @@ msgstr "[Serveurs] Hattigarm Scans : nouvelle version du serveur"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:119
 msgid "[Servers] Scantrad France: Fix"
-msgstr "[Serveurs] Scrantrad France : corrigé"
+msgstr "[Serveurs] Scrantrad France : correction"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:120
 msgid "[Servers] MangaDex: Added ability to log in"
@@ -813,7 +813,7 @@ msgstr "[Serveurs] MangaDex : Ajout de la possibilité de se connecter"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:121
 msgid "[Servers] Read Manga: Fixes"
-msgstr "[Serveurs] Manga lu : corrigé"
+msgstr "[Serveurs] Manga lu : corrections"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:122
 #: ../data/info.febvre.Komikku.appdata.xml.in:128
@@ -867,7 +867,7 @@ msgid ""
 "Added abilility to add manga by ID using keyword \"id:&lt;id&gt;\" (useful "
 "with MangaDex)"
 msgstr ""
-"Ajout de la possibilité de d'ajouter des managas par un ID en utilisant des mots-clés "
+"Ajout de la possibilité d'ajouter des mangas par un ID en utilisant des mots-clés "
 "\"id:&lt;id&gt;\" (utile avec MangaDex)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:143
@@ -1078,7 +1078,7 @@ msgstr "Corrections au niveau du serveur Japscan (la recherche est toujours cass
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:265
 msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
-msgstr "Nouveau serveurs : NineManga Russe, Webtoon Indonésie et Webtoon Thaïlande"
+msgstr "Nouveaux serveurs : NineManga Russe, Webtoon Indonésie et Webtoon Thaïlande"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:266
 msgid ""
