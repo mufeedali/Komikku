@@ -5,7 +5,6 @@
 from copy import deepcopy
 from gettext import gettext as _
 from gettext import ngettext as n_
-import threading
 import time
 
 from gi.repository import Gdk
@@ -48,13 +47,13 @@ class Card:
         return self.manga.sort_order or 'desc'
 
     def add_actions(self):
-        delete_action = Gio.SimpleAction.new('card.delete', None)
-        delete_action.connect('activate', self.on_delete_menu_clicked)
-        self.window.application.add_action(delete_action)
+        self.delete_action = Gio.SimpleAction.new('card.delete', None)
+        self.delete_action.connect('activate', self.on_delete_menu_clicked)
+        self.window.application.add_action(self.delete_action)
 
-        update_action = Gio.SimpleAction.new('card.update', None)
-        update_action.connect('activate', self.on_update_menu_clicked)
-        self.window.application.add_action(update_action)
+        self.update_action = Gio.SimpleAction.new('card.update', None)
+        self.update_action.connect('activate', self.on_update_menu_clicked)
+        self.window.application.add_action(self.update_action)
 
         self.sort_order_action = Gio.SimpleAction.new_stateful('card.sort-order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
         self.sort_order_action.connect('change-state', self.on_sort_order_changed)
@@ -86,11 +85,6 @@ class Card:
             self.window.show_notification(
                 _('NOTICE\n{0} server is not longer supported.\nPlease switch to another server.').format(manga.server.name)
             )
-
-        if len(manga.chapters) > 0:
-            self.window.activity_indicator.start()
-
-        self.chapters_list.clear()
 
         self.show(transition)
 
@@ -145,10 +139,6 @@ class Card:
             self.manga = manga
 
             if nb_recent_chapters > 0 or nb_deleted_chapters > 0:
-                if len(manga.chapters) > 0:
-                    self.window.activity_indicator.start()
-
-                self.chapters_list.clear()
                 self.chapters_list.populate()
 
             self.info_grid.populate()
@@ -174,6 +164,11 @@ class Card:
 
         self.set_sort_order(invalidate=False)
 
+    def set_actions_enabled(self, enabled):
+        self.delete_action.set_enabled(enabled)
+        self.update_action.set_enabled(enabled)
+        self.sort_order_action.set_enabled(enabled)
+
     def set_sort_order(self, invalidate=True):
         self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
         if invalidate:
@@ -198,8 +193,6 @@ class Card:
 
 
 class ChaptersList:
-    populate_countdown = 0
-    selection_mode_count = 0
     selection_mode_range = False
     selection_mode_last_row_index = None
 
@@ -296,7 +289,6 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def enter_selection_mode(self):
-        self.selection_mode_count = 0
         self.selection_mode_last_row_index = None
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
@@ -335,7 +327,6 @@ class ChaptersList:
                 while walk_index != last_index:
                     walk_row = self.listbox.get_row_at_index(walk_index)
                     if walk_row and not walk_row._selected:
-                        self.selection_mode_count += 1
                         self.listbox.select_row(walk_row)
                         walk_row._selected = True
 
@@ -348,16 +339,14 @@ class ChaptersList:
 
             if row._selected:
                 self.listbox.unselect_row(row)
-                self.selection_mode_count -= 1
                 self.selection_mode_last_row_index = None
                 row._selected = False
             else:
                 self.listbox.select_row(row)
-                self.selection_mode_count += 1
                 self.selection_mode_last_row_index = row.get_index()
                 row._selected = True
 
-            if self.selection_mode_count == 0:
+            if len(self.listbox.get_selected_rows()) == 0:
                 self.card.leave_selection_mode()
         else:
             self.window.reader.init(self.card.manga, row.chapter)
@@ -379,26 +368,33 @@ class ChaptersList:
             self.card.subtitle_label.hide()
 
     def populate(self):
-        def run():
-            for row in self.listbox.get_children():
-                GLib.idle_add(self.populate_chapter_row, row)
-                time.sleep(0.0025)
+        self.clear()
 
-        # Use countdown to stop activity indicator
-        self.populate_countdown = len(self.card.manga.chapters)
+        if not self.card.manga.chapters:
+            return
 
-        for chapter in self.card.manga.chapters:
-            row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('card-chapter-listboxrow')
-            row.chapter = chapter
-            row.download = None
-            row._selected = False
-            self.listbox.add(row)
+        def add_chapters_rows():
+            for chapter in self.card.manga.chapters:
+                row = Gtk.ListBoxRow()
+                row.get_style_context().add_class('card-chapter-listboxrow')
+                row.chapter = chapter
+                row.download = None
+                row._selected = False
+                self.populate_chapter_row(row)
+                self.listbox.add(row)
+                yield True
 
-        if self.card.manga.chapters:
-            thread = threading.Thread(target=run)
-            thread.daemon = True
-            thread.start()
+            self.window.activity_indicator.stop()
+            self.card.set_actions_enabled(True)
+
+        def run_generator(func):
+            self.window.activity_indicator.start()
+            self.card.set_actions_enabled(False)
+
+            gen = func()
+            GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
+
+        run_generator(add_chapters_rows)
 
     def populate_chapter_row(self, row):
         children = row.get_children()
@@ -530,15 +526,6 @@ class ChaptersList:
         else:
             row.show_all()
 
-        if self.populate_countdown:
-            self.populate_countdown -= 1
-            if self.populate_countdown == 0:
-                # All rows have been populated/updated
-                self.window.activity_indicator.stop()
-
-                if self.card.selection_mode:
-                    self.card.leave_selection_mode()
-
     def refresh(self, chapters):
         for chapter in chapters:
             self.update_chapter_row(chapter=chapter)
@@ -567,13 +554,24 @@ class ChaptersList:
         if not self.card.selection_mode:
             self.card.enter_selection_mode()
 
-        self.selection_mode_count = len(self.listbox.get_children())
+        def select_chapters_rows():
+            for row in self.listbox.get_children():
+                if row._selected:
+                    continue
 
-        for row in self.listbox.get_children():
-            if row._selected:
-                continue
-            self.listbox.select_row(row)
-            row._selected = True
+                self.listbox.select_row(row)
+                row._selected = True
+                yield True
+
+            self.window.activity_indicator.stop()
+
+        def run_generator(func):
+            self.window.activity_indicator.start()
+
+            gen = func()
+            GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
+
+        run_generator(select_chapters_rows)
 
     def show_chapter_menu(self, button, row):
         chapter = row.chapter
@@ -629,29 +627,31 @@ class ChaptersList:
 
         db_conn.close()
 
-        # Then, if DB update succeeded, refresh chapters rows
-        def run():
-            # Use countdown to stop activity indicator and leave selection mode
-            self.populate_countdown = len(self.listbox.get_selected_rows())
-
-            for row in self.listbox.get_selected_rows():
-                chapter = row.chapter
-
-                if chapter.pages:
-                    for chapter_page in chapter.pages:
-                        chapter_page['read'] = read
-                if chapter.read == read == 0:
-                    chapter.last_page_read_index = None
-                chapter.read = read
-                chapter.recent = False
-
-                GLib.idle_add(self.populate_chapter_row, row)
-                time.sleep(0.0025)
-
         if res:
-            thread = threading.Thread(target=run)
-            thread.daemon = True
-            thread.start()
+            # Then, if DB update succeeded, update chapters rows
+            def update_chapters_rows():
+                for row in self.listbox.get_selected_rows():
+                    chapter = row.chapter
+
+                    if chapter.pages:
+                        for chapter_page in chapter.pages:
+                            chapter_page['read'] = read
+                    if chapter.read == read == 0:
+                        chapter.last_page_read_index = None
+                    chapter.read = read
+                    chapter.recent = False
+
+                    self.populate_chapter_row(row)
+                    yield True
+
+                self.card.leave_selection_mode()
+                self.window.activity_indicator.stop()
+
+            def run_generator(func):
+                gen = func()
+                GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
+
+            run_generator(update_chapters_rows)
         else:
             self.window.activity_indicator.stop()
             self.card.leave_selection_mode()
