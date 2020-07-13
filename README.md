@@ -93,7 +93,6 @@ cd _build
 meson ..
 meson configure -Dprefix=$(pwd)/testdir
 ninja install # This will actually install in _build/testdir
-export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0/
 ninja run
 ```
 

@@ -397,13 +397,8 @@ class ChaptersList:
         run_generator(add_chapters_rows)
 
     def populate_chapter_row(self, row):
-        children = row.get_children()
-        if children:
-            update = True
-            for child in children:
-                child.destroy()
-        else:
-            update = False
+        for child in row.get_children():
+            child.destroy()
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         row.add(box)
@@ -521,10 +516,7 @@ class ChaptersList:
 
         box.pack_start(hbox, True, True, 0)
 
-        if update:
-            box.show_all()
-        else:
-            row.show_all()
+        row.show_all()
 
     def refresh(self, chapters):
         for chapter in chapters:
