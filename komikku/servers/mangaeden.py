@@ -29,7 +29,7 @@ class Mangaeden(Server):
     name = SERVER_NAME
     lang = 'en'
 
-    base_url = 'http://www.mangaeden.com'
+    base_url = 'https://www.mangaeden.com'
     search_url = base_url + '/en/en-directory/'
     most_populars_url = search_url + '?order=1'
     manga_url = base_url + '/en/en-manga/{0}/'
@@ -157,7 +157,7 @@ class Mangaeden(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(page['image'])
+        r = self.session_get(page['image'], headers=dict(referer=self.chapter_url.format(manga_slug, chapter_slug)))
         if r is None or r.status_code != 200:
             return None
 

@@ -19,6 +19,7 @@ import requests
 import subprocess
 import traceback
 
+gi.require_version('GdkPixbuf', '2.0')
 gi.require_version('Secret', '1')
 
 from gi.repository import GLib
