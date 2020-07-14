@@ -48,7 +48,7 @@ class Webtoon(Server):
     lang = 'en'
 
     base_url = 'https://www.webtoons.com'
-    search_url = base_url + '/search'
+    search_url = base_url + '/{0}/search'
     most_populars_url = base_url + '/{0}/top'
     manga_url = base_url + '{0}'
     chapters_url = 'https://m.webtoons.com{0}'
@@ -274,7 +274,7 @@ class Webtoon(Server):
     def search_by_type(self, term, type):
         assert type in ('CHALLENGE', 'WEBTOON', ), 'Invalid type'
 
-        r = self.session_get(self.search_url, params=dict(keyword=term, type=type))
+        r = self.session_get(self.search_url.format(LANGUAGES_CODES[self.lang]), params=dict(keyword=term, type=type))
         if r is None:
             return None
 
