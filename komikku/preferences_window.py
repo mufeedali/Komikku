@@ -38,6 +38,8 @@ class PreferencesWindow(Handy.PreferencesWindow):
     borders_crop_switch = Gtk.Template.Child('borders_crop_switch')
     fullscreen_switch = Gtk.Template.Child('fullscreen_switch')
 
+    credentials_storage_plaintext_fallback_switch = Gtk.Template.Child('credentials_storage_plaintext_fallback_switch')
+
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
@@ -150,6 +152,14 @@ class PreferencesWindow(Handy.PreferencesWindow):
         self.fullscreen_switch.set_active(settings.fullscreen)
         self.fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
+        #
+        # Advanced
+        #
+
+        # Credentials storag: allow plaintext as fallback
+        self.credentials_storage_plaintext_fallback_switch.set_active(settings.credentials_storage_plaintext_fallback)
+        self.credentials_storage_plaintext_fallback_switch.connect('notify::active', self.on_credentials_storage_plaintext_fallback_changed)
+
     @staticmethod
     def on_background_color_changed(row, param):
         index = row.get_selected_index()
@@ -162,6 +172,10 @@ class PreferencesWindow(Handy.PreferencesWindow):
     @staticmethod
     def on_borders_crop_changed(switch_button, gparam):
         Settings.get_default().borders_crop = switch_button.get_active()
+
+    @staticmethod
+    def on_credentials_storage_plaintext_fallback_changed(switch_button, gparam):
+        Settings.get_default().credentials_storage_plaintext_fallback = switch_button.get_active()
 
     @staticmethod
     def on_desktop_notifications_changed(switch_button, gparam):
@@ -264,6 +278,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
 
         settings = Settings.get_default().servers_settings
         languages = Settings.get_default().servers_languages
+        credentials_storage_plaintext_fallback = Settings.get_default().credentials_storage_plaintext_fallback
 
         servers_data = {}
         for server_data in get_servers_list(order_by=('name', 'lang')):
@@ -344,8 +359,30 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                     password_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'dialog-password-symbolic')
                     box.pack_start(password_entry, True, True, 0)
 
+                    plaintext_checkbutton = None
+                    if self.keyring_helper.is_disabled or not self.keyring_helper.has_recommended_backend:
+                        label = Gtk.Label()
+                        label.set_line_wrap(True)
+                        if self.keyring_helper.is_disabled:
+                            label.get_style_context().add_class('dim-label')
+                            label.set_text(_('System keyring service is disabled. Credential cannot be saved.'))
+                            box.pack_start(label, False, False, 0)
+                        elif not self.keyring_helper.has_recommended_backend:
+                            if not credentials_storage_plaintext_fallback:
+                                plaintext_checkbutton = Gtk.CheckButton.new()
+                                label.set_text(_('No keyring backends were found to store credential. Use plaintext storage as fallback.'))
+                                plaintext_checkbutton.add(label)
+                                box.pack_start(plaintext_checkbutton, False, False, 0)
+                            else:
+                                label.get_style_context().add_class('dim-label')
+                                label.set_text(_('No keyring backends were found to store credential. Plaintext storage will be used as fallback.'))
+                                box.pack_start(label, False, False, 0)
+
                     btn = Gtk.Button(_('Test'))
-                    btn.connect('clicked', self.save_credential, server_main_id, server_class, username_entry, password_entry)
+                    btn.connect(
+                        'clicked', self.save_credential,
+                        server_main_id, server_class, username_entry, password_entry, plaintext_checkbutton
+                    )
                     btn.set_always_show_image(True)
                     box.pack_start(btn, False, False, 0)
 
@@ -380,13 +417,20 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
     def on_server_language_activated(switch_button, gparam, server_main_id, lang):
         Settings.get_default().toggle_server_lang(server_main_id, lang, switch_button.get_active())
 
-    def save_credential(self, button, server_main_id, server_class, username_entry, password_entry):
+    def save_credential(self, button, server_main_id, server_class, username_entry, password_entry, plaintext_checkbutton):
         username = username_entry.get_text()
         password = password_entry.get_text()
         server = server_class(username=username, password=password)
 
         if server.logged_in:
             button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
+            if self.keyring_helper.is_disabled or plaintext_checkbutton is not None and not plaintext_checkbutton.get_active():
+                return
+
+            if plaintext_checkbutton is not None and plaintext_checkbutton.get_active():
+                # Save user agrees to save credentials in plaintext
+                self.parent.credentials_storage_plaintext_fallback_switch.set_active(True)
+
             self.keyring_helper.store(server_main_id, username, password)
         else:
             button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.MENU))

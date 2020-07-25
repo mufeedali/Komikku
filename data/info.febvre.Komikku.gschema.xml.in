@@ -90,6 +90,12 @@
             <description>Automatically enter fullscreen mode in reader</description>
         </key>
 
+        <key type="b" name="credentials-storage-plaintext-fallback">
+            <default>false</default>
+            <summary>Allow plaintext storage as fallback</summary>
+            <description>Used when no keyring backends are found</description>
+        </key>
+
         <key type="ai" name="window-size">
             <default>[768, 600]</default>
             <summary>Window Size</summary>

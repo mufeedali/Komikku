@@ -72,6 +72,14 @@ class Settings(Gio.Settings):
         self.set_boolean('borders-crop', state)
 
     @property
+    def credentials_storage_plaintext_fallback(self):
+        return self.get_boolean('credentials-storage-plaintext-fallback')
+
+    @credentials_storage_plaintext_fallback.setter
+    def credentials_storage_plaintext_fallback(self, state):
+        self.set_boolean('credentials-storage-plaintext-fallback', state)
+
+    @property
     def dark_theme(self):
         return self.get_boolean('dark-theme')
 

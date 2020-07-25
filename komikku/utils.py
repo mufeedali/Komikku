@@ -235,15 +235,29 @@ class Imagebuf:
 class KeyringHelper:
     """Simple helper to store servers accounts credentials using Python keyring library"""
 
-    def __init__(self, fallback_backend='plaintext'):
-        self.keyring = keyring.get_keyring()
-        self.keyring.appid = 'info.febvre.Komikku'
+    appid = 'info.febvre.Komikku'
 
-        if isinstance(self.keyring, keyring.backends.fail.Keyring):
-            if fallback_backend == 'plaintext':
+    def __init__(self, fallback_keyring='plaintext'):
+        if not self.is_disabled and not self.has_recommended_backend:
+            if fallback_keyring == 'plaintext':
                 keyring.set_keyring(PlaintextKeyring())
 
+    @property
+    def has_recommended_backend(self):
+        return not isinstance(self.keyring, keyring.backends.fail.Keyring)
+
+    @property
+    def is_disabled(self):
+        return hasattr(keyring.backends, 'null') and isinstance(self.keyring, keyring.backends.null.Keyring)
+
+    @property
+    def keyring(self):
+        return keyring.get_keyring()
+
     def get(self, service):
+        if self.is_disabled:
+            return None
+
         credential = self.keyring.get_credential(service, None)
 
         if isinstance(self.keyring, keyring.backends.SecretService.Keyring) and credential and credential.username is None:
@@ -265,11 +279,14 @@ class KeyringHelper:
         return credential
 
     def store(self, service, username, password):
+        if self.is_disabled:
+            return
+
         if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
             collection = self.keyring.get_preferred_collection()
-            label = f'{self.keyring.appid}: {username}@{service}'
+            label = f'{self.appid}: {username}@{service}'
             attributes = {
-                'application': self.keyring.appid,
+                'application': self.appid,
                 'service': service,
                 'username': username,
             }
