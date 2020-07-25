@@ -20,7 +20,7 @@ class Crunchyroll(Server):
     start_session_url = 'https://api.crunchyroll.com/start_session.0.json'
     login_url = 'https://api.crunchyroll.com/login.0.json'
 
-    api_base_url = 'http://api-manga.crunchyroll.com'
+    api_base_url = 'https://api-manga.crunchyroll.com'
     api_auth_url = api_base_url + '/cr_authenticate?auth=&session_id={}&version=0&format=json'
     api_series_url = api_base_url + '/series?sort=popular'
     api_chapter_url = api_base_url + '/list_chapter?session_id={}&chapter_id={}&auth={}'

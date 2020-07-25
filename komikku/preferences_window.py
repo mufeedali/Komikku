@@ -156,7 +156,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
         # Advanced
         #
 
-        # Credentials storag: allow plaintext as fallback
+        # Credentials storage: allow plaintext as fallback
         self.credentials_storage_plaintext_fallback_switch.set_active(settings.credentials_storage_plaintext_fallback)
         self.credentials_storage_plaintext_fallback_switch.connect('notify::active', self.on_credentials_storage_plaintext_fallback_changed)
 
