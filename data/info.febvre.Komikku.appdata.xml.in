@@ -40,6 +40,28 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.18.0" date="2020-07-28">
+            <description>
+                <ul>
+                    <li>[Library] Press &lt;Enter&gt; opens first manga in search</li>
+                    <li>[Library] Disable range selection when in search mode</li>
+                    <li>[Library/Chapters/Download manager] Enter selection mode with Right click</li>
+                    <li>[Reader] Two new navigation types: mouse scroll, 2-fingers swipe gesture</li>
+                    <li>[Reader] New 'Save Page' action</li>
+                    <li>[Servers] Fix and improve credentials storage</li>
+                    <li>[servers] Crunchyroll: Fix login</li>
+                    <li>[Servers] Re-enable Jaimini's Box</li>
+                    <li>[Servers] Manga Eden: Fix downloading of images</li>
+                    <li>[Servers] MangaSee: Update</li>
+                    <li>[Servers] Manga Plus: Add manga 'Status' info</li>
+                    <li>[Servers] Manga Plus: Can't get manga info of some manga</li>
+                    <li>[Servers] MangaDex: Fix new chapters not appearing</li>
+                    <li>[Servers] Webtoon: Fix search</li>
+                    <li>[Preferences] Add search</li>
+                    <li>Add Turkish translation</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.17.0" date="2020-05-29">
             <description>
                 <ul>
