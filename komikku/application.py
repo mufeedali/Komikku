@@ -85,6 +85,7 @@ class Application(Gtk.Application):
 class ApplicationWindow(Handy.ApplicationWindow):
     __gtype_name__ = 'ApplicationWindow'
 
+    hidpi_scale = 1
     mobile_width = False
     page = None
 
@@ -141,6 +142,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
         super().__init__(*args, **kwargs)
 
         self.application = kwargs['application']
+
+        self.hidpi_scale = self.get_scale_factor()
 
         self._night_light_handler_id = 0
         self._night_light_proxy = None

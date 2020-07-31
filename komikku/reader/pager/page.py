@@ -5,6 +5,7 @@
 from gettext import gettext as _
 import threading
 
+from gi.repository import Gdk
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
@@ -46,6 +47,7 @@ class Page(Gtk.Overlay):
         self.viewport = Gtk.Viewport()
         self.image = Gtk.Image()
         self.imagebuf = None
+        self.surface = None
         self.viewport.add(self.image)
         self.scrolledwindow.add(self.viewport)
         self.add(self.scrolledwindow)
@@ -78,6 +80,7 @@ class Page(Gtk.Overlay):
         self.status = 'cleaned'
         self.loadable = False
         self.imagebuf = None
+        self.surface = None
         self.image.clear()
 
     def on_button_retry_clicked(self, button):
@@ -277,10 +280,10 @@ class Page(Gtk.Overlay):
             if not self.animated:
                 if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
                     # Adapt image to width
-                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
+                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False, self.window.hidpi_scale)
                 elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
                     # Adapt image to height
-                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
+                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False, self.window.hidpi_scale)
             else:
                 # NOTE: Special case of animated images (GIF)
                 # They cannot be cropped, which would prevent navigation by 2-finger swipe gesture
@@ -288,20 +291,34 @@ class Page(Gtk.Overlay):
 
                 if adapt_to_width_height <= self.reader.size.height:
                     # Adapt image to width
-                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False)
+                    pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False, self.window.hidpi_scale)
                 elif adapt_to_height_width <= self.reader.size.width:
                     # Adapt image to height
-                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False)
+                    pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False, self.window.hidpi_scale)
         else:
             pixbuf = imagebuf.get_pixbuf()
 
         if crop is not None:
+            # The 'crop' argument allows the image to be cropped to keep only its visible part
+            # Used during 2-fingers swipe gestures to disable Gtk.Scrolledwindow scrolling
             if crop in ('right', 'bottom'):
-                pixbuf = crop_pixbuf(pixbuf, 0, 0, self.reader.size.width, self.reader.size.height)
+                pixbuf = crop_pixbuf(
+                    pixbuf,
+                    0, 0,
+                    self.reader.size.width * self.window.hidpi_scale, self.reader.size.height * self.window.hidpi_scale
+                )
             elif crop == 'left':
-                pixbuf = crop_pixbuf(pixbuf, pixbuf.get_width() - self.reader.size.width, 0, self.reader.size.width, self.reader.size.height)
+                pixbuf = crop_pixbuf(
+                    pixbuf,
+                    pixbuf.get_width() - self.reader.size.width * self.window.hidpi_scale, 0,
+                    self.reader.size.width * self.window.hidpi_scale, self.reader.size.height * self.window.hidpi_scale
+                )
             elif crop == 'top':
-                pixbuf = crop_pixbuf(pixbuf, 0, pixbuf.get_height() - self.reader.size.height, self.reader.size.width, self.reader.size.height)
+                pixbuf = crop_pixbuf(
+                    pixbuf,
+                    0, pixbuf.get_height() - self.reader.size.height * self.window.hidpi_scale,
+                    self.reader.size.width * self.window.hidpi_scale, self.reader.size.height * self.window.hidpi_scale
+                )
             self.cropped = True
         else:
             self.cropped = False
@@ -309,7 +326,8 @@ class Page(Gtk.Overlay):
         if isinstance(pixbuf, PixbufAnimation):
             self.image.set_from_animation(pixbuf)
         else:
-            self.image.set_from_pixbuf(pixbuf)
+            self.surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
+            self.image.set_from_surface(self.surface)
 
     def set_size(self):
         self.set_size_request(self.reader.size.width, self.reader.size.height)

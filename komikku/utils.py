@@ -217,7 +217,7 @@ class Imagebuf:
 
         return self._buffer
 
-    def get_scaled_pixbuf(self, width, height, preserve_aspect_ratio):
+    def get_scaled_pixbuf(self, width, height, preserve_aspect_ratio, hidpi_scale):
         if preserve_aspect_ratio:
             if width == -1:
                 ratio = self.height / height
@@ -229,7 +229,7 @@ class Imagebuf:
         if isinstance(self._buffer, bytes):
             return self._get_pixbuf_from_bytes(width, height)
 
-        return self._buffer.scale_simple(width, height, InterpType.BILINEAR)
+        return self._buffer.scale_simple(width * hidpi_scale, height * hidpi_scale, InterpType.BILINEAR)
 
 
 class KeyringHelper:

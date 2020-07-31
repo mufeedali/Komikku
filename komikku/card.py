@@ -712,17 +712,18 @@ class InfoGrid:
         else:
             try:
                 if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
-                    pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174, -1, True)
+                    pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174 * self.window.hidpi_scale, -1, True)
                 else:
                     pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 174, -1, True, True)
             except Exception:
                 # Invalid image, corrupted image, unsupported image format,...
-                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+                pixbuf = Pixbuf.new_from_resource_at_scale(
+                    '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
 
         if isinstance(pixbuf, PixbufAnimation):
             self.cover_image.set_from_animation(pixbuf)
         else:
-            self.cover_image.set_from_pixbuf(pixbuf)
+            self.cover_image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
         authors = html_escape(', '.join(manga.authors)) if manga.authors else '-'
         self.authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))

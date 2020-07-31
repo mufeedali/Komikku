@@ -5,6 +5,7 @@
 from gettext import gettext as _
 import threading
 
+from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
@@ -319,18 +320,20 @@ class AddDialog:
                     self.show_notification(user_error_message)
 
             if cover_data is None:
-                pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+                pixbuf = Pixbuf.new_from_resource_at_scale(
+                    '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
             else:
                 cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
                 if get_buffer_mime_type(cover_data) != 'image/gif':
-                    pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174, -1, True, None)
+                    pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174 * self.window.hidpi_scale, -1, True, None)
                 else:
                     pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_stream(cover_stream), 174, -1, True, True)
 
             if isinstance(pixbuf, PixbufAnimation):
                 self.builder.get_object('cover_image').set_from_animation(pixbuf)
             else:
-                self.builder.get_object('cover_image').set_from_pixbuf(pixbuf)
+                self.builder.get_object('cover_image').set_from_surface(
+                    Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
             authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
             self.builder.get_object('authors_value_label').set_markup('<span size="small">{0}</span>'.format(authors))

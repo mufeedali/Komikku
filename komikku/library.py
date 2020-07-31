@@ -515,8 +515,7 @@ class Library():
             overlay._selected = True
             self.flowbox.select_child(child)
 
-    @staticmethod
-    def set_manga_cover_image(overlay, width, height, update=False):
+    def set_manga_cover_image(self, overlay, width, height, update=False):
         if overlay._pixbuf is None or update:
             manga = overlay.manga
 
@@ -537,7 +536,8 @@ class Library():
         if isinstance(overlay._pixbuf, PixbufAnimation):
             image.set_from_animation(scale_pixbuf_animation(overlay._pixbuf, width, height, False, loop=True))
         else:
-            image.set_from_pixbuf(overlay._pixbuf.scale_simple(width, height, InterpType.BILINEAR))
+            pixbuf = overlay._pixbuf.scale_simple(width * self.window.hidpi_scale, height * self.window.hidpi_scale, InterpType.BILINEAR)
+            image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)

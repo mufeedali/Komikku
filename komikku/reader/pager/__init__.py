@@ -192,8 +192,8 @@ class Pager(Handy.Carousel):
 
             # Adjust image's width to 2x window's width
             factor = 2
-            orig_width = image.get_pixbuf().get_width()
-            orig_height = image.get_pixbuf().get_height()
+            orig_width = page.surface.get_width() / self.window.hidpi_scale
+            orig_height = page.surface.get_height() / self.window.hidpi_scale
             zoom_width = self.reader.size.width * factor
             zoom_height = orig_height * (zoom_width / orig_width)
             ratio = zoom_width / orig_width
@@ -212,9 +212,10 @@ class Pager(Handy.Carousel):
 
             handler_id = hadj.connect('changed', on_adjustment_change, vadj, h_value, v_value)
 
-            scaled_pixbuf = pixbuf.scale_simple(zoom_width, zoom_height, InterpType.BILINEAR)
+            scaled_pixbuf = pixbuf.scale_simple(
+                zoom_width * self.window.hidpi_scale, zoom_height * self.window.hidpi_scale, InterpType.BILINEAR)
 
-            image.set_from_pixbuf(scaled_pixbuf)
+            image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(scaled_pixbuf, self.window.hidpi_scale))
 
             self.zoom['active'] = True
         else:
