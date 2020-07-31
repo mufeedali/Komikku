@@ -247,8 +247,7 @@ class Library():
 
         ctx.restore()
 
-    @staticmethod
-    def draw_cover_server_logo(da, ctx, manga):
+    def draw_cover_server_logo(self, da, ctx, manga):
         size = 75
 
         ctx.save()
@@ -266,8 +265,10 @@ class Library():
         ctx.fill()
 
         # Draw server logo
-        pixbuf = Pixbuf.new_from_resource_at_scale(manga.server.logo_resource_path, 20, 20, True)
-        Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 4, 4)
+        pixbuf = Pixbuf.new_from_resource_at_scale(
+            manga.server.logo_resource_path, 20 * self.window.hidpi_scale, 20 * self.window.hidpi_scale, True)
+        surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
+        ctx.set_source_surface(surface, 4, 4)
         ctx.paint()
 
         ctx.restore()

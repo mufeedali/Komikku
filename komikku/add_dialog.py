@@ -82,9 +82,10 @@ class AddDialog:
             row.add(box)
 
             # Server logo
-            pixbuf = Pixbuf.new_from_resource_at_scale(get_server_logo_resource_path_by_id(server_data['id']), 24, 24, True)
             logo = Gtk.Image()
-            logo.set_from_pixbuf(pixbuf)
+            pixbuf = Pixbuf.new_from_resource_at_scale(
+                get_server_logo_resource_path_by_id(server_data['id']), 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
+            logo.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
             box.pack_start(logo, False, True, 0)
 
             # Server title
