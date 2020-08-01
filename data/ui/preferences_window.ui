@@ -24,9 +24,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Dark Theme</property>
                 <property name="activatable_widget">theme_switch</property>
                 <property name="subtitle" translatable="yes">Use dark GTK theme</property>
-                <property name="title" translatable="yes">Dark Theme</property>
                 <child>
                   <object class="GtkSwitch" id="theme_switch">
                     <property name="visible">True</property>
@@ -41,9 +41,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Night Light</property>
                 <property name="activatable_widget">night_light_switch</property>
                 <property name="subtitle" translatable="yes">Automatically enable dark theme at night</property>
-                <property name="title" translatable="yes">Night Light</property>
                 <child>
                   <object class="GtkSwitch" id="night_light_switch">
                     <property name="visible">True</property>
@@ -58,9 +58,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Desktop Notifications</property>
                 <property name="activatable_widget">desktop_notifications_switch</property>
                 <property name="subtitle" translatable="yes">Use desktop notifications for downloads</property>
-                <property name="title" translatable="yes">Desktop Notifications</property>
                 <child>
                   <object class="GtkSwitch" id="desktop_notifications_switch">
                     <property name="visible">True</property>
@@ -89,9 +89,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Update at Startup</property>
                 <property name="activatable_widget">update_at_startup_switch</property>
                 <property name="subtitle" translatable="yes">Automatically update library at startup</property>
-                <property name="title" translatable="yes">Update at Startup</property>
                 <child>
                   <object class="GtkSwitch" id="update_at_startup_switch">
                     <property name="visible">True</property>
@@ -107,9 +107,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Auto Download of New Chapters</property>
                 <property name="activatable_widget">new_chapters_auto_download_switch</property>
                 <property name="subtitle" translatable="yes">Automatically download new chapters</property>
-                <property name="title" translatable="yes">Auto Download of New Chapters</property>
                 <child>
                   <object class="GtkSwitch" id="new_chapters_auto_download_switch">
                     <property name="visible">True</property>
@@ -122,20 +122,28 @@
               </object>
             </child>
             <child>
-              <object class="HdyExpanderRow" id="servers_languages_expander_row">
+              <object class="HdyActionRow" id="servers_languages_actionrow">
                 <property name="visible">True</property>
+                <property name="activatable">True</property>
                 <property name="can_focus">True</property>
-                <property name="title">Servers Languages</property>
-                <property name="subtitle">Restrict servers to selected languages</property>
+                <property name="title" translatable="yes">Servers Languages</property>
+                <property name="subtitle" translatable="yes">Restrict servers to selected languages</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">go-next-symbolic</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Servers Settings</property>
                 <property name="activatable_widget">servers_settings_button</property>
                 <property name="subtitle" translatable="yes">Enable/disable and configure servers</property>
-                <property name="title" translatable="yes">Servers Settings</property>
                 <child>
                   <object class="GtkButton" id="servers_settings_button">
                     <property name="visible">True</property>
@@ -158,9 +166,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Long Strip Detection</property>
                 <property name="activatable_widget">long_strip_detection_switch</property>
                 <property name="subtitle" translatable="yes">Automatically detect long vertical strip when possible</property>
-                <property name="title" translatable="yes">Long Strip Detection</property>
                 <child>
                   <object class="GtkSwitch" id="long_strip_detection_switch">
                     <property name="visible">True</property>
@@ -197,8 +205,8 @@
               <object class="HdyComboRow" id="scaling_row">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="subtitle" translatable="yes">Type of scaling to adapt image</property>
                 <property name="title" translatable="yes">Scaling</property>
+                <property name="subtitle" translatable="yes">Type of scaling to adapt image</property>
               </object>
             </child>
             <child>
@@ -212,9 +220,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Borders Crop</property>
                 <property name="activatable_widget">borders_crop_switch</property>
                 <property name="subtitle" translatable="yes">Crop white borders of images</property>
-                <property name="title" translatable="yes">Borders Crop</property>
                 <child>
                   <object class="GtkSwitch" id="borders_crop_switch">
                     <property name="visible">True</property>
@@ -230,9 +238,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Fullscreen</property>
                 <property name="activatable_widget">fullscreen_switch</property>
                 <property name="subtitle" translatable="yes">Automatically enter fullscreen mode</property>
-                <property name="title" translatable="yes">Fullscreen</property>
                 <child>
                   <object class="GtkSwitch" id="fullscreen_switch">
                     <property name="visible">True</property>
@@ -263,9 +271,9 @@
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="title" translatable="yes">Allow plaintext storage as fallback</property>
                 <property name="activatable_widget">credentials_storage_plaintext_fallback_switch</property>
                 <property name="subtitle" translatable="yes">Used when no keyring backends are found</property>
-                <property name="title" translatable="yes">Allow plaintext storage as fallback</property>
                 <child>
                   <object class="GtkSwitch" id="credentials_storage_plaintext_fallback_switch">
                     <property name="visible">True</property>
@@ -282,4 +290,56 @@
       </object>
     </child>
   </template>
+  <object class="GtkBox" id="servers_languages_subpage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="HdyHeaderBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Servers Languages</property>
+        <child>
+          <object class="GtkButton" id="servers_languages_subpage_close_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">go-previous-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="HdyPreferencesGroup" id="servers_languages_subpage_group">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="vexpand">True</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
 </interface>

@@ -28,7 +28,10 @@ class PreferencesWindow(Handy.PreferencesWindow):
 
     update_at_startup_switch = Gtk.Template.Child('update_at_startup_switch')
     new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
-    servers_languages_expander_row = Gtk.Template.Child('servers_languages_expander_row')
+    servers_languages_actionrow = Gtk.Template.Child('servers_languages_actionrow')
+    servers_languages_subpage = Gtk.Template.Child('servers_languages_subpage')
+    servers_languages_subpage_close_button = Gtk.Template.Child('servers_languages_subpage_close_button')
+    servers_languages_subpage_group = Gtk.Template.Child('servers_languages_subpage_group')
     servers_settings_button = Gtk.Template.Child('servers_settings_button')
     long_strip_detection_switch = Gtk.Template.Child('long_strip_detection_switch')
 
@@ -42,8 +45,19 @@ class PreferencesWindow(Handy.PreferencesWindow):
 
     def __init__(self, parent):
         super().__init__()
+
         self.parent = parent
-        self.connect('key-press-event', self.on_key_press)
+
+        self.set_can_swipe_back(True)
+
+        self.servers_languages_subpage_close_button.connect('clicked', self._close_subpage)
+        self.servers_languages_actionrow.connect('activated', self._present_subpage, self.servers_languages_subpage)
+
+    def _close_subpage(self, _widget):
+        self.close_subpage()
+
+    def _present_subpage(self, _widget, subpage):
+        self.present_subpage(subpage)
 
     def open(self, action, param):
         self.set_transient_for(self.parent)
@@ -84,24 +98,18 @@ class PreferencesWindow(Handy.PreferencesWindow):
         # Servers languages
         servers_languages = settings.servers_languages
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        vbox.set_border_width(12)
-
         for code, language in LANGUAGES.items():
-            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-
-            label = Gtk.Label(language, xalign=0)
-            hbox.pack_start(label, True, True, 0)
+            action_row = Handy.ActionRow()
+            action_row.set_title(language)
 
             switch = Gtk.Switch.new()
+            switch.set_valign(Gtk.Align.CENTER)
             switch.set_active(code in servers_languages)
             switch.connect('notify::active', self.on_servers_language_activated, code)
-            hbox.pack_start(switch, False, False, 0)
+            action_row.add(switch)
+            action_row.show_all()
 
-            vbox.pack_start(hbox, True, True, 0)
-
-        self.servers_languages_expander_row.add(vbox)
-        vbox.show_all()
+            self.servers_languages_subpage_group.add(action_row)
 
         # Servers settings
         self.servers_settings_button.connect('clicked', self.open_servers_settings)
@@ -187,10 +195,6 @@ class PreferencesWindow(Handy.PreferencesWindow):
     @staticmethod
     def on_fullscreen_changed(switch_button, gparam):
         Settings.get_default().fullscreen = switch_button.get_active()
-
-    def on_key_press(self, widget, event):
-        if event.keyval == Gdk.KEY_Escape:
-            self.destroy()
 
     @staticmethod
     def on_long_strip_detection_changed(switch_button, gparam):
