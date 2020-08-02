@@ -30,7 +30,7 @@ def test_jaiminisbox(jaiminisbox_server):
     # Search
     print('Search')
     try:
-        response = jaiminisbox_server.search('solo leveling')
+        response = jaiminisbox_server.search('oshi no ko')
         slug = response[0]['slug']
     except Exception as e:
         slug = None
