@@ -138,26 +138,17 @@
               </object>
             </child>
             <child>
-              <object class="HdyActionRow">
+              <object class="HdyActionRow" id="servers_settings_actionrow">
                 <property name="visible">True</property>
+                <property name="activatable">True</property>
                 <property name="can_focus">True</property>
                 <property name="title" translatable="yes">Servers Settings</property>
-                <property name="activatable_widget">servers_settings_button</property>
                 <property name="subtitle" translatable="yes">Enable/disable and configure servers</property>
                 <child>
-                  <object class="GtkButton" id="servers_settings_button">
+                  <object class="GtkImage">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <child>
-                      <object class="GtkImage" id="left_button_image">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="icon_name">emblem-system-symbolic</property>
-                      </object>
-                    </child>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">go-next-symbolic</property>
                   </object>
                 </child>
               </object>
@@ -326,6 +317,58 @@
         <property name="can_focus">False</property>
         <child>
           <object class="HdyPreferencesGroup" id="servers_languages_subpage_group">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="vexpand">True</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkBox" id="servers_settings_subpage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="HdyHeaderBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Servers Settings</property>
+        <child>
+          <object class="GtkButton" id="servers_settings_subpage_close_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">go-previous-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="HdyPreferencesGroup" id="servers_settings_subpage_group">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="vexpand">True</property>

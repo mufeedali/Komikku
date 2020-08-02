@@ -4,7 +4,6 @@
 
 from gettext import gettext as _
 
-from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Handy
@@ -21,6 +20,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
     __gtype_name__ = 'PreferencesWindow'
 
     parent = NotImplemented
+    settings = NotImplemented
 
     theme_switch = Gtk.Template.Child('theme_switch')
     night_light_switch = Gtk.Template.Child('night_light_switch')
@@ -32,7 +32,10 @@ class PreferencesWindow(Handy.PreferencesWindow):
     servers_languages_subpage = Gtk.Template.Child('servers_languages_subpage')
     servers_languages_subpage_close_button = Gtk.Template.Child('servers_languages_subpage_close_button')
     servers_languages_subpage_group = Gtk.Template.Child('servers_languages_subpage_group')
-    servers_settings_button = Gtk.Template.Child('servers_settings_button')
+    servers_settings_actionrow = Gtk.Template.Child('servers_settings_actionrow')
+    servers_settings_subpage = Gtk.Template.Child('servers_settings_subpage')
+    servers_settings_subpage_close_button = Gtk.Template.Child('servers_settings_subpage_close_button')
+    servers_settings_subpage_group = Gtk.Template.Child('servers_settings_subpage_group')
     long_strip_detection_switch = Gtk.Template.Child('long_strip_detection_switch')
 
     reading_direction_row = Gtk.Template.Child('reading_direction_row')
@@ -47,17 +50,9 @@ class PreferencesWindow(Handy.PreferencesWindow):
         super().__init__()
 
         self.parent = parent
+        self.settings = Settings.get_default()
 
         self.set_can_swipe_back(True)
-
-        self.servers_languages_subpage_close_button.connect('clicked', self._close_subpage)
-        self.servers_languages_actionrow.connect('activated', self._present_subpage, self.servers_languages_subpage)
-
-    def _close_subpage(self, _widget):
-        self.close_subpage()
-
-    def _present_subpage(self, _widget, subpage):
-        self.present_subpage(subpage)
 
     def open(self, action, param):
         self.set_transient_for(self.parent)
@@ -65,22 +60,20 @@ class PreferencesWindow(Handy.PreferencesWindow):
         self.present()
 
     def set_config_values(self):
-        settings = Settings.get_default()
-
         #
         # General
         #
 
         # Dark theme
-        self.theme_switch.set_active(settings.dark_theme)
+        self.theme_switch.set_active(self.settings.dark_theme)
         self.theme_switch.connect('notify::active', self.on_theme_changed)
 
         # Night light
-        self.night_light_switch.set_active(settings.night_light)
+        self.night_light_switch.set_active(self.settings.night_light)
         self.night_light_switch.connect('notify::active', self.on_night_light_changed)
 
         # Desktop notifications
-        self.desktop_notifications_switch.set_active(settings.desktop_notifications)
+        self.desktop_notifications_switch.set_active(self.settings.desktop_notifications)
         self.desktop_notifications_switch.connect('notify::active', self.on_desktop_notifications_changed)
 
         #
@@ -88,34 +81,21 @@ class PreferencesWindow(Handy.PreferencesWindow):
         #
 
         # Update manga at startup
-        self.update_at_startup_switch.set_active(settings.update_at_startup)
+        self.update_at_startup_switch.set_active(self.settings.update_at_startup)
         self.update_at_startup_switch.connect('notify::active', self.on_update_at_startup_changed)
 
         # Auto download new chapters
-        self.new_chapters_auto_download_switch.set_active(settings.new_chapters_auto_download)
+        self.new_chapters_auto_download_switch.set_active(self.settings.new_chapters_auto_download)
         self.new_chapters_auto_download_switch.connect('notify::active', self.on_new_chapters_auto_download_changed)
 
         # Servers languages
-        servers_languages = settings.servers_languages
-
-        for code, language in LANGUAGES.items():
-            action_row = Handy.ActionRow()
-            action_row.set_title(language)
-
-            switch = Gtk.Switch.new()
-            switch.set_valign(Gtk.Align.CENTER)
-            switch.set_active(code in servers_languages)
-            switch.connect('notify::active', self.on_servers_language_activated, code)
-            action_row.add(switch)
-            action_row.show_all()
-
-            self.servers_languages_subpage_group.add(action_row)
+        PreferencesServersLanguagesSubpage(self)
 
         # Servers settings
-        self.servers_settings_button.connect('clicked', self.open_servers_settings)
+        PreferencesServersSettingsSubpage(self)
 
         # Long strip detection
-        self.long_strip_detection_switch.set_active(settings.long_strip_detection)
+        self.long_strip_detection_switch.set_active(self.settings.long_strip_detection)
         self.long_strip_detection_switch.connect('notify::active', self.on_long_strip_detection_changed)
 
         #
@@ -129,7 +109,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
         liststore.insert(2, Handy.ValueObject.new(_('Vertical ↓')))
 
         self.reading_direction_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        self.reading_direction_row.set_selected_index(settings.reading_direction_value)
+        self.reading_direction_row.set_selected_index(self.settings.reading_direction_value)
         self.reading_direction_row.connect('notify::selected-index', self.on_reading_direction_changed)
 
         # Image scaling
@@ -140,7 +120,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
         liststore.insert(3, Handy.ValueObject.new(_('Original Size')))
 
         self.scaling_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        self.scaling_row.set_selected_index(settings.scaling_value)
+        self.scaling_row.set_selected_index(self.settings.scaling_value)
         self.scaling_row.connect('notify::selected-index', self.on_scaling_changed)
 
         # Background color
@@ -149,15 +129,15 @@ class PreferencesWindow(Handy.PreferencesWindow):
         liststore.insert(1, Handy.ValueObject.new(_('Black')))
 
         self.background_color_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        self.background_color_row.set_selected_index(settings.background_color_value)
+        self.background_color_row.set_selected_index(self.settings.background_color_value)
         self.background_color_row.connect('notify::selected-index', self.on_background_color_changed)
 
         # Borders crop
-        self.borders_crop_switch.set_active(settings.borders_crop)
+        self.borders_crop_switch.set_active(self.settings.borders_crop)
         self.borders_crop_switch.connect('notify::active', self.on_borders_crop_changed)
 
         # Full screen
-        self.fullscreen_switch.set_active(settings.fullscreen)
+        self.fullscreen_switch.set_active(self.settings.fullscreen)
         self.fullscreen_switch.connect('notify::active', self.on_fullscreen_changed)
 
         #
@@ -165,124 +145,146 @@ class PreferencesWindow(Handy.PreferencesWindow):
         #
 
         # Credentials storage: allow plaintext as fallback
-        self.credentials_storage_plaintext_fallback_switch.set_active(settings.credentials_storage_plaintext_fallback)
+        self.credentials_storage_plaintext_fallback_switch.set_active(self.settings.credentials_storage_plaintext_fallback)
         self.credentials_storage_plaintext_fallback_switch.connect('notify::active', self.on_credentials_storage_plaintext_fallback_changed)
 
-    @staticmethod
-    def on_background_color_changed(row, param):
+    def on_background_color_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            Settings.get_default().background_color = 'white'
+            self.settings.background_color = 'white'
         elif index == 1:
-            Settings.get_default().background_color = 'black'
+            self.settings.background_color = 'black'
 
-    @staticmethod
-    def on_borders_crop_changed(switch_button, gparam):
-        Settings.get_default().borders_crop = switch_button.get_active()
+    def on_borders_crop_changed(self, switch_button, gparam):
+        self.settings.borders_crop = switch_button.get_active()
 
-    @staticmethod
-    def on_credentials_storage_plaintext_fallback_changed(switch_button, gparam):
-        Settings.get_default().credentials_storage_plaintext_fallback = switch_button.get_active()
+    def on_credentials_storage_plaintext_fallback_changed(self, switch_button, gparam):
+        self.settings.credentials_storage_plaintext_fallback = switch_button.get_active()
 
-    @staticmethod
-    def on_desktop_notifications_changed(switch_button, gparam):
+    def on_desktop_notifications_changed(self, switch_button, gparam):
         if switch_button.get_active():
-            Settings.get_default().desktop_notifications = True
+            self.settings.desktop_notifications = True
         else:
-            Settings.get_default().desktop_notifications = False
+            self.settings.desktop_notifications = False
 
-    @staticmethod
-    def on_fullscreen_changed(switch_button, gparam):
-        Settings.get_default().fullscreen = switch_button.get_active()
+    def on_fullscreen_changed(self, switch_button, gparam):
+        self.settings.fullscreen = switch_button.get_active()
 
-    @staticmethod
-    def on_long_strip_detection_changed(switch_button, gparam):
-        Settings.get_default().long_strip_detection = switch_button.get_active()
+    def on_long_strip_detection_changed(self, switch_button, gparam):
+        self.settings.long_strip_detection = switch_button.get_active()
 
-    @staticmethod
-    def on_new_chapters_auto_download_changed(switch_button, gparam):
+    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
         if switch_button.get_active():
-            Settings.get_default().new_chapters_auto_download = True
+            self.settings.new_chapters_auto_download = True
         else:
-            Settings.get_default().new_chapters_auto_download = False
+            self.settings.new_chapters_auto_download = False
 
     def on_night_light_changed(self, switch_button, gparam):
-        Settings.get_default().night_light = switch_button.get_active()
+        self.settings.night_light = switch_button.get_active()
 
         self.parent.init_theme()
 
-    @staticmethod
-    def on_reading_direction_changed(row, param):
+    def on_reading_direction_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            Settings.get_default().reading_direction = 'right-to-left'
+            self.settings.reading_direction = 'right-to-left'
         elif index == 1:
-            Settings.get_default().reading_direction = 'left-to-right'
+            self.settings.reading_direction = 'left-to-right'
         elif index == 2:
-            Settings.get_default().reading_direction = 'vertical'
+            self.settings.reading_direction = 'vertical'
 
-    @staticmethod
-    def on_scaling_changed(row, param):
+    def on_scaling_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            Settings.get_default().scaling = 'screen'
+            self.settings.scaling = 'screen'
         elif index == 1:
-            Settings.get_default().scaling = 'width'
+            self.settings.scaling = 'width'
         elif index == 2:
-            Settings.get_default().scaling = 'height'
+            self.settings.scaling = 'height'
         elif index == 3:
-            Settings.get_default().scaling = 'original'
+            self.settings.scaling = 'original'
 
-    @staticmethod
-    def on_servers_language_activated(switch_button, gparam, code):
+    def on_servers_language_activated(self, switch_button, gparam, code):
         if switch_button.get_active():
-            Settings.get_default().add_servers_language(code)
+            self.settings.add_servers_language(code)
         else:
-            Settings.get_default().remove_servers_language(code)
+            self.settings.remove_servers_language(code)
 
     def on_theme_changed(self, switch_button, gparam):
-        Settings.get_default().dark_theme = switch_button.get_active()
+        self.settings.dark_theme = switch_button.get_active()
 
         self.parent.init_theme()
 
-    @staticmethod
-    def on_update_at_startup_changed(switch_button, gparam):
+    def on_update_at_startup_changed(self, switch_button, gparam):
         if switch_button.get_active():
-            Settings.get_default().update_at_startup = True
+            self.settings.update_at_startup = True
         else:
-            Settings.get_default().update_at_startup = False
-
-    def open_servers_settings(self, button):
-        PreferencesServersWindow(self).open()
+            self.settings.update_at_startup = False
 
 
-@Gtk.Template.from_resource('/info/febvre/Komikku/ui/preferences_servers_window.ui')
-class PreferencesServersWindow(Handy.PreferencesWindow):
-    __gtype_name__ = 'PreferencesServersWindow'
-
-    group = Gtk.Template.Child('preferences_group')
+class PreferencesServersLanguagesSubpage:
     parent = NotImplemented
+    settings = NotImplemented
 
     def __init__(self, parent):
-        super().__init__()
         self.parent = parent
+        self.settings = Settings.get_default()
+
+        self.parent.servers_languages_subpage_close_button.connect('clicked', self.close)
+        self.parent.servers_languages_actionrow.connect('activated', self.present)
+
+        servers_languages = self.settings.servers_languages
+
+        for code, language in LANGUAGES.items():
+            action_row = Handy.ActionRow()
+            action_row.set_title(language)
+            action_row.set_activatable(True)
+
+            switch = Gtk.Switch.new()
+            switch.set_valign(Gtk.Align.CENTER)
+            switch.set_active(code in servers_languages)
+            switch.connect('notify::active', self.on_language_activated, code)
+            action_row.add(switch)
+            action_row.set_activatable_widget(switch)
+            action_row.show_all()
+
+            self.parent.servers_languages_subpage_group.add(action_row)
+
+    def close(self, _widget):
+        self.parent.close_subpage()
+
+    def on_language_activated(self, switch_button, gparam, code):
+        if switch_button.get_active():
+            self.settings.add_servers_language(code)
+        else:
+            self.settings.remove_servers_language(code)
+
+    def present(self, _widget):
+        self.parent.present_subpage(self.parent.servers_languages_subpage)
+
+
+class PreferencesServersSettingsSubpage:
+    parent = NotImplemented
+    settings = NotImplemented
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.settings = Settings.get_default()
         self.keyring_helper = KeyringHelper()
-        self.connect('key-press-event', self.on_key_press)
 
-    def on_key_press(self, widget, event):
-        if event.keyval == Gdk.KEY_Escape:
-            self.destroy()
+        self.parent.servers_settings_subpage_close_button.connect('clicked', self.close)
+        self.parent.servers_settings_actionrow.connect('activated', self.present)
 
-    def open(self):
-        self.set_title(_('Servers Settings'))
-        self.set_transient_for(self.parent)
+    def close(self, _widget):
+        self.parent.close_subpage()
 
-        settings = Settings.get_default().servers_settings
-        languages = Settings.get_default().servers_languages
-        credentials_storage_plaintext_fallback = Settings.get_default().credentials_storage_plaintext_fallback
+    def present(self, _widget):
+        settings = self.settings.servers_settings
+        languages = self.settings.servers_languages
+        credentials_storage_plaintext_fallback = self.settings.credentials_storage_plaintext_fallback
 
         servers_data = {}
         for server_data in get_servers_list(order_by=('name', 'lang')):
@@ -319,7 +321,7 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                 expander_row.connect('notify::enable-expansion', self.on_server_activated, server_main_id)
                 expander_row.add(vbox)
 
-                self.group.add(expander_row)
+                self.parent.servers_settings_subpage_group.add(expander_row)
 
                 if len(server_data['langs']) > 1:
                     for lang in server_data['langs']:
@@ -405,21 +407,19 @@ class PreferencesServersWindow(Handy.PreferencesWindow):
                 action_row.set_activatable_widget(switch)
                 action_row.add(switch)
 
-                self.group.add(action_row)
+                self.parent.servers_settings_subpage_group.add(action_row)
 
-        self.group.show_all()
-        self.present()
+        self.parent.servers_settings_subpage_group.show_all()
+        self.parent.present_subpage(self.parent.servers_settings_subpage)
 
-    @staticmethod
-    def on_server_activated(widget, gparam, server_main_id):
+    def on_server_activated(self, widget, gparam, server_main_id):
         if isinstance(widget, Handy.ExpanderRow):
-            Settings.get_default().toggle_server(server_main_id, widget.get_enable_expansion())
+            self.settings.toggle_server(server_main_id, widget.get_enable_expansion())
         else:
-            Settings.get_default().toggle_server(server_main_id, widget.get_active())
+            self.settings.toggle_server(server_main_id, widget.get_active())
 
-    @staticmethod
-    def on_server_language_activated(switch_button, gparam, server_main_id, lang):
-        Settings.get_default().toggle_server_lang(server_main_id, lang, switch_button.get_active())
+    def on_server_language_activated(self, switch_button, gparam, server_main_id, lang):
+        self.settings.toggle_server_lang(server_main_id, lang, switch_button.get_active())
 
     def save_credential(self, button, server_main_id, server_class, username_entry, password_entry, plaintext_checkbutton):
         username = username_entry.get_text()
