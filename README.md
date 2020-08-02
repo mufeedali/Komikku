@@ -19,7 +19,6 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 * Five types of navigation:
     - Keyboard arrow keys
     - Mouse click
-    - Mouse drag
     - Mouse wheel
     - 2-fingers swipe gesture
 * Light and dark themes

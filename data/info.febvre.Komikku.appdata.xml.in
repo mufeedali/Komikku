@@ -40,6 +40,14 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.19.0" date="2020-08-02">
+            <description>
+                <ul>
+                    <li>Add HiDPI display support</li>
+                    <li>[Preferences] Use Handy.PreferencesWindow subpages to display Servers Languages and Servers Settings</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.18.0" date="2020-07-28">
             <description>
                 <ul>
@@ -49,7 +57,7 @@
                     <li>[Reader] Two new navigation types: mouse scroll, 2-fingers swipe gesture</li>
                     <li>[Reader] New 'Save Page' action</li>
                     <li>[Servers] Fix and improve credentials storage</li>
-                    <li>[servers] Crunchyroll: Fix login</li>
+                    <li>[Servers] Crunchyroll: Fix login</li>
                     <li>[Servers] Re-enable Jaimini's Box</li>
                     <li>[Servers] Manga Eden: Fix downloading of images</li>
                     <li>[Servers] MangaSee: Update</li>
