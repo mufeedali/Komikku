@@ -8,6 +8,7 @@ data/ui/menu/card_selection_mode.xml
 data/ui/menu/card.xml
 data/ui/menu/download_manager_selection_mode.xml
 data/ui/menu/download_manager.xml
+data/ui/menu/library_search.xml
 data/ui/menu/library_selection_mode.xml
 data/ui/menu/main.xml
 data/ui/menu/reader.xml
