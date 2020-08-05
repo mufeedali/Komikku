@@ -12,8 +12,8 @@
                 <attribute name="action">app.library.search.unread</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">Recent</attribute>
-                <attribute name="action">app.library.search.recent</attribute>
+                <attribute name="label" translatable="yes">Recents</attribute>
+                <attribute name="action">app.library.search.recents</attribute>
             </item>
         </section>
     </menu>

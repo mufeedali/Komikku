@@ -78,7 +78,7 @@ class Library():
                 ret = manga.nb_downloaded_chapters > 0
             if ret and self.search_menu_filters.get('unread'):
                 ret = manga.nb_unread_chapters > 0
-            if ret and self.search_menu_filters.get('recent'):
+            if ret and self.search_menu_filters.get('recents'):
                 ret = manga.nb_recent_chapters > 0
 
             return ret
@@ -143,9 +143,9 @@ class Library():
         search_unread_action.connect('change-state', self.on_search_menu_action_changed)
         self.window.application.add_action(search_unread_action)
 
-        search_recent_action = Gio.SimpleAction.new_stateful('library.search.recent', None, GLib.Variant('b', False))
-        search_recent_action.connect('change-state', self.on_search_menu_action_changed)
-        self.window.application.add_action(search_recent_action)
+        search_recents_action = Gio.SimpleAction.new_stateful('library.search.recents', None, GLib.Variant('b', False))
+        search_recents_action.connect('change-state', self.on_search_menu_action_changed)
+        self.window.application.add_action(search_recents_action)
 
         # Menu actions in selection mode
         delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
@@ -187,7 +187,7 @@ class Library():
         drawingarea.connect('draw', self.draw_cover_server_logo, manga)
         overlay.add_overlay(drawingarea)
 
-        # Badges: number of recents chapters and number of downloaded chapters (top right corner)
+        # Badges: number of recent chapters and number of downloaded chapters (top right corner)
         drawingarea = Gtk.DrawingArea()
         drawingarea.connect('draw', self.draw_cover_badges, manga)
         overlay.add_overlay(drawingarea)
