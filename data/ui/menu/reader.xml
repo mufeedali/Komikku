@@ -73,7 +73,7 @@
             </submenu>
 
             <item>
-                <attribute name="label" translatable="yes">Crop borders</attribute>
+                <attribute name="label" translatable="yes">Crop Borders</attribute>
                 <attribute name="action">app.reader.borders-crop</attribute>
             </item>
         </section>

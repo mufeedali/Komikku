@@ -108,6 +108,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     stack = Gtk.Template.Child('stack')
 
     library_title_stack = Gtk.Template.Child('library_title_stack')
+    library_search_menu_button = Gtk.Template.Child('library_search_menu_button')
     library_searchentry = Gtk.Template.Child('library_searchentry')
     library_subtitle_label = Gtk.Template.Child('library_subtitle_label')
     library_flowbox = Gtk.Template.Child('library_flowbox')

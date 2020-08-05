@@ -23,6 +23,7 @@ from komikku.utils import scale_pixbuf_animation
 
 
 class Library():
+    search_menu_filters = {}
     search_mode = False
     selection_mode = False
     selection_mode_range = False
@@ -31,18 +32,22 @@ class Library():
     def __init__(self, window):
         self.window = window
         self.builder = window.builder
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_search.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_selection_mode.xml')
 
-        # Search
         self.title_stack = self.window.library_title_stack
+        self.subtitle_label = self.window.library_subtitle_label
+
+        # Search
+        self.search_menu_button = self.window.library_search_menu_button
+        self.search_menu_button.set_menu_model(self.builder.get_object('menu-library-search'))
         self.search_entry = self.window.library_searchentry
         self.search_entry.connect('activate', self.on_search_entry_activate)
         self.search_entry.connect('changed', self.search)
         self.search_button = self.window.search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
 
-        self.subtitle_label = self.window.library_subtitle_label
-
+        # Mangas Flowbox
         self.flowbox = self.window.library_flowbox
         self.flowbox.connect('button-press-event', self.on_button_pressed)
         self.flowbox.connect('child-activated', self.on_manga_clicked)
@@ -67,6 +72,14 @@ class Library():
 
             # Search in genres (exact match)
             ret = ret or term in [genre.lower() for genre in manga.genres]
+
+            # Optional menu filters
+            if ret and self.search_menu_filters.get('downloaded'):
+                ret = manga.nb_downloaded_chapters > 0
+            if ret and self.search_menu_filters.get('unread'):
+                ret = manga.nb_unread_chapters > 0
+            if ret and self.search_menu_filters.get('recent'):
+                ret = manga.nb_recent_chapters > 0
 
             return ret
 
@@ -120,6 +133,19 @@ class Library():
         download_manager_action = Gio.SimpleAction.new('library.download-manager', None)
         download_manager_action.connect('activate', self.open_download_manager)
         self.window.application.add_action(download_manager_action)
+
+        # Search menu actions
+        search_downloaded_action = Gio.SimpleAction.new_stateful('library.search.downloaded', None, GLib.Variant('b', False))
+        search_downloaded_action.connect('change-state', self.on_search_menu_action_changed)
+        self.window.application.add_action(search_downloaded_action)
+
+        search_unread_action = Gio.SimpleAction.new_stateful('library.search.unread', None, GLib.Variant('b', False))
+        search_unread_action.connect('change-state', self.on_search_menu_action_changed)
+        self.window.application.add_action(search_unread_action)
+
+        search_recent_action = Gio.SimpleAction.new_stateful('library.search.recent', None, GLib.Variant('b', False))
+        search_recent_action.connect('change-state', self.on_search_menu_action_changed)
+        self.window.application.add_action(search_recent_action)
 
         # Menu actions in selection mode
         delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
@@ -445,6 +471,24 @@ class Library():
         # Schedule a redraw. It will update drawing areas (servers logos and badges)
         self.flowbox.queue_draw()
 
+    def on_search_entry_activate(self, _entry):
+        """Open first manga in search when <Enter> is pressed"""
+        child = self.flowbox.get_child_at_pos(0, 0)
+        if child:
+            self.on_manga_clicked(self.flowbox, child)
+
+    def on_search_menu_action_changed(self, action, variant):
+        value = variant.get_boolean()
+        action.set_state(GLib.Variant('b', value))
+
+        self.search_menu_filters[action.props.name.split('.')[-1]] = value
+        if sum(self.search_menu_filters.values()):
+            self.search_menu_button.get_style_context().add_class('button-warning')
+        else:
+            self.search_menu_button.get_style_context().remove_class('button-warning')
+
+        self.flowbox.invalidate_filter()
+
     def on_selection_changed(self, _flowbox):
         number = len(self.flowbox.get_selected_children())
         if number:
@@ -461,12 +505,6 @@ class Library():
         for child in self.flowbox.get_children():
             overlay = child.get_children()[0]
             self.set_manga_cover_image(overlay, width, height)
-
-    def on_search_entry_activate(self, _entry):
-        """Open first manga in search when <Enter> is pressed"""
-        child = self.flowbox.get_child_at_pos(0, 0)
-        if child:
-            self.on_manga_clicked(self.flowbox, child)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
@@ -561,7 +599,7 @@ class Library():
         if button.get_active():
             self.search_mode = True
 
-            self.title_stack.set_visible_child_name('searchentry')
+            self.title_stack.set_visible_child_name('searchbox')
             self.search_entry.grab_focus()
         else:
             self.search_mode = False
