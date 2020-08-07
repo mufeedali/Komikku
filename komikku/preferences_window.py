@@ -234,6 +234,7 @@ class PreferencesServersLanguagesSubpage:
         self.settings = Settings.get_default()
 
         self.parent.servers_languages_subpage_close_button.connect('clicked', self.close)
+        self.parent.servers_languages_actionrow.props.activatable = True
         self.parent.servers_languages_actionrow.connect('activated', self.present)
 
         servers_languages = self.settings.servers_languages
@@ -276,6 +277,7 @@ class PreferencesServersSettingsSubpage:
         self.keyring_helper = KeyringHelper()
 
         self.parent.servers_settings_subpage_close_button.connect('clicked', self.close)
+        self.parent.servers_settings_actionrow.props.activatable = True
         self.parent.servers_settings_actionrow.connect('activated', self.present)
 
     def close(self, _widget):
