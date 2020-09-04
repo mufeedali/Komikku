@@ -5,13 +5,14 @@
 # Author: Leo Prikler <leo.prikler@student.tugraz.at>
 
 from bs4 import BeautifulSoup
-import requests
 import json
+import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+
 
 class Dynasty(Server):
     lang = 'en'
@@ -65,23 +66,23 @@ class Dynasty(Server):
             data['authors'] = [name_element.a.text.strip()]
 
         if name_element.find('small'):
-            # status may contain additional information, such as 'Licensed'
+            # Status may contain additional information, such as 'Licensed'
             status = name_element.small.text.split(' ')
             if 'Ongoing' in status:
                 data['status'] = 'ongoing'
             elif 'Completed' in status:
-                data['status'] = 'completed'
+                data['status'] = 'complete'
 
         try:
             cover_rel = soup.find('div', class_='cover').find('img')['src']
             data['cover'] = self.base_url + cover_rel
-        except AttributeError: # relative cover not found
+        except AttributeError:  # relative cover not found
             pass
 
         try:
             elements = soup.find('div', class_='description').find_all('p')
             data['synopsis'] = "\n\n".join([p.text.strip() for p in elements])
-        except AttributeError: # no description
+        except AttributeError:  # no synopsis
             pass
 
         elements = soup.find('div', class_='tag-tags').find_all('a', class_='label')
@@ -98,7 +99,7 @@ class Dynasty(Server):
             data['chapters'].append(dict(
                 slug=a_element.get('href').split('/')[-1],
                 title=a_element.text.strip(),
-                date=convert_date_string(date_text)
+                date=convert_date_string(date_text),
             ))
 
         return data
@@ -189,7 +190,7 @@ class Dynasty(Server):
                     a_element = element.find('a', class_='name')
                     results.append(dict(
                         slug=a_element.get('href').split('/')[-1],
-                        name=a_element.text.strip()
+                        name=a_element.text.strip(),
                     ))
 
                 return results
