@@ -52,8 +52,6 @@ class PreferencesWindow(Handy.PreferencesWindow):
         self.parent = parent
         self.settings = Settings.get_default()
 
-        self.set_can_swipe_back(True)
-
     def open(self, action, param):
         self.set_transient_for(self.parent)
         self.set_config_values()
