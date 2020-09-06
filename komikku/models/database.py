@@ -10,6 +10,7 @@ import json
 import os
 import sqlite3
 import shutil
+from PIL import Image
 
 from komikku.models.settings import Settings
 from komikku.servers import convert_webp_buffer
@@ -632,7 +633,9 @@ class Chapter:
         else:
             buffer = data['buffer']
 
-        if self.scrambled:
+        if isinstance(buffer, Image.Image):
+            buffer.save(page_path)
+        elif self.scrambled:
             with open(page_path + '_scrambled', 'wb') as fp:
                 fp.write(buffer)
 
