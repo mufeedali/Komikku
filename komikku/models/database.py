@@ -10,10 +10,9 @@ import json
 import os
 import sqlite3
 import shutil
-from PIL import Image
 
 from komikku.models.settings import Settings
-from komikku.servers import convert_webp_buffer
+from komikku.servers import convert_image
 from komikku.servers import get_server_class_name_by_id
 from komikku.servers import get_server_dir_name_by_id
 from komikku.servers import get_server_module_name_by_id
@@ -628,21 +627,17 @@ class Chapter:
 
         page_path = os.path.join(self.path, data['name'])
 
-        if data['mime_type'] == 'image/webp':
-            buffer = convert_webp_buffer(data['buffer'])
-        else:
-            buffer = data['buffer']
+        if data['mime_type'] == 'image/webp' or self.scrambled:
+            if data['mime_type'] == 'image/webp':
+                image = convert_image(data['buffer'])
 
-        if isinstance(buffer, Image.Image):
-            buffer.save(page_path)
-        elif self.scrambled:
-            with open(page_path + '_scrambled', 'wb') as fp:
-                fp.write(buffer)
+            if self.scrambled:
+                image = unscramble_image(data['buffer'])
 
-            unscramble_image(page_path + '_scrambled', page_path)
+            image.save(page_path)
         else:
             with open(page_path, 'wb') as fp:
-                fp.write(buffer)
+                fp.write(data['buffer'])
 
         updated_data = {}
         if self.pages[page_index]['image'] is None:

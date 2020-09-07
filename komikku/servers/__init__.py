@@ -161,7 +161,7 @@ class Server:
             return None
 
         if mime_type == 'image/webp':
-            buffer = convert_webp_buffer(buffer)
+            buffer = convert_image(buffer, ret_type='bytes')
 
         return buffer
 
@@ -262,13 +262,23 @@ def convert_mri_data_to_webp_buffer(data):
     return bytes(buffer)
 
 
-def convert_webp_buffer(webp_buffer, format='JPEG'):
-    image = Image.open(io.BytesIO(webp_buffer))
+def convert_image(image, format='jpeg', ret_type='image'):
+    """Convert an image to a specific format
 
-    buffer = io.BytesIO()
-    image.convert('RGB').save(buffer, format)
+    :param image: PIL.Image.Image or bytes object
+    :param format: convertion format: jpeg, png, webp,...
+    :param ret_type: image (PIL.Image.Image) or bytes (bytes object)
+    """
+    if not isinstance(image, Image.Image):
+        image = Image.open(io.BytesIO(image))
 
-    return buffer.getvalue()
+    io_buffer = io.BytesIO()
+    image.convert('RGB').save(io_buffer, format)
+    if ret_type == 'bytes':
+        return io_buffer.getbuffer()
+    else:
+        io_buffer.seek(0)
+        return Image.open(io_buffer)
 
 
 def get_buffer_mime_type(buffer):
@@ -386,20 +396,26 @@ def search_duckduckgo(site, term):
 
 
 # https://github.com/Harkame/JapScanDownloader
-def unscramble_image(scrambled_image, image_full_path):
-    input_image = Image.open(scrambled_image)
-    temp = Image.new('RGB', input_image.size)
-    output_image = Image.new('RGB', input_image.size)
+def unscramble_image(image):
+    """Unscramble an image
 
-    for x in range(0, input_image.width, 200):
-        col1 = input_image.crop((x, 0, x + 100, input_image.height))
+    :param image: PIL.Image.Image or bytes object
+    """
+    if not isinstance(image, Image.Image):
+        image = Image.open(io.BytesIO(image))
 
-        if x + 200 <= input_image.width:
-            col2 = input_image.crop((x + 100, 0, x + 200, input_image.height))
+    temp = Image.new('RGB', image.size)
+    output_image = Image.new('RGB', image.size)
+
+    for x in range(0, image.width, 200):
+        col1 = image.crop((x, 0, x + 100, image.height))
+
+        if x + 200 <= image.width:
+            col2 = image.crop((x + 100, 0, x + 200, image.height))
             temp.paste(col1, (x + 100, 0))
             temp.paste(col2, (x, 0))
         else:
-            col2 = input_image.crop((x + 100, 0, input_image.width, input_image.height))
+            col2 = image.crop((x + 100, 0, image.width, image.height))
             temp.paste(col1, (x, 0))
             temp.paste(col2, (x + 100, 0))
 
@@ -415,6 +431,4 @@ def unscramble_image(scrambled_image, image_full_path):
             output_image.paste(row1, (0, y))
             output_image.paste(row2, (0, y + 100))
 
-    os.remove(scrambled_image)
-
-    output_image.save(image_full_path)
+    return output_image
