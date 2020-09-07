@@ -8,6 +8,7 @@ from gettext import gettext as _
 import importlib
 import json
 import os
+from PIL import Image
 import sqlite3
 import shutil
 
@@ -625,19 +626,21 @@ class Chapter:
         if not os.path.exists(self.path):
             os.makedirs(self.path, exist_ok=True)
 
+        image = data['buffer']
         page_path = os.path.join(self.path, data['name'])
 
         if data['mime_type'] == 'image/webp' or self.scrambled:
             if data['mime_type'] == 'image/webp':
-                image = convert_image(data['buffer'])
+                image = convert_image(image)
 
             if self.scrambled:
-                image = unscramble_image(data['buffer'])
+                image = unscramble_image(image)
 
+        if isinstance(image, Image.Image):
             image.save(page_path)
         else:
             with open(page_path, 'wb') as fp:
-                fp.write(data['buffer'])
+                fp.write(image)
 
         updated_data = {}
         if self.pages[page_index]['image'] is None:
