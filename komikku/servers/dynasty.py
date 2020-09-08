@@ -217,7 +217,7 @@ class Dynasty_doujins(Dynasty):
 class Dynasty_issues(Dynasty):
     id = 'dynasty_issues'
     name = 'Dynasty Issues'
-    search_classes = ['Issues']
+    search_classes = ['Issue']
     manga_url = Dynasty.base_url + '/issues/{0}'
 
 
