@@ -126,7 +126,11 @@ class Dynasty(Server):
         elements = soup.find('dl', class_='chapter-list').find_all('dd')
         for element in elements:
             a_element = element.find('a')
-            date_text = element.find('small').text.strip()[len('released'):]
+            date_text = None
+            for small in element.find_all('small'):
+                small = small.text.strip()
+                if small.startswith('released'):
+                    date_text = small[len('released'):]
 
             data['chapters'].append(dict(
                 slug=a_element.get('href').split('/')[-1],
