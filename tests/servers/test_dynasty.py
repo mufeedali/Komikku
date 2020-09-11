@@ -7,21 +7,17 @@ from komikku.utils import log_error_traceback
 logging.basicConfig(level=logging.DEBUG)
 
 @pytest.fixture
-def dynasty_servers():
-    from komikku.servers.dynasty import Dynasty_anthologies, Dynasty_doujins, Dynasty_issues, Dynasty_series
-
-    return dict(anthologies=Dynasty_anthologies(),
-                doujins=Dynasty_doujins(),
-                issues=Dynasty_issues(),
-                series=Dynasty_series())
+def dynasty_server():
+    from komikku.servers.dynasty import Dynasty
+    return Dynasty()
 
 
 @pytest.fixture
 def test_dynasty_common():
-    def helper(dynasty_server, term):
+    def helper(dynasty_server, term, **settings):
         print('Search')
         try:
-            response = dynasty_server.search(term)
+            response = dynasty_server.search(term, **settings)
             slug = response[0]['slug']
         except Exception as e:
             slug = None
@@ -79,24 +75,24 @@ def test_dynasty_common():
 
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_dynasty_anthologies(dynasty_servers, test_dynasty_common):
-    for step in test_dynasty_common(dynasty_servers['anthologies'], 'eclair'):
+def test_dynasty_anthologies(dynasty_server, test_dynasty_common):
+    for step in test_dynasty_common(dynasty_server, 'eclair', classes=['Anthology']):
         yield step
 
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_dynasty_doujins(dynasty_servers, test_dynasty_common):
-    for step in test_dynasty_common(dynasty_servers['doujins'], 'nanoha'):
+def test_dynasty_doujins(dynasty_server, test_dynasty_common):
+    for step in test_dynasty_common(dynasty_server, 'nanoha', classes=['Doujin']):
         yield step
 
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_dynasty_doujins(dynasty_servers, test_dynasty_common):
-    for step in test_dynasty_common(dynasty_servers['issues'], 'yuri hime'):
+def test_dynasty_issues(dynasty_server, test_dynasty_common):
+    for step in test_dynasty_common(dynasty_server, 'yuri hime', classes=['Issue']):
         yield step
 
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_dynasty_series(dynasty_servers, test_dynasty_common):
-    for step in test_dynasty_common(dynasty_servers['series'], 'room for two'):
+def test_dynasty_series(dynasty_server, test_dynasty_common):
+    for step in test_dynasty_common(dynasty_server, 'room for two', classes=['Series']):
         yield step

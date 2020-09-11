@@ -5,6 +5,7 @@
 # Author: Leo Prikler <leo.prikler@student.tugraz.at>
 
 from bs4 import BeautifulSoup
+from gettext import gettext as _
 import json
 import requests
 
@@ -16,13 +17,29 @@ from komikku.servers import USER_AGENT
 
 class Dynasty(Server):
     lang = 'en'
+    id = 'dynasty'
+    name = 'Dynasty'
 
     base_url = 'https://dynasty-scans.com'
+    manga_url = base_url + '/{0}'
     search_url = base_url + '/search'
     chapter_url = base_url + '/chapters/{0}'
 
-    manga_url = NotImplemented
-    search_classes = NotImplemented
+    FILTERS = [
+        {
+            'key': 'classes',
+            'type': 'select',
+            'name': _('Categories'),
+            'description': '',
+            'value_type': 'multiple',
+            'options': [
+                {'key': 'Anthology', 'name': _('Anthology'), 'default': True},
+                {'key': 'Doujin', 'name': _('Doujins'), 'default': True},
+                {'key': 'Issue', 'name': _('Issues'), 'default': True},
+                {'key': 'Series', 'name': _('Series'), 'default': True},
+            ],
+        },
+    ]
 
     def __init__(self):
         if self.session is None:
@@ -174,9 +191,10 @@ class Dynasty(Server):
         """
         return self.manga_url.format(slug)
 
-    def search(self, term):
+    def search(self, term, *, classes):
         self.session_get(self.base_url)
-        r = self.session_get(self.search_url, params=dict(q=term, classes=self.search_classes))
+        classes = sorted(classes, key=str.lower)
+        r = self.session_get(self.search_url, params=dict(q=term, classes=classes))
         if r is None:
             return None
 
@@ -189,7 +207,7 @@ class Dynasty(Server):
                 for element in elements:
                     a_element = element.find('a', class_='name')
                     results.append(dict(
-                        slug=a_element.get('href').split('/')[-1],
+                        slug=a_element.get('href').lstrip('/'),
                         name=a_element.text.strip(),
                     ))
 
@@ -198,31 +216,3 @@ class Dynasty(Server):
                 return None
 
         return None
-
-
-class Dynasty_anthologies(Dynasty):
-    id = 'dynasty_anthologies'
-    name = 'Dynasty Anthologies'
-    search_classes = ['Anthology']
-    manga_url = Dynasty.base_url + '/anthologies/{0}'
-
-
-class Dynasty_doujins(Dynasty):
-    id = 'dynasty_doujins'
-    name = 'Dynasty Doujins'
-    search_classes = ['Doujin']
-    manga_url = Dynasty.base_url + '/doujins/{0}'
-
-
-class Dynasty_issues(Dynasty):
-    id = 'dynasty_issues'
-    name = 'Dynasty Issues'
-    search_classes = ['Issue']
-    manga_url = Dynasty.base_url + '/issues/{0}'
-
-
-class Dynasty_series(Dynasty):
-    id = 'dynasty_series'
-    name = 'Dynasty Series'
-    search_classes = ['Series']
-    manga_url = Dynasty.base_url + '/series/{0}'
