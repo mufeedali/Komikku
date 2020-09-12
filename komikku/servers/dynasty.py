@@ -31,7 +31,7 @@ class Dynasty(Server):
             'key': 'classes',
             'type': 'select',
             'name': _('Categories'),
-            'description': '',
+            'description': _('Types of manga to search for'),
             'value_type': 'multiple',
             'options': [
                 {'key': 'Anthology', 'name': _('Anthology'), 'default': True},
