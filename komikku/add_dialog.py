@@ -179,7 +179,7 @@ class AddDialog:
             def on_text_changed(buf, param, key):
                 self.search_filters[key] = buf.get_text()
 
-            entry = Gtk.Entry(text=f['default'], placeholder_text=f['name'], visible=True)
+            entry = Gtk.Entry(text=f['default'], placeholder_text=f['name'], tooltip_text=f['description'], visible=True)
             entry.get_buffer().connect('notify::text', on_text_changed, f['key'])
 
             return entry
@@ -191,7 +191,8 @@ class AddDialog:
         for f in self.server.FILTERS:
             if f['type'] == 'select':
                 submenu = {'single': select_single, 'multiple': select_multiple}[f['value_type']](f)
-                submenu_label = Gtk.Label(label=f['name'], visible=True, sensitive=False)
+                submenu_label = Gtk.Label(label=f['name'], tooltip_text=f['description'],
+                                          visible=True, sensitive=False)
                 if last:
                     sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL, visible=True)
                     vbox.add(sep)
