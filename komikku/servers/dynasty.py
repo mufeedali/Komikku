@@ -24,6 +24,7 @@ class Dynasty(Server):
     manga_url = base_url + '/{0}'
     search_url = base_url + '/search'
     chapter_url = base_url + '/chapters/{0}'
+    tags_url = base_url + '/tags/suggest/'
 
     FILTERS = [
         {
@@ -38,6 +39,20 @@ class Dynasty(Server):
                 {'key': 'Issue', 'name': _('Issues'), 'default': True},
                 {'key': 'Series', 'name': _('Series'), 'default': True},
             ],
+        },
+        {
+            'key': 'with_tags',
+            'type': 'entry',
+            'name': _('With Tags'),
+            'description': _('Tags to search for'),
+            'default': '',
+        },
+        {
+            'key': 'without_tags',
+            'type': 'entry',
+            'name': _('Without Tags'),
+            'description': _('Tags to exclude from search'),
+            'default': '',
         },
     ]
 
@@ -191,10 +206,32 @@ class Dynasty(Server):
         """
         return self.manga_url.format(slug)
 
-    def search(self, term, *, classes):
+    def resolve_tag(self, search_tag):
+        r = self.session_post(self.tags_url, params=dict(query=search_tag))
+        if r is None:
+            return None
+
+        if r.status_code == 200:
+            tags = json.loads(r.text)
+            for tag in tags:
+                if tag['name'].lower() == search_tag.lower():
+                    return tag['id']
+
+        return None
+
+    def search(self, term, *, classes, with_tags='', without_tags=''):
         self.session_get(self.base_url)
         classes = sorted(classes, key=str.lower)
-        r = self.session_get(self.search_url, params=dict(q=term, classes=classes))
+        with_tags = [self.resolve_tag(t) for t in with_tags.split(',') if t]
+        without_tags = [self.resolve_tag(t) for t in without_tags.split(',') if t]
+
+        r = self.session_get(self.search_url,
+                             params={
+                                 'q': term,
+                                 'classes': classes,
+                                 'with': with_tags,
+                                 'without': without_tags,
+                             })
         if r is None:
             return None
 
