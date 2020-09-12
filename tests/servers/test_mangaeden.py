@@ -30,7 +30,7 @@ def test_mangaeden(mangaeden_server):
     # Search
     print('Search')
     try:
-        response = mangaeden_server.search('black clover')
+        response = mangaeden_server.search('berserk')
         slug = response[0]['slug']
     except Exception as e:
         slug = None
