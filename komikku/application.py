@@ -34,8 +34,21 @@ from komikku.updater import Updater
 
 CREDITS = dict(
     developers=('Valéry Febvre (valos)', ),
-    contributors=('Gerben Droogers (Tijder)', 'GrownNed', 'Mufeed Ali (fushinari)', 'Romain Vaudois', 'Arthur Williams (TAAPArthur)', ),
-    translators=('Ege Çelikçi (Turkish)', 'GrownNed (Russian)', 'Heimen Stoffels (Dutch)', 'VaGNaroK (Brazilian Portuguese)', 'Valéry Febvre (French)', ),
+    contributors=(
+        'Mufeed Ali (fushinari)',
+        'Gerben Droogers (Tijder)',
+        'GrownNed',
+        'Leo Prikler',
+        'Romain Vaudois',
+        'Arthur Williams (TAAPArthur)',
+    ),
+    translators=(
+        'Ege Çelikçi (Turkish)',
+        'GrownNed (Russian)',
+        'Heimen Stoffels (Dutch)',
+        'VaGNaroK (Brazilian Portuguese)',
+        'Valéry Febvre (French)',
+    ),
 )
 
 
