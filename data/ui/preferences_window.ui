@@ -14,7 +14,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon_name">emblem-system-symbolic</property>
-        <property name="title">General</property>
+        <property name="title" translatable="yes">General</property>
         <child>
           <object class="HdyPreferencesGroup">
             <property name="visible">True</property>
@@ -79,7 +79,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon_name">preferences-desktop-apps</property>
-        <property name="title">Library</property>
+        <property name="title" translatable="yes">Library</property>
         <child>
           <object class="HdyPreferencesGroup">
             <property name="visible">True</property>
