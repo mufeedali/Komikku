@@ -97,43 +97,43 @@ msgstr "Bibliothek"
 
 #: ../komikku/servers/dynasty.py:33
 msgid "Categories"
-msgstr ""
+msgstr "Kategorien"
 
 #: ../komikku/servers/dynasty.py:34
 msgid "Types of manga to search for"
-msgstr ""
+msgstr "Arten von Manga, nach denen gesucht werden soll"
 
 #: ../komikku/servers/dynasty.py:37
 msgid "Anthology"
-msgstr ""
+msgstr "Anthologien"
 
 #: ../komikku/servers/dynasty.py:38
 msgid "Doujins"
-msgstr ""
+msgstr "Doujinshi"
 
 #: ../komikku/servers/dynasty.py:39
 msgid "Issues"
-msgstr ""
+msgstr "Magazine"
 
 #: ../komikku/servers/dynasty.py:40
 msgid "Series"
-msgstr ""
+msgstr "Serien"
 
 #: ../komikku/servers/dynasty.py:46
 msgid "With Tags"
-msgstr ""
+msgstr "Mit [...]"
 
 #: ../komikku/servers/dynasty.py:47
 msgid "Tags to search for"
-msgstr ""
+msgstr "Elemente, nach denen gesucht werden soll"
 
 #: ../komikku/servers/dynasty.py:53
 msgid "Without Tags"
-msgstr ""
+msgstr "Ohne [...]"
 
 #: ../komikku/servers/dynasty.py:54
 msgid "Tags to exclude from search"
-msgstr ""
+msgstr "Elemente, die bei der Suche umgangen werden sollen"
 
 #: ../komikku/downloader.py:165
 msgid "Download completed"
@@ -567,7 +567,7 @@ msgstr "Keine Downloads"
 
 #: ../data/ui/preferences_window.ui:17
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: ../data/ui/preferences_window.ui:26
 msgid "Dark Theme"
