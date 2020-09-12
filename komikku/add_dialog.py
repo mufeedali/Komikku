@@ -173,6 +173,17 @@ class AddDialog:
                 vbox.add(check_button)
             return vbox
 
+        def entry(f):
+            self.search_filters[f['key']] = f['default']
+
+            def on_text_changed(buf, param, key):
+                self.search_filters[key] = buf.get_text()
+
+            entry = Gtk.Entry(text=f['default'], placeholder_text=f['name'], visible=True)
+            entry.get_buffer().connect('notify::text', on_text_changed, f['key'])
+
+            return entry
+
         search_filters_popover = Gtk.Popover()
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
         last = None
@@ -187,6 +198,9 @@ class AddDialog:
                 vbox.add(submenu_label)
                 vbox.add(submenu)
                 last = submenu
+            elif f['type'] == 'entry':
+                last = entry(f)
+                vbox.add(last)
             else:
                 raise NotImplementedError
         search_filters_popover.add(vbox)
