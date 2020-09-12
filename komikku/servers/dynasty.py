@@ -26,7 +26,7 @@ class Dynasty(Server):
     chapter_url = base_url + '/chapters/{0}'
     tags_url = base_url + '/tags/suggest/'
 
-    FILTERS = [
+    filters = [
         {
             'key': 'classes',
             'type': 'select',

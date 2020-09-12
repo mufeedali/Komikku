@@ -73,7 +73,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkMenuButton" id="custom_title_search_page_filter_button">
+                      <object class="GtkMenuButton" id="custom_title_search_page_filter_menu_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="focus_on_click">False</property>
@@ -92,6 +92,9 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
+                    <style>
+                      <class name="search-box"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="name">search</property>

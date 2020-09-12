@@ -29,14 +29,13 @@ from komikku.utils import scale_pixbuf_animation
 
 class AddDialog:
     page = None
+    search_filters = None
     search_lock = False
 
     server = None
     manga_slug = None
     manga_data = None
     manga = None
-
-    search_filters = None
 
     def __init__(self, window):
         self.window = window
@@ -108,12 +107,11 @@ class AddDialog:
         # Search page
         self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
         self.custom_title_search_page_searchentry.connect('activate', self.search)
+        self.custom_title_search_page_filter_menu_button = self.builder.get_object('custom_title_search_page_filter_menu_button')
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
         self.search_page_listbox.get_style_context().add_class('list-bordered')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
-
-        self.custom_title_search_page_filter_button = self.builder.get_object('custom_title_search_page_filter_button')
 
         # Manga page
         grid = self.builder.get_object('manga_page_grid')
@@ -132,81 +130,7 @@ class AddDialog:
     def clear_search(self):
         self.custom_title_search_page_searchentry.set_text('')
         self.clear_results()
-        self.reset_filters()
-
-    def reset_filters(self):
-        self.search_filters = dict()
-        if getattr(self.server, 'FILTERS', None) is None:
-            return
-
-        def select_single(f):
-            self.search_filters[f['key']] = f['default']
-
-            def toggle_option(button, gparam, key):
-                if button.get_active():
-                    self.search_filters[f['key']] = key
-
-            last = None
-            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
-            for option in f['options']:
-                is_active = option['key'] == f['default']
-                radio_button = Gtk.RadioButton(label=option['name'], active=is_active, visible=True)
-                radio_button.join_group(last)
-                radio_button.connect('notify::active', toggle_option, option['key'])
-                vbox.add(radio_button)
-                last = radio_button
-            return vbox
-
-        def select_multiple(f):
-            self.search_filters[f['key']] = [option['key'] for option in f['options'] if option['default']]
-
-            def toggle_option(button, gparam, key):
-                if button.get_active():
-                    self.search_filters[f['key']].append(key)
-                else:
-                    self.search_filters[f['key']].remove(key)
-
-            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
-            for option in f['options']:
-                check_button = Gtk.CheckButton(label=option['name'], active=option['default'], visible=True)
-                check_button.connect('notify::active', toggle_option, option['key'])
-                vbox.add(check_button)
-            return vbox
-
-        def entry(f):
-            self.search_filters[f['key']] = f['default']
-
-            def on_text_changed(buf, param, key):
-                self.search_filters[key] = buf.get_text()
-
-            entry = Gtk.Entry(text=f['default'], placeholder_text=f['name'], tooltip_text=f['description'], visible=True)
-            entry.get_buffer().connect('notify::text', on_text_changed, f['key'])
-
-            return entry
-
-        search_filters_popover = Gtk.Popover()
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
-        last = None
-
-        for f in self.server.FILTERS:
-            if f['type'] == 'select':
-                submenu = {'single': select_single, 'multiple': select_multiple}[f['value_type']](f)
-                submenu_label = Gtk.Label(label=f['name'], tooltip_text=f['description'],
-                                          visible=True, sensitive=False)
-                if last:
-                    sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL, visible=True)
-                    vbox.add(sep)
-                vbox.add(submenu_label)
-                vbox.add(submenu)
-                last = submenu
-            elif f['type'] == 'entry':
-                last = entry(f)
-                vbox.add(last)
-            else:
-                raise NotImplementedError
-        search_filters_popover.add(vbox)
-
-        self.custom_title_search_page_filter_button.set_popover(search_filters_popover)
+        self.init_filters()
 
     def clear_results(self):
         for child in self.search_page_listbox.get_children():
@@ -214,6 +138,95 @@ class AddDialog:
 
     def hide_notification(self):
         self.builder.get_object('notification_revealer').set_reveal_child(False)
+
+    def init_filters(self):
+        self.search_filters = dict()
+
+        if getattr(self.server, 'filters', None) is None:
+            return
+
+        def build_entry(filter):
+            self.search_filters[filter['key']] = filter['default']
+
+            def on_text_changed(buf, param, key):
+                self.search_filters[key] = buf.get_text()
+
+            entry = Gtk.Entry(text=filter['default'], placeholder_text=filter['name'], tooltip_text=filter['description'], visible=True)
+            entry.get_buffer().connect('notify::text', on_text_changed, filter['key'])
+
+            return entry
+
+        def build_select_single(filter):
+            self.search_filters[filter['key']] = filter['default']
+
+            def toggle_option(button, gparam, key):
+                if button.get_active():
+                    self.search_filters[filter['key']] = key
+
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, visible=True)
+
+            last = None
+            for option in filter['options']:
+                is_active = option['key'] == filter['default']
+                radio_button = Gtk.RadioButton(label=option['name'], active=is_active, visible=True)
+                radio_button.join_group(last)
+                radio_button.connect('notify::active', toggle_option, option['key'])
+                vbox.add(radio_button)
+                last = radio_button
+
+            return vbox
+
+        def build_select_multiple(filter):
+            self.search_filters[filter['key']] = [option['key'] for option in filter['options'] if option['default']]
+
+            def toggle_option(button, gparam, key):
+                if button.get_active():
+                    self.search_filters[filter['key']].append(key)
+                else:
+                    self.search_filters[filter['key']].remove(key)
+
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, visible=True)
+
+            for option in filter['options']:
+                check_button = Gtk.CheckButton(label=option['name'], active=option['default'], visible=True)
+                check_button.connect('notify::active', toggle_option, option['key'])
+                vbox.add(check_button)
+
+            return vbox
+
+        popover = Gtk.Popover()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, visible=True)
+        vbox.set_margin_top(6)
+        vbox.set_margin_end(6)
+        vbox.set_margin_bottom(6)
+        vbox.set_margin_start(6)
+
+        last = None
+        for filter in self.server.filters:
+            if filter['type'] == 'select':
+                if filter['value_type'] == 'single':
+                    filter_widget = build_select_single(filter)
+                elif filter['value_type'] == 'multiple':
+                    filter_widget = build_select_multiple(filter)
+                else:
+                    raise NotImplementedError('Invalid select value_type')
+
+                label = Gtk.Label(label=filter['name'], tooltip_text=filter['description'], visible=True, sensitive=False)
+                if last:
+                    sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL, visible=True)
+                    vbox.add(sep)
+                vbox.add(label)
+            elif filter['type'] == 'entry':
+                filter_widget = build_entry(filter)
+            else:
+                raise NotImplementedError('Invalid filter type')
+
+            vbox.add(filter_widget)
+            last = filter_widget
+
+        popover.add(vbox)
+
+        self.custom_title_search_page_filter_menu_button.set_popover(popover)
 
     def on_add_button_clicked(self, button):
         def run():
