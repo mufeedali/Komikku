@@ -5,6 +5,7 @@
 # Author: Leo Prikler <leo.prikler@student.tugraz.at>
 
 from bs4 import BeautifulSoup
+from gettext import gettext as _
 import json
 import requests
 
@@ -16,13 +17,44 @@ from komikku.servers import USER_AGENT
 
 class Dynasty(Server):
     lang = 'en'
+    id = 'dynasty'
+    name = 'Dynasty'
 
     base_url = 'https://dynasty-scans.com'
+    manga_url = base_url + '/{0}'
     search_url = base_url + '/search'
     chapter_url = base_url + '/chapters/{0}'
+    tags_url = base_url + '/tags/suggest/'
 
-    manga_url = NotImplemented
-    search_classes = NotImplemented
+    FILTERS = [
+        {
+            'key': 'classes',
+            'type': 'select',
+            'name': _('Categories'),
+            'description': _('Types of manga to search for'),
+            'value_type': 'multiple',
+            'options': [
+                {'key': 'Anthology', 'name': _('Anthology'), 'default': True},
+                {'key': 'Doujin', 'name': _('Doujins'), 'default': True},
+                {'key': 'Issue', 'name': _('Issues'), 'default': True},
+                {'key': 'Series', 'name': _('Series'), 'default': True},
+            ],
+        },
+        {
+            'key': 'with_tags',
+            'type': 'entry',
+            'name': _('With Tags'),
+            'description': _('Tags to search for'),
+            'default': '',
+        },
+        {
+            'key': 'without_tags',
+            'type': 'entry',
+            'name': _('Without Tags'),
+            'description': _('Tags to exclude from search'),
+            'default': '',
+        },
+    ]
 
     def __init__(self):
         if self.session is None:
@@ -94,7 +126,11 @@ class Dynasty(Server):
         elements = soup.find('dl', class_='chapter-list').find_all('dd')
         for element in elements:
             a_element = element.find('a')
-            date_text = element.find('small').text.strip()[len('released'):]
+            date_text = None
+            for small in element.find_all('small'):
+                small = small.text.strip()
+                if small.startswith('released'):
+                    date_text = small[len('released'):]
 
             data['chapters'].append(dict(
                 slug=a_element.get('href').split('/')[-1],
@@ -174,9 +210,32 @@ class Dynasty(Server):
         """
         return self.manga_url.format(slug)
 
-    def search(self, term):
+    def resolve_tag(self, search_tag):
+        r = self.session_post(self.tags_url, params=dict(query=search_tag))
+        if r is None:
+            return None
+
+        if r.status_code == 200:
+            tags = json.loads(r.text)
+            for tag in tags:
+                if tag['name'].lower() == search_tag.lower():
+                    return tag['id']
+
+        return None
+
+    def search(self, term, *, classes, with_tags='', without_tags=''):
         self.session_get(self.base_url)
-        r = self.session_get(self.search_url, params=dict(q=term, classes=self.search_classes))
+        classes = sorted(classes, key=str.lower)
+        with_tags = [self.resolve_tag(t) for t in with_tags.split(',') if t]
+        without_tags = [self.resolve_tag(t) for t in without_tags.split(',') if t]
+
+        r = self.session_get(self.search_url,
+                             params={
+                                 'q': term,
+                                 'classes': classes,
+                                 'with': with_tags,
+                                 'without': without_tags,
+                             })
         if r is None:
             return None
 
@@ -189,7 +248,7 @@ class Dynasty(Server):
                 for element in elements:
                     a_element = element.find('a', class_='name')
                     results.append(dict(
-                        slug=a_element.get('href').split('/')[-1],
+                        slug=a_element.get('href').lstrip('/'),
                         name=a_element.text.strip(),
                     ))
 
@@ -198,31 +257,3 @@ class Dynasty(Server):
                 return None
 
         return None
-
-
-class Dynasty_anthologies(Dynasty):
-    id = 'dynasty_anthologies'
-    name = 'Dynasty Anthologies'
-    search_classes = ['Anthology']
-    manga_url = Dynasty.base_url + '/anthologies/{0}'
-
-
-class Dynasty_doujins(Dynasty):
-    id = 'dynasty_doujins'
-    name = 'Dynasty Doujins'
-    search_classes = ['Doujin']
-    manga_url = Dynasty.base_url + '/doujins/{0}'
-
-
-class Dynasty_issues(Dynasty):
-    id = 'dynasty_issues'
-    name = 'Dynasty Issues'
-    search_classes = ['Issue']
-    manga_url = Dynasty.base_url + '/issues/{0}'
-
-
-class Dynasty_series(Dynasty):
-    id = 'dynasty_series'
-    name = 'Dynasty Series'
-    search_classes = ['Series']
-    manga_url = Dynasty.base_url + '/series/{0}'

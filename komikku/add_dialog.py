@@ -36,6 +36,8 @@ class AddDialog:
     manga_data = None
     manga = None
 
+    search_filters = None
+
     def __init__(self, window):
         self.window = window
         self.builder = Gtk.Builder()
@@ -111,6 +113,8 @@ class AddDialog:
         self.search_page_listbox.get_style_context().add_class('list-bordered')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
+        self.custom_title_search_page_filter_button = self.builder.get_object('custom_title_search_page_filter_button')
+
         # Manga page
         grid = self.builder.get_object('manga_page_grid')
         grid.set_margin_top(6)
@@ -128,6 +132,81 @@ class AddDialog:
     def clear_search(self):
         self.custom_title_search_page_searchentry.set_text('')
         self.clear_results()
+        self.reset_filters()
+
+    def reset_filters(self):
+        self.search_filters = dict()
+        if getattr(self.server, 'FILTERS', None) is None:
+            return
+
+        def select_single(f):
+            self.search_filters[f['key']] = f['default']
+
+            def toggle_option(button, gparam, key):
+                if button.get_active():
+                    self.search_filters[f['key']] = key
+
+            last = None
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
+            for option in f['options']:
+                is_active = option['key'] == f['default']
+                radio_button = Gtk.RadioButton(label=option['name'], active=is_active, visible=True)
+                radio_button.join_group(last)
+                radio_button.connect('notify::active', toggle_option, option['key'])
+                vbox.add(radio_button)
+                last = radio_button
+            return vbox
+
+        def select_multiple(f):
+            self.search_filters[f['key']] = [option['key'] for option in f['options'] if option['default']]
+
+            def toggle_option(button, gparam, key):
+                if button.get_active():
+                    self.search_filters[f['key']].append(key)
+                else:
+                    self.search_filters[f['key']].remove(key)
+
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
+            for option in f['options']:
+                check_button = Gtk.CheckButton(label=option['name'], active=option['default'], visible=True)
+                check_button.connect('notify::active', toggle_option, option['key'])
+                vbox.add(check_button)
+            return vbox
+
+        def entry(f):
+            self.search_filters[f['key']] = f['default']
+
+            def on_text_changed(buf, param, key):
+                self.search_filters[key] = buf.get_text()
+
+            entry = Gtk.Entry(text=f['default'], placeholder_text=f['name'], tooltip_text=f['description'], visible=True)
+            entry.get_buffer().connect('notify::text', on_text_changed, f['key'])
+
+            return entry
+
+        search_filters_popover = Gtk.Popover()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
+        last = None
+
+        for f in self.server.FILTERS:
+            if f['type'] == 'select':
+                submenu = {'single': select_single, 'multiple': select_multiple}[f['value_type']](f)
+                submenu_label = Gtk.Label(label=f['name'], tooltip_text=f['description'],
+                                          visible=True, sensitive=False)
+                if last:
+                    sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL, visible=True)
+                    vbox.add(sep)
+                vbox.add(submenu_label)
+                vbox.add(submenu)
+                last = submenu
+            elif f['type'] == 'entry':
+                last = entry(f)
+                vbox.add(last)
+            else:
+                raise NotImplementedError
+        search_filters_popover.add(vbox)
+
+        self.custom_title_search_page_filter_button.set_popover(search_filters_popover)
 
     def clear_results(self):
         for child in self.search_page_listbox.get_children():
@@ -224,7 +303,7 @@ class AddDialog:
                     # We offer most popular mangas as starting search results
                     result = server.get_most_populars()
                 else:
-                    result = server.search(term)
+                    result = server.search(term, **self.search_filters)
 
                 if result:
                     GLib.idle_add(complete, result, server, most_populars)
