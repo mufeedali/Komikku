@@ -215,27 +215,29 @@ class Dynasty(Server):
         if r is None:
             return None
 
+        tag_id = None
         if r.status_code == 200:
-            tags = json.loads(r.text)
-            for tag in tags:
+            for tag in r.json():
                 if tag['name'].lower() == search_tag.lower():
-                    return tag['id']
+                    tag_id = tag['id']
+                    break
 
-        return None
+        return tag_id
 
-    def search(self, term, *, classes, with_tags='', without_tags=''):
-        self.session_get(self.base_url)
+    def search(self, term, classes=[], with_tags='', without_tags=''):
         classes = sorted(classes, key=str.lower)
-        with_tags = [self.resolve_tag(t) for t in with_tags.split(',') if t]
-        without_tags = [self.resolve_tag(t) for t in without_tags.split(',') if t]
+        with_tags = [self.resolve_tag(t.strip()) for t in with_tags.split(',') if t]
+        without_tags = [self.resolve_tag(t.strip()) for t in without_tags.split(',') if t]
 
-        r = self.session_get(self.search_url,
-                             params={
-                                 'q': term,
-                                 'classes': classes,
-                                 'with': with_tags,
-                                 'without': without_tags,
-                             })
+        r = self.session_get(
+            self.search_url,
+            params={
+                'q': term,
+                'classes[]': classes,
+                'with[]': with_tags,
+                'without[]': without_tags,
+            }
+        )
         if r is None:
             return None
 
