@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-12 23:26+0200\n"
+"POT-Creation-Date: 2020-09-13 01:54+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -10,33 +10,204 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4\n"
+"X-Generator: Poedit 2.4.1\n"
 
-#: ../komikku/add_dialog.py:226
+#: ../komikku/models/database.py:236
+msgid "Complete"
+msgstr "Terminé"
+
+#: ../komikku/models/database.py:237
+msgid "Ongoing"
+msgstr "En cours"
+
+#: ../komikku/models/database.py:238
+msgid "Suspended"
+msgstr "Suspendu"
+
+#: ../komikku/models/database.py:239
+msgid "Hiatus"
+msgstr "Hiatus"
+
+#: ../komikku/models/database.py:727
+msgid "Download pending"
+msgstr "Téléchargement en attente"
+
+#: ../komikku/models/database.py:728
+msgid "Downloaded"
+msgstr "Téléchargé"
+
+#: ../komikku/models/database.py:729
+msgid "Downloading"
+msgstr "Téléchargement en cours"
+
+#: ../komikku/models/database.py:730
+msgid "Download error"
+msgstr "Erreur de téléchargement"
+
+#: ../komikku/utils.py:93
+msgid "No Internet connection, timeout or server down"
+msgstr "Pas de connexion Internet, délai dépassé ou serveur en panne"
+
+#: ../komikku/application.py:72 ../komikku/application.py:76
+msgid "Komikku"
+msgstr "Komikku"
+
+#: ../komikku/application.py:286
+msgid "Yes"
+msgstr "Oui"
+
+#: ../komikku/application.py:286 ../komikku/reader/__init__.py:188
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../komikku/application.py:348
+msgid "Contributors: Code, Patches, Debugging:"
+msgstr "Contributeurs: Code, correctifs, débogage :"
+
+#: ../komikku/application.py:375
+msgid "Are you sure you want to quit?"
+msgstr "Êtes-vous sûr de vouloir quitter ?"
+
+#: ../komikku/application.py:378
+msgid "Some chapters are currently being downloaded."
+msgstr "Certains chapitres sont en cours de téléchargement."
+
+#: ../komikku/application.py:380
+msgid "Some mangas are currently being updated."
+msgstr "Certains mangas sont en cours de mise à jour."
+
+#: ../komikku/application.py:383
+msgid "Quit?"
+msgstr "Quitter ?"
+
+#: ../komikku/servers/dynasty.py:33
+msgid "Categories"
+msgstr "Catégories"
+
+#: ../komikku/servers/dynasty.py:34
+msgid "Types of manga to search for"
+msgstr "Types de mangas à rechercher"
+
+#: ../komikku/servers/dynasty.py:37
+msgid "Anthology"
+msgstr "Anthologie"
+
+#: ../komikku/servers/dynasty.py:38
+msgid "Doujins"
+msgstr "Doujins"
+
+#: ../komikku/servers/dynasty.py:39
+msgid "Issues"
+msgstr "Magazines"
+
+#: ../komikku/servers/dynasty.py:40
+msgid "Series"
+msgstr "Séries"
+
+#: ../komikku/servers/dynasty.py:46
+msgid "With Tags"
+msgstr "Avec les mots clés"
+
+#: ../komikku/servers/dynasty.py:47
+msgid "Tags to search for"
+msgstr "Mots clés à rechercher"
+
+#: ../komikku/servers/dynasty.py:53
+msgid "Without Tags"
+msgstr "Sans les mots clés"
+
+#: ../komikku/servers/dynasty.py:54
+msgid "Tags to exclude from search"
+msgstr "Mots clés à exclure de la recherche"
+
+#: ../komikku/downloader.py:165
+msgid "Download completed"
+msgstr "Téléchargement terminé"
+
+#: ../komikku/downloader.py:166 ../komikku/downloader.py:195
 #, python-brace-format
-msgid "{0} manga added"
-msgstr "{0} manga ajouté"
+msgid "[{0}] Chapter {1}"
+msgstr "[{0}] Chapitre {1}"
 
-#: ../komikku/add_dialog.py:329
-msgid "MOST POPULARS"
-msgstr "LES PLUS POPULAIRES"
-
-#: ../komikku/add_dialog.py:362
-msgid "Oops, search failed. Please try again."
-msgstr "Oups, la recherche a échoué. Veuillez réessayer."
-
-#: ../komikku/add_dialog.py:364
-msgid "No results"
-msgstr "Aucun résultat"
-
-#: ../komikku/add_dialog.py:452
-msgid "Oops, failed to retrieve manga's information."
-msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
-
-#: ../komikku/add_dialog.py:476
+#: ../komikku/downloader.py:189
 #, python-brace-format
-msgid "Search in {0}…"
-msgstr "Rechercher dans {0}…"
+msgid "{0}/{1} pages downloaded"
+msgstr "{0}/{1} pages téléchargées"
+
+#: ../komikku/downloader.py:191
+msgid "error"
+msgstr "erreur"
+
+#: ../komikku/updater.py:75
+msgid "Library update completed"
+msgstr "Mise à jour de la bibliothèque terminée"
+
+#: ../komikku/updater.py:77
+msgid "Update completed"
+msgstr "Mise à jour terminée"
+
+#: ../komikku/updater.py:87
+msgid "No new chapter found"
+msgstr "Aucun nouveau chapitre trouvé"
+
+#: ../komikku/updater.py:113
+#, python-brace-format
+msgid ""
+"{0}\n"
+"Oops, update has failed. Please try again."
+msgstr ""
+"{0}\n"
+"Oups, la mise à jour a échouée. Veuillez réessayer."
+
+#: ../komikku/updater.py:121
+msgid "Library update started"
+msgstr "Mise à jour de la bibliothèque démarrée"
+
+#: ../komikku/updater.py:123
+msgid "Update started"
+msgstr "Mise à jour démarrée"
+
+#: ../komikku/reader/__init__.py:184
+msgid "Please choose a file"
+msgstr "Veuillez choisir un fichier"
+
+#: ../komikku/reader/__init__.py:190
+msgid "Save"
+msgstr "Enregistrer"
+
+#: ../komikku/reader/__init__.py:209
+msgid ""
+"Failed to save page: missing permission to access the XDG pictures directory"
+msgstr ""
+"Échec de l'enregistrement de la page: autorisation manquante pour accéder au "
+"répertoire XDG pictures"
+
+#: ../komikku/reader/__init__.py:213
+#, python-brace-format
+msgid "Page successfully saved to {0}"
+msgstr "Page enregistrée avec succès dans {0}"
+
+#: ../komikku/reader/pager/__init__.py:317
+#: ../komikku/reader/pager/__init__.py:421
+msgid "There is no previous chapter."
+msgstr "Il n'y a pas de chapitre précédent."
+
+#: ../komikku/reader/pager/__init__.py:319
+#: ../komikku/reader/pager/__init__.py:419
+msgid "It was the last chapter."
+msgstr "C'était le dernier chapitre."
+
+#: ../komikku/reader/pager/__init__.py:457
+msgid "This chapter is inaccessible."
+msgstr "Ce chapitre est inaccessible."
+
+#: ../komikku/reader/pager/page.py:267
+msgid "Failed to load image"
+msgstr "Impossible de charger l'image"
+
+#: ../komikku/reader/pager/page.py:340
+msgid "Retry"
+msgstr "Réessayer"
 
 #: ../komikku/card.py:86
 #, python-brace-format
@@ -85,72 +256,6 @@ msgstr "Marquer comme non lu"
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
-
-#: ../komikku/library.py:223
-msgid "Are you sure you want to delete selected mangas?"
-msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
-
-#: ../komikku/library.py:497
-msgid "Library"
-msgstr "Bibliothèque"
-
-#: ../komikku/servers/dynasty.py:33
-msgid "Categories"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:34
-msgid "Types of manga to search for"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:37
-msgid "Anthology"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:38
-msgid "Doujins"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:39
-msgid "Issues"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:40
-msgid "Series"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:46
-msgid "With Tags"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:47
-msgid "Tags to search for"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:53
-msgid "Without Tags"
-msgstr ""
-
-#: ../komikku/servers/dynasty.py:54
-msgid "Tags to exclude from search"
-msgstr ""
-
-#: ../komikku/downloader.py:165
-msgid "Download completed"
-msgstr "Téléchargement terminé"
-
-#: ../komikku/downloader.py:166 ../komikku/downloader.py:195
-#, python-brace-format
-msgid "[{0}] Chapter {1}"
-msgstr "[{0}] Chapitre {1}"
-
-#: ../komikku/downloader.py:189
-#, python-brace-format
-msgid "{0}/{1} pages downloaded"
-msgstr "{0}/{1} pages téléchargées"
-
-#: ../komikku/downloader.py:191
-msgid "error"
-msgstr "erreur"
 
 #: ../komikku/preferences_window.py:105
 msgid "Right to Left ←"
@@ -220,289 +325,39 @@ msgstr ""
 msgid "Test"
 msgstr "Tester"
 
-#: ../komikku/models/database.py:236
-msgid "Complete"
-msgstr "Terminé"
+#: ../komikku/library.py:223
+msgid "Are you sure you want to delete selected mangas?"
+msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 
-#: ../komikku/models/database.py:237
-msgid "Ongoing"
-msgstr "En cours"
+#: ../komikku/library.py:497
+msgid "Library"
+msgstr "Bibliothèque"
 
-#: ../komikku/models/database.py:238
-msgid "Suspended"
-msgstr "Suspendu"
-
-#: ../komikku/models/database.py:239
-msgid "Hiatus"
-msgstr "Hiatus"
-
-#: ../komikku/models/database.py:727
-msgid "Download pending"
-msgstr "Téléchargement en attente"
-
-#: ../komikku/models/database.py:728
-msgid "Downloaded"
-msgstr "Téléchargé"
-
-#: ../komikku/models/database.py:729
-msgid "Downloading"
-msgstr "Téléchargement en cours"
-
-#: ../komikku/models/database.py:730
-msgid "Download error"
-msgstr "Erreur de téléchargement"
-
-#: ../komikku/utils.py:93
-msgid "No Internet connection, timeout or server down"
-msgstr "Pas de connexion Internet, délai dépassé ou serveur en panne"
-
-#: ../komikku/reader/pager/page.py:267
-msgid "Failed to load image"
-msgstr "Impossible de charger l'image"
-
-#: ../komikku/reader/pager/page.py:340
-msgid "Retry"
-msgstr "Réessayer"
-
-#: ../komikku/reader/pager/__init__.py:317
-#: ../komikku/reader/pager/__init__.py:421
-msgid "There is no previous chapter."
-msgstr "Il n'y a pas de chapitre précédent."
-
-#: ../komikku/reader/pager/__init__.py:319
-#: ../komikku/reader/pager/__init__.py:419
-msgid "It was the last chapter."
-msgstr "C'était le dernier chapitre."
-
-#: ../komikku/reader/pager/__init__.py:457
-msgid "This chapter is inaccessible."
-msgstr "Ce chapitre est inaccessible."
-
-#: ../komikku/reader/__init__.py:184
-msgid "Please choose a file"
-msgstr "Veuillez choisir un fichier"
-
-#: ../komikku/reader/__init__.py:188 ../komikku/application.py:273
-msgid "Cancel"
-msgstr "Annuler"
-
-#: ../komikku/reader/__init__.py:190
-msgid "Save"
-msgstr "Enregistrer"
-
-#: ../komikku/reader/__init__.py:209
-msgid ""
-"Failed to save page: missing permission to access the XDG pictures directory"
-msgstr ""
-"Échec de l'enregistrement de la page: autorisation manquante pour accéder au "
-"répertoire XDG pictures"
-
-#: ../komikku/reader/__init__.py:213
+#: ../komikku/add_dialog.py:239
 #, python-brace-format
-msgid "Page successfully saved to {0}"
-msgstr "Page enregistrée avec succès dans {0}"
+msgid "{0} manga added"
+msgstr "{0} manga ajouté"
 
-#: ../komikku/updater.py:75
-msgid "Library update completed"
-msgstr "Mise à jour de la bibliothèque terminée"
+#: ../komikku/add_dialog.py:342
+msgid "MOST POPULARS"
+msgstr "LES PLUS POPULAIRES"
 
-#: ../komikku/updater.py:77
-msgid "Update completed"
-msgstr "Mise à jour terminée"
+#: ../komikku/add_dialog.py:375
+msgid "Oops, search failed. Please try again."
+msgstr "Oups, la recherche a échoué. Veuillez réessayer."
 
-#: ../komikku/updater.py:87
-msgid "No new chapter found"
-msgstr "Aucun nouveau chapitre trouvé"
+#: ../komikku/add_dialog.py:377
+msgid "No results"
+msgstr "Aucun résultat"
 
-#: ../komikku/updater.py:113
+#: ../komikku/add_dialog.py:465
+msgid "Oops, failed to retrieve manga's information."
+msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
+
+#: ../komikku/add_dialog.py:489
 #, python-brace-format
-msgid ""
-"{0}\n"
-"Oops, update has failed. Please try again."
-msgstr ""
-"{0}\n"
-"Oups, la mise à jour a échouée. Veuillez réessayer."
-
-#: ../komikku/updater.py:121
-msgid "Library update started"
-msgstr "Mise à jour de la bibliothèque démarrée"
-
-#: ../komikku/updater.py:123
-msgid "Update started"
-msgstr "Mise à jour démarrée"
-
-#: ../komikku/application.py:59 ../komikku/application.py:63
-msgid "Komikku"
-msgstr "Komikku"
-
-#: ../komikku/application.py:273
-msgid "Yes"
-msgstr "Oui"
-
-#: ../komikku/application.py:335
-msgid "Contributors: Code, Patches, Debugging:"
-msgstr "Contributeurs: Code, correctifs, débogage :"
-
-#: ../komikku/application.py:362
-msgid "Are you sure you want to quit?"
-msgstr "Êtes-vous sûr de vouloir quitter ?"
-
-#: ../komikku/application.py:365
-msgid "Some chapters are currently being downloaded."
-msgstr "Certains chapitres sont en cours de téléchargement."
-
-#: ../komikku/application.py:367
-msgid "Some mangas are currently being updated."
-msgstr "Certains mangas sont en cours de mise à jour."
-
-#: ../komikku/application.py:370
-msgid "Quit?"
-msgstr "Quitter ?"
-
-#: ../data/ui/menu/card.xml:7 ../data/ui/menu/library_selection_mode.xml:11
-#: ../data/ui/menu/download_manager_selection_mode.xml:7
-msgid "Delete"
-msgstr "Supprimer"
-
-#: ../data/ui/menu/card.xml:11 ../data/ui/menu/library_selection_mode.xml:7
-msgid "Update"
-msgstr "Mettre à jour"
-
-#: ../data/ui/menu/card.xml:18
-msgid "Order of Chapters"
-msgstr "Ordre des chapitres"
-
-#: ../data/ui/menu/card.xml:23
-msgid "By Chapter Number (9-0)"
-msgstr "Par numéro de chapitre (9-0)"
-
-#: ../data/ui/menu/card.xml:28
-msgid "By Chapter Number (0-9)"
-msgstr "Par numéro de chapitre (0-9)"
-
-#: ../data/ui/menu/card.xml:38
-msgid "Open in Browser"
-msgstr "Ouvrir dans le navigateur"
-
-#: ../data/ui/menu/download_manager.xml:7
-msgid "Delete All"
-msgstr "Tout supprimer"
-
-#: ../data/ui/menu/library_search.xml:11
-msgid "Unread"
-msgstr "Non lus"
-
-#: ../data/ui/menu/library_search.xml:15
-msgid "Recents"
-msgstr "Récents"
-
-#: ../data/ui/menu/library_selection_mode.xml:18
-#: ../data/ui/menu/card_selection_mode.xml:26
-msgid "Select All"
-msgstr "Tout sélectionner"
-
-#: ../data/ui/menu/reader.xml:7
-msgid "Reading direction"
-msgstr "Sens de lecture"
-
-#: ../data/ui/menu/reader.xml:30
-msgid "Type of Scaling"
-msgstr "Type de mise à l'échelle"
-
-#: ../data/ui/menu/reader.xml:58 ../data/ui/preferences_window.ui:204
-msgid "Background Color"
-msgstr "Couleur de fond"
-
-#: ../data/ui/menu/reader.xml:76
-msgid "Crop Borders"
-msgstr "Rogner les bordures"
-
-#: ../data/ui/menu/main.xml:7
-msgid "Update Library"
-msgstr "Mettre à jour la bibliothèque"
-
-#: ../data/ui/menu/main.xml:11 ../data/ui/download_manager_dialog.ui:32
-msgid "Download Manager"
-msgstr "Gestionnaire de téléchargement"
-
-#: ../data/ui/menu/main.xml:17
-msgid "Preferences"
-msgstr "Préférences"
-
-#: ../data/ui/menu/main.xml:21
-msgid "Keyboard Shortcuts"
-msgstr "Raccourcis clavier"
-
-#: ../data/ui/menu/main.xml:25
-msgid "About Komikku"
-msgstr "À propos de Komikku"
-
-#: ../data/ui/menu/card_selection_mode.xml:15
-msgid "Mark as Read"
-msgstr "Marquer comme lu"
-
-#: ../data/ui/menu/card_selection_mode.xml:19
-msgid "Mark as Unread"
-msgstr "Marquer comme non lu"
-
-#: ../data/ui/application_window.ui:418 ../data/ui/add_dialog.ui:298
-msgid "Authors"
-msgstr "Auteurs"
-
-#: ../data/ui/application_window.ui:446 ../data/ui/add_dialog.ui:326
-msgid "Genres"
-msgstr "Genres"
-
-#: ../data/ui/application_window.ui:474 ../data/ui/add_dialog.ui:354
-msgid "Status"
-msgstr "Status"
-
-#: ../data/ui/application_window.ui:502 ../data/ui/add_dialog.ui:382
-msgid "Server"
-msgstr "Serveur"
-
-#: ../data/ui/application_window.ui:531 ../data/ui/add_dialog.ui:410
-msgid "Synopsis"
-msgstr "Synopsis"
-
-#: ../data/ui/application_window.ui:561
-msgid "Last update"
-msgstr "Dernière mise à jour"
-
-#: ../data/ui/application_window.ui:616 ../data/ui/add_dialog.ui:441
-msgid "Scanlators"
-msgstr "Scantrad"
-
-#: ../data/ui/application_window.ui:636
-msgid "Info"
-msgstr "Infos"
-
-#: ../data/ui/application_window.ui:667
-msgid "Chapters"
-msgstr "Chapitres"
-
-#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/application_window.ui:823
-msgid "An online/offline manga reader"
-msgstr "Un lecteur de manga en ligne / hors ligne"
-
-#: ../data/ui/about_dialog.ui.in:11
-msgid ""
-"An online/offline manga reader.\n"
-"\n"
-"Never forget, you can support the authors\n"
-"by buying the official comics when they are\n"
-"available in your region/language."
-msgstr ""
-"Un lecteur de manga en ligne / hors ligne.\n"
-"\n"
-"N'oubliez jamais, vous pouvez soutenir les auteurs\n"
-"en achetant les BD officielles lorsqu'elles sont\n"
-"disponibles dans votre région / langue."
-
-#: ../data/ui/about_dialog.ui.in:17
-msgid "Learn more about Komikku"
-msgstr "En savoir plus sur Komikku"
+msgid "Search in {0}…"
+msgstr "Rechercher dans {0}…"
 
 #: ../data/ui/shortcuts_overview.ui:14
 msgctxt "Shortcut window description"
@@ -564,13 +419,141 @@ msgctxt "Shortcut window description"
 msgid "Select all downloads"
 msgstr "Sélectionner tous les téléchargements"
 
-#: ../data/ui/download_manager_dialog.ui:201
-msgid "No downloads"
-msgstr "Aucun téléchargement"
+#: ../data/ui/application_window.ui:418 ../data/ui/add_dialog.ui:301
+msgid "Authors"
+msgstr "Auteurs"
+
+#: ../data/ui/application_window.ui:446 ../data/ui/add_dialog.ui:329
+msgid "Genres"
+msgstr "Genres"
+
+#: ../data/ui/application_window.ui:474 ../data/ui/add_dialog.ui:357
+msgid "Status"
+msgstr "Status"
+
+#: ../data/ui/application_window.ui:502 ../data/ui/add_dialog.ui:385
+msgid "Server"
+msgstr "Serveur"
+
+#: ../data/ui/application_window.ui:531 ../data/ui/add_dialog.ui:413
+msgid "Synopsis"
+msgstr "Synopsis"
+
+#: ../data/ui/application_window.ui:561
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
+#: ../data/ui/application_window.ui:616 ../data/ui/add_dialog.ui:444
+msgid "Scanlators"
+msgstr "Scantrad"
+
+#: ../data/ui/application_window.ui:636
+msgid "Info"
+msgstr "Infos"
+
+#: ../data/ui/application_window.ui:667
+msgid "Chapters"
+msgstr "Chapitres"
+
+#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
+#: ../data/ui/application_window.ui:823
+msgid "An online/offline manga reader"
+msgstr "Un lecteur de manga en ligne / hors ligne"
+
+#: ../data/ui/menu/main.xml:7
+msgid "Update Library"
+msgstr "Mettre à jour la bibliothèque"
+
+#: ../data/ui/menu/main.xml:11 ../data/ui/download_manager_dialog.ui:32
+msgid "Download Manager"
+msgstr "Gestionnaire de téléchargement"
+
+#: ../data/ui/menu/main.xml:17
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../data/ui/menu/main.xml:21
+msgid "Keyboard Shortcuts"
+msgstr "Raccourcis clavier"
+
+#: ../data/ui/menu/main.xml:25
+msgid "About Komikku"
+msgstr "À propos de Komikku"
+
+#: ../data/ui/menu/library_selection_mode.xml:7 ../data/ui/menu/card.xml:11
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: ../data/ui/menu/library_selection_mode.xml:11
+#: ../data/ui/menu/download_manager_selection_mode.xml:7
+#: ../data/ui/menu/card.xml:7
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../data/ui/menu/library_selection_mode.xml:18
+#: ../data/ui/menu/card_selection_mode.xml:26
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+#: ../data/ui/menu/library_search.xml:11
+msgid "Unread"
+msgstr "Non lus"
+
+#: ../data/ui/menu/library_search.xml:15
+msgid "Recents"
+msgstr "Récents"
+
+#: ../data/ui/menu/card_selection_mode.xml:15
+msgid "Mark as Read"
+msgstr "Marquer comme lu"
+
+#: ../data/ui/menu/card_selection_mode.xml:19
+msgid "Mark as Unread"
+msgstr "Marquer comme non lu"
+
+#: ../data/ui/menu/download_manager.xml:7
+msgid "Delete All"
+msgstr "Tout supprimer"
+
+#: ../data/ui/menu/reader.xml:7
+msgid "Reading direction"
+msgstr "Sens de lecture"
+
+#: ../data/ui/menu/reader.xml:30
+msgid "Type of Scaling"
+msgstr "Type de mise à l'échelle"
+
+#: ../data/ui/menu/reader.xml:58 ../data/ui/preferences_window.ui:204
+msgid "Background Color"
+msgstr "Couleur de fond"
+
+#: ../data/ui/menu/reader.xml:76
+msgid "Crop Borders"
+msgstr "Rogner les bordures"
+
+#: ../data/ui/menu/card.xml:18
+msgid "Order of Chapters"
+msgstr "Ordre des chapitres"
+
+#: ../data/ui/menu/card.xml:23
+msgid "By Chapter Number (9-0)"
+msgstr "Par numéro de chapitre (9-0)"
+
+#: ../data/ui/menu/card.xml:28
+msgid "By Chapter Number (0-9)"
+msgstr "Par numéro de chapitre (0-9)"
+
+#: ../data/ui/menu/card.xml:38
+msgid "Open in Browser"
+msgstr "Ouvrir dans le navigateur"
+
+#: ../data/ui/add_dialog.ui:46
+msgid "Select a server"
+msgstr "Choisissez un serveur"
 
 #: ../data/ui/preferences_window.ui:17
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: ../data/ui/preferences_window.ui:26
 msgid "Dark Theme"
@@ -684,9 +667,27 @@ msgstr "Autoriser le stockage en texte en clair comme solution de secours"
 msgid "Used when no keyring backends are found"
 msgstr "Utilisé lorsqu'aucun backend de trousseau de clés n'est trouvé"
 
-#: ../data/ui/add_dialog.ui:46
-msgid "Select a server"
-msgstr "Choisissez un serveur"
+#: ../data/ui/about_dialog.ui.in:11
+msgid ""
+"An online/offline manga reader.\n"
+"\n"
+"Never forget, you can support the authors\n"
+"by buying the official comics when they are\n"
+"available in your region/language."
+msgstr ""
+"Un lecteur de manga en ligne / hors ligne.\n"
+"\n"
+"N'oubliez jamais, vous pouvez soutenir les auteurs\n"
+"en achetant les BD officielles lorsqu'elles sont\n"
+"disponibles dans votre région / langue."
+
+#: ../data/ui/about_dialog.ui.in:17
+msgid "Learn more about Komikku"
+msgstr "En savoir plus sur Komikku"
+
+#: ../data/ui/download_manager_dialog.ui:201
+msgid "No downloads"
+msgstr "Aucun téléchargement"
 
 #: ../data/info.febvre.Komikku.desktop.in:3
 msgid "@prettyname@"
@@ -716,438 +717,612 @@ msgstr ""
 msgid "Valéry Febvre"
 msgstr "Valéry Febvre"
 
-#~ msgid "[Preferences] New UI"
-#~ msgstr "[Préférences] Nouvelle interface"
-
-#~ msgid "[Servers] MangaNelo: Fix images loading"
-#~ msgstr "[Serveurs] MangaNelo : Correction du chargement des images"
-
-#~ msgid "[Servers] Disable Jaimini's Box"
-#~ msgstr "[Serveurs] Jailini's Box a été désactivé"
-
-#~ msgid "Fix 2 critical bugs (app crashs)"
-#~ msgstr "2 bugs critiques ont été corrigés (crash de l'application)"
-
-#~ msgid "[Library/Readers] Add support of animated GIFs"
-#~ msgstr "[Bibliothèque/Lecteurs] Ajout du support des GIFs"
-
-#~ msgid "[Library] Add &lt;Control&gt;+F shortcut: Enter search mode"
-#~ msgstr ""
-#~ "[Bibliothèque] Ajout du raccourci &lt;Contrôle&gt;+F : Trouver dans la "
-#~ "page"
-
-#~ msgid ""
-#~ "[Library/Manga/Download Manager] Add &lt;Control&gt;+A shortcut: Select "
-#~ "all"
-#~ msgstr ""
-#~ "[Bibliothèque/Manga/Gestionnaire de Téléchargement] Ajout du raccourci&lt;"
-#~ "Contrôle&gt;+A : Tout sélectionner"
-
-#~ msgid ""
-#~ "[Library/Manga/Download Manger] Add &lt;Control&gt;+Click and &lt;"
-#~ "Shift&gt;+Click shortcuts: Enter selection mode"
-#~ msgstr ""
-#~ "[Bibliothèque/Manga/Gestionnaire de Téléchargement] Ajout du raccourci&lt;"
-#~ "Contrôle&gt;+Clique et &lt;Maj&gt;+Clique : Entrer en mode de sélection"
-
-#~ msgid ""
-#~ "[Download Manager] Add range selection: long press on an item then long "
-#~ "press on another to select everything in between"
-#~ msgstr ""
-#~ "[Gestionnaire de Téléchargement] Ajout de la sélection multiple : Appui "
-#~ "long sur un objet puis appui long sur un autre pour sélectionner tousce "
-#~ "qui se trouve entre eux"
-
-#~ msgid "[Manga] Add chapters scanlators support (MangaDex only)"
-#~ msgstr ""
-#~ "[Manga] Ajout du support des scantrads de chapitre (MangaDex uniquement)"
-
-#~ msgid ""
-#~ "[Servers] Add Izneo (DE, EN and FR) and Yieha (NL): a account is required"
-#~ msgstr ""
-#~ "[Serveurs] Ajout de Izneo (DE,EN et FR) et de Yieha (NL) : un compte est "
-#~ "requis"
-
-#~ msgid "[Library] Faster chapters list rendering"
-#~ msgstr ""
-#~ "[Bibliothèque] Le rendu des listes de chapitres est maintenant plus rapide"
-
-#~ msgid ""
-#~ "[Library] Faster read/unread state toggling with long chapters selections"
-#~ msgstr ""
-#~ "[Bibliothèque] Le changement d'état entre lu/non lu lors de la sélection "
-#~ "de beaucoup de chapitres est maintenant plus rapide"
-
-#~ msgid "[Library] Reduce memory used by covers"
-#~ msgstr "[Bibliothèque] Réduction de la consomation mémoire par couverture"
-
-#~ msgid "[Servers] MangaSee: Fix manga with chapters grouped by seasons"
-#~ msgstr ""
-#~ "[Serveurs] MangaSee : Correction des mangas qui possèdent des chapitres "
-#~ "groupés par saisons"
-
-#~ msgid "[Servers] Jaimini's Box: Several fixes"
-#~ msgstr "[Serveurs] Jaimini's Box : Nombreuses corrections"
-
-#~ msgid "[Servers] MangaLib: Several fixes"
-#~ msgstr "[Serveurs] MangaLib : Nombreuses corrections"
-
-#~ msgid "[Library] Add search by genre (exact match)"
-#~ msgstr ""
-#~ "[Bibliothèque] Ajout de la recherche par genre (correspondance exacte)"
-
-#~ msgid ""
-#~ "[Library/Chapters] Add range selection: long press on an item then long "
-#~ "press on another to select everything in between"
-#~ msgstr ""
-#~ "[Bibliothèque/Chapitre] Ajout de la sélection multiple : Appui long sur "
-#~ "un objet puis appui long sur un autre pour sélectionner tousce qui se "
-#~ "trouve entre eux"
-
-#~ msgid ""
-#~ "[Chapters] Fully cached/read chapters are now marked as \"Downloaded\""
-#~ msgstr ""
-#~ "[Chapitre] Les chapitres entièrement mis en cache/lu sont maintenant "
-#~ "marqués comme \"Téléchargé\""
-
-#~ msgid "[Reader] Improve keyboard navigation"
-#~ msgstr "[Lecteur] Amélioration de la navigation via le clavier"
-
-#~ msgid "[Reader] Improve pages transition"
-#~ msgstr "[Lecteur] Amélioration de la transition des pages"
-
-#~ msgid "[Servers] Add Crunchyroll (EN): a Premium account is required"
-#~ msgstr "[Serveurs] Ajout de Crunchyroll (EN) : un compte premium est requis"
-
-#~ msgid "[Servers] Scantrad France: Add Most populars"
-#~ msgstr ""
-#~ "[Serveurs] Scantrad France : Ajout de la catégorie 'les plus populaires'"
-
-#~ msgid "Improve manga update"
-#~ msgstr "Amélioration du processus de mise à jour des mangas"
-
-#~ msgid "New icon"
-#~ msgstr "Nouvelle icone"
-
-#~ msgid "[Reader] Add 'Original Size' scaling"
-#~ msgstr "[Lecteur] Ajout de l'échelle 'Taille Originale'"
-
-#~ msgid "[Reader] Several fixes in keyboard navigation"
-#~ msgstr "[Lecteur] Nombreuses corrections dans la navigation via le clavier"
-
-#~ msgid "[Settings] Library: Add new option 'Auto Download of New Chapters'"
-#~ msgstr ""
-#~ "[Paramètres] Bibliothèque : Ajout d'une nouvelle option 'Téléchargement "
-#~ "automatique des nouveaux chapitres'"
-
-#~ msgid ""
-#~ "[Settings] Library: Add new option 'Long Strip Detection' (MangaDex, "
-#~ "MangaNelo, Mangakawaii, JapScan and Union Mangás)"
-#~ msgstr ""
-#~ "[Paramètres] Bibliothèque : Ajout d'une nouvelle option 'Détection de "
-#~ "bande longue' (MangaDex, MangaNelo, Mangakawaii, JapScan et Union Mangás)"
-
-#~ msgid "[Servers] JapScan: Fix search and images loading"
-#~ msgstr ""
-#~ "[Serveurs] JapScan : Correction de la recherche et du chargement des "
-#~ "images"
-
-#~ msgid "[Servers] MangaLib: Fix images loading"
-#~ msgstr "[Serveurs] MangaLib : Correction du chargement des images"
-
-#~ msgid "[Servers] Submanga: Update of domain"
-#~ msgstr "[Serveurs] Submanga : mise à jour du domaine"
-
-#~ msgid "[Reader] Fix crash with corrupt or empty images"
-#~ msgstr "[Lecteur] Correction d'un crash dû à des images corrompues ou vides"
-
-#~ msgid "[Settings] Add servers settings"
-#~ msgstr "[Serveurs] Ajout de paramètres serveur"
-
-#~ msgid "[Servers] Add Union Mangás (PT)"
-#~ msgstr "[Serveurs] Ajout de Union Mangás (PT)"
-
-#~ msgid "[Servers] Add MangaLib and HentaiLib (RU)"
-#~ msgstr "[Serveurs Ajout de MangaLib et HentaiLib (RU)"
-
-#~ msgid ""
-#~ "[Servers] Add Edelgarde Scans, Hunlight Scans, One Shot Scans, Reaper "
-#~ "Scans, The Nonames Scans, Zero Scans (EN)"
-#~ msgstr ""
-#~ "[Serveurs] Ajout de Edelgarde Scans, Hunlight Scans, One Shot Scans, "
-#~ "Reaper Scans, The Nonames Scans et de Zero Scans (EN)"
-
-#~ msgid "[Servers] Add Leviatan Scans (EN, ES)"
-#~ msgstr "[Serveurs] Ajout de Leviatan Scans (EN, ES)"
-
-#~ msgid "[Servers] Hatigarm Scans: new server version"
-#~ msgstr "[Serveurs] Hattigarm Scans : nouvelle version du serveur"
-
-#~ msgid "[Servers] Scantrad France: Fix"
-#~ msgstr "[Serveurs] Scrantrad France : correction"
-
-#~ msgid "[Servers] MangaDex: Added ability to log in"
-#~ msgstr "[Serveurs] MangaDex : Ajout de la possibilité de se connecter"
-
-#~ msgid "[Servers] Read Manga: Fixes"
-#~ msgstr "[Serveurs] Manga lu : corrections"
-
-#~ msgid "Improved manga update"
-#~ msgstr "Amélioration du processus de mise à jour des mangas"
-
-#~ msgid "[Servers] Mangakawaii: Fixed manga cover"
-#~ msgstr "[Serveurs] Mangakawaii : Correction de la couverture des mangas"
-
-#~ msgid "[Manga] Fixed the unread action of chapters"
-#~ msgstr "[Manga] Correction de la fonction 'non lu' des chapitres"
-
-#~ msgid "[Reader] Cursor hiding during keyboard navigation"
-#~ msgstr ""
-#~ "[Lecteur] Le curseur de la souris se masque lors de la navigation par "
-#~ "clavier"
-
-#~ msgid "[Reader] Arrow scrolling in every reading directions"
-#~ msgstr ""
-#~ "[Lecteur] Les flèches de direction permettent de défiler dans toutes les "
-#~ "directions"
-
-#~ msgid "[Reader] Added white borders crop"
-#~ msgstr "[Lecteur] Ajout du rognage des bordures blanches"
-
-#~ msgid "[Servers] Added Kirei Cake (EN)"
-#~ msgstr "[Serveurs] Ajout de Kirei Cake (EN)"
-
-#~ msgid "[Servers] Added Read Manga, Mint Manga and Self Manga (RU)"
-#~ msgstr "[Serveurs] Ajout de Read Manga, Mint Manga et Self Manga (RU)"
-
-#~ msgid "[Servers] Updated Mangakawaii domain"
-#~ msgstr "[Serveurs] Mise à jour du domaine de Mangakawaii"
-
-#~ msgid "[Servers] Fixed JapScan search (using DuckDuckGo Lite)"
-#~ msgstr ""
-#~ "[Serveurs] Correction de la recherche pour JapScan (en utilisant "
-#~ "DuckDuckGo Lite)"
-
-#~ msgid "Added back navigation with Escape key"
-#~ msgstr ""
-#~ "Ajout de la possiblité de retourner en arrière avec la touche 'Échape'"
-
-#~ msgid ""
-#~ "Added abilility to add manga by ID using keyword \"id:&lt;id&gt;"
-#~ "\" (useful with MangaDex)"
-#~ msgstr ""
-#~ "Ajout de la possibilité d'ajouter des mangas par un ID en utilisant des "
-#~ "mots-clés \"id:&lt;id&gt;\" (utile avec MangaDex)"
-
-#~ msgid "Various bugs fixes"
-#~ msgstr "Divers corrections de bugs"
-
-#~ msgid "Added the Dutch translation"
-#~ msgstr "Ajout de la traduction néerlandaise"
-
-#~ msgid "Added Desu server (RU)"
-#~ msgstr "Ajout du serveur Desu (RU)"
-
-#~ msgid "Added the Russian translation"
-#~ msgstr "Ajout de la traduction Russe"
-
-#~ msgid "Updated the Brazilian Portuguese translation"
-#~ msgstr "Mise à jour de la traduction portugaise brésilienne"
-
-#~ msgid "Fixed a bug in manga updater"
-#~ msgstr "Correction d'un bug pour la mise à jour des mangas"
-
-#~ msgid "Fixe a bug in Download Manager"
-#~ msgstr "Correction d'un bug dans le gestionnaire de téléchargement"
-
-#~ msgid "Added a Download Manager"
-#~ msgstr "Ajout d'un gestionnaire de téléchargement"
-
-#~ msgid "[Manga] Improved chapters download"
-#~ msgstr "[Manga] Amélioration du téléchargement des chapitres"
-
-#~ msgid ""
-#~ "[Reader] Vertical reading direction: Added scrolling with UP and DOWN keys"
-#~ msgstr ""
-#~ "[Lecteur] Lecture verticale : Ajout du défilement via les flèches HAUT et "
-#~ "BAS"
-
-#~ msgid "[Reader] Added a Retry button when a image load failed"
-#~ msgstr ""
-#~ "[Lecteur] Ajout d'un bouton 'Ré-essayer' quand le chargement d'une image "
-#~ "a échoué"
-
-#~ msgid "[Servers] Removed Manga Rock (server has closed)"
-#~ msgstr "[Serveurs] Retrait de Manga Rock (les serveurs ont fermés)"
-
-#~ msgid "[Servers] Minor fix in xkcd"
-#~ msgstr "[Serveurs] Correction mineure pour xkcd"
-
-#~ msgid "[Servers] MangaDex: Added 15 languages"
-#~ msgstr "[Serveurs] MangaDex : Ajout de 15 langues"
-
-#~ msgid "[Library] Add an unread badge"
-#~ msgstr "[Bibliothèque] Ajout d'un badge 'non lu'"
-
-#~ msgid "[Library/Manga] Added \"Select All\" in selection mode"
-#~ msgstr ""
-#~ "[Bibliothèque/Manga] Ajout de l'option \"Tout sélectionner\" dans l'écran "
-#~ "de sélection"
-
-#~ msgid ""
-#~ "[Library/Manga] Now leaves selection mode when no mangas/chapters are "
-#~ "selected"
-#~ msgstr ""
-#~ "[Bibliothèque/Manga] L'application quitte le mode sélection si aucun "
-#~ "manga/chapitre n'est sélectionné"
-
-#~ msgid "[Manga] Improved chapters list rendering"
-#~ msgstr "[Manga] Amélioration du rendu de la liste des chapitres"
-
-#~ msgid ""
-#~ "[Manga] Improved chapters download: add a progress bar and a \"Stop\" "
-#~ "button"
-#~ msgstr ""
-#~ "[Manga] Amélioration du téléchargement des chapitres : Ajout d'une barre "
-#~ "de progession ainsi qu'un bouton \"Stop\""
-
-#~ msgid "[Settings] General: New option to disable desktop notifications"
-#~ msgstr ""
-#~ "[Paramètres] Général : Nouvelle option pour désactiver les notifications "
-#~ "de bureau"
-
-#~ msgid "[Servers] Minor fixes in xkcd"
-#~ msgstr "[Serveurs] Correction mineure pour xkcd"
-
-#~ msgid "[Servers] Add MangaDex (EN, ES, FR)"
-#~ msgstr "[Serveurs] Ajout de MangaDex (EN, ES, FR)"
-
-#~ msgid "Jaimini's Box server: Fixed mangas with an adult alert"
-#~ msgstr ""
-#~ "Serveur Jaimini's Box : Correction pour les mangas ayant une alerte PEGI "
-#~ "18"
-
-#~ msgid "Added MANGA Plus server (EN, ES)"
-#~ msgstr "Ajout du serveur MANGA Plus (EN, ES)"
-
-#~ msgid "Added Jaimini's Box"
-#~ msgstr "Ajout de Jaiminis Box"
-
-#~ msgid "Fixed 'Night Light' preference"
-#~ msgstr "Correction pour le mode 'veilleuse'"
-
-#~ msgid "Fixed JapScan server search"
-#~ msgstr "Correction de la recherche sur le serveur JapScan"
-
-#~ msgid ""
-#~ "Pager focus is now correctly restored when menu is closed (useful for "
-#~ "keypad navigation)."
-#~ msgstr ""
-#~ "Le re-focus de la page fonctionne maintenant correctement quant un menu "
-#~ "est fermé (utile pour la navigation au clavier)"
-
-#~ msgid "Happy new year to everyone."
-#~ msgstr "Bonne années tous le monde."
-
-#~ msgid "Added 'Vertical' reading direction"
-#~ msgstr "Ajout du mode de lecture 'Vertical'"
-
-#~ msgid "Added 'Night Light' preference"
-#~ msgstr "Ajout d'un mode 'veilleuse'"
-
-#~ msgid "Fixed Manganelo and WEBTOON servers"
-#~ msgstr "Correction des serveurs Manganelo et WEBTOON"
-
-#~ msgid "Ninemanga: Fixed missing chapters issue (EN, BR, DE, ES, IT)"
-#~ msgstr ""
-#~ "Ninemanga : Correction du problème des chapitres manquants (EN, BR, DE , "
-#~ "ES, IT)"
-
-#~ msgid "Pepper&amp;Carrot: Fixed chapters update"
-#~ msgstr "Pepper&amp;Carrot : Correction de la mise à jour des chapitres"
-
-#~ msgid "Pepper&amp;Carrot: Added missing Cover and Credits pages"
-#~ msgstr ""
-#~ "Pepper&amp;Carrot : Ajout des pages de couverture et crédit manquantes"
-
-#~ msgid "New preference: Servers languages"
-#~ msgstr "Nouvelles préférences : Langues des serveurs"
-
-#~ msgid "Bug fixes in Scantrad France and DB Multiverse"
-#~ msgstr "Correction de bugs pour Scantrad France et DB Multiverse"
-
-#~ msgid "A bug fix in change of reading direction"
-#~ msgstr "Correction d'un bug dans le changement du sens de lecture"
-
-#~ msgid "A bug fix in Pepper&amp;Carrot"
-#~ msgstr "Correction d'un bug dans Pepper&amp;Carrot"
-
-#~ msgid "Added Pepper&amp;Carrot server"
-#~ msgstr "Ajout du serveur Pepper&amp;Carrot"
-
-#~ msgid ""
-#~ "A free(libre) and open-source webcomic supported directly by its patrons "
-#~ "to change the comic book industry!"
-#~ msgstr ""
-#~ "Un lecteur de bande déssinée en ligne libre et open-source supporté "
-#~ "directement  par ses propres mécènes afin de changer l'industrie des "
-#~ "comics book !"
-
-#~ msgid "New preference: Automatically update library at startup"
-#~ msgstr ""
-#~ "Nouvelle préférence : Mise à jour de la Bibliothèque au démarrage de "
-#~ "l'application"
-
-#~ msgid "Fix in Mangakawaii server (Cloudflare problem)"
-#~ msgstr "Correction pour le serveur Mangakawaii (Problème lié à Cloudflare)"
-
-#~ msgid "Fixes in Mangakawaii server"
-#~ msgstr "Corrections pour le serveur Mangakawaii"
-
-#~ msgid "Added Dragon Ball Multiverse (DBM) server"
-#~ msgstr "Ajout du serveur Dragon Ball Multiverse (DMB)"
-
-#~ msgid "Fixes in Japscan server (search still broken)"
-#~ msgstr ""
-#~ "Corrections au niveau du serveur Japscan (la recherche est toujours "
-#~ "cassée)"
-
-#~ msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
-#~ msgstr ""
-#~ "Nouveaux serveurs : NineManga Russe, Webtoon Indonésie et Webtoon "
-#~ "Thaïlande"
-
-#~ msgid ""
-#~ "For all servers that allow it, most popular mangas are now offered as "
-#~ "starting search results."
-#~ msgstr ""
-#~ "Pour tous les serveurs qui le permettent, les mangas les plus populaires "
-#~ "sont affichés à l'accueil de la page de recherche."
-
-#~ msgid "Improve speed of dates parsing"
-#~ msgstr "La vitesse de parsing des dates a été améliorée"
-
-#~ msgid ""
-#~ "Fixed order of manga chapters for Scantrad France and Central de Mangás"
-#~ msgstr ""
-#~ "Correction de l'ordre des chapitres de manga pour Scantrad France et "
-#~ "Central de Mangás"
-
-#~ msgid "Fix keyboard navigation in reader"
-#~ msgstr "Correction de la navigation par le clavier dans le lecteur"
-
-#~ msgid "Add a new server: xkcd (English)"
-#~ msgstr "Ajout d'un nouveau serveur : xkcd (Anglais)"
-
-#~ msgid "Add the Portuguese (Brazil) translation"
-#~ msgstr "Ajout de la traduction portugaise (Brésil)"
-
-#~ msgid "Add a new server: Central de Mangas (Portuguese)"
-#~ msgstr "Ajout d'un nouveau serveur : Central de Mangas (Portugais)"
-
-#~ msgid "Bug fix: Change the location of the data storage"
-#~ msgstr ""
-#~ "Correction de bug : Changement de l'emplacement des données de stockage"
-
-#~ msgid "First release"
-#~ msgstr "Première sortie"
+#: ../data/info.febvre.Komikku.appdata.xml.in:46
+msgid "Add HiDPI display support"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:47
+msgid ""
+"[Preferences] Use Handy.PreferencesWindow subpages to display Servers "
+"Languages and Servers Settings"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:54
+msgid "[Library] Press &lt;Enter&gt; opens first manga in search"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:55
+msgid "[Library] Disable range selection when in search mode"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:56
+msgid ""
+"[Library/Chapters/Download manager] Enter selection mode with Right click"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:57
+msgid ""
+"[Reader] Two new navigation types: mouse scroll, 2-fingers swipe gesture"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:58
+msgid "[Reader] New 'Save Page' action"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:59
+msgid "[Servers] Fix and improve credentials storage"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:60
+msgid "[Servers] Crunchyroll: Fix login"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:61
+msgid "[Servers] Re-enable Jaimini's Box"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:62
+msgid "[Servers] Manga Eden: Fix downloading of images"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:63
+msgid "[Servers] MangaSee: Update"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:64
+msgid "[Servers] Manga Plus: Add manga 'Status' info"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:65
+msgid "[Servers] Manga Plus: Can't get manga info of some manga"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:66
+msgid "[Servers] MangaDex: Fix new chapters not appearing"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:67
+msgid "[Servers] Webtoon: Fix search"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:68
+msgid "[Preferences] Add search"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:69
+msgid "Add Turkish translation"
+msgstr ""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:76
+msgid "[Preferences] New UI"
+msgstr "[Préférences] Nouvelle interface"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:77
+msgid "[Servers] MangaNelo: Fix images loading"
+msgstr "[Serveurs] MangaNelo : Correction du chargement des images"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:78
+msgid "[Servers] Disable Jaimini's Box"
+msgstr "[Serveurs] Jailini's Box a été désactivé"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:84
+msgid "Fix 2 critical bugs (app crashs)"
+msgstr "2 bugs critiques ont été corrigés (crash de l'application)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:90
+msgid "[Library/Readers] Add support of animated GIFs"
+msgstr "[Bibliothèque/Lecteurs] Ajout du support des GIFs"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:91
+msgid "[Library] Add &lt;Control&gt;+F shortcut: Enter search mode"
+msgstr ""
+"[Bibliothèque] Ajout du raccourci &lt;Contrôle&gt;+F : Trouver dans la page"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:92
+msgid ""
+"[Library/Manga/Download Manager] Add &lt;Control&gt;+A shortcut: Select all"
+msgstr ""
+"[Bibliothèque/Manga/Gestionnaire de Téléchargement] Ajout du raccourci&lt;"
+"Contrôle&gt;+A : Tout sélectionner"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:93
+msgid ""
+"[Library/Manga/Download Manger] Add &lt;Control&gt;+Click and &lt;Shift&gt;"
+"+Click shortcuts: Enter selection mode"
+msgstr ""
+"[Bibliothèque/Manga/Gestionnaire de Téléchargement] Ajout du raccourci&lt;"
+"Contrôle&gt;+Clique et &lt;Maj&gt;+Clique : Entrer en mode de sélection"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:94
+msgid ""
+"[Download Manager] Add range selection: long press on an item then long "
+"press on another to select everything in between"
+msgstr ""
+"[Gestionnaire de Téléchargement] Ajout de la sélection multiple : Appui long "
+"sur un objet puis appui long sur un autre pour sélectionner tousce qui se "
+"trouve entre eux"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:95
+msgid "[Manga] Add chapters scanlators support (MangaDex only)"
+msgstr ""
+"[Manga] Ajout du support des scantrads de chapitre (MangaDex uniquement)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:96
+msgid ""
+"[Servers] Add Izneo (DE, EN and FR) and Yieha (NL): a account is required"
+msgstr ""
+"[Serveurs] Ajout de Izneo (DE,EN et FR) et de Yieha (NL) : un compte est "
+"requis"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:103
+msgid "[Library] Faster chapters list rendering"
+msgstr ""
+"[Bibliothèque] Le rendu des listes de chapitres est maintenant plus rapide"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:104
+msgid ""
+"[Library] Faster read/unread state toggling with long chapters selections"
+msgstr ""
+"[Bibliothèque] Le changement d'état entre lu/non lu lors de la sélection de "
+"beaucoup de chapitres est maintenant plus rapide"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:105
+msgid "[Library] Reduce memory used by covers"
+msgstr "[Bibliothèque] Réduction de la consomation mémoire par couverture"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:106
+msgid "[Servers] MangaSee: Fix manga with chapters grouped by seasons"
+msgstr ""
+"[Serveurs] MangaSee : Correction des mangas qui possèdent des chapitres "
+"groupés par saisons"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:107
+msgid "[Servers] Jaimini's Box: Several fixes"
+msgstr "[Serveurs] Jaimini's Box : Nombreuses corrections"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:108
+msgid "[Servers] MangaLib: Several fixes"
+msgstr "[Serveurs] MangaLib : Nombreuses corrections"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:115
+msgid "[Library] Add search by genre (exact match)"
+msgstr "[Bibliothèque] Ajout de la recherche par genre (correspondance exacte)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:116
+msgid ""
+"[Library/Chapters] Add range selection: long press on an item then long "
+"press on another to select everything in between"
+msgstr ""
+"[Bibliothèque/Chapitre] Ajout de la sélection multiple : Appui long sur un "
+"objet puis appui long sur un autre pour sélectionner tousce qui se trouve "
+"entre eux"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:117
+msgid "[Chapters] Fully cached/read chapters are now marked as \"Downloaded\""
+msgstr ""
+"[Chapitre] Les chapitres entièrement mis en cache/lu sont maintenant marqués "
+"comme \"Téléchargé\""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:118
+msgid "[Reader] Improve keyboard navigation"
+msgstr "[Lecteur] Amélioration de la navigation via le clavier"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:119
+msgid "[Reader] Improve pages transition"
+msgstr "[Lecteur] Amélioration de la transition des pages"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:120
+msgid "[Servers] Add Crunchyroll (EN): a Premium account is required"
+msgstr "[Serveurs] Ajout de Crunchyroll (EN) : un compte premium est requis"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:121
+msgid "[Servers] Scantrad France: Add Most populars"
+msgstr ""
+"[Serveurs] Scantrad France : Ajout de la catégorie 'les plus populaires'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:122
+msgid "Improve manga update"
+msgstr "Amélioration du processus de mise à jour des mangas"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:123
+msgid "New icon"
+msgstr "Nouvelle icone"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:130
+msgid "[Reader] Add 'Original Size' scaling"
+msgstr "[Lecteur] Ajout de l'échelle 'Taille Originale'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:131
+msgid "[Reader] Several fixes in keyboard navigation"
+msgstr "[Lecteur] Nombreuses corrections dans la navigation via le clavier"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:132
+msgid "[Settings] Library: Add new option 'Auto Download of New Chapters'"
+msgstr ""
+"[Paramètres] Bibliothèque : Ajout d'une nouvelle option 'Téléchargement "
+"automatique des nouveaux chapitres'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:133
+msgid ""
+"[Settings] Library: Add new option 'Long Strip Detection' (MangaDex, "
+"MangaNelo, Mangakawaii, JapScan and Union Mangás)"
+msgstr ""
+"[Paramètres] Bibliothèque : Ajout d'une nouvelle option 'Détection de bande "
+"longue' (MangaDex, MangaNelo, Mangakawaii, JapScan et Union Mangás)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:134
+msgid "[Servers] JapScan: Fix search and images loading"
+msgstr ""
+"[Serveurs] JapScan : Correction de la recherche et du chargement des images"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:135
+msgid "[Servers] MangaLib: Fix images loading"
+msgstr "[Serveurs] MangaLib : Correction du chargement des images"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:136
+msgid "[Servers] Submanga: Update of domain"
+msgstr "[Serveurs] Submanga : mise à jour du domaine"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:142
+msgid "[Reader] Fix crash with corrupt or empty images"
+msgstr "[Lecteur] Correction d'un crash dû à des images corrompues ou vides"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:143
+msgid "[Settings] Add servers settings"
+msgstr "[Serveurs] Ajout de paramètres serveur"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:144
+msgid "[Servers] Add Union Mangás (PT)"
+msgstr "[Serveurs] Ajout de Union Mangás (PT)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:145
+msgid "[Servers] Add MangaLib and HentaiLib (RU)"
+msgstr "[Serveurs Ajout de MangaLib et HentaiLib (RU)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:146
+msgid ""
+"[Servers] Add Edelgarde Scans, Hunlight Scans, One Shot Scans, Reaper Scans, "
+"The Nonames Scans, Zero Scans (EN)"
+msgstr ""
+"[Serveurs] Ajout de Edelgarde Scans, Hunlight Scans, One Shot Scans, Reaper "
+"Scans, The Nonames Scans et de Zero Scans (EN)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:147
+msgid "[Servers] Add Leviatan Scans (EN, ES)"
+msgstr "[Serveurs] Ajout de Leviatan Scans (EN, ES)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:148
+msgid "[Servers] Hatigarm Scans: new server version"
+msgstr "[Serveurs] Hattigarm Scans : nouvelle version du serveur"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:149
+msgid "[Servers] Scantrad France: Fix"
+msgstr "[Serveurs] Scrantrad France : correction"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:150
+msgid "[Servers] MangaDex: Added ability to log in"
+msgstr "[Serveurs] MangaDex : Ajout de la possibilité de se connecter"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:151
+msgid "[Servers] Read Manga: Fixes"
+msgstr "[Serveurs] Manga lu : corrections"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:152
+#: ../data/info.febvre.Komikku.appdata.xml.in:158
+msgid "Improved manga update"
+msgstr "Amélioration du processus de mise à jour des mangas"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:157
+msgid "[Servers] Mangakawaii: Fixed manga cover"
+msgstr "[Serveurs] Mangakawaii : Correction de la couverture des mangas"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:163
+msgid "[Manga] Fixed the unread action of chapters"
+msgstr "[Manga] Correction de la fonction 'non lu' des chapitres"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:164
+msgid "[Reader] Cursor hiding during keyboard navigation"
+msgstr ""
+"[Lecteur] Le curseur de la souris se masque lors de la navigation par clavier"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:165
+msgid "[Reader] Arrow scrolling in every reading directions"
+msgstr ""
+"[Lecteur] Les flèches de direction permettent de défiler dans toutes les "
+"directions"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:166
+msgid "[Reader] Added white borders crop"
+msgstr "[Lecteur] Ajout du rognage des bordures blanches"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:167
+msgid "[Servers] Added Kirei Cake (EN)"
+msgstr "[Serveurs] Ajout de Kirei Cake (EN)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:168
+msgid "[Servers] Added Read Manga, Mint Manga and Self Manga (RU)"
+msgstr "[Serveurs] Ajout de Read Manga, Mint Manga et Self Manga (RU)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:169
+msgid "[Servers] Updated Mangakawaii domain"
+msgstr "[Serveurs] Mise à jour du domaine de Mangakawaii"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:170
+msgid "[Servers] Fixed JapScan search (using DuckDuckGo Lite)"
+msgstr ""
+"[Serveurs] Correction de la recherche pour JapScan (en utilisant DuckDuckGo "
+"Lite)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:171
+msgid "Added back navigation with Escape key"
+msgstr "Ajout de la possiblité de retourner en arrière avec la touche 'Échape'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:172
+msgid ""
+"Added abilility to add manga by ID using keyword \"id:&lt;id&gt;\" (useful "
+"with MangaDex)"
+msgstr ""
+"Ajout de la possibilité d'ajouter des mangas par un ID en utilisant des mots-"
+"clés \"id:&lt;id&gt;\" (utile avec MangaDex)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:173
+msgid "Various bugs fixes"
+msgstr "Divers corrections de bugs"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:178
+msgid "Added the Dutch translation"
+msgstr "Ajout de la traduction néerlandaise"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:183
+msgid "Added Desu server (RU)"
+msgstr "Ajout du serveur Desu (RU)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:184
+msgid "Added the Russian translation"
+msgstr "Ajout de la traduction Russe"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:185
+msgid "Updated the Brazilian Portuguese translation"
+msgstr "Mise à jour de la traduction portugaise brésilienne"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:186
+msgid "Fixed a bug in manga updater"
+msgstr "Correction d'un bug pour la mise à jour des mangas"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:191
+msgid "Fixe a bug in Download Manager"
+msgstr "Correction d'un bug dans le gestionnaire de téléchargement"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:196
+msgid "Added a Download Manager"
+msgstr "Ajout d'un gestionnaire de téléchargement"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:197
+msgid "[Manga] Improved chapters download"
+msgstr "[Manga] Amélioration du téléchargement des chapitres"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:198
+msgid ""
+"[Reader] Vertical reading direction: Added scrolling with UP and DOWN keys"
+msgstr ""
+"[Lecteur] Lecture verticale : Ajout du défilement via les flèches HAUT et BAS"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:199
+msgid "[Reader] Added a Retry button when a image load failed"
+msgstr ""
+"[Lecteur] Ajout d'un bouton 'Ré-essayer' quand le chargement d'une image a "
+"échoué"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:200
+msgid "[Servers] Removed Manga Rock (server has closed)"
+msgstr "[Serveurs] Retrait de Manga Rock (les serveurs ont fermés)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:201
+msgid "[Servers] Minor fix in xkcd"
+msgstr "[Serveurs] Correction mineure pour xkcd"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:202
+msgid "[Servers] MangaDex: Added 15 languages"
+msgstr "[Serveurs] MangaDex : Ajout de 15 langues"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:207
+msgid "[Library] Add an unread badge"
+msgstr "[Bibliothèque] Ajout d'un badge 'non lu'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:208
+msgid "[Library/Manga] Added \"Select All\" in selection mode"
+msgstr ""
+"[Bibliothèque/Manga] Ajout de l'option \"Tout sélectionner\" dans l'écran de "
+"sélection"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:209
+msgid ""
+"[Library/Manga] Now leaves selection mode when no mangas/chapters are "
+"selected"
+msgstr ""
+"[Bibliothèque/Manga] L'application quitte le mode sélection si aucun manga/"
+"chapitre n'est sélectionné"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:210
+msgid "[Manga] Improved chapters list rendering"
+msgstr "[Manga] Amélioration du rendu de la liste des chapitres"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:211
+msgid ""
+"[Manga] Improved chapters download: add a progress bar and a \"Stop\" button"
+msgstr ""
+"[Manga] Amélioration du téléchargement des chapitres : Ajout d'une barre de "
+"progession ainsi qu'un bouton \"Stop\""
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:212
+msgid "[Settings] General: New option to disable desktop notifications"
+msgstr ""
+"[Paramètres] Général : Nouvelle option pour désactiver les notifications de "
+"bureau"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:213
+msgid "[Servers] Minor fixes in xkcd"
+msgstr "[Serveurs] Correction mineure pour xkcd"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:214
+msgid "[Servers] Add MangaDex (EN, ES, FR)"
+msgstr "[Serveurs] Ajout de MangaDex (EN, ES, FR)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:219
+msgid "Jaimini's Box server: Fixed mangas with an adult alert"
+msgstr ""
+"Serveur Jaimini's Box : Correction pour les mangas ayant une alerte PEGI 18"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:224
+msgid "Added MANGA Plus server (EN, ES)"
+msgstr "Ajout du serveur MANGA Plus (EN, ES)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:225
+msgid "Added Jaimini's Box"
+msgstr "Ajout de Jaiminis Box"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:230
+msgid "Fixed 'Night Light' preference"
+msgstr "Correction pour le mode 'veilleuse'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:231
+msgid "Fixed JapScan server search"
+msgstr "Correction de la recherche sur le serveur JapScan"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:236
+msgid ""
+"Pager focus is now correctly restored when menu is closed (useful for keypad "
+"navigation)."
+msgstr ""
+"Le re-focus de la page fonctionne maintenant correctement quant un menu est "
+"fermé (utile pour la navigation au clavier)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:237
+msgid "Happy new year to everyone."
+msgstr "Bonne années tous le monde."
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:242
+msgid "Added 'Vertical' reading direction"
+msgstr "Ajout du mode de lecture 'Vertical'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:243
+msgid "Added 'Night Light' preference"
+msgstr "Ajout d'un mode 'veilleuse'"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:248
+msgid "Fixed Manganelo and WEBTOON servers"
+msgstr "Correction des serveurs Manganelo et WEBTOON"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:253
+msgid "Ninemanga: Fixed missing chapters issue (EN, BR, DE, ES, IT)"
+msgstr ""
+"Ninemanga : Correction du problème des chapitres manquants (EN, BR, DE , ES, "
+"IT)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:254
+msgid "Pepper&amp;Carrot: Fixed chapters update"
+msgstr "Pepper&amp;Carrot : Correction de la mise à jour des chapitres"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:255
+msgid "Pepper&amp;Carrot: Added missing Cover and Credits pages"
+msgstr "Pepper&amp;Carrot : Ajout des pages de couverture et crédit manquantes"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:260
+msgid "New preference: Servers languages"
+msgstr "Nouvelles préférences : Langues des serveurs"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:261
+msgid "Bug fixes in Scantrad France and DB Multiverse"
+msgstr "Correction de bugs pour Scantrad France et DB Multiverse"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:266
+msgid "A bug fix in change of reading direction"
+msgstr "Correction d'un bug dans le changement du sens de lecture"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:267
+msgid "A bug fix in Pepper&amp;Carrot"
+msgstr "Correction d'un bug dans Pepper&amp;Carrot"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:272
+msgid "Added Pepper&amp;Carrot server"
+msgstr "Ajout du serveur Pepper&amp;Carrot"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:273
+msgid ""
+"A free(libre) and open-source webcomic supported directly by its patrons to "
+"change the comic book industry!"
+msgstr ""
+"Un lecteur de bande déssinée en ligne libre et open-source supporté "
+"directement  par ses propres mécènes afin de changer l'industrie des comics "
+"book !"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:278
+msgid "New preference: Automatically update library at startup"
+msgstr ""
+"Nouvelle préférence : Mise à jour de la Bibliothèque au démarrage de "
+"l'application"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:279
+msgid "Fix in Mangakawaii server (Cloudflare problem)"
+msgstr "Correction pour le serveur Mangakawaii (Problème lié à Cloudflare)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:284
+msgid "Fixes in Mangakawaii server"
+msgstr "Corrections pour le serveur Mangakawaii"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:289
+msgid "Added Dragon Ball Multiverse (DBM) server"
+msgstr "Ajout du serveur Dragon Ball Multiverse (DMB)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:290
+msgid "Fixes in Japscan server (search still broken)"
+msgstr ""
+"Corrections au niveau du serveur Japscan (la recherche est toujours cassée)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:295
+msgid "New servers: NineManga Russian, Webtoon Indonesia and Webtoon Thai"
+msgstr ""
+"Nouveaux serveurs : NineManga Russe, Webtoon Indonésie et Webtoon Thaïlande"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:296
+msgid ""
+"For all servers that allow it, most popular mangas are now offered as "
+"starting search results."
+msgstr ""
+"Pour tous les serveurs qui le permettent, les mangas les plus populaires "
+"sont affichés à l'accueil de la page de recherche."
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:301
+msgid "Improve speed of dates parsing"
+msgstr "La vitesse de parsing des dates a été améliorée"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:302
+msgid "Fixed order of manga chapters for Scantrad France and Central de Mangás"
+msgstr ""
+"Correction de l'ordre des chapitres de manga pour Scantrad France et Central "
+"de Mangás"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:307
+msgid "Fix keyboard navigation in reader"
+msgstr "Correction de la navigation par le clavier dans le lecteur"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:312
+msgid "Add a new server: xkcd (English)"
+msgstr "Ajout d'un nouveau serveur : xkcd (Anglais)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:317
+msgid "Add the Portuguese (Brazil) translation"
+msgstr "Ajout de la traduction portugaise (Brésil)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:318
+msgid "Add a new server: Central de Mangas (Portuguese)"
+msgstr "Ajout d'un nouveau serveur : Central de Mangas (Portugais)"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:323
+msgid "Bug fix: Change the location of the data storage"
+msgstr ""
+"Correction de bug : Changement de l'emplacement des données de stockage"
+
+#: ../data/info.febvre.Komikku.appdata.xml.in:328
+msgid "First release"
+msgstr "Première sortie"

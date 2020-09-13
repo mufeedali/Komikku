@@ -44,10 +44,11 @@ CREDITS = dict(
     ),
     translators=(
         'Ege Çelikçi (Turkish)',
+        'Valéry Febvre (French)',
         'GrownNed (Russian)',
+        'Leo Prikler (German)',
         'Heimen Stoffels (Dutch)',
         'VaGNaroK (Brazilian Portuguese)',
-        'Valéry Febvre (French)',
     ),
 )
 
