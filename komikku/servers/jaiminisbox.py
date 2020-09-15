@@ -7,12 +7,15 @@
 import base64
 from bs4 import BeautifulSoup
 import json
+import re
 import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+
+re_chapter_date = re.compile(r'\d{4}.\d{2}.\d{2}')
 
 # All theses servers use FoOlSlide Open Source online comic management software (NO LONGER MAINTAINED)
 # https://github.com/FoolCode/FoOlSlide or https://github.com/chocolatkey/FoOlSlide2 (fork)
@@ -126,7 +129,12 @@ class Jaiminisbox(Server):
 
             title = a_element.text.strip()
             slug = a_element.get('href').replace(f'{self.base_url}/read/{initial_data["slug"]}/{self.lang}/', '')[:-1]
-            date = convert_date_string(list(element.find('div', class_='meta_r').find_all('a')[-1].next_siblings)[0][2:], '%Y.%m.%d')
+
+            date_match = re.search(re_chapter_date, element.find('div', class_='meta_r').text)
+            if date_match:
+                date = convert_date_string(date_match.group(), '%Y.%m.%d')
+            else:
+                date = None
 
             data['chapters'].append(dict(
                 slug=slug,
@@ -259,7 +267,11 @@ class Jaiminisbox(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        nb_pages = int(soup.find_all('a', class_='gbutton')[0].get('href').split('/')[-2])
+        nav_buttons = soup.find_all('a', class_='gbutton')
+        if nav_buttons:
+            nb_pages = int(nav_buttons[0].get('href').split('/')[-2])
+        else:
+            nb_pages = 1
 
         results = []
         for index in range(nb_pages):
@@ -300,3 +312,29 @@ class Kireicake(Jaiminisbox):
     mangas_url = base_url + '/directory'
     manga_url = base_url + '/series/{0}'
     chapter_url = base_url + '/read/{0}/en/{1}/page/1'
+
+
+class Lupiteam(Jaiminisbox):
+    id = 'lupiteam:jaiminisbox'
+    name = 'Lupi Team'
+    lang = 'it'
+    status = 'enabled'
+
+    base_url = 'https://lupiteam.net/reader'
+    search_url = base_url + '/search'
+    mangas_url = base_url + '/directory'
+    manga_url = base_url + '/series/{0}'
+    chapter_url = base_url + '/read/{0}/it/{1}/page/1'
+
+
+class Tuttoanimemanga(Jaiminisbox):
+    id = 'tuttoanimemanga:jaiminisbox'
+    name = 'Tutto Anime Manga'
+    lang = 'it'
+    status = 'enabled'
+
+    base_url = 'http://tuttoanimemanga.net/slide'
+    search_url = base_url + '/search'
+    mangas_url = base_url + '/directory'
+    manga_url = base_url + '/series/{0}'
+    chapter_url = base_url + '/read/{0}/it/{1}/page/1'
