@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-13 01:54+0200\n"
-"PO-Revision-Date: 2020-09-12 16:03+0200\n"
+"PO-Revision-Date: 2020-09-16 21:55+0200\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../komikku/models/database.py:236
@@ -419,7 +419,7 @@ msgstr "Alle Downloads auswählen"
 
 #: ../data/ui/application_window.ui:418 ../data/ui/add_dialog.ui:301
 msgid "Authors"
-msgstr "Authoren"
+msgstr "Autoren"
 
 #: ../data/ui/application_window.ui:446 ../data/ui/add_dialog.ui:329
 msgid "Genres"
