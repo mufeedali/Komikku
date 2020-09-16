@@ -17,10 +17,10 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 * Offline reading of downloaded mangas
 * RTL, LTR and vertical reading directions
 * Five types of navigation:
-    - Keyboard arrow keys
-    - Mouse click
-    - Mouse wheel
-    - 2-fingers swipe gesture
+  * Keyboard arrow keys
+  * Mouse click
+  * Mouse wheel
+  * 2-fingers swipe gesture
 * Light and dark themes
 
 ## Screenshots
@@ -119,7 +119,9 @@ ninja install
 ```
 
 ## Translations
+
 Helping to translate Komikku or add support to a new language is very welcome.
 
 ## Disclaimer
+
 The developer of this application does not have any affiliation with the content providers available.

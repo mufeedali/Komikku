@@ -244,6 +244,7 @@ class PreferencesServersLanguagesSubpage:
 
             switch = Gtk.Switch.new()
             switch.set_valign(Gtk.Align.CENTER)
+            switch.set_halign(Gtk.Align.CENTER)
             switch.set_active(code in servers_languages)
             switch.connect('notify::active', self.on_language_activated, code)
             action_row.add(switch)
@@ -403,6 +404,7 @@ class PreferencesServersSettingsSubpage:
                 switch = Gtk.Switch.new()
                 switch.set_active(server_enabled)
                 switch.set_valign(Gtk.Align.CENTER)
+                switch.set_halign(Gtk.Align.CENTER)
                 switch.connect('notify::active', self.on_server_activated, server_main_id)
                 action_row.set_activatable_widget(switch)
                 action_row.add(switch)
