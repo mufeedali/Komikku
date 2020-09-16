@@ -14,13 +14,3 @@ flatpak:
         RUNTIME_REPO: "https://flathub.org/repo/flathub.flatpakrepo"
         APP_ID: "info.febvre.Komikku"
     extends: .flatpak
-
-review:
-    stage: deploy
-    dependencies:
-        - 'flatpak'
-    extends: '.review'
-
-stop_review:
-    stage: deploy
-    extends: '.stop_review'
