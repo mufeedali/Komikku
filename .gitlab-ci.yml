@@ -5,7 +5,7 @@ variables:
     BUNDLE: "info.febvre.Komikku.flatpak"
 
 flatpak:
-    image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.34'
+    image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36'
     stage: 'test'
     variables:
         MANIFEST_PATH: "flatpak/info.febvre.Komikku.json"
