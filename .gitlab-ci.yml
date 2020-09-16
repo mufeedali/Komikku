@@ -1,15 +1,26 @@
-# include: 'https://gitlab.gnome.org/GNOME/citemplates/-/raw/70996b9c3985709ab8700f7948be9ac620e1943e/flatpak/flatpak_ci_initiative.yml'
-include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
+include: 'https://gitlab.gnome.org/GNOME/citemplates/-/raw/70996b9c3985709ab8700f7948be9ac620e1943e/flatpak/flatpak_ci_initiative.yml'
+# include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
 
 variables:
     BUNDLE: "info.febvre.Komikku.flatpak"
 
 flatpak:
+    image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.34'
     stage: 'test'
     variables:
         MANIFEST_PATH: "flatpak/info.febvre.Komikku.json"
         MESON_ARGS: "-Dprofile=development"
         FLATPAK_MODULE: "komikku"
-        RUNTIME_REPO: "https://nightly.gnome.org/gnome-nightly.flatpakrepo"
+        RUNTIME_REPO: "https://flathub.org/repo/flathub.flatpakrepo"
         APP_ID: "info.febvre.Komikku"
     extends: .flatpak
+
+review:
+    stage: deploy
+    dependencies:
+        - 'flatpak'
+    extends: '.review'
+
+stop_review:
+    stage: deploy
+    extends: '.stop_review'
