@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import cairo
 from gettext import gettext as _
 from gettext import ngettext as n_
+import math
 import time
 
 from gi.repository import Gdk
@@ -22,7 +22,7 @@ from komikku.servers import get_file_mime_type
 from komikku.utils import scale_pixbuf_animation
 
 
-class Library():
+class Library:
     search_menu_filters = {}
     search_mode = False
     selection_mode = False
@@ -107,12 +107,12 @@ class Library():
         self.flowbox.set_sort_func(_sort)
 
     @property
-    def cover_size(self):
+    def thumbnail_size(self):
         default_width = 180
         default_height = 250
 
         box_width = self.window.get_size().width
-        padding = 6  # Set via CSS
+        padding = 6  # flowbox children padding is set via CSS
         child_width = default_width + padding * 2
         if box_width / child_width != box_width // child_width:
             nb = box_width // child_width + 1
@@ -161,39 +161,7 @@ class Library():
         self.window.application.add_action(select_all_action)
 
     def add_manga(self, manga, position=-1):
-        width, height = self.cover_size
-
-        overlay = Gtk.Overlay()
-        overlay.set_halign(Gtk.Align.CENTER)
-        overlay.set_valign(Gtk.Align.CENTER)
-        overlay.manga = manga
-        overlay._pixbuf = None
-        overlay._selected = False
-
-        # Cover
-        overlay.add_overlay(Gtk.Image())
-        self.set_manga_cover_image(overlay, width, height)
-
-        # Name (bottom)
-        label = Gtk.Label(xalign=0)
-        label.get_style_context().add_class('library-manga-name-label')
-        label.set_valign(Gtk.Align.END)
-        label.set_line_wrap(True)
-        label.set_text(manga.name)
-        overlay.add_overlay(label)
-
-        # Server logo (top left corner)
-        drawingarea = Gtk.DrawingArea()
-        drawingarea.connect('draw', self.draw_cover_server_logo, manga)
-        overlay.add_overlay(drawingarea)
-
-        # Badges: number of recent chapters and number of downloaded chapters (top right corner)
-        drawingarea = Gtk.DrawingArea()
-        drawingarea.connect('draw', self.draw_cover_badges, manga)
-        overlay.add_overlay(drawingarea)
-
-        overlay.show_all()
-        self.flowbox.insert(overlay, position)
+        self.flowbox.insert(Thumbnail(self.window, manga), position)
 
     def delete_selected(self, action, param):
         def confirm_callback():
@@ -224,81 +192,6 @@ class Library():
             confirm_callback
         )
 
-    def draw_cover_badges(self, da, ctx, manga):
-        """
-        Draws badges in top right corner of cover
-        * Unread chapter: green
-        * Recent chapters: blue
-        * Downloaded chapters: red
-        """
-        nb_unread_chapters = manga.nb_unread_chapters
-        nb_recent_chapters = manga.nb_recent_chapters
-        nb_downloaded_chapters = manga.nb_downloaded_chapters
-
-        if nb_unread_chapters == nb_recent_chapters == nb_downloaded_chapters == 0:
-            return
-
-        cover_width, _cover_height = self.cover_size
-        spacing = 5  # with top and right borders, between badges
-        x = cover_width
-
-        ctx.save()
-        ctx.set_font_size(13)
-
-        def draw_badge(nb, color_r, color_g, color_b):
-            nonlocal x
-
-            if nb == 0:
-                return
-
-            text = str(nb)
-            text_extents = ctx.text_extents(text)
-            width = text_extents.x_advance + 2 * 3 + 1
-            height = text_extents.height + 2 * 5
-
-            # Draw rectangle
-            x = x - spacing - width
-            ctx.set_source_rgb(color_r, color_g, color_b)
-            ctx.rectangle(x, spacing, width, height)
-            ctx.fill()
-
-            # Draw number
-            ctx.set_source_rgb(1, 1, 1)
-            ctx.move_to(x + 3, height)
-            ctx.show_text(text)
-
-        draw_badge(nb_unread_chapters, 0.2, 0.5, 0)        # #338000
-        draw_badge(nb_recent_chapters, 0.2, 0.6, 1)        # #3399FF
-        draw_badge(nb_downloaded_chapters, 1, 0.266, 0.2)  # #FF4433
-
-        ctx.restore()
-
-    def draw_cover_server_logo(self, da, ctx, manga):
-        size = 75
-
-        ctx.save()
-
-        # Draw triangle
-        gradient = cairo.LinearGradient(0, 0, size / 2, size / 2)
-        gradient.add_color_stop_rgba(0, 0, 0, 0, 0.75)
-        gradient.add_color_stop_rgba(1, 0, 0, 0, 0)
-        ctx.set_source(gradient)
-        ctx.new_path()
-        ctx.move_to(0, 0)
-        ctx.rel_line_to(0, size)
-        ctx.rel_line_to(size, -size)
-        ctx.close_path()
-        ctx.fill()
-
-        # Draw server logo
-        pixbuf = Pixbuf.new_from_resource_at_scale(
-            manga.server.logo_resource_path, 20 * self.window.hidpi_scale, 20 * self.window.hidpi_scale, True)
-        surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
-        ctx.set_source_surface(surface, 4, 4)
-        ctx.paint()
-
-        ctx.restore()
-
     def enter_search_mode(self):
         if self.selection_mode:
             # 'Search mode' is not allowed in 'Selection mode'
@@ -323,9 +216,9 @@ class Library():
                 selected_child = self.flowbox.get_child_at_pos(x, y)
             else:
                 selected_child = self.flowbox.get_child_at_index(0)
-        selected_overlay = selected_child.get_children()[0]
+        selected_thumbnail = selected_child.get_children()[0]
         self.flowbox.select_child(selected_child)
-        selected_overlay._selected = True
+        selected_thumbnail._selected = True
         self.selection_mode_last_child_index = selected_child.get_index()
 
         self.window.headerbar.get_style_context().add_class('selection-mode')
@@ -343,8 +236,8 @@ class Library():
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for child in self.flowbox.get_children():
-            overlay = child.get_children()[0]
-            overlay._selected = False
+            thumbnail = child.get_children()[0]
+            thumbnail._selected = False
 
         self.window.headerbar.get_style_context().remove_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
@@ -396,7 +289,7 @@ class Library():
             self.add_manga(manga, position=0)
 
     def on_manga_clicked(self, flowbox, child):
-        overlay = child.get_children()[0]
+        thumbnail = child.get_children()[0]
         _ret, state = Gtk.get_current_event_state()
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
@@ -416,10 +309,10 @@ class Library():
 
                 while walk_index != last_index:
                     walk_child = self.flowbox.get_child_at_index(walk_index)
-                    walk_overlay = walk_child.get_children()[0]
-                    if walk_child and not walk_overlay._selected:
+                    walk_thumbnail = walk_child.get_children()[0]
+                    if walk_child and not walk_thumbnail._selected:
                         self.flowbox.select_child(walk_child)
-                        walk_overlay._selected = True
+                        walk_thumbnail._selected = True
 
                     if walk_index < last_index:
                         walk_index += 1
@@ -428,48 +321,36 @@ class Library():
 
             self.selection_mode_range = False
 
-            if overlay._selected:
+            if thumbnail._selected:
                 self.selection_mode_last_child_index = None
                 self.flowbox.unselect_child(child)
-                overlay._selected = False
+                thumbnail._selected = False
             else:
                 self.selection_mode_last_child_index = child.get_index()
-                overlay._selected = True
+                thumbnail._selected = True
 
             if len(self.flowbox.get_selected_children()) == 0:
                 self.leave_selection_mode()
         else:
-            self.window.card.init(overlay.manga)
+            self.window.card.init(thumbnail.manga)
 
     def on_manga_deleted(self, manga):
-        # Remove manga cover in flowbox
+        # Remove manga thumbnail in flowbox
         for child in self.flowbox.get_children():
-            overlay = child.get_children()[0]
-            if overlay.manga.id == manga.id:
+            thumbnail = child.get_children()[0]
+            if thumbnail.manga.id == manga.id:
                 child.destroy()
                 break
 
     def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
         for child in self.flowbox.get_children():
-            overlay = child.get_children()[0]
+            thumbnail = child.get_children()[0]
 
-            if overlay.manga.id != manga.id:
+            if thumbnail.manga.id != manga.id:
                 continue
 
-            overlay.manga = manga
-
-            # Update cover
-            width, height = self.cover_size
-            self.set_manga_cover_image(overlay, width, height, True)
-
-            # Update manga name
-            name_label = overlay.get_children()[1]
-            name_label.set_text(manga.name)
-
+            thumbnail.update(manga)
             break
-
-        # Schedule a redraw. It will update drawing areas (servers logos and badges)
-        self.flowbox.queue_draw()
 
     def on_search_entry_activate(self, _entry):
         """Open first manga in search when <Enter> is pressed"""
@@ -500,11 +381,10 @@ class Library():
         if self.window.first_start_grid.is_ancestor(self.window.box):
             return
 
-        width, height = self.cover_size
+        width, height = self.thumbnail_size
 
         for child in self.flowbox.get_children():
-            overlay = child.get_children()[0]
-            self.set_manga_cover_image(overlay, width, height)
+            child.get_children()[0].resize(width, height)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
@@ -548,35 +428,11 @@ class Library():
             return
 
         for child in self.flowbox.get_children():
-            overlay = child.get_children()[0]
-            if overlay._selected:
+            thumbnail = child.get_children()[0]
+            if thumbnail._selected:
                 continue
-            overlay._selected = True
+            thumbnail._selected = True
             self.flowbox.select_child(child)
-
-    def set_manga_cover_image(self, overlay, width, height, update=False):
-        if overlay._pixbuf is None or update:
-            manga = overlay.manga
-
-            if manga.cover_fs_path is None:
-                overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
-            else:
-                try:
-                    if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
-                        overlay._pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 200, -1, True)
-                    else:
-                        overlay._pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 200, -1, True)
-                except Exception:
-                    # Invalid image, corrupted image, unsupported image format,...
-                    overlay._pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
-
-        overlay.set_size_request(width, height)
-        image = overlay.get_children()[0]
-        if isinstance(overlay._pixbuf, PixbufAnimation):
-            image.set_from_animation(scale_pixbuf_animation(overlay._pixbuf, width, height, False, loop=True))
-        else:
-            pixbuf = overlay._pixbuf.scale_simple(width * self.window.hidpi_scale, height * self.window.hidpi_scale, InterpType.BILINEAR)
-            image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
@@ -616,3 +472,142 @@ class Library():
         self.window.updater.start()
 
         self.leave_selection_mode()
+
+
+class Thumbnail(Gtk.Overlay):
+    def __init__(self, window, manga):
+        super().__init__(visible=True)
+
+        self.window = window
+        self.manga = manga
+
+        self._cover_pixbuf = None
+        self._server_logo_pixbuf = None
+        self._selected = False
+
+        self.drawing_area = Gtk.DrawingArea(visible=True)
+        self.drawing_area.connect('draw', self._draw)
+        self.add(self.drawing_area)
+
+        self.name_label = Gtk.Label(xalign=0, visible=True)
+        self.name_label.get_style_context().add_class('library-manga-name-label')
+        self.name_label.set_valign(Gtk.Align.END)
+        self.name_label.set_line_wrap(True)
+        self.add_overlay(self.name_label)
+
+        self._draw_name()
+
+    def _draw(self, _drawing_area, context):
+        context.save()
+
+        self._draw_cover(context)
+        self._draw_badges(context)
+        self._draw_server_logo(context)
+
+        context.restore()
+
+    def _draw_badges(self, context):
+        """
+        Draws badges in top right corner of cover
+        * Unread chapter: green
+        * Recent chapters: blue
+        * Downloaded chapters: red
+        """
+        nb_unread_chapters = self.manga.nb_unread_chapters
+        nb_recent_chapters = self.manga.nb_recent_chapters
+        nb_downloaded_chapters = self.manga.nb_downloaded_chapters
+
+        if nb_unread_chapters == nb_recent_chapters == nb_downloaded_chapters == 0:
+            return
+
+        spacing = 5  # with top and right borders, between badges
+        x = self.width
+
+        context.set_font_size(13)
+
+        def draw_badge(nb, color_r, color_g, color_b):
+            nonlocal x
+
+            if nb == 0:
+                return
+
+            text = str(nb)
+            text_extents = context.text_extents(text)
+            width = text_extents.x_advance + 2 * 3 + 1
+            height = text_extents.height + 2 * 5
+
+            # Draw rectangle
+            x = x - spacing - width
+            context.set_source_rgb(color_r, color_g, color_b)
+            context.rectangle(x, spacing, width, height)
+            context.fill()
+
+            # Draw number
+            context.set_source_rgb(1, 1, 1)
+            context.move_to(x + 3, height)
+            context.show_text(text)
+
+        draw_badge(nb_unread_chapters, 0.2, 0.5, 0)        # #338000
+        draw_badge(nb_recent_chapters, 0.2, 0.6, 1)        # #3399FF
+        draw_badge(nb_downloaded_chapters, 1, 0.266, 0.2)  # #FF4433
+
+    def _draw_cover(self, context):
+        if self._cover_pixbuf is None:
+            try:
+                if get_file_mime_type(self.manga.cover_fs_path) != 'image/gif':
+                    self._cover_pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 200, -1, True)
+                else:
+                    animation_pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(self.manga.cover_fs_path), 200, -1, True)
+                    self._cover_pixbuf = animation_pixbuf.get_static_image()
+            except Exception:
+                # Invalid image, corrupted image, unsupported image format,...
+                self._cover_pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+
+        pixbuf = self._cover_pixbuf.scale_simple(
+            self.width * self.window.hidpi_scale, self.height * self.window.hidpi_scale, InterpType.BILINEAR)
+
+        radius = 6
+        arc_0 = 0
+        arc_1 = math.pi * 0.5
+        arc_2 = math.pi
+        arc_3 = math.pi * 1.5
+
+        context.new_sub_path()
+        context.arc(self.width - radius, radius, radius, arc_3, arc_0)
+        context.arc(self.width - radius, self.height - radius, radius, arc_0, arc_1)
+        context.arc(radius, self.height - radius, radius, arc_1, arc_2)
+        context.arc(radius, radius, radius, arc_2, arc_3)
+        context.close_path()
+
+        context.clip()
+
+        context.scale(1 / self.window.hidpi_scale, 1 / self.window.hidpi_scale)
+
+        Gdk.cairo_set_source_pixbuf(context, pixbuf, 0, 0)
+        context.paint()
+
+    def _draw_name(self):
+        self.name_label.set_text(self.manga.name)
+
+    def _draw_server_logo(self, context):
+        if self._server_logo_pixbuf is None:
+            self._server_logo_pixbuf = Pixbuf.new_from_resource_at_scale(
+                self.manga.server.logo_resource_path, 20 * self.window.hidpi_scale, 20 * self.window.hidpi_scale, True)
+
+        surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
+        context.set_source_surface(surface, 4, 4)
+        context.paint()
+
+    def resize(self, width, height):
+        self.width = width
+        self.height = height
+
+        self.drawing_area.set_size_request(self.width, self.height)
+
+    def update(self, manga):
+        self.manga = manga
+        self._cover_pixbuf = None
+
+        self._draw_name()
+        # Schedule a redraw to update drawing areas (cover, server logo and badges)
+        self.queue_draw()

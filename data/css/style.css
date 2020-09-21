@@ -25,6 +25,8 @@ flowbox flowboxchild {
     font-size: 12px;
     font-weight: bold;
     color: #fff;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
     text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
     padding: 20px 8px 4px 8px;
