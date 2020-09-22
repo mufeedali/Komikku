@@ -40,6 +40,15 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.21.0" date="2020-09-23">
+            <description>
+                <ul>
+                    <li>[Library] Rounded mangas thumbnails</li>
+                    <li>[L10n] German translation update</li>
+                    <li>Fixed circular import error that prevented Komikku from starting (only on first launch, didn't affect Flatpak)</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.20.0" date="2020-09-15">
             <description>
                 <ul>
