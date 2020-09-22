@@ -300,9 +300,15 @@ class PlaintextKeyring(keyring.backend.KeyringBackend):
     Used as fallback when no Keyring backend is found
     """
 
-    folder = os.path.join(get_data_dir(), 'keyrings')
-    filename = os.path.join(folder, 'plaintext.keyring')
     priority = 1
+
+    @property
+    def filename(self):
+        return os.path.join(self.folder, 'plaintext.keyring')
+
+    @property
+    def folder(self):
+        return os.path.join(get_data_dir(), 'keyrings')
 
     def _read(self):
         if not os.path.exists(self.filename):
