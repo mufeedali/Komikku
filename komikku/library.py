@@ -422,6 +422,9 @@ class Library:
         self.flowbox.invalidate_filter()
 
     def select_all(self, action=None, param=None):
+        if self.window.first_start_grid.is_ancestor(self.window.box):
+            return
+
         if not self.selection_mode:
             self.enter_selection_mode()
         if not self.selection_mode:
