@@ -181,7 +181,7 @@ class Jaiminisbox(Server):
                     # String is BASE64 encoded
                     pages = base64.b64decode(pages)
                     break
-                elif line.startswith('var pages'):
+                if line.startswith('var pages'):
                     #
                     # Kirei Cake
                     #

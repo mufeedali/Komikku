@@ -276,9 +276,8 @@ def convert_image(image, format='jpeg', ret_type='image'):
     image.convert('RGB').save(io_buffer, format)
     if ret_type == 'bytes':
         return io_buffer.getbuffer()
-    else:
-        io_buffer.seek(0)
-        return Image.open(io_buffer)
+    io_buffer.seek(0)
+    return Image.open(io_buffer)
 
 
 def get_buffer_mime_type(buffer):
