@@ -3,7 +3,7 @@ conf = configuration_data()
 
 conf.set_quoted('PROFILE', profile)
 conf.set('VERSION', meson.project_version())
-conf.set('PYTHON', python.find_python().path())
+conf.set('PYTHON', py_installation.path())
 conf.set('prefix', prefix)
 conf.set('datadir', datadir)
 conf.set('pkgdatadir', pkgdatadir)

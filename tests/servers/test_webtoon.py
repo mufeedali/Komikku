@@ -45,7 +45,6 @@ def test_webtoon(webtoon_server):
         response = webtoon_server.get_manga_data(manga_data)
         chapter_url = response['chapters'][0]['url']
     except Exception as e:
-        chapter_slug = None
         log_error_traceback(e)
 
     assert chapter_url is not None

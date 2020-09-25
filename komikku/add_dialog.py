@@ -140,7 +140,7 @@ class AddDialog:
         self.builder.get_object('notification_revealer').set_reveal_child(False)
 
     def init_filters(self):
-        self.search_filters = dict()
+        self.search_filters = {}
 
         if getattr(self.server, 'filters', None) is None:
             return

@@ -328,8 +328,7 @@ class PlaintextKeyring(keyring.backend.KeyringBackend):
         data = self._read()
         if service in data:
             return SimpleCredential(data[service]['username'], data[service]['password'])
-        else:
-            return None
+        return None
 
     def get_password(self, service, username):
         pass

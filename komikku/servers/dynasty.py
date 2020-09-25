@@ -224,7 +224,9 @@ class Dynasty(Server):
 
         return tag_id
 
-    def search(self, term, classes=[], with_tags='', without_tags=''):
+    def search(self, term, classes=None, with_tags='', without_tags=''):
+        if classes is None:
+            classes = []
         classes = sorted(classes, key=str.lower)
         with_tags = [self.resolve_tag(t.strip()) for t in with_tags.split(',') if t]
         without_tags = [self.resolve_tag(t.strip()) for t in without_tags.split(',') if t]

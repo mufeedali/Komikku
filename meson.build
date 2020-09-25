@@ -19,14 +19,20 @@ domainext = 'info'
 gitrepo = 'https://gitlab.com/' + authornickname + '/' + prettyname
 website = gitrepo
 
-python = import('python3')
+python = import('python')
+py_installation = python.find_installation('python3')
+if not py_installation.found()
+    error('No valid python3 binary found')
+else
+    message('Found python3 binary')
+endif
 
 prefix = get_option('prefix') # should be /usr
 profile = get_option('profile') # should be default or development
 bindir = get_option('bindir') # should be /bin
 datadir = get_option('datadir') # should be /usr/share
 pkgdatadir = join_paths(prefix, datadir, meson.project_name())
-pythondir = join_paths(prefix, python.sysconfig_path('purelib'))
+pythondir = py_installation.get_install_dir()
 localedir = join_paths(prefix, get_option('localedir'))
 
 app_id = '.'.join([domainext, domainname, prettyname])
