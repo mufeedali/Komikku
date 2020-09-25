@@ -28,6 +28,7 @@ class Library:
     selection_mode = False
     selection_mode_range = False
     selection_mode_last_child_index = None
+    thumbnails_size = None
 
     def __init__(self, window):
         self.window = window
@@ -106,24 +107,6 @@ class Library:
         self.flowbox.set_filter_func(_filter)
         self.flowbox.set_sort_func(_sort)
 
-    @property
-    def thumbnail_size(self):
-        default_width = 180
-        default_height = 250
-
-        box_width = self.window.get_size().width
-        padding = 6  # flowbox children padding is set via CSS
-        child_width = default_width + padding * 2
-        if box_width / child_width != box_width // child_width:
-            nb = box_width // child_width + 1
-            width = box_width // nb - (padding * 2)
-            height = default_height // (default_width / width)
-        else:
-            width = default_width
-            height = default_height
-
-        return width, height
-
     def add_actions(self):
         # Menu actions
         update_action = Gio.SimpleAction.new('library.update', None)
@@ -161,7 +144,25 @@ class Library:
         self.window.application.add_action(select_all_action)
 
     def add_manga(self, manga, position=-1):
-        self.flowbox.insert(Thumbnail(self.window, manga), position)
+        thumbnail = Thumbnail(self.window, manga, *self.thumbnails_size)
+        self.flowbox.insert(thumbnail, position)
+
+    def compute_thumbnails_size(self):
+        default_width = 180
+        default_height = 250
+
+        container_width = self.window.get_size().width
+        padding = 6  # flowbox children padding is set via CSS
+        child_width = default_width + padding * 2
+        if container_width / child_width != container_width // child_width:
+            nb = container_width // child_width + 1
+            width = container_width // nb - (padding * 2)
+            height = default_height // (default_width / width)
+        else:
+            width = default_width
+            height = default_height
+
+        self.thumbnails_size = (width, height)
 
     def delete_selected(self, action, param):
         def confirm_callback():
@@ -378,13 +379,13 @@ class Library:
             self.subtitle_label.set_label(_('Library'))
 
     def on_resize(self):
+        self.compute_thumbnails_size()
+
         if self.window.first_start_grid.is_ancestor(self.window.box):
             return
 
-        width, height = self.thumbnail_size
-
         for child in self.flowbox.get_children():
-            child.get_children()[0].resize(width, height)
+            child.get_children()[0].resize(*self.thumbnails_size)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
@@ -413,6 +414,7 @@ class Library:
             child.destroy()
 
         # Populate flowbox with mangas
+        self.compute_thumbnails_size()
         for row in mangas_rows:
             self.add_manga(Manga.get(row['id']))
 
@@ -478,7 +480,7 @@ class Library:
 
 
 class Thumbnail(Gtk.Overlay):
-    def __init__(self, window, manga):
+    def __init__(self, window, manga, width, height):
         super().__init__(visible=True)
 
         self.window = window
@@ -498,6 +500,7 @@ class Thumbnail(Gtk.Overlay):
         self.name_label.set_line_wrap(True)
         self.add_overlay(self.name_label)
 
+        self.resize(width, height)
         self._draw_name()
 
     def _draw(self, _drawing_area, context):
