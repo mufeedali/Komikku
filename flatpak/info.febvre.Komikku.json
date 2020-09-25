@@ -18,7 +18,6 @@
     "modules" : [
         "python3-wheel.json",
         "python3-cffi.json",
-        "python3-importlib-metadata.json",
         "python3-keyring.json",
         "python3-dateparser.json",
         "python3-file-magic.json",

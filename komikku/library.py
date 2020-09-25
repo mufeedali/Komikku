@@ -496,7 +496,6 @@ class Thumbnail(Gtk.FlowBoxChild):
         self.overlay.add_overlay(self.name_label)
 
         self.add(self.overlay)
-
         self.resize(width, height)
         self._draw_name()
 
