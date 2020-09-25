@@ -555,15 +555,18 @@ class Thumbnail(Gtk.FlowBoxChild):
 
     def _draw_cover(self, context):
         if self._cover_pixbuf is None:
-            try:
-                if get_file_mime_type(self.manga.cover_fs_path) != 'image/gif':
-                    self._cover_pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 200, -1, True)
-                else:
-                    animation_pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(self.manga.cover_fs_path), 200, -1, True)
-                    self._cover_pixbuf = animation_pixbuf.get_static_image()
-            except Exception:
-                # Invalid image, corrupted image, unsupported image format,...
+            if self.manga.cover_fs_path is None:
                 self._cover_pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+            else:
+                try:
+                    if get_file_mime_type(self.manga.cover_fs_path) != 'image/gif':
+                        self._cover_pixbuf = Pixbuf.new_from_file_at_scale(self.manga.cover_fs_path, 200, -1, True)
+                    else:
+                        animation_pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(self.manga.cover_fs_path), 200, -1, True)
+                        self._cover_pixbuf = animation_pixbuf.get_static_image()
+                except Exception:
+                    # Invalid image, corrupted image, unsupported image format,...
+                    self._cover_pixbuf = Pixbuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
 
         pixbuf = self._cover_pixbuf.scale_simple(
             self.width * self.window.hidpi_scale, self.height * self.window.hidpi_scale, InterpType.BILINEAR)
