@@ -32,6 +32,9 @@ logger = logging.getLogger()
 
 
 def folder_size(path):
+    if not os.path.exists(path):
+        return 0
+
     res = subprocess.run(['du', '-sh', path], stdout=subprocess.PIPE, check=False)
 
     return res.stdout.split()[0].decode()
