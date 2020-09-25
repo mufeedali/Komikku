@@ -27,7 +27,7 @@ class Library:
     search_mode = False
     selection_mode = False
     selection_mode_range = False
-    selection_mode_last_child_index = None
+    selection_mode_last_thumbnail_index = None
     thumbnails_size = None
 
     def __init__(self, window):
@@ -61,8 +61,8 @@ class Library:
         self.window.connect('key-press-event', self.on_key_press)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
-        def _filter(child):
-            manga = child.get_children()[0].manga
+        def _filter(thumbnail):
+            manga = thumbnail.manga
             term = self.search_entry.get_text().lower()
 
             # Search in name
@@ -84,15 +84,15 @@ class Library:
 
             return ret
 
-        def _sort(child1, child2):
+        def _sort(thumbnail1, thumbnail2):
             """
             This function gets two children and has to return:
             - a negative integer if the firstone should come before the second one
             - zero if they are equal
             - a positive integer if the second one should come before the firstone
             """
-            manga1 = child1.get_children()[0].manga
-            manga2 = child2.get_children()[0].manga
+            manga1 = thumbnail1.manga
+            manga2 = thumbnail2.manga
 
             if manga1.last_read > manga2.last_read:
                 return -1
@@ -175,8 +175,8 @@ class Library:
                 continue
 
             # Safely delete mangas in DB
-            for child in self.flowbox.get_selected_children():
-                child.get_children()[0].manga.delete()
+            for thumbnail in self.flowbox.get_selected_children():
+                thumbnail.manga.delete()
 
             # Restart Downloader & Updater
             self.window.downloader.start()
@@ -200,7 +200,7 @@ class Library:
 
         self.search_button.set_active(True)
 
-    def enter_selection_mode(self, x=None, y=None, selected_child=None):
+    def enter_selection_mode(self, x=None, y=None, selected_thumbnail=None):
         if self.search_mode:
             # 'Selection mode' is not allowed in 'Search mode'
             return
@@ -212,15 +212,15 @@ class Library:
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
-        if selected_child is None:
+        if selected_thumbnail is None:
             if x is not None and y is not None:
-                selected_child = self.flowbox.get_child_at_pos(x, y)
+                selected_thumbnail = self.flowbox.get_child_at_pos(x, y)
             else:
-                selected_child = self.flowbox.get_child_at_index(0)
-        selected_thumbnail = selected_child.get_children()[0]
-        self.flowbox.select_child(selected_child)
+                selected_thumbnail = self.flowbox.get_child_at_index(0)
+
+        self.flowbox.select_child(selected_thumbnail)
         selected_thumbnail._selected = True
-        self.selection_mode_last_child_index = selected_child.get_index()
+        self.selection_mode_last_thumbnail_index = selected_thumbnail.get_index()
 
         self.window.headerbar.get_style_context().add_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
@@ -236,8 +236,7 @@ class Library:
         self.search_button.show()
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
-        for child in self.flowbox.get_children():
-            thumbnail = child.get_children()[0]
+        for thumbnail in self.flowbox.get_children():
             thumbnail._selected = False
 
         self.window.headerbar.get_style_context().remove_class('selection-mode')
@@ -245,9 +244,9 @@ class Library:
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_button_pressed(self, _widget, event):
-        child = self.flowbox.get_child_at_pos(event.x, event.y)
-        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and child is not None:
-            self.enter_selection_mode(selected_child=child)
+        thumbnail = self.flowbox.get_child_at_pos(event.x, event.y)
+        if not self.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and thumbnail is not None:
+            self.enter_selection_mode(selected_thumbnail=thumbnail)
             return Gdk.EVENT_STOP
 
         return Gdk.EVENT_PROPAGATE
@@ -258,9 +257,9 @@ class Library:
             # Long press on a manga then long press on another to select everything in between
             self.selection_mode_range = True
 
-            selected_child = self.flowbox.get_child_at_pos(x, y)
-            self.flowbox.select_child(selected_child)
-            self.on_manga_clicked(self.flowbox, selected_child)
+            selected_thumbnail = self.flowbox.get_child_at_pos(x, y)
+            self.flowbox.select_child(selected_thumbnail)
+            self.on_manga_clicked(self.flowbox, selected_thumbnail)
         else:
             self.enter_selection_mode(x, y)
 
@@ -289,30 +288,28 @@ class Library:
         else:
             self.add_manga(manga, position=0)
 
-    def on_manga_clicked(self, flowbox, child):
-        thumbnail = child.get_children()[0]
+    def on_manga_clicked(self, flowbox, thumbnail):
         _ret, state = Gtk.get_current_event_state()
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
         # Enter selection mode if <Control>+Click or <Shift>+Click is done
         if modifiers in (Gdk.ModifierType.CONTROL_MASK, Gdk.ModifierType.SHIFT_MASK) and not self.selection_mode:
-            self.enter_selection_mode(selected_child=child)
+            self.enter_selection_mode(selected_thumbnail=thumbnail)
             return Gdk.EVENT_PROPAGATE
 
         if self.selection_mode:
             if modifiers == Gdk.ModifierType.SHIFT_MASK:
                 # Enter range selection mode if <Shift>+Click is done
                 self.selection_mode_range = True
-            if self.selection_mode_range and self.selection_mode_last_child_index is not None:
+            if self.selection_mode_range and self.selection_mode_last_thumbnail_index is not None:
                 # Range selection mode: select all mangas between last selected manga and clicked manga
-                walk_index = self.selection_mode_last_child_index
-                last_index = child.get_index()
+                walk_index = self.selection_mode_last_thumbnail_index
+                last_index = thumbnail.get_index()
 
                 while walk_index != last_index:
-                    walk_child = self.flowbox.get_child_at_index(walk_index)
-                    walk_thumbnail = walk_child.get_children()[0]
-                    if walk_child and not walk_thumbnail._selected:
-                        self.flowbox.select_child(walk_child)
+                    walk_thumbnail = self.flowbox.get_child_at_index(walk_index)
+                    if walk_thumbnail and not walk_thumbnail._selected:
+                        self.flowbox.select_child(walk_thumbnail)
                         walk_thumbnail._selected = True
 
                     if walk_index < last_index:
@@ -323,11 +320,11 @@ class Library:
             self.selection_mode_range = False
 
             if thumbnail._selected:
-                self.selection_mode_last_child_index = None
-                self.flowbox.unselect_child(child)
+                self.selection_mode_last_thumbnail_index = None
+                self.flowbox.unselect_child(thumbnail)
                 thumbnail._selected = False
             else:
-                self.selection_mode_last_child_index = child.get_index()
+                self.selection_mode_last_thumbnail_index = thumbnail.get_index()
                 thumbnail._selected = True
 
             if len(self.flowbox.get_selected_children()) == 0:
@@ -337,16 +334,13 @@ class Library:
 
     def on_manga_deleted(self, manga):
         # Remove manga thumbnail in flowbox
-        for child in self.flowbox.get_children():
-            thumbnail = child.get_children()[0]
+        for thumbnail in self.flowbox.get_children():
             if thumbnail.manga.id == manga.id:
-                child.destroy()
+                thumbnail.destroy()
                 break
 
     def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
-        for child in self.flowbox.get_children():
-            thumbnail = child.get_children()[0]
-
+        for thumbnail in self.flowbox.get_children():
             if thumbnail.manga.id != manga.id:
                 continue
 
@@ -355,9 +349,9 @@ class Library:
 
     def on_search_entry_activate(self, _entry):
         """Open first manga in search when <Enter> is pressed"""
-        child = self.flowbox.get_child_at_pos(0, 0)
-        if child:
-            self.on_manga_clicked(self.flowbox, child)
+        thumbnail = self.flowbox.get_child_at_pos(0, 0)
+        if thumbnail:
+            self.on_manga_clicked(self.flowbox, thumbnail)
 
     def on_search_menu_action_changed(self, action, variant):
         value = variant.get_boolean()
@@ -384,8 +378,8 @@ class Library:
         if self.window.first_start_grid.is_ancestor(self.window.box):
             return
 
-        for child in self.flowbox.get_children():
-            child.get_children()[0].resize(*self.thumbnails_size)
+        for thumbnail in self.flowbox.get_children():
+            thumbnail.resize(*self.thumbnails_size)
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
@@ -410,8 +404,8 @@ class Library:
             self.window.box.add(self.window.overlay)
 
         # Clear library flowbox
-        for child in self.flowbox.get_children():
-            child.destroy()
+        for thumbnail in self.flowbox.get_children():
+            thumbnail.destroy()
 
         # Populate flowbox with mangas
         self.compute_thumbnails_size()
@@ -432,12 +426,11 @@ class Library:
         if not self.selection_mode:
             return
 
-        for child in self.flowbox.get_children():
-            thumbnail = child.get_children()[0]
+        for thumbnail in self.flowbox.get_children():
             if thumbnail._selected:
                 continue
             thumbnail._selected = True
-            self.flowbox.select_child(child)
+            self.flowbox.select_child(thumbnail)
 
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
@@ -473,13 +466,13 @@ class Library:
         self.window.updater.update_library()
 
     def update_selected(self, action, param):
-        self.window.updater.add([child.get_children()[0].manga for child in self.flowbox.get_selected_children()])
+        self.window.updater.add([thumbnail.manga for thumbnail in self.flowbox.get_selected_children()])
         self.window.updater.start()
 
         self.leave_selection_mode()
 
 
-class Thumbnail(Gtk.Overlay):
+class Thumbnail(Gtk.FlowBoxChild):
     def __init__(self, window, manga, width, height):
         super().__init__(visible=True)
 
@@ -490,15 +483,19 @@ class Thumbnail(Gtk.Overlay):
         self._server_logo_pixbuf = None
         self._selected = False
 
+        self.overlay = Gtk.Overlay(visible=True)
+
         self.drawing_area = Gtk.DrawingArea(visible=True)
         self.drawing_area.connect('draw', self._draw)
-        self.add(self.drawing_area)
+        self.overlay.add(self.drawing_area)
 
         self.name_label = Gtk.Label(xalign=0, visible=True)
         self.name_label.get_style_context().add_class('library-manga-name-label')
         self.name_label.set_valign(Gtk.Align.END)
         self.name_label.set_line_wrap(True)
-        self.add_overlay(self.name_label)
+        self.overlay.add_overlay(self.name_label)
+
+        self.add(self.overlay)
 
         self.resize(width, height)
         self._draw_name()
