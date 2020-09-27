@@ -12,13 +12,14 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-SERVER_NAME = "NHentai (NSFW)"
+SERVER_NAME = 'NHentai (NSFW)'
+
 
 class Nhentai(Server):
     id = 'nhentai'
     name = SERVER_NAME
     lang = 'en'
-    lang_code='english'
+    lang_code = 'english'
 
     base_url = 'https://nhentai.net'
     search_url = base_url + '/search'
@@ -30,19 +31,6 @@ class Nhentai(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
-
-    def get_most_populars(self):
-        """
-        Returns most popular mangas (bayesian rating)
-        """
-        return self._search_common({'q': 'language:' + self.lang_code, 'sort': 'popular'})
-
-    def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
-        return self.manga_url.format(slug)
-
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
@@ -52,12 +40,11 @@ class Nhentai(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
@@ -80,12 +67,12 @@ class Nhentai(Server):
         data['cover'] = cover_img
 
         data['chapters'].append(dict(
-                slug=cover_img.rstrip('/').split('/')[-2],
-                title=info.find('h1').text.strip(),
-            ))
+            slug=cover_img.rstrip('/').split('/')[-2],
+            title=info.find('h1').text.strip(),
+        ))
 
         for tag_container in info.find_all('div', class_='tag-container'):
-            category = tag_container.text.split(":")[0].strip()
+            category = tag_container.text.split(':')[0].strip()
 
             if category == 'Uploaded':
                 time = tag_container.find('time').get('datetime')
@@ -93,10 +80,11 @@ class Nhentai(Server):
 
             for tag in tag_container.find_all('a', class_='tag'):
                 clean_tag = tag.find('span', class_='name').text.strip()
-                if category in ['Artists', 'Groups']:
+                if category in ['Artists', 'Groups', ]:
                     data['authors'].append(clean_tag)
-                if category in ['Tags']:
+                if category in ['Tags', ]:
                     data['genres'].append(clean_tag)
+
         return data
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
@@ -107,12 +95,11 @@ class Nhentai(Server):
         """
         assert chapter_slug is not None
         r = self.session_get(self.manga_url.format(manga_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
@@ -120,14 +107,18 @@ class Nhentai(Server):
 
         info = soup.find('div', id='info')
         for tag_container in info.find_all('div', class_='tag-container'):
-            category = tag_container.text.split(":")[0].strip()
+            category = tag_container.text.split(':')[0].strip()
 
             if category in ['Pages']:
                 tag = tag_container.find('a', class_='tag')
                 clean_tag = tag.find('span', class_='name').text.strip()
                 for i in range(1, int(clean_tag) + 1):
-                    page = dict(slug=str(i))
+                    page = dict(
+                        image=None,
+                        slug=str(i),
+                    )
                     pages.append(page)
+
         return dict(pages=pages)
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
@@ -135,8 +126,9 @@ class Nhentai(Server):
         Returns chapter page scan (image) content
         """
         assert chapter_slug is not None
+        print(self.page_url.format(chapter_slug, page['slug']))
         r = self.session_get(self.page_url.format(chapter_slug, page['slug']))
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -149,10 +141,20 @@ class Nhentai(Server):
             name=page['slug'],
         )
 
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(slug)
+
+    def get_most_populars(self):
+        """
+        Returns most popular mangas (bayesian rating)
+        """
+        return self._search_common({'q': 'language:' + self.lang_code, 'sort': 'popular'})
+
     def _search_common(self, params):
         r = self.session_get(self.search_url, params=params)
-        if r is None:
-            return None
 
         if r.status_code == 200:
             try:
@@ -178,10 +180,12 @@ class Nhentai(Server):
         term = term + ' language:' + self.lang_code
         return self._search_common({'q': term})
 
+
 class Nhentai_chinese(Nhentai):
     id = 'nhentai_chinese'
     lang = 'zh_Hans'
     lang_code = 'chinese'
+
 
 class Nhentai_japanese(Nhentai):
     id = 'nhentai_japanese'
