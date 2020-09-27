@@ -7,12 +7,15 @@
 from bs4 import BeautifulSoup
 from gettext import gettext as _
 import json
+import logging
 import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+
+logger = logging.getLogger()
 
 
 class Dynasty(Server):
@@ -108,14 +111,16 @@ class Dynasty(Server):
         try:
             cover_rel = soup.find('div', class_='cover').find('img')['src']
             data['cover'] = self.base_url + cover_rel
-        except AttributeError:  # relative cover not found
-            pass
+        except AttributeError:
+            logger.info("[Dynasty] No cover found.")
+        except TypeError:
+            logger.info("[Dynasty] There appears to be a cover, but we can't find any images.")
 
         try:
             elements = soup.find('div', class_='description').find_all('p')
             data['synopsis'] = "\n\n".join([p.text.strip() for p in elements])
-        except AttributeError:  # no synopsis
-            pass
+        except AttributeError:
+            logger.info("[Dynasty] No synopsis found.")
 
         elements = soup.find('div', class_='tag-tags').find_all('a', class_='label')
         for element in elements:
