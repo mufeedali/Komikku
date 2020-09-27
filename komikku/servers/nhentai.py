@@ -5,6 +5,7 @@
 # Author: Leo Prikler <leo.prikler@student.tugraz.at>
 
 from bs4 import BeautifulSoup
+import json
 import requests
 
 from komikku.servers import convert_date_string
@@ -12,6 +13,7 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
+IMAGES_EXTS = dict(g='gif', j='jpg', p='png')
 SERVER_NAME = 'NHentai (NSFW)'
 
 
@@ -24,7 +26,7 @@ class Nhentai(Server):
     base_url = 'https://nhentai.net'
     search_url = base_url + '/search'
     manga_url = base_url + '/g/{0}'
-    page_url = 'https://i.nhentai.net/galleries/{0}/{1}.jpg'
+    page_url = 'https://i.nhentai.net/galleries/{0}/{1}'
 
     def __init__(self):
         if self.session is None:
@@ -93,7 +95,6 @@ class Nhentai(Server):
 
         Currently, only pages are expected.
         """
-        assert chapter_slug is not None
         r = self.session_get(self.manga_url.format(manga_slug))
         if r.status_code != 200:
             return None
@@ -103,21 +104,25 @@ class Nhentai(Server):
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
+
         pages = []
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if not script or not script.strip().startswith('window._gallery'):
+                continue
 
-        info = soup.find('div', id='info')
-        for tag_container in info.find_all('div', class_='tag-container'):
-            category = tag_container.text.split(':')[0].strip()
+            info = json.loads(script.strip().split('\n')[0][30:-3].replace('\\u0022', '"'))
+            if not info.get('images') or not info['images'].get('pages'):
+                break
 
-            if category in ['Pages']:
-                tag = tag_container.find('a', class_='tag')
-                clean_tag = tag.find('span', class_='name').text.strip()
-                for i in range(1, int(clean_tag) + 1):
-                    page = dict(
-                        image=None,
-                        slug=str(i),
-                    )
-                    pages.append(page)
+            for index, page in enumerate(info['images']['pages']):
+                num = index + 1
+                extension = IMAGES_EXTS[page['t']]
+                page = dict(
+                    image=None,
+                    slug=f'{num}.{extension}',
+                )
+                pages.append(page)
 
         return dict(pages=pages)
 
@@ -126,7 +131,6 @@ class Nhentai(Server):
         Returns chapter page scan (image) content
         """
         assert chapter_slug is not None
-        print(self.page_url.format(chapter_slug, page['slug']))
         r = self.session_get(self.page_url.format(chapter_slug, page['slug']))
         if r.status_code != 200:
             return None
