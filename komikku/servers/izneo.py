@@ -19,7 +19,7 @@ class Izneo(Server):
     has_login = True
     session_expiration_cookies = ['remember_me', ]
 
-    base_url = 'https://yieha.izneo.com'
+    base_url = 'https://www.izneo.com'
     base_reader_url = 'https://reader.izneo.com'
     login_url = base_url + '/nl/login'
     api_manga_url = base_url + '/nl/api/serie/top/{0}?abo=0'
