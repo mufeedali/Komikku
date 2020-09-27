@@ -6,6 +6,7 @@ from komikku.utils import log_error_traceback
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 @pytest.fixture
 def dynasty_server():
     from komikku.servers.dynasty import Dynasty
@@ -96,6 +97,7 @@ def test_dynasty_issues(dynasty_server, test_dynasty_common):
 def test_dynasty_series(dynasty_server, test_dynasty_common):
     for step in test_dynasty_common(dynasty_server, 'room for two', classes=['Series']):
         yield step
+
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
 def test_broken_cover(dynasty_server, test_dynasty_common):
