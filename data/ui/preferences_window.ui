@@ -121,6 +121,13 @@
                 </child>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="title" translatable="yes">Servers</property>
             <child>
               <object class="HdyActionRow" id="servers_languages_actionrow">
                 <property name="visible">True</property>
@@ -168,6 +175,27 @@
                   </object>
                 </child>
               </object>
+            </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="title" translatable="yes">NSFW Content</property>
+                <property name="activatable_widget">nsfw_content_switch</property>
+                <property name="subtitle" translatable="yes">Whether to enable servers with NSFW only content</property>
+                <child>
+                  <object class="GtkSwitch" id="nsfw_content_switch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
         </child>

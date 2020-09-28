@@ -65,8 +65,9 @@ class AddDialog:
         listbox.get_style_context().add_class('list-bordered')
         listbox.connect('row-activated', self.on_server_clicked)
 
-        servers_settings = Settings.get_default().servers_settings
-        servers_languages = Settings.get_default().servers_languages
+        settings = Settings.get_default()
+        servers_settings = settings.servers_settings
+        servers_languages = settings.servers_languages
 
         for server_data in get_servers_list():
             if servers_languages and server_data['lang'] not in servers_languages:
@@ -74,6 +75,9 @@ class AddDialog:
 
             server_settings = servers_settings.get(get_server_main_id_by_id(server_data['id']))
             if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
+                continue
+
+            if settings.nsfw_content is False and server_data['is_nsfw']:
                 continue
 
             row = Gtk.ListBoxRow()
@@ -91,7 +95,10 @@ class AddDialog:
 
             # Server title
             label = Gtk.Label(xalign=0)
-            label.set_text(server_data['name'])
+            title = server_data['name']
+            if server_data['is_nsfw']:
+                title += ' (NSFW)'
+            label.set_text(title)
             box.pack_start(label, True, True, 0)
 
             # Server language

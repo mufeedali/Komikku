@@ -28,6 +28,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
 
     update_at_startup_switch = Gtk.Template.Child('update_at_startup_switch')
     new_chapters_auto_download_switch = Gtk.Template.Child('new_chapters_auto_download_switch')
+    nsfw_content_switch = Gtk.Template.Child('nsfw_content_switch')
     servers_languages_actionrow = Gtk.Template.Child('servers_languages_actionrow')
     servers_languages_subpage = Gtk.Template.Child('servers_languages_subpage')
     servers_languages_subpage_close_button = Gtk.Template.Child('servers_languages_subpage_close_button')
@@ -95,6 +96,10 @@ class PreferencesWindow(Handy.PreferencesWindow):
         # Long strip detection
         self.long_strip_detection_switch.set_active(self.settings.long_strip_detection)
         self.long_strip_detection_switch.connect('notify::active', self.on_long_strip_detection_changed)
+
+        # NSFW content
+        self.nsfw_content_switch.set_active(self.settings.nsfw_content)
+        self.nsfw_content_switch.connect('notify::active', self.on_nsfw_content_changed)
 
         #
         # Reader
@@ -182,6 +187,12 @@ class PreferencesWindow(Handy.PreferencesWindow):
         self.settings.night_light = switch_button.get_active()
 
         self.parent.init_theme()
+
+    def on_nsfw_content_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            self.settings.nsfw_content = True
+        else:
+            self.settings.nsfw_content = False
 
     def on_reading_direction_changed(self, row, param):
         index = row.get_selected_index()

@@ -14,7 +14,7 @@ from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
 IMAGES_EXTS = dict(g='gif', j='jpg', p='png')
-SERVER_NAME = 'NHentai (NSFW)'
+SERVER_NAME = 'NHentai'
 
 
 class Nhentai(Server):
@@ -22,6 +22,7 @@ class Nhentai(Server):
     name = SERVER_NAME
     lang = 'en'
     lang_code = 'english'
+    is_nsfw = True
 
     base_url = 'https://nhentai.net'
     search_url = base_url + '/search'

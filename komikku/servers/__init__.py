@@ -71,6 +71,7 @@ class Server:
     lang = NotImplemented
 
     status = 'enabled'
+    is_nsfw = False
     logged_in = False
     long_strip_genres = []
     has_login = False
@@ -361,6 +362,7 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
+                    is_nsfw=obj.is_nsfw,
                     class_name=get_server_class_name_by_id(obj.id),
                     module=module,
                 ))

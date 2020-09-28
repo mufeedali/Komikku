@@ -136,6 +136,14 @@ class Settings(Gio.Settings):
         self.set_boolean('night-light', state)
 
     @property
+    def nsfw_content(self):
+        return self.get_boolean('nsfw-content')
+
+    @nsfw_content.setter
+    def nsfw_content(self, state):
+        self.set_boolean('nsfw-content', state)
+
+    @property
     def reading_direction(self):
         """Return the reader's reading direction"""
         value = self.reading_direction_value
