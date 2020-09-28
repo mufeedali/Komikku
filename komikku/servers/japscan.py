@@ -20,12 +20,12 @@ class Japscan(Server):
     lang = 'fr'
     long_strip_genres = ['Webtoon', ]
 
-    base_url = 'https://www.japscan.co'
+    base_url = 'https://www.japscan.se'
     search_url = base_url + '/manga/'
     api_search_url = base_url + '/live-search/'
     manga_url = base_url + '/manga/{0}/'
     chapter_url = base_url + '/lecture-en-ligne/{0}/{1}/'
-    image_url = 'https://c.japscan.co/lel/{0}/{1}/{2}'
+    image_url = 'https://c.japscan.se/lel/{0}/{1}/{2}'
     cover_url = base_url + '{0}'
 
     def __init__(self):
