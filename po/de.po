@@ -1,17 +1,21 @@
+#
+# Sandor Odor <sandor@codingclouds.de>, 2020.
+# Leo Prikler <leo.prikler@student.tugraz.at>, 2020.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-28 16:50+0200\n"
-"PO-Revision-Date: 2020-09-17 19:11+0200\n"
-"Last-Translator: Sandor Odor <sandor@codingclouds.de>\n"
+"PO-Revision-Date: 2020-09-29 17:20+0200\n"
+"Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 3.36.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../komikku/models/database.py:236
 msgid "Complete"
@@ -594,7 +598,7 @@ msgstr "Lädt neue Kapitel automatisch herunter"
 
 #: ../data/ui/preferences_window.ui:130
 msgid "Servers"
-msgstr ""
+msgstr "Servers"
 
 #: ../data/ui/preferences_window.ui:135 ../data/ui/preferences_window.ui:318
 msgid "Servers Languages"
@@ -622,11 +626,12 @@ msgstr "Erkennt lange, vertikale Strips automatisch"
 
 #: ../data/ui/preferences_window.ui:183
 msgid "NSFW Content"
-msgstr ""
+msgstr "Pornografische Inhalte"
 
 #: ../data/ui/preferences_window.ui:185
 msgid "Whether to enable servers with NSFW only content"
 msgstr ""
+"Ob Server mit ausschließlich pornografischem Inhalt aktiviert werden sollen"
 
 #: ../data/ui/preferences_window.ui:209
 msgid "Reader"
@@ -728,50 +733,56 @@ msgstr "Valéry Febvre"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:46
 msgid "[Library] Several bugs fixes"
-msgstr ""
+msgstr "[Bibliothek] Einige Fehler behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:53
 msgid "[Library] Rounded mangas thumbnails"
-msgstr ""
+msgstr "[Bibliothek] Abgerundete Mangathumbnails"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:54
 msgid "[L10n] German translation update"
-msgstr ""
+msgstr "[Lokalisierung] Deutsche Übersetzung überarbeitet"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:55
 msgid ""
 "Fixed circular import error that prevented Komikku from starting (only on "
 "first launch, didn't affect Flatpak)"
 msgstr ""
+"Zirkulären Importfehler behoben, der Komikku vom Starten abhielt (nur beim "
+"ersten Start, nicht in Flatpak)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:62
 msgid "[Library] Search: Add filter options (Downloaded, Unread, Recent)"
 msgstr ""
+"[Bibliothek] Suche: Filteroptionen hinzugefügt (Heruntergeladen, Ungelesen, "
+"Neu)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:63
 msgid ""
 "[Preferences] The window and its subpages can now be closed with Esc key"
 msgstr ""
+"[Einstellungen] Das Fenster und Unterseiten können nun mit der ESC-Taste "
+"geschlossen werden"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:64
 msgid "[Servers] Add Dynasty (EN)"
-msgstr ""
+msgstr "[Server] Dynasty (EN) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:65
 msgid "[Servers] Add 'Lupi Team' and 'Tutto Anime Manga' (IT)"
-msgstr ""
+msgstr "[Server] 'Lupi Team' und 'Tutti Anime Manga' (IT) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:66
 msgid "[Servers] Add VizManga (EN): an account is required"
-msgstr ""
+msgstr "[Server] VizManga (EN) hinzugefügt: Ein Account wird benötigt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:67
 msgid "[Servers] Disable Jaimini's Box (definitely closed)"
-msgstr ""
+msgstr "[Server] Jaimini's Box deaktiviert (geschlossen)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:68
 msgid "[L10n] Add German translation"
-msgstr ""
+msgstr "[Lokalisierung] Deutsche Übersetzung hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:75
 msgid "Add HiDPI display support"
