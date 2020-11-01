@@ -27,7 +27,6 @@ class Manganelo(Server):
     most_populars_url = base_url + '/genre-all?type=topview'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/chapter/{0}/{1}'
-    image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
 
     def __init__(self):
         if self.session is None:
