@@ -11,6 +11,11 @@
         <p>An online/offline manga reader for GNOME developed with the aim of being used with the Librem 5 phone</p>
     </description>
 
+    <custom>
+        <value key="Purism::form_factor">workstation</value>
+        <value key="Purism::form_factor">mobile</value>
+    </custom>
+
     <screenshots>
         <screenshot type="default">
             <image>https://gitlab.com/valos/Komikku/raw/master/screenshots/main-window.png</image>
