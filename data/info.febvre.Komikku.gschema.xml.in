@@ -8,6 +8,7 @@
         <value nick="right-to-left" value="0" />
         <value nick="left-to-right" value="1" />
         <value nick="vertical" value="2" />
+        <value nick="webtoon" value="3" />
     </enum>
     <enum id="@appid@.Scaling">
         <value nick="screen" value="0" />

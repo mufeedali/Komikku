@@ -143,6 +143,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     card_more_label = Gtk.Template.Child('card_more_label')
 
     reader_overlay = Gtk.Template.Child('reader_overlay')
+    reader_scrolledwindow = Gtk.Template.Child('reader_scrolledwindow')
     reader_viewport = Gtk.Template.Child('reader_viewport')
     reader_title_label = Gtk.Template.Child('reader_title_label')
     reader_subtitle_label = Gtk.Template.Child('reader_subtitle_label')

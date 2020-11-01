@@ -23,6 +23,11 @@
                         <attribute name="action">app.reader.reading-direction</attribute>
                         <attribute name="target">vertical</attribute>
                     </item>
+                    <item>
+                        <attribute name="label" translatable="yes">Webtoon ↓</attribute>
+                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="target">webtoon</attribute>
+                    </item>
                 </section>
             </submenu>
 

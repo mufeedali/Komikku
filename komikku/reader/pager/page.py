@@ -27,13 +27,13 @@ class Page(Gtk.Overlay):
 
         self.pager = pager
         self.reader = pager.reader
-        self.window = pager.window
+        self.window = self.reader.window
 
         self.chapter = chapter
         self.index = index
         self.path = None
 
-        self.status = None     # rendering, rendered, offlimit, cleaned
+        self._status = None    # rendering, render, rendered, offlimit, cleaned
         self.error = None      # connection error, server error or corrupt file error
         self.loadable = False  # loadable from disk or downloadable from server (chapter pages are known)
 
@@ -43,7 +43,9 @@ class Page(Gtk.Overlay):
 
         self.set_size()
 
+        policy_type = Gtk.PolicyType.AUTOMATIC if self.reader.reading_direction != 'webtoon' else Gtk.PolicyType.NEVER
         self.scrolledwindow = Gtk.ScrolledWindow()
+        self.scrolledwindow.set_policy(policy_type, policy_type)
         self.viewport = Gtk.Viewport()
         self.image = Gtk.Image()
         self.imagebuf = None
@@ -55,11 +57,12 @@ class Page(Gtk.Overlay):
         if self.reader.reading_direction == 'vertical':
             self.scrolledwindow.get_vadjustment().connect('changed', self.on_scroll_changed, 'vertical')
             self.scrolledwindow.get_vadjustment().connect('value-changed', self.on_scroll_value_changed, 'vertical')
-        else:
+        elif self.reader.reading_direction != 'webtoon':
             self.scrolledwindow.get_hadjustment().connect('changed', self.on_scroll_changed, 'horizontal')
             self.scrolledwindow.get_hadjustment().connect('value-changed', self.on_scroll_value_changed, 'horizontal')
 
-        self.scrolledwindow.connect('edge-overshot', self.on_edge_overshotted)
+        if self.reader.reading_direction != 'webtoon':
+            self.scrolledwindow.connect('edge-overshot', self.on_edge_overshotted)
 
         # Activity indicator
         self.activity_indicator = ActivityIndicator()
@@ -67,6 +70,14 @@ class Page(Gtk.Overlay):
         self.set_overlay_pass_through(self.activity_indicator, True)  # Allows scrolling in zoom mode
 
         self.show_all()
+
+    @GObject.Property(type=str)
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
 
     @property
     def animated(self):
@@ -77,6 +88,9 @@ class Page(Gtk.Overlay):
         return self.pixbuf is not None
 
     def clean(self):
+        if self.status is None:
+            return
+
         self.status = 'cleaned'
         self.loadable = False
         self.imagebuf = None
@@ -134,92 +148,59 @@ class Page(Gtk.Overlay):
             self.last_vadj_value = vadj.get_value()
 
     def render(self, retry=False):
-        def run():
-            # First, we ensure that chapter's list of pages is known
-            if self.chapter.pages is None:
-                try:
-                    if not self.chapter.update_full():
-                        on_error('server')
-                        GLib.idle_add(complete)
-                        return
-                except Exception as e:
-                    user_error_message = log_error_traceback(e)
-                    on_error('connection', user_error_message)
-                    GLib.idle_add(complete)
-                    return
-
-            # If page's index is out of pages numbers, page belongs to previous or next chapter.
-            if self.index < 0 or self.index > len(self.chapter.pages) - 1:
-                if self.index < 0:
-                    # Page is the last page of previous chapter
-                    self.chapter = self.reader.manga.get_next_chapter(self.chapter, -1)
-                elif self.index > len(self.chapter.pages) - 1:
-                    # Page is the first page of next chapter
-                    self.chapter = self.reader.manga.get_next_chapter(self.chapter, 1)
-
-                if self.chapter is not None:
-                    # Chapter has changed
-                    # Again, we ensure that chapter's list of pages is known
-                    if self.chapter.pages is None:
-                        try:
-                            if not self.chapter.update_full():
-                                on_error('server')
-                                GLib.idle_add(complete)
-                                return
-                        except Exception as e:
-                            user_error_message = log_error_traceback(e)
-                            on_error('connection', user_error_message)
-                            GLib.idle_add(complete)
-                            return
-
-                    if self.index < 0:
-                        # Page is the last page of chapter
-                        self.index = len(self.chapter.pages) - 1
-                    else:
-                        # Page is the first page of chapter
-                        self.index = 0
-
-                    self.loadable = True
-                else:
-                    # Page does not exist, it's out of limit
-                    # ie before first page of first chapter or after last page of last chapter
-                    self.status = 'offlimit'
-                    GLib.idle_add(complete)
-                    return
-            else:
-                self.loadable = True
-
-            page_path = self.chapter.get_page_path(self.index)
-            if page_path is None:
-                try:
-                    page_path = self.chapter.get_page(self.index)
-                    if page_path:
-                        self.path = page_path
-                    else:
-                        on_error('server')
-                except Exception as e:
-                    user_error_message = log_error_traceback(e)
-                    on_error('connection', user_error_message)
-            else:
-                self.path = page_path
-
-            GLib.idle_add(complete)
-
-        def complete():
-            if self.status == 'cleaned' or self.get_parent() is None:
-                # Page has been removed from pager
-                # rare case that occurs during a quick navigation
-                return False
-
-            if self.status != 'offlimit':
-                self.set_image()
-                self.status = 'rendered'
-
+        def complete(error_code, error_message):
             self.activity_indicator.stop()
 
+            if error_code == 'server':
+                on_error('server')
+            elif error_code == 'connection':
+                on_error('connection', error_message)
+            elif error_code == 'offlimit':
+                self.status = 'offlimit'
+                return
+
+            if self.status == 'cleaned' or self.get_parent() is None:
+                # Page has been removed from pager
+                return False
+
+            self.status = 'render'
+            self.set_image()
+            self.status = 'rendered'
             self.emit('rendered', retry)
 
             return False
+
+        def load_chapter(prior_chapter=None):
+            if self.chapter.pages and self.index >= 0 and self.index < len(self.chapter.pages):
+                return 'success', None, None
+
+            if self.index < 0:
+                # Page belongs to another (previous) chapter
+                prior_chapter = self.chapter
+                self.chapter = self.reader.manga.get_next_chapter(self.chapter, -1)
+                if self.chapter is None:
+                    return 'error', 'offlimit', None
+
+            if not self.chapter.pages:
+                try:
+                    if not self.chapter.update_full():
+                        return 'error', 'server', None
+                except Exception as e:
+                    return 'error', 'connection', log_error_traceback(e)
+
+            if self.index > len(self.chapter.pages) - 1:
+                # Page belongs to another (next) chapter
+                prior_chapter = self.chapter
+                self.chapter = self.reader.manga.get_next_chapter(self.chapter, 1)
+                if self.chapter is None:
+                    return 'error', 'offlimit', None
+
+            if self.index < 0:
+                self.index = len(self.chapter.pages) + self.index
+            elif self.index > len(prior_chapter.pages if prior_chapter else self.chapter.pages) - 1:
+                self.index = self.index - len(prior_chapter.pages)
+
+            return load_chapter(prior_chapter)
 
         def on_error(kind, message=None):
             assert kind in ('connection', 'server', ), 'Invalid error kind'
@@ -230,6 +211,30 @@ class Page(Gtk.Overlay):
             self.error = kind
 
             self.show_retry_button()
+
+        def run():
+            res, error_code, error_message = load_chapter()
+            if res == 'error':
+                GLib.idle_add(complete, error_code, error_message)
+                return
+
+            self.loadable = True
+
+            page_path = self.chapter.get_page_path(self.index)
+            if page_path is None:
+                try:
+                    page_path = self.chapter.get_page(self.index)
+                    if page_path:
+                        self.path = page_path
+                    else:
+                        error_code, error_message = 'server', None
+                        on_error('server')
+                except Exception as e:
+                    error_code, error_message = 'connection', log_error_traceback(e)
+            else:
+                self.path = page_path
+
+            GLib.idle_add(complete, error_code, error_message)
 
         if self.status is not None and self.error is None:
             return
@@ -273,21 +278,22 @@ class Page(Gtk.Overlay):
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
 
         # Adjust image
+        scaling = self.reader.scaling if self.reader.reading_direction not in ('vertical', 'webtoon') else 'width'
         if self.reader.scaling != 'original':
             adapt_to_width_height = imagebuf.height / (imagebuf.width / self.reader.size.width)
             adapt_to_height_width = imagebuf.width / (imagebuf.height / self.reader.size.height)
 
             if not self.animated:
-                if self.reader.scaling == 'width' or (self.reader.scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
+                if scaling == 'width' or (scaling == 'screen' and adapt_to_width_height <= self.reader.size.height):
                     # Adapt image to width
                     pixbuf = imagebuf.get_scaled_pixbuf(self.reader.size.width, adapt_to_width_height, False, self.window.hidpi_scale)
-                elif self.reader.scaling == 'height' or (self.reader.scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
+                elif scaling == 'height' or (scaling == 'screen' and adapt_to_height_width <= self.reader.size.width):
                     # Adapt image to height
                     pixbuf = imagebuf.get_scaled_pixbuf(adapt_to_height_width, self.reader.size.height, False, self.window.hidpi_scale)
             else:
                 # NOTE: Special case of animated images (GIF)
                 # They cannot be cropped, which would prevent navigation by 2-finger swipe gesture
-                # Moreover, it's more comfortable to view them in full (fit viewport)
+                # Moreover, it's more comfortable to view them in their entirety (fit viewport)
 
                 if adapt_to_width_height <= self.reader.size.height:
                     # Adapt image to width
@@ -328,6 +334,9 @@ class Page(Gtk.Overlay):
         else:
             self.surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
             self.image.set_from_surface(self.surface)
+
+        if self.reader.reading_direction == 'webtoon':
+            self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
 
     def set_size(self):
         self.set_size_request(self.reader.size.width, self.reader.size.height)

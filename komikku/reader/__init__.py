@@ -14,6 +14,7 @@ from gi.repository import Gtk
 from komikku.models import Settings
 from komikku.reader.controls import Controls
 from komikku.reader.pager import Pager
+from komikku.reader.pager.webtoon import WebtoonPager
 from komikku.servers import get_file_mime_type
 from komikku.utils import is_flatpak
 
@@ -21,6 +22,7 @@ from komikku.utils import is_flatpak
 class Reader:
     manga = None
     chapters_consulted = None
+    pager = None
 
     def __init__(self, window):
         self.window = window
@@ -28,14 +30,12 @@ class Reader:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/reader.xml')
 
         self.overlay = self.window.reader_overlay
+        self.scrolledwindow = self.window.reader_scrolledwindow
+        self.viewport = self.window.reader_viewport
 
         # Headerbar
         self.title_label = self.window.reader_title_label
         self.subtitle_label = self.window.reader_subtitle_label
-
-        # Pager
-        self.pager = Pager(self)
-        self.window.reader_viewport.add(self.pager)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
@@ -117,53 +117,72 @@ class Reader:
         self.chapters_consulted = set()
 
         # Init settings
-        self.set_reading_direction()
-        self.set_scaling()
-        self.set_background_color()
-        self.set_borders_crop()
+        self.set_action_reading_direction()
+        self.set_action_scaling()
+        self.set_action_borders_crop()
+
+        # Init pager
+        self.init_pager(chapter)
+        self.set_action_background_color()
 
         self.show()
+
+    def init_pager(self, chapter, reverse_pages=False):
+        if self.pager:
+            self.pager.clear()
+            self.pager.destroy()
+
+        if self.reading_direction == 'webtoon':
+            self.pager = WebtoonPager(self)
+        else:
+            self.pager = Pager(self)
+
+        self.set_orientation()
+
+        self.viewport.add(self.pager)
 
         self.pager.init(chapter)
 
     def on_background_color_changed(self, action, variant):
         value = variant.get_string()
-        if value == self.manga.background_color:
+        if value == self.background_color:
             return
 
         self.manga.update(dict(background_color=value))
-        self.set_background_color()
+        self.set_action_background_color()
 
     def on_borders_crop_changed(self, action, variant):
         self.manga.update(dict(borders_crop=variant.get_boolean()))
-        self.set_borders_crop()
+        self.set_action_borders_crop()
         self.pager.crop_pages_borders()
 
     def on_reading_direction_changed(self, action, variant):
         value = variant.get_string()
-        if value == self.manga.reading_direction:
+        if value == self.reading_direction:
             return
 
-        # Reverse pages order
-        # except in cases: LTR => Vertical and Vertical => LTR
-        if value not in ('left-to-right', 'vertical') or self.reading_direction not in ('left-to-right', 'vertical'):
-            self.pager.reverse_pages()
+        prior_reading_direction = self.reading_direction
 
         self.manga.update(dict(reading_direction=value))
-        self.set_reading_direction()
+        self.set_action_reading_direction()
 
-        self.pager.set_orientation()
+        if value == 'webtoon' or prior_reading_direction == 'webtoon':
+            self.init_pager(self.pager.current_page.chapter)
+        else:
+            if value == 'right-to-left' or prior_reading_direction == 'right-to-left':
+                self.pager.reverse_pages()
+            self.set_orientation()
 
     def on_resize(self):
         self.pager.resize_pages()
 
     def on_scaling_changed(self, action, variant):
         value = variant.get_string()
-        if value == self.manga.scaling:
+        if value == self.scaling:
             return
 
         self.manga.update(dict(scaling=value))
-        self.set_scaling()
+        self.set_action_scaling()
 
         self.pager.rescale_pages()
 
@@ -212,22 +231,35 @@ class Reader:
             shutil.copy(page.path, dest_path)
             self.window.show_notification(_('Page successfully saved to {0}').format(dest_path.replace(os.path.expanduser('~'), '~')))
 
-    def set_background_color(self):
+    def set_action_background_color(self):
         self.background_color_action.set_state(GLib.Variant('s', self.background_color))
         if self.background_color == 'white':
             self.pager.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         else:
             self.pager.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1))
 
-    def set_borders_crop(self):
+    def set_action_borders_crop(self):
         self.borders_crop_action.set_state(GLib.Variant('b', self.borders_crop))
 
-    def set_reading_direction(self):
+    def set_action_reading_direction(self):
         self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))
-        self.controls.set_scale_direction(self.reading_direction == 'right-to-left')
 
-    def set_scaling(self):
-        self.scaling_action.set_state(GLib.Variant('s', self.scaling))
+        # Scaling action is enabled in RTL and LTR reading directions only
+        self.scaling_action.set_enabled(self.reading_direction in ('right-to-left', 'left-to-right'))
+
+        # Additionally, direction of page slider in controls must be updated
+        self.controls.set_scale_direction(inverted=self.reading_direction == 'right-to-left')
+
+    def set_action_scaling(self, scaling=None):
+        self.scaling_action.set_state(GLib.Variant('s', scaling or self.scaling))
+
+    def set_orientation(self):
+        if self.reading_direction in ('right-to-left', 'left-to-right'):
+            orientation = Gtk.Orientation.HORIZONTAL
+        else:
+            orientation = Gtk.Orientation.VERTICAL
+
+        self.pager.set_orientation(orientation)
 
     def show(self):
         def on_menu_popover_closed(menu_button):
