@@ -10,7 +10,7 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import USER_AGENT
 from komikku.servers import Server
 
-SERVER_NAME = 'Readmanhwa'
+SERVER_NAME = 'ReadManhwa'
 
 
 class ReadmanhwaException(Exception):
@@ -27,14 +27,14 @@ class Readmanhwa(Server):
     is_nsfw = False
 
     base_url = 'https://www.readmanhwa.com'
-    manga_url = base_url + '/'+ lang + '/webtoon/{0}' # slug
+    manga_url = base_url + '/' + lang + '/webtoon/{0}'  # slug
     api_base_url = base_url + '/api/'
     api_search_url = api_base_url + 'comics?page={0}&q={1}&sort=popularity&order=desc&duration=week'
     api_most_populars_url = api_base_url + 'comics?page={0}&q=&sort=popularity&order=desc&duration=week'
-    api_manga_slug_url = api_base_url +'comics/{0}'
-    api_manga_chapters_slug =  api_manga_slug_url + '/chapters' # slug
+    api_manga_slug_url = api_base_url + 'comics/{0}'
+    api_manga_chapters_slug = api_manga_slug_url + '/chapters'  # slug
     api_manga_url = api_base_url + 'comics?page={0}&q={1}&sort=popularity&order=desc'
-    api_manga_chapter_images = api_manga_slug_url + '/images' # chapter_url 
+    api_manga_chapter_images = api_manga_slug_url + '/images'  # chapter_url
 
     def __init__(self):
         if self.session is None:
@@ -61,11 +61,11 @@ class Readmanhwa(Server):
         return self.do_api_request(self.api_manga_slug_url.format(slug))
 
     def get_manga_chapter_images(self, chapter_url):
-        return self.do_api_request(self.api_manga_chapter_images.format(chapter_url)) 
+        return self.do_api_request(self.api_manga_chapter_images.format(chapter_url))
 
     def get_manga_data(self, initial_data):
         """
-        Returns manga data by Doing API Requests
+        Returns manga data using API requests
 
         Initial data should contain at least manga's slug (provided by search)
         """
@@ -99,16 +99,17 @@ class Readmanhwa(Server):
 
         # Details & Synopsis
         data['status'] = manga['status']
-        for genre in manga.get('tags',[]):
-            data['genres'].append(genre.get('name',''))
+        for genre in manga.get('tags', []):
+            data['genres'].append(genre.get('name', ''))
 
         data['synopsis'] = manga['description']
+
         # Chapters
-        for chapter in chapters:
+        for chapter in reversed(chapters):
             data['chapters'].append(dict(
                 slug=chapter['slug'],
-                title=chapter['name']
-                ))
+                title=chapter['name'],
+            ))
 
         return data
 
@@ -123,14 +124,12 @@ class Readmanhwa(Server):
 
         data = dict(
             pages=[],
-            scrambled=0,
         )
-
         for image in images['images']:
             data['pages'].append(dict(
-                    slug=None,  # not necessary, we know image url already
-                    image=image['source_url'],
-                ))
+                slug=None,  # not necessary, we know image url already
+                image=image['source_url'],
+            ))
 
         return data
 
@@ -144,10 +143,6 @@ class Readmanhwa(Server):
 
         buffer = r.content
         mime_type = get_buffer_mime_type(buffer)
-        if mime_type == 'application/octet-stream':
-            buffer = convert_mri_data_to_webp_buffer(buffer)
-            mime_type = get_buffer_mime_type(buffer)
-
         if not mime_type.startswith('image'):
             return None
 
@@ -169,7 +164,7 @@ class Readmanhwa(Server):
         """
         try:
             resp = self.get_popular_manga()
-        except (ReadmanhwaException,Exception):
+        except (ReadmanhwaException, Exception):
             return None
 
         results = []
@@ -187,13 +182,14 @@ class Readmanhwa(Server):
         """
         try:
             resp = self.get_manga_title(term)
-        except (ReadmanhwaException,Exception):
+        except (ReadmanhwaException, Exception):
             return None
+
         results = []
         for manga in resp['data']:
             results.append(dict(
-                    name=manga['title'],
-                    slug=manga['slug'],
+                name=manga['title'],
+                slug=manga['slug'],
             ))
 
         return results
