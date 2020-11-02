@@ -216,7 +216,8 @@ class BasePager:
             vadj = page.scrolledwindow.get_vadjustment()
 
             if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                if self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
+                if self.reader.reading_direction == 'webtoon' or \
+                        (self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper()):
                     self.scroll_to_direction('right')
                     return Gdk.EVENT_STOP
 
