@@ -15,6 +15,21 @@
 
         <section>
             <item>
+                <attribute name="label" translatable="yes">Download</attribute>
+                <attribute name="action">app.library.download-selected</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">Mark as read</attribute>
+                <attribute name="action">app.library.mark-selected-read</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">Mark as unread</attribute>
+                <attribute name="action">app.library.mark-selected-unread</attribute>
+            </item>
+        </section>
+
+        <section>
+            <item>
                 <attribute name="label" translatable="yes">Select All</attribute>
                 <attribute name="action">app.library.select-all</attribute>
             </item>

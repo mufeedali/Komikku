@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from copy import deepcopy
 from gettext import gettext as _
 from gettext import ngettext as n_
 import math
@@ -16,7 +17,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.downloader import DownloadManagerDialog
-from komikku.models import create_db_connection
+from komikku.models import create_db_connection, update_rows
 from komikku.models import Manga
 from komikku.servers import get_file_mime_type
 from komikku.utils import scale_pixbuf_animation
@@ -138,6 +139,18 @@ class Library:
         update_selected_action = Gio.SimpleAction.new('library.update-selected', None)
         update_selected_action.connect('activate', self.update_selected)
         self.window.application.add_action(update_selected_action)
+
+        download_selected_action = Gio.SimpleAction.new('library.download-selected', None)
+        download_selected_action.connect('activate', self.download_selected)
+        self.window.application.add_action(download_selected_action)
+
+        mark_selected_read_action = Gio.SimpleAction.new('library.mark-selected-read', None)
+        mark_selected_read_action.connect('activate', self.toggle_selected_manga_read_status, 1)
+        self.window.application.add_action(mark_selected_read_action)
+
+        mark_selected_unread_action = Gio.SimpleAction.new('library.mark-selected-unread', None)
+        mark_selected_unread_action.connect('activate', self.toggle_selected_manga_read_status, 0)
+        self.window.application.add_action(mark_selected_unread_action)
 
         select_all_action = Gio.SimpleAction.new('library.select-all', None)
         select_all_action.connect('activate', self.select_all)
@@ -464,6 +477,46 @@ class Library:
 
     def update_all(self, action, param):
         self.window.updater.update_library()
+
+    def toggle_selected_manga_read_status(self, action, param, read):
+        mangas = [thumbnail.manga for thumbnail in self.flowbox.get_selected_children()]
+        chapters_ids = []
+        chapters_data = []
+
+        for manga in mangas:
+            for chapter in manga.chapters:
+                last_page_read_index = None
+                if chapter.pages:
+                    pages = deepcopy(chapter.pages)
+                    for page in pages:
+                        page['read'] = read
+                else:
+                    pages = None
+                    last_page_read_index = None if chapter.read == read == 0 else chapter.last_page_read_index
+
+                chapters_ids.append(chapter.id)
+                chapters_data.append(dict(
+                    pages=pages,
+                    read=read,
+                    recent=False,
+                    last_page_read_index=last_page_read_index,
+                ))
+
+        db_conn = create_db_connection()
+        with db_conn:
+            res = update_rows(db_conn, 'chapters', chapters_ids, chapters_data)
+        db_conn.close()
+
+        self.leave_selection_mode()
+
+    def download_selected(self, action, param):
+        mangas = [thumbnail.manga for thumbnail in self.flowbox.get_selected_children()]
+        for manga in mangas:
+            for chapter in manga.chapters:
+                self.window.downloader.add(chapter)
+        self.window.downloader.start()
+
+        self.leave_selection_mode()
 
     def update_selected(self, action, param):
         self.window.updater.add([thumbnail.manga for thumbnail in self.flowbox.get_selected_children()])
