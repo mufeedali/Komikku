@@ -152,21 +152,35 @@ class AddDialog:
         if getattr(self.server, 'filters', None) is None:
             return
 
+        def build_checkbox(filter):
+            self.search_filters[filter['key']] = filter['default']
+
+            def toggle(button, _param):
+                self.search_filters[filter['key']] = button.get_active()
+
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, visible=True)
+
+            check_button = Gtk.CheckButton(label=filter['name'], active=filter['default'], tooltip_text=filter['description'], visible=True)
+            check_button.connect('notify::active', toggle)
+            vbox.add(check_button)
+
+            return vbox
+
         def build_entry(filter):
             self.search_filters[filter['key']] = filter['default']
 
-            def on_text_changed(buf, param, key):
-                self.search_filters[key] = buf.get_text()
+            def on_text_changed(buf, _param):
+                self.search_filters[filter['key']] = buf.get_text()
 
             entry = Gtk.Entry(text=filter['default'], placeholder_text=filter['name'], tooltip_text=filter['description'], visible=True)
-            entry.get_buffer().connect('notify::text', on_text_changed, filter['key'])
+            entry.get_buffer().connect('notify::text', on_text_changed)
 
             return entry
 
         def build_select_single(filter):
             self.search_filters[filter['key']] = filter['default']
 
-            def toggle_option(button, gparam, key):
+            def toggle_option(button, _param, key):
                 if button.get_active():
                     self.search_filters[filter['key']] = key
 
@@ -186,7 +200,7 @@ class AddDialog:
         def build_select_multiple(filter):
             self.search_filters[filter['key']] = [option['key'] for option in filter['options'] if option['default']]
 
-            def toggle_option(button, gparam, key):
+            def toggle_option(button, _param, key):
                 if button.get_active():
                     self.search_filters[filter['key']].append(key)
                 else:
@@ -210,7 +224,11 @@ class AddDialog:
 
         last = None
         for filter in self.server.filters:
-            if filter['type'] == 'select':
+            if filter['type'] == 'checkbox':
+                filter_widget = build_checkbox(filter)
+            elif filter['type'] == 'entry':
+                filter_widget = build_entry(filter)
+            elif filter['type'] == 'select':
                 if filter['value_type'] == 'single':
                     filter_widget = build_select_single(filter)
                 elif filter['value_type'] == 'multiple':
@@ -223,8 +241,6 @@ class AddDialog:
                     sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL, visible=True)
                     vbox.add(sep)
                 vbox.add(label)
-            elif filter['type'] == 'entry':
-                filter_widget = build_entry(filter)
             else:
                 raise NotImplementedError('Invalid filter type')
 
@@ -321,7 +337,7 @@ class AddDialog:
             try:
                 if most_populars:
                     # We offer most popular mangas as starting search results
-                    result = server.get_most_populars()
+                    result = server.get_most_populars(**self.search_filters)
                 else:
                     result = server.search(term, **self.search_filters)
 
