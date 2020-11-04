@@ -132,24 +132,24 @@ class Library:
         self.window.application.add_action(search_recents_action)
 
         # Menu actions in selection mode
-        delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
-        delete_selected_action.connect('activate', self.delete_selected)
-        self.window.application.add_action(delete_selected_action)
-
         update_selected_action = Gio.SimpleAction.new('library.update-selected', None)
         update_selected_action.connect('activate', self.update_selected)
         self.window.application.add_action(update_selected_action)
+
+        delete_selected_action = Gio.SimpleAction.new('library.delete-selected', None)
+        delete_selected_action.connect('activate', self.delete_selected)
+        self.window.application.add_action(delete_selected_action)
 
         download_selected_action = Gio.SimpleAction.new('library.download-selected', None)
         download_selected_action.connect('activate', self.download_selected)
         self.window.application.add_action(download_selected_action)
 
         mark_selected_read_action = Gio.SimpleAction.new('library.mark-selected-read', None)
-        mark_selected_read_action.connect('activate', self.toggle_selected_manga_read_status, 1)
+        mark_selected_read_action.connect('activate', self.toggle_selected_read_status, 1)
         self.window.application.add_action(mark_selected_read_action)
 
         mark_selected_unread_action = Gio.SimpleAction.new('library.mark-selected-unread', None)
-        mark_selected_unread_action.connect('activate', self.toggle_selected_manga_read_status, 0)
+        mark_selected_unread_action.connect('activate', self.toggle_selected_read_status, 0)
         self.window.application.add_action(mark_selected_unread_action)
 
         select_all_action = Gio.SimpleAction.new('library.select-all', None)
@@ -177,7 +177,7 @@ class Library:
 
         self.thumbnails_size = (width, height)
 
-    def delete_selected(self, action, param):
+    def delete_selected(self, _action, _param):
         def confirm_callback():
             # Stop Downloader & Updater
             self.window.downloader.stop()
@@ -205,6 +205,15 @@ class Library:
             _('Are you sure you want to delete selected mangas?'),
             confirm_callback
         )
+
+    def download_selected(self, _action, _param):
+        for thumbnail in self.flowbox.get_selected_children():
+            for chapter in thumbnail.manga.chapters:
+                self.window.downloader.add(chapter)
+
+        self.window.downloader.start()
+
+        self.leave_selection_mode()
 
     def enter_search_mode(self):
         if self.selection_mode:
@@ -264,7 +273,7 @@ class Library:
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_gesture_long_press_activated(self, gesture, x, y):
+    def on_gesture_long_press_activated(self, _gesture, x, y):
         if self.selection_mode:
             # Enter in 'Range' selection mode
             # Long press on a manga then long press on another to select everything in between
@@ -276,7 +285,7 @@ class Library:
         else:
             self.enter_selection_mode(x, y)
 
-    def on_key_press(self, widget, event):
+    def on_key_press(self, _widget, event):
         """Search can be triggered by simply typing a printable character"""
 
         if self.window.page != 'library':
@@ -301,7 +310,7 @@ class Library:
         else:
             self.add_manga(manga, position=0)
 
-    def on_manga_clicked(self, flowbox, thumbnail):
+    def on_manga_clicked(self, _flowbox, thumbnail):
         _ret, state = Gtk.get_current_event_state()
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
@@ -352,7 +361,7 @@ class Library:
                 thumbnail.destroy()
                 break
 
-    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
+    def on_manga_updated(self, _updater, manga, _nb_recent_chapters, _nb_deleted_chapters):
         for thumbnail in self.flowbox.get_children():
             if thumbnail.manga.id != manga.id:
                 continue
@@ -427,10 +436,10 @@ class Library:
 
         db_conn.close()
 
-    def search(self, search_entry):
+    def search(self, _search_entry):
         self.flowbox.invalidate_filter()
 
-    def select_all(self, action=None, param=None):
+    def select_all(self, _action=None, _param=None):
         if self.window.first_start_grid.is_ancestor(self.window.box):
             return
 
@@ -475,16 +484,14 @@ class Library:
             self.search_entry.set_text('')
             self.search_entry.grab_remove()
 
-    def update_all(self, action, param):
-        self.window.updater.update_library()
-
-    def toggle_selected_manga_read_status(self, action, param, read):
-        mangas = [thumbnail.manga for thumbnail in self.flowbox.get_selected_children()]
+    def toggle_selected_read_status(self, _action, _param, read):
         chapters_ids = []
         chapters_data = []
 
-        for manga in mangas:
-            for chapter in manga.chapters:
+        self.window.activity_indicator.start()
+
+        for thumbnail in self.flowbox.get_selected_children():
+            for chapter in thumbnail.manga.chapters:
                 last_page_read_index = None
                 if chapter.pages:
                     pages = deepcopy(chapter.pages)
@@ -504,21 +511,16 @@ class Library:
 
         db_conn = create_db_connection()
         with db_conn:
-            res = update_rows(db_conn, 'chapters', chapters_ids, chapters_data)
+            update_rows(db_conn, 'chapters', chapters_ids, chapters_data)
         db_conn.close()
 
+        self.window.activity_indicator.stop()
         self.leave_selection_mode()
 
-    def download_selected(self, action, param):
-        mangas = [thumbnail.manga for thumbnail in self.flowbox.get_selected_children()]
-        for manga in mangas:
-            for chapter in manga.chapters:
-                self.window.downloader.add(chapter)
-        self.window.downloader.start()
+    def update_all(self, _action, _param):
+        self.window.updater.update_library()
 
-        self.leave_selection_mode()
-
-    def update_selected(self, action, param):
+    def update_selected(self, _action, _param):
         self.window.updater.add([thumbnail.manga for thumbnail in self.flowbox.get_selected_children()])
         self.window.updater.start()
 
