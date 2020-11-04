@@ -151,6 +151,38 @@ class WebtoonPager(Gtk.Box, BasePager):
             message = _('There is no previous chapter.')
         self.window.show_notification(message, interval=2)
 
+    def on_key_press(self, _widget, event):
+        if self.window.page != 'reader' or self.scroll_lock:
+            return Gdk.EVENT_PROPAGATE
+
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+        if (event.state & modifiers) != 0:
+            return Gdk.EVENT_PROPAGATE
+
+        if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            self.scroll_direction = Gtk.DirectionType.DOWN
+            self.dont_ignore_scroll_adjustment = True
+            self.vadj.set_value(self.vadj.get_value() + self.vadj.get_step_increment())
+
+            return Gdk.EVENT_STOP
+
+        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
+            self.scroll_direction = Gtk.DirectionType.UP
+            self.dont_ignore_scroll_adjustment = True
+            self.vadj.set_value(self.vadj.get_value() - self.vadj.get_step_increment())
+
+            return Gdk.EVENT_STOP
+
+        if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
+            self.scroll_to_direction('left')
+            return Gdk.EVENT_STOP
+
+        if event.keyval in (Gdk.KEY_Right, Gdk.KEY_KP_Right):
+            self.scroll_to_direction('right')
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
+
     def on_page_status_changed(self, page, _param):
         if page.status == 'rendering':
             return

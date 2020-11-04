@@ -178,68 +178,9 @@ class BasePager:
 
             self.zoom['active'] = False
 
-    def on_key_press(self, widget, event):
-        if self.window.page != 'reader':
-            return Gdk.EVENT_PROPAGATE
-
-        modifiers = Gtk.accelerator_get_default_mod_mask()
-        if (event.state & modifiers) != 0:
-            return Gdk.EVENT_PROPAGATE
-
-        if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
-            # Hide mouse cursor when using keyboard navigation
-            self.hide_cursor()
-
-            page = self.current_page
-            hadj = page.scrolledwindow.get_hadjustment()
-
-            if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
-                if hadj.get_value() == 0 and self.zoom['active'] is False:
-                    self.scroll_to_direction('left')
-                    return Gdk.EVENT_STOP
-
-                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_LEFT, False)
-                return Gdk.EVENT_STOP
-
-            if hadj.get_value() + self.reader.size.width == hadj.get_upper() and self.zoom['active'] is False:
-                self.scroll_to_direction('right')
-                return Gdk.EVENT_STOP
-
-            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_RIGHT, False)
-            return Gdk.EVENT_STOP
-
-        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
-            # Hide mouse cursor when using keyboard navigation
-            self.hide_cursor()
-
-            page = self.current_page
-            vadj = page.scrolledwindow.get_vadjustment()
-
-            if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                if self.reader.reading_direction == 'webtoon' or \
-                        (self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper()):
-                    self.scroll_to_direction('right')
-                    return Gdk.EVENT_STOP
-
-                # If image height is greater than viewport height, arrow keys should scroll page down
-                # Emit scroll signal: one step down
-                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
-                return Gdk.EVENT_STOP
-
-            if self.reader.reading_direction == 'vertical' and vadj.get_value() == 0:
-                self.scroll_to_direction('left')
-
-                # After switching pages, go to the end of the page that is now the current page
-                vadj = self.current_page.scrolledwindow.get_vadjustment()
-                vadj.set_value(vadj.get_upper() - self.reader.size.height)
-                return Gdk.EVENT_STOP
-
-            # If image height is greater than viewport height, arrow keys should scroll page up
-            # Emit scroll signal: one step up
-            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
-            return Gdk.EVENT_STOP
-
-        return Gdk.EVENT_PROPAGATE
+    @abstractmethod
+    def on_key_press(self, _widget, event):
+        raise NotImplementedError()
 
     def on_motion_notify(self, widget, event):
         if self.get_window().get_cursor():
@@ -420,6 +361,68 @@ class Pager(Handy.Carousel, BasePager):
         right_page.render()
 
         self.scroll_to(center_page)
+
+    def on_key_press(self, _widget, event):
+        if self.window.page != 'reader':
+            return Gdk.EVENT_PROPAGATE
+
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+        if (event.state & modifiers) != 0:
+            return Gdk.EVENT_PROPAGATE
+
+        if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left, Gdk.KEY_Right, Gdk.KEY_KP_Right):
+            # Hide mouse cursor when using keyboard navigation
+            self.hide_cursor()
+
+            page = self.current_page
+            hadj = page.scrolledwindow.get_hadjustment()
+
+            if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
+                if hadj.get_value() == 0 and self.zoom['active'] is False:
+                    self.scroll_to_direction('left')
+                    return Gdk.EVENT_STOP
+
+                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_LEFT, False)
+                return Gdk.EVENT_STOP
+
+            if hadj.get_value() + self.reader.size.width == hadj.get_upper() and self.zoom['active'] is False:
+                self.scroll_to_direction('right')
+                return Gdk.EVENT_STOP
+
+            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_RIGHT, False)
+            return Gdk.EVENT_STOP
+
+        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            # Hide mouse cursor when using keyboard navigation
+            self.hide_cursor()
+
+            page = self.current_page
+            vadj = page.scrolledwindow.get_vadjustment()
+
+            if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+                if self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
+                    self.scroll_to_direction('right')
+                    return Gdk.EVENT_STOP
+
+                # If image height is greater than viewport height, arrow keys should scroll page down
+                # Emit scroll signal: one step down
+                page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
+                return Gdk.EVENT_STOP
+
+            if self.reader.reading_direction == 'vertical' and vadj.get_value() == 0:
+                self.scroll_to_direction('left')
+
+                # After switching pages, go to the end of the page that is now the current page
+                vadj = self.current_page.scrolledwindow.get_vadjustment()
+                vadj.set_value(vadj.get_upper() - self.reader.size.height)
+                return Gdk.EVENT_STOP
+
+            # If image height is greater than viewport height, arrow keys should scroll page up
+            # Emit scroll signal: one step up
+            page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_UP, False)
+            return Gdk.EVENT_STOP
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_page_changed(self, carousel, index):
         if self.pages[1].cropped:
