@@ -4,8 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: JaskaranSM
 
+from gettext import gettext as _
 import requests
 
+from komikku.models import Settings
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import USER_AGENT
 from komikku.servers import Server
@@ -23,45 +25,42 @@ class Readmanhwa(Server):
     id = 'readmanhwa'
     name = SERVER_NAME
     lang = 'en'
-    lang_code = 'english'
-    is_nsfw = False
+    long_strip_genres = ['Webtoons', ]
 
     base_url = 'https://www.readmanhwa.com'
-    manga_url = base_url + '/' + lang + '/webtoon/{0}'  # slug
+    manga_url = base_url + '/' + lang + '/webtoon/{0}'
+
     api_base_url = base_url + '/api/'
-    api_search_url = api_base_url + 'comics?page={0}&q={1}&sort=popularity&order=desc&duration=week'
-    api_most_populars_url = api_base_url + 'comics?page={0}&q=&sort=popularity&order=desc&duration=week'
-    api_manga_slug_url = api_base_url + 'comics/{0}'
-    api_manga_chapters_slug = api_manga_slug_url + '/chapters'  # slug
-    api_manga_url = api_base_url + 'comics?page={0}&q={1}&sort=popularity&order=desc'
-    api_manga_chapter_images = api_manga_slug_url + '/images'  # chapter_url
+    api_search_url = api_base_url + 'comics?q={0}&per_page=20&nsfw={1}'
+    api_most_populars_url = api_base_url + 'comics?page=1&q=&sort=popularity&order=desc&duration=year&nsfw={0}'
+    api_manga_url = api_base_url + 'comics/{0}?nsfw=true'
+    api_manga_chapters_url = api_base_url + 'comics/{0}/chapters?nsfw=true'
+    api_manga_chapter_images_url = api_base_url + 'comics/{0}/{1}/images?nsfw=true'
+
+    filters = [
+        {
+            'key': 'nsfw',
+            'type': 'checkbox',
+            'name': _('NSFW'),
+            'description': _('NSFW content'),
+            'default': False,
+        },
+    ]
 
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+        # Update NSFW filter default value according to current settings
+        self.filters[0]['default'] = Settings.get_default().nsfw_content
+
     def do_api_request(self, url):
-        resp = self.session.get(url)
-        mime = get_buffer_mime_type(resp.content)
-        if 'html' in mime:
+        resp = self.session.get(url, headers={'X-Requested-With': 'XMLHttpRequest'})
+        if get_buffer_mime_type(resp.content) != 'text/plain':
             raise ReadmanhwaException(resp.text)
+
         return resp.json()
-
-    def get_popular_manga(self, page=1):
-        return self.do_api_request(self.api_most_populars_url.format(page))
-
-    def get_manga_chapters_slug(self, slug):
-        return self.do_api_request(self.api_manga_chapters_slug.format(slug))
-
-    def get_manga_title(self, title, page=1):
-        return self.do_api_request(self.api_search_url.format(page, title))
-
-    def get_manga_slug(self, slug):
-        return self.do_api_request(self.api_manga_slug_url.format(slug))
-
-    def get_manga_chapter_images(self, chapter_url):
-        return self.do_api_request(self.api_manga_chapter_images.format(chapter_url))
 
     def get_manga_data(self, initial_data):
         """
@@ -71,13 +70,15 @@ class Readmanhwa(Server):
         """
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
         try:
-            manga = self.get_manga_slug(initial_data['slug'])
+            manga = self.do_api_request(self.api_manga_url.format(initial_data['slug']))
         except (ReadmanhwaException, Exception):
             return None
+
         if not manga.get('slug', False):
             return None
+
         try:
-            chapters = self.get_manga_chapters_slug(manga['slug'])
+            chapters = self.do_api_request(self.api_manga_chapters_url.format(manga['slug']))
         except (ReadmanhwaException, Exception):
             return None
 
@@ -97,10 +98,24 @@ class Readmanhwa(Server):
         data['name'] = manga['title']
         data['cover'] = manga['thumb_url']
 
-        # Details & Synopsis
-        data['status'] = manga['status']
+        # Authors & Artists
+        for author in manga['authors']:
+            data['authors'].append(author['name'])
+        for artist in manga['artists']:
+            if artist['name'] not in data['authors']:
+                data['authors'].append(artist['name'])
+
+        # Status
+        if manga['status'] == 'canceled':
+            data['status'] = 'suspended'
+        elif manga['status'] == 'onhold':
+            data['status'] = 'hiatus'
+        else:
+            data['status'] = manga['status']
+
+        # Genres
         for genre in manga.get('tags', []):
-            data['genres'].append(genre.get('name', ''))
+            data['genres'].append(genre['name'])
 
         data['synopsis'] = manga['description']
 
@@ -118,7 +133,7 @@ class Readmanhwa(Server):
         Returns manga chapter data
         """
         try:
-            images = self.get_manga_chapter_images(manga_slug + '/' + chapter_slug)
+            images = self.do_api_request(self.api_manga_chapter_images_url.format(manga_slug, chapter_slug))
         except (ReadmanhwaException, Exception):
             return None
 
@@ -138,7 +153,7 @@ class Readmanhwa(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'])
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         buffer = r.content
@@ -158,12 +173,12 @@ class Readmanhwa(Server):
         """
         return self.manga_url.format(slug)
 
-    def get_most_populars(self):
+    def get_most_populars(self, nsfw):
         """
         Returns Popular Manga
         """
         try:
-            resp = self.get_popular_manga()
+            resp = self.do_api_request(self.api_most_populars_url.format('true' if nsfw else 'false'))
         except (ReadmanhwaException, Exception):
             return None
 
@@ -176,12 +191,12 @@ class Readmanhwa(Server):
 
         return results
 
-    def search(self, term):
+    def search(self, term, nsfw):
         """
         Returns Manga by search
         """
         try:
-            resp = self.get_manga_title(term)
+            resp = self.do_api_request(self.api_search_url.format(term, 'true' if nsfw else 'false'))
         except (ReadmanhwaException, Exception):
             return None
 
