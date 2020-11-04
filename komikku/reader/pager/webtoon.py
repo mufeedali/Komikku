@@ -160,24 +160,26 @@ class WebtoonPager(Gtk.Box, BasePager):
             return Gdk.EVENT_PROPAGATE
 
         if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            self.hide_cursor()
             self.scroll_direction = Gtk.DirectionType.DOWN
             self.dont_ignore_scroll_adjustment = True
             self.vadj.set_value(self.vadj.get_value() + self.vadj.get_step_increment())
-
             return Gdk.EVENT_STOP
 
         if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
+            self.hide_cursor()
             self.scroll_direction = Gtk.DirectionType.UP
             self.dont_ignore_scroll_adjustment = True
             self.vadj.set_value(self.vadj.get_value() - self.vadj.get_step_increment())
-
             return Gdk.EVENT_STOP
 
         if event.keyval in (Gdk.KEY_Left, Gdk.KEY_KP_Left):
+            self.hide_cursor()
             self.scroll_to_direction('left')
             return Gdk.EVENT_STOP
 
         if event.keyval in (Gdk.KEY_Right, Gdk.KEY_KP_Right):
+            self.hide_cursor()
             self.scroll_to_direction('right')
             return Gdk.EVENT_STOP
 
