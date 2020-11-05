@@ -201,6 +201,21 @@ def insert_row(db_conn, table, data):
         return None
 
 
+def insert_rows(db_conn, table, data):
+    sql = 'INSERT INTO {0} ({1}) VALUES ({2})'.format(table, ', '.join(data[0].keys()), ', '.join(['?'] * len(data[0])))
+
+    seq = []
+    for i in range(len(data)):
+        seq.append(tuple(data[i].values()))
+
+    try:
+        db_conn.executemany(sql, seq)
+        return True
+    except Exception as e:
+        print('SQLite-error:', e, data)
+        return False
+
+
 def update_row(db_conn, table, id, data):
     try:
         db_conn.execute(
