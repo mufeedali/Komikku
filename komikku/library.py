@@ -17,8 +17,9 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.downloader import DownloadManagerDialog
-from komikku.models import create_db_connection, update_rows
+from komikku.models import create_db_connection
 from komikku.models import Manga
+from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
 from komikku.utils import scale_pixbuf_animation
 
@@ -207,13 +208,15 @@ class Library:
         )
 
     def download_selected(self, _action, _param):
+        chapters = []
         for thumbnail in self.flowbox.get_selected_children():
             for chapter in thumbnail.manga.chapters:
-                self.window.downloader.add(chapter)
-
-        self.window.downloader.start()
+                chapters.append(chapter)
 
         self.leave_selection_mode()
+
+        self.window.downloader.add(chapters)
+        self.window.downloader.start()
 
     def enter_search_mode(self):
         if self.selection_mode:

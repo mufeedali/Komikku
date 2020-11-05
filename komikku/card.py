@@ -275,15 +275,12 @@ class ChaptersList:
 
     def download_chapter(self, action, param):
         # Add chapter in download queue
-        self.window.downloader.add(self.action_row.chapter)
-
+        self.window.downloader.add([self.action_row.chapter, ], emit_signal=True)
         self.window.downloader.start()
 
     def download_selected_chapters(self, action, param):
-        for row in self.listbox.get_selected_rows():
-            # Add chapter in download queue
-            self.window.downloader.add(row.chapter)
-
+        # Add selected chapters in download queue
+        self.window.downloader.add([row.chapter for row in self.listbox.get_selected_rows()], emit_signal=True)
         self.window.downloader.start()
 
         self.card.leave_selection_mode()

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import datetime
 from gettext import gettext as _
 from gettext import ngettext as n_
 import threading
@@ -17,6 +18,7 @@ from gi.repository import Notify
 from komikku.models import Chapter
 from komikku.models import create_db_connection
 from komikku.models import Download
+from komikku.models import insert_rows
 from komikku.models import Settings
 from komikku.utils import log_error_traceback
 
@@ -43,15 +45,39 @@ class Downloader(GObject.GObject):
         if Settings.get_default().downloader_state:
             self.start()
 
-    def add(self, chapter):
-        if isinstance(chapter, Chapter):
-            chapter_id = chapter.id
-        else:
-            chapter_id = chapter
+    def add(self, chapters, emit_signal=False):
+        chapters_ids = []
+        rows_data = []
 
-        download = Download.new(chapter_id)
-        if download:
-            self.emit('download-changed', download, None)
+        for chapter in chapters:
+            if isinstance(chapter, Chapter):
+                if chapter.downloaded:
+                    continue
+                chapter_id = chapter.id
+            else:
+                chapter_id = chapter
+
+            rows_data.append(dict(
+                chapter_id=chapter_id,
+                status='pending',
+                percent=0,
+                date=datetime.datetime.now(),
+            ))
+            chapters_ids.append(chapter_id)
+
+        if not chapters_ids:
+            return
+
+        db_conn = create_db_connection()
+        with db_conn:
+            insert_rows(db_conn, 'downloads', rows_data)
+        db_conn.close()
+
+        if emit_signal:
+            for chapter_id in chapters_ids:
+                download = Download.get_by_chapter_id(chapter_id)
+                if download:
+                    self.emit('download-changed', download, None)
 
     def remove(self, chapters):
         if not isinstance(chapters, list):
