@@ -336,7 +336,7 @@ class Page(Gtk.Overlay):
             self.image.set_from_surface(self.surface)
 
         if self.reader.reading_direction == 'webtoon':
-            self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
+            self.set_size_request(pixbuf.get_width() / self.window.hidpi_scale, pixbuf.get_height() / self.window.hidpi_scale)
 
     def set_size(self):
         self.set_size_request(self.reader.size.width, self.reader.size.height)
