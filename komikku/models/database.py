@@ -795,33 +795,6 @@ class Download:
 
         return None
 
-    @classmethod
-    def new(cls, chapter_id):
-        db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM downloads WHERE chapter_id = ?', (chapter_id,)).fetchone()
-        db_conn.close()
-        if row:
-            return None
-
-        d = cls()
-        data = dict(
-            chapter_id=chapter_id,
-            status='pending',
-            percent=0,
-            date=datetime.datetime.now(),
-        )
-
-        for key in data:
-            setattr(d, key, data[key])
-
-        db_conn = create_db_connection()
-        with db_conn:
-            d.id = insert_row(db_conn, 'downloads', data)
-
-        db_conn.close()
-
-        return d
-
     @property
     def chapter(self):
         if self._chapter is None:
