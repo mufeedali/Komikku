@@ -60,7 +60,7 @@
                 <property name="can_focus">True</property>
                 <property name="title" translatable="yes">Desktop Notifications</property>
                 <property name="activatable_widget">desktop_notifications_switch</property>
-                <property name="subtitle" translatable="yes">Use desktop notifications for downloads</property>
+                <property name="subtitle" translatable="yes">Use desktop notifications for downloads and library updates</property>
                 <child>
                   <object class="GtkSwitch" id="desktop_notifications_switch">
                     <property name="visible">True</property>
