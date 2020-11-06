@@ -7,7 +7,7 @@ find ../data/ui -iname "*.ui" -or -iname "*.xml" -or -iname "*.ui.in" | xargs xg
 find ../data/ -iname "*.desktop.in" | xargs xgettext --package-name=Komikku --package-version=$version --from-code=UTF-8 --output=komikku-desktop.pot -L Desktop
 find ../data/ -iname "*.appdata.xml.in" | xargs xgettext --no-wrap --package-name=Komikku --package-version=$version --from-code=UTF-8 --output=komikku-appdata.pot
 
-msgcat --use-first komikku-python.pot komikku-glade.pot komikku-desktop.pot komikku-appdata.pot > komikku.pot
+msgcat --sort-by-file --use-first --output-file=komikku.pot komikku-python.pot komikku-glade.pot komikku-desktop.pot komikku-appdata.pot
 
 sed 's/#: //g;s/:[0-9]*//g;s/\.\.\///g' <(fgrep "#: " komikku.pot) | sed s/\ /\\n/ | sort | uniq > POTFILES.in
 
@@ -16,7 +16,7 @@ for l in $(ls *.po); do basename $l .po >> LINGUAS; done
 
 for lang in $(sed "s/^#.*$//g" LINGUAS); do
     mv "${lang}.po" "${lang}.po.old"
-    msginit --locale=$lang --input komikku.pot
+    msginit --no-translator --locale=$lang --input komikku.pot
     mv "${lang}.po" "${lang}.po.new"
     msgmerge -N "${lang}.po.old" "${lang}.po.new" > ${lang}.po
     rm "${lang}.po.old" "${lang}.po.new"
