@@ -13,11 +13,11 @@
             </item>
             <item>
                 <attribute name="label" translatable="yes">Mark as Read</attribute>
-                <attribute name="action">app.card.mark-selected-chapters-as-read</attribute>
+                <attribute name="action">app.card.mark-selected-chapters-read</attribute>
             </item>
             <item>
                 <attribute name="label" translatable="yes">Mark as Unread</attribute>
-                <attribute name="action">app.card.mark-selected-chapters-as-unread</attribute>
+                <attribute name="action">app.card.mark-selected-chapters-unread</attribute>
             </item>
         </section>
 

@@ -242,11 +242,11 @@ class ChaptersList:
         download_selected_chapters_action.connect('activate', self.download_selected_chapters)
         self.window.application.add_action(download_selected_chapters_action)
 
-        mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-read', None)
+        mark_selected_chapters_as_read_action = Gio.SimpleAction.new('card.mark-selected-chapters-read', None)
         mark_selected_chapters_as_read_action.connect('activate', self.toggle_selected_chapters_read_status, 1)
         self.window.application.add_action(mark_selected_chapters_as_read_action)
 
-        mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-as-unread', None)
+        mark_selected_chapters_as_unread_action = Gio.SimpleAction.new('card.mark-selected-chapters-unread', None)
         mark_selected_chapters_as_unread_action.connect('activate', self.toggle_selected_chapters_read_status, 0)
         self.window.application.add_action(mark_selected_chapters_as_unread_action)
 
@@ -263,11 +263,11 @@ class ChaptersList:
         download_chapter_action.connect('activate', self.download_chapter)
         self.window.application.add_action(download_chapter_action)
 
-        mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-as-read', None)
+        mark_chapter_as_read_action = Gio.SimpleAction.new('card.mark-chapter-read', None)
         mark_chapter_as_read_action.connect('activate', self.toggle_chapter_read_status, 1)
         self.window.application.add_action(mark_chapter_as_read_action)
 
-        mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-as-unread', None)
+        mark_chapter_as_unread_action = Gio.SimpleAction.new('card.mark-chapter-unread', None)
         mark_chapter_as_unread_action.connect('activate', self.toggle_chapter_read_status, 0)
         self.window.application.add_action(mark_chapter_as_unread_action)
 
@@ -587,9 +587,9 @@ class ChaptersList:
         if not chapter.downloaded:
             menu.append(_('Download'), 'app.card.download-chapter')
         if not chapter.read:
-            menu.append(_('Mark as read'), 'app.card.mark-chapter-as-read')
+            menu.append(_('Mark as read'), 'app.card.mark-chapter-read')
         if chapter.read or chapter.last_page_read_index is not None:
-            menu.append(_('Mark as unread'), 'app.card.mark-chapter-as-unread')
+            menu.append(_('Mark as unread'), 'app.card.mark-chapter-unread')
 
         popover.bind_model(menu, None)
         popover.popup()
