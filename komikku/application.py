@@ -421,6 +421,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
+                self.card.stop_populate()
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
             self.set_unfullscreen()

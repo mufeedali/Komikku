@@ -187,6 +187,11 @@ class Card:
 
         self.window.show_page('card', transition=transition)
 
+    def stop_populate(self):
+        # Allows to stop chapters list population when we leave card page
+        # in case it's not completed (occurs with very long series)
+        self.chapters_list.populate_generator_stop_flag = True
+
     def refresh(self, chapters):
         self.info_grid.refresh()
         self.chapters_list.refresh(chapters)
@@ -195,6 +200,7 @@ class Card:
 class ChaptersList:
     selection_mode_range = False
     selection_mode_last_row_index = None
+    populate_generator_stop_flag = False
 
     def __init__(self, card):
         self.card = card
@@ -372,6 +378,10 @@ class ChaptersList:
 
         def add_chapters_rows():
             for chapter in self.card.manga.chapters:
+                if self.populate_generator_stop_flag:
+                    self.window.activity_indicator.stop()
+                    return
+
                 row = Gtk.ListBoxRow()
                 row.get_style_context().add_class('card-chapter-listboxrow')
                 row.chapter = chapter
@@ -391,6 +401,7 @@ class ChaptersList:
             gen = func()
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
 
+        self.populate_generator_stop_flag = False
         run_generator(add_chapters_rows)
 
     def populate_chapter_row(self, row):
