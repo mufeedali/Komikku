@@ -24,6 +24,8 @@ komikku/preferences_window.py
 komikku/reader/__init__.py
 komikku/reader/pager/__init__.py
 komikku/reader/pager/page.py
+komikku/reader/pager/webtoon.py
 komikku/servers/dynasty.py
+komikku/servers/readmanhwa.py
 komikku/updater.py
 komikku/utils.py
