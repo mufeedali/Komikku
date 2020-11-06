@@ -41,8 +41,8 @@ class Readmanhwa(Server):
         {
             'key': 'nsfw',
             'type': 'checkbox',
-            'name': _('NSFW Content'),
-            'description': _('Whether to show manga containing NSFW content'),
+            'name': _('NSFW'),
+            'description': _('NSFW content'),
             'default': False,
         },
     ]

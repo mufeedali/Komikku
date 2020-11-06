@@ -8,7 +8,6 @@ import threading
 
 from gi.repository import GLib
 from gi.repository import GObject
-from gi.repository import Notify
 
 from komikku.utils import log_error_traceback
 from komikku.models import create_db_connection
@@ -46,16 +45,8 @@ class Updater(GObject.GObject):
                 self.queue.append(manga.id)
 
     def start(self):
-        def show_notification(summary, body=''):
-            if notification is None:
-                self.window.show_notification('{0}\n{1}'.format(summary, body))
-            else:
-                notification.update(summary, body)
-                notification.show()
-
         def run():
             total_recent_chapters = 0
-            total_errors = 0
 
             while self.queue:
                 if self.stop_flag is True:
@@ -71,11 +62,9 @@ class Updater(GObject.GObject):
                         total_recent_chapters += len(recent_chapters_ids)
                         GLib.idle_add(complete, manga, recent_chapters_ids, nb_deleted_chapters)
                     else:
-                        total_errors += 1
                         GLib.idle_add(error, manga)
                 except Exception as e:
                     user_error_message = log_error_traceback(e)
-                    total_errors += 1
                     GLib.idle_add(error, manga, user_error_message)
 
             self.running = False
@@ -83,39 +72,29 @@ class Updater(GObject.GObject):
             # End notification
             if self.update_library_flag:
                 self.update_library_flag = False
-                if total_errors > 0:
-                    summary = _('Library update completed with errors')
-                else:
-                    summary = _('Library update completed')
+                message = _('Library update completed')
             else:
-                if total_errors > 0:
-                    summary = _('Update completed with errors')
-                else:
-                    summary = _('Update completed')
+                message = _('Update completed')
 
             if total_recent_chapters > 0:
-                message =  n_('{0} new chapter found', '{0} new chapters found', total_recent_chapters).format(
+                message = '{0}\n{1}'.format(
+                    message,
+                    n_('{0} new chapter found', '{0} new chapters found', total_recent_chapters).format(
                         total_recent_chapters
+                    )
                 )
             else:
-                message = _('No new chapter found')
+                message = '{0}\n{1}'.format(message, _('No new chapter found'))
 
-            if total_errors > 0:
-                message = n_('{0}\n{1} error encountered', '{0}\n{1} errors encountered', total_errors).format(
-                        message,
-                        total_errors
-                )
-
-            show_notification(summary, message)
+            self.window.show_notification(message)
 
         def complete(manga, recent_chapters_ids, nb_deleted_chapters):
             nb_recent_chapters = len(recent_chapters_ids)
 
             if nb_recent_chapters > 0:
-                show_notification(
-                    manga.name,
-                    n_('{0} new chapter has been found', '{0} new chapters have been found', nb_recent_chapters).format(
-                        nb_recent_chapters
+                self.window.show_notification(
+                    n_('{0}\n{1} new chapter has been found', '{0}\n{1} new chapters have been found', nb_recent_chapters).format(
+                        manga.name, nb_recent_chapters
                     )
                 )
 
@@ -129,23 +108,17 @@ class Updater(GObject.GObject):
             return False
 
         def error(manga, message=None):
-            show_notification(manga.name, message or _('Oops, update has failed. Please try again.'))
+            self.window.show_notification(message or _('{0}\nOops, update has failed. Please try again.').format(manga.name))
 
             return False
 
         if self.running or len(self.queue) == 0:
             return
 
-        if Settings.get_default().desktop_notifications:
-            notification = Notify.Notification.new('')
-            notification.set_timeout(Notify.EXPIRES_DEFAULT)
-        else:
-            notification = None
-
         if self.update_library_flag:
-            show_notification(_('Library update started'))
+            self.window.show_notification(_('Library update started'))
         else:
-            show_notification(_('Update started'))
+            self.window.show_notification(_('Update started'))
 
         self.running = True
         self.stop_flag = False
