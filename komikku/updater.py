@@ -94,16 +94,14 @@ class Updater(GObject.GObject):
                     summary = _('Update completed')
 
             if total_recent_chapters > 0:
-                message =  n_('{0} new chapter found', '{0} new chapters found', total_recent_chapters).format(
-                        total_recent_chapters
-                )
+                message = n_('{0} new chapter found', '{0} new chapters found', total_recent_chapters).format(total_recent_chapters)
             else:
                 message = _('No new chapter found')
 
             if total_errors > 0:
                 message = n_('{0}\n{1} error encountered', '{0}\n{1} errors encountered', total_errors).format(
-                        message,
-                        total_errors
+                    message,
+                    total_errors
                 )
 
             show_notification(summary, message)
