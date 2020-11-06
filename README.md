@@ -92,7 +92,6 @@ cd _build
 meson ..
 meson configure -Dprefix=$(pwd)/testdir
 ninja install # This will actually install in _build/testdir
-export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0/
 ninja run
 ```
 
@@ -104,7 +103,7 @@ ninja install # This will actually install in _build/testdir
 ninja run
 ```
 
-### Option 3: Build and install systemwide directly with Meson
+### Option 3: Build and install system-wide directly with Meson
 
 **WARNING**: This approach is discouraged, since it will manually copy all the files in your system. **Uninstalling could be difficult and/or dangerous**.
 
