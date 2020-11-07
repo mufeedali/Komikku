@@ -70,8 +70,14 @@ class Mangahub(Server):
         )
         try:
             manga = resp.json()["data"]["manga"]
-            data["authors"].extend(a.strip() for a in manga["author"].split(","))
-            data["authors"].extend(a.strip() for a in manga["artist"].split(","))
+            authors = []
+            for a in (s.strip() for s in manga["author"].split(",")):
+                if a not in authors:
+                    authors.append(a)
+            for a in (s.strip() for s in manga["artist"].split(",")):
+                if a not in authors:
+                    authors.append(a)
+            data["authors"] = authors
             data["genres"].extend(g.strip() for g in manga["genres"].split(","))
             if manga["status"] == "ongoing":
                 data["status"] = "ongoing"
