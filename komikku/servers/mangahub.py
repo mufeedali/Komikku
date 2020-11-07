@@ -6,6 +6,7 @@
 
 import json
 from collections import OrderedDict
+from gettext import gettext as _
 import requests
 
 from komikku.servers import get_buffer_mime_type
@@ -80,9 +81,12 @@ class Mangahub(Server):
             data["cover"] = self.thumb_url.format(manga["image"])
             raw_chapters = sorted(manga["chapters"], key=lambda c: c["number"])
             def conv_chap(c):
+                title = c["title"]
+                if not title:
+                    title = f"{_('Chapter')} {c['number']}"
                 return {
                     "slug": _mh_chap_num_to_komikku_slug(c["number"]),
-                    "title": c["title"],
+                    "title": title,
                     "date": convert_date_string(c["date"]),
                 }
 
