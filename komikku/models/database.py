@@ -289,7 +289,7 @@ class Manga:
             for genre in server.long_strip_genres:
                 if genre in data['genres']:
                     data.update(dict(
-                        reading_direction='vertical',
+                        reading_direction='webtoon',
                         scaling='width',
                     ))
                     break
