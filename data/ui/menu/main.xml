@@ -15,6 +15,10 @@
                 <attribute name="label" translatable="yes">Categories</attribute>
                 <attribute name="action">app.library.categories-editor</attribute>
             </item>
+            <item>
+                <attribute name="label" translatable="yes">Import Backup</attribute>
+                <attribute name="action">app.library.importer</attribute>
+            </item>
         </section>
         <section>
             <item>

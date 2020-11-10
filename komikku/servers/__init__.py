@@ -223,7 +223,8 @@ class Server:
         else:
             self.logged_in = True
 
-    def login(self, username, password):
+    @staticmethod
+    def login(username, password):
         return False
 
     @cached_property

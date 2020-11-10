@@ -180,6 +180,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
     library_flowbox = Gtk.Template.Child('library_flowbox')
 
     card_resume_read_button = Gtk.Template.Child('card_resume_read_button')
+    card_search_bar = Gtk.Template.Child('card_search_bar')
+    card_search_entry = Gtk.Template.Child('card_search_entry')
     card_viewswitchertitle = Gtk.Template.Child('card_viewswitchertitle')
     card_viewswitcherbar = Gtk.Template.Child('card_viewswitcherbar')
     card_stack = Gtk.Template.Child('card_stack')
@@ -492,15 +494,16 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 self.explorer.show()
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            if source == 'esc-key':
+            elif source == 'esc-key':
                 self.library.searchbar.set_search_mode(False)
-
         elif self.page == 'card':
-            if self.card.selection_mode:
+            if self.card.chapters_list.search_mode:
+                self.card.chapters_list.search_mode = False
+            elif self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
                 self.card.stop_populate()
-                self.library.show(invalidate_sort=True)
+                self.library.show(invalidate_sort=True, invalidate_filter=True)
 
         elif self.page == 'reader':
             self.reader.remove_pager()

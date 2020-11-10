@@ -199,7 +199,8 @@ class Downloader(GObject.GObject):
 
         def notify_download_error(download, message=None):
             if message:
-                self.window.show_notification(message)
+                self.window.show_notification(f'[{download.chapter.manga.name}] Chapter {download.chapter.title}'
+                                              f'\nDownload failed. Please try again.\n{message}')
 
             self.emit('download-changed', download, None)
 

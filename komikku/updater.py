@@ -85,7 +85,7 @@ class Updater(GObject.GObject):
                         total_errors += 1
                         GLib.idle_add(error, manga)
                 except Exception as e:
-                    user_error_message = log_error_traceback(e)
+                    user_error_message = _('{0}\nOops, update has failed. Please try again.\n{1}').format(manga.name, log_error_traceback(e))
                     total_errors += 1
                     GLib.idle_add(error, manga, user_error_message)
 

@@ -44,6 +44,7 @@ class Settings(Gio.Settings):
             return 'white'
         if value == 1:
             return 'black'
+        return 'white'
 
     @property
     def background_color_value(self):
@@ -179,6 +180,7 @@ class Settings(Gio.Settings):
             return 'vertical'
         if value == 3:
             return 'webtoon'
+        return 'right-to-left'
 
     @property
     def reading_mode_value(self):
@@ -233,6 +235,7 @@ class Settings(Gio.Settings):
             return 'height'
         if value == 3:
             return 'original'
+        return 'screen'
 
     @property
     def scaling_value(self):
