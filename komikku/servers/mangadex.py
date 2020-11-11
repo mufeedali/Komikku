@@ -7,11 +7,13 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 import html
+import logging
 
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
+logger = logging.getLogger()
 
 GENRES = {
     '1': '4-koma',
@@ -184,6 +186,10 @@ class Mangadex(Server):
             data['status'] = 'hiatus'
 
         data['synopsis'] = html.unescape(resp_data['manga']['description'])
+
+        if not 'chapter' in resp_data:
+            logger.warning('Chapter information missing')
+            return data
 
         for slug, chapter in resp_data['chapter'].items():
             if self.lang_code != chapter['lang_code']:
