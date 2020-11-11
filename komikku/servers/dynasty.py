@@ -41,6 +41,7 @@ class Dynasty(Server):
                 {'key': 'Doujin', 'name': _('Doujins'), 'default': True},
                 {'key': 'Issue', 'name': _('Issues'), 'default': True},
                 {'key': 'Series', 'name': _('Series'), 'default': True},
+                {'key': 'Chapter', 'name': _('Chapters'), 'default': False},
             ],
         },
         {
@@ -95,10 +96,61 @@ class Dynasty(Server):
             cover=None,
         ))
 
+        return {
+            'anthologies': self._fill_data_multi,
+            'chapters': self._fill_data_single,
+            'doujins': self._fill_data_multi,
+            'issues': self._fill_data_multi,
+            'series': self._fill_data_multi,
+        }[initial_data['slug'].split('/')[0]](data, soup)
+
+    def _fill_data_single(self, data, soup):
+        # Fill metadata
+        name_element = soup.find('h3', id='chapter-title')
+        data['name'] = name_element.b.text.strip()
+        data['authors'] = [elt.text.strip() for elt in name_element.find_all('a')]
+
+        details = soup.find('div', id='chapter-details')
+        scanlators = details.find('span', class_='scanlators')
+        if scanlators:
+            data['scanlators'] = [elt.text.strip() for elt in scanlators.find_all('a')]
+
+        tags = details.find('span', class_='tags')
+        if tags:
+            data['genres'] = [elt.text.strip() for elt in tags.find_all('a')]
+
+        date_text = details.find('span', class_='released').text.strip()
+
+        data['chapters'].append(dict(
+            slug=data['slug'].split('/')[-1],
+            title=data['name'],
+            date=convert_date_string(date_text),
+        ))
+
+        # Use first page as cover
+        for script_element in soup.find_all('script'):
+            script = script_element.string
+            if script is None:
+                continue
+
+            for line in script.split('\n'):
+                line = line.strip()
+                if line.startswith('var pages'):
+                    pages = line.replace('var pages = ', '')[:-1]
+                    break
+            if pages is not None:
+                pages = json.loads(pages)
+                break
+
+        if pages is not None:
+            data['cover'] = self.base_url + pages[0]['image']
+
+        return data
+
+    def _fill_data_multi(self, data, soup):
         name_element = soup.find('h2', class_='tag-title')
         data['name'] = name_element.b.text.strip()
-        if name_element.find('a'):
-            data['authors'] = [name_element.a.text.strip()]
+        data['authors'] = [elt.text.strip() for elt in name_element.find_all('a')]
 
         if name_element.find('small'):
             # Status may contain additional information, such as 'Licensed'
