@@ -171,12 +171,14 @@ class Page(Gtk.Overlay):
             return False
 
         def load_chapter(prior_chapter=None):
+            if self.chapter is None:
+                return 'error', 'offlimit', None
+
             if self.chapter.pages and self.index >= 0 and self.index < len(self.chapter.pages):
                 return 'success', None, None
 
             if self.index < 0:
                 # Page belongs to another (previous) chapter
-                prior_chapter = self.chapter
                 self.chapter = self.reader.manga.get_next_chapter(self.chapter, -1)
                 if self.chapter is None:
                     return 'error', 'offlimit', None
