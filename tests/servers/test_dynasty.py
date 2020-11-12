@@ -82,6 +82,12 @@ def test_dynasty_anthologies(dynasty_server, test_dynasty_common):
 
 
 @test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_dynasty_chapters(dynasty_server, test_dynasty_common):
+    for step in test_dynasty_common(dynasty_server, 'living with a siren', classes=['Chapter']):
+        yield step
+
+
+@test_steps('search', 'get_manga_url', 'get_manga_data', 'get_chapter_data', 'get_page_image')
 def test_dynasty_doujins(dynasty_server, test_dynasty_common):
     for step in test_dynasty_common(dynasty_server, 'nanoha', classes=['Doujin']):
         yield step
