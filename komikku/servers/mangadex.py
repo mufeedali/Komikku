@@ -187,7 +187,7 @@ class Mangadex(Server):
 
         data['synopsis'] = html.unescape(resp_data['manga']['description'])
 
-        if not 'chapter' in resp_data:
+        if 'chapter' not in resp_data:
             logger.warning('Chapter information missing')
             return data
 
