@@ -4,14 +4,18 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import cloudscraper
 from bs4 import BeautifulSoup
+import cloudscraper
+import json
+import time
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 
-SERVER_NAME = 'Mangakawaii'
+SERVER_NAME = 'MangaKawaii'
 
 
 class Mangakawaii(Server):
@@ -21,11 +25,11 @@ class Mangakawaii(Server):
     long_strip_genres = ['Webtoon', ]
 
     base_url = 'https://www.mangakawaii.com'
-    search_url = base_url + '/recherche'
-    most_populars_url = base_url + '/mieux-notes'
+    search_url = base_url + '/recherche-manga'
+    most_populars_url = base_url + '/filterMangaList?page=1&cat=&alpha=&sortBy=views&asc=false&author='
+    most_populars_referer_url = base_url + '/liste-manga'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
-    image_url = 'https://cdn.mangakawaii.com/uploads/manga/{0}/chapters/{1}/{2}'
     cover_url = 'https://cdn.mangakawaii.com/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
@@ -41,12 +45,11 @@ class Mangakawaii(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -62,51 +65,57 @@ class Mangakawaii(Server):
             server_id=self.id,
         ))
 
-        title_element = soup.find('h1', class_='manga-bg__title')
-        if title_element is None:
-            title_element = soup.find('h1', class_='manga__title')
-        data['name'] = title_element.text.strip()
+        data['name'] = soup.find('h1').text.strip()
         if data.get('cover') is None:
             data['cover'] = self.cover_url.format(data['slug'])
 
         # Details
-        elements = soup.find('div', class_='manga-info').find_all(class_='info-list__row')
+        elements = soup.find('div', class_='col-md-8 mt-4 mt-md-0').find_all('dl')
         for element in elements:
-            label = element.strong.text.strip()
+            label = element.dt.text.strip()
 
             if label.startswith('Auteur') or label.startswith('Artiste'):
-                value = element.a.text.strip()
+                value = element.dd.span.text.strip()
                 for t in value.split(','):
                     t = t.strip()
                     if t not in data['authors']:
                         data['authors'].append(t)
+
             elif label.startswith('Scantrad'):
-                a_element = element.find_all('a')[0]
-                data['scanlators'] = [a_element.text.replace('[', '').replace(']', '').strip(), ]
+                for a_element in element.dd.find_all('a', itemprop='name'):
+                    data['scanlators'].append(a_element.text.replace('[', '').replace(']', '').strip())
+
             elif label.startswith('Genres'):
-                a_elements = element.find_all('a')
+                a_elements = element.dd.find_all('a')
                 data['genres'] = [a_element.text.strip() for a_element in a_elements]
+
             elif label.startswith('Statut'):
-                status = element.span.text.strip().lower()
+                status = element.dd.span.text.strip().lower()
                 if status == 'en cours':
                     data['status'] = 'ongoing'
                 elif status == 'terminé':
                     data['status'] = 'complete'
+                elif status == 'abdandonné':
+                    data['status'] = 'suspended'
+                elif status == 'en pause':
+                    data['status'] = 'hiatus'
 
-        # Synopsis
-        data['synopsis'] = soup.find('div', class_='info-desc__content').text.strip()
+            elif label.startswith('Description'):
+                data['synopsis'] = element.dd.text.strip()
 
         # Chapters
-        elements = soup.find('div', class_='chapters-list').find_all('div', class_='chapter-item')
+        elements = soup.find('table', class_='table--manga').find_all('tr')
         for element in reversed(elements):
-            a_element = element.find('div', class_='chapter-item__name').a
-            slug = a_element.get('href').split('/')[-1]
-            title = a_element.text.strip()
-            date = element.find('div', class_='chapter-item__date').text.strip()
+            if not element.get('class'):
+                # Skip volume row
+                continue
+
+            a_element = element.find('td', class_='table__chapter').a
+            date = element.find('td', class_='table__date').text.strip()
 
             data['chapters'].append(dict(
-                slug=slug,
-                title=title,
+                slug=a_element.get('href').split('/')[-1],
+                title=a_element.text.strip(),
                 date=convert_date_string(date, format='%d.%m.%Y'),
             ))
 
@@ -119,12 +128,11 @@ class Mangakawaii(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -134,19 +142,23 @@ class Mangakawaii(Server):
         )
         for script_element in reversed(soup.find_all('script')):
             script = script_element.string
-            if not script or not script.strip().startswith('var $Imagesrc'):
+            if not script or not script.strip().startswith('var title'):
                 continue
 
             for line in script.split('\n'):
-                if '.rdata-' not in line:
+                line = line.strip()
+                if not line.startswith('var pages'):
                     continue
 
-                data['pages'].append(dict(
-                    slug=line.strip().split('"')[-2].strip().split('/')[-1],
-                    image=None,
-                ))
+                pages = json.loads(line[12:-1])
+                for index, page in enumerate(pages):
+                    data['pages'].append(dict(
+                        slug=None,
+                        image=page['url'],
+                        index=index,
+                    ))
 
-            break
+                break
 
         return data
 
@@ -154,8 +166,18 @@ class Mangakawaii(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(self.image_url.format(manga_slug, chapter_slug, page['slug']))
-        if r is None or r.status_code != 200:
+        # Images URLs have an expire time with signature.
+        # We must re-fetch image URL from chapter data first if URL is expired
+        expires = parse_qs(urlparse(page['image']).query).get('expires')
+        if expires and int(expires[0]) < time.time():
+            data = self.get_manga_chapter_data(manga_slug, manga_name, chapter_slug, None)
+            if data is None or not data['pages']:
+                return None
+
+            page = data['pages'][page['index']]
+
+        r = self.session_get(page['image'])
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -165,7 +187,7 @@ class Mangakawaii(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['slug'],
+            name=page['image'].split('?')[0].split('/')[-1],
         )
 
     def get_manga_url(self, slug, url):
@@ -176,26 +198,29 @@ class Mangakawaii(Server):
 
     def get_most_populars(self):
         """
-        Returns best noted manga list
+        Returns list of most viewed manga
         """
-        r = self.session_get(self.most_populars_url)
-        if r is None:
+        r = self.session_get(
+            self.most_populars_url,
+            headers={
+                'x-requested-with': 'XMLHttpRequest',
+                'referer': self.most_populars_referer_url,
+            }
+        )
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/plain':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
 
         results = []
-        for tr_element in soup.find('table', class_='table').tbody.find_all('tr', recursive=False):
-            a_element = tr_element.find_all('td')[2].a
-            a_element.span.decompose()
+        for element in soup.find_all('div', class_='media-thumbnail'):
             results.append(dict(
-                name=a_element.text.strip(),
-                slug=a_element.get('href').split('/')[-1],
+                name=element.find('div', class_='media-thumbnail__overlay').find('h3').text.strip(),
+                slug=element.find('a').get('href').split('/')[-1],
             ))
 
         return results
@@ -203,9 +228,14 @@ class Mangakawaii(Server):
     def search(self, term):
         self.session_get(self.base_url)
 
-        r = self.session_get(self.search_url, params=dict(query=term))
-        if r is None:
-            return None
+        r = self.session_get(
+            self.search_url,
+            params=dict(query=term),
+            headers={
+                'x-requested-with': 'XMLHttpRequest',
+                'referer': self.base_url,
+            }
+        )
 
         if r.status_code == 200:
             try:
