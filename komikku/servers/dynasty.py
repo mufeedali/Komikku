@@ -15,7 +15,7 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-logger = logging.getLogger()
+logger = logging.getLogger('komikku.servers.dynasty')
 
 
 class Dynasty(Server):
@@ -164,15 +164,15 @@ class Dynasty(Server):
             cover_rel = soup.find('div', class_='cover').find('img')['src']
             data['cover'] = self.base_url + cover_rel
         except AttributeError:
-            logger.info("[Dynasty] No cover found.")
+            logger.info('No cover found.')
         except TypeError:
-            logger.info("[Dynasty] There appears to be a cover, but we can't find any images.")
+            logger.info("There appears to be a cover, but we can't find any images.")
 
         try:
             elements = soup.find('div', class_='description').find_all('p')
-            data['synopsis'] = "\n\n".join([p.text.strip() for p in elements])
+            data['synopsis'] = '\n\n'.join([p.text.strip() for p in elements])
         except AttributeError:
-            logger.info("[Dynasty] No synopsis found.")
+            logger.info('No synopsis found.')
 
         elements = soup.find('div', class_='tag-tags').find_all('a', class_='label')
         for element in elements:

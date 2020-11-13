@@ -13,7 +13,7 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-logger = logging.getLogger()
+logger = logging.getLogger('komikku.servers.mangadex')
 
 GENRES = {
     '1': '4-koma',

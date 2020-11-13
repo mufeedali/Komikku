@@ -93,9 +93,9 @@ class Mangahub(Server):
 
             for author in (s.strip() for s in manga['author'].split(',')):
                 data['authors'].append(author)
-            for author in (s.strip() for s in manga['artist'].split(',')):
-                if author not in data['authors']:
-                    data['authors'].append(author)
+            for artist in (s.strip() for s in manga['artist'].split(',')):
+                if artist not in data['authors']:
+                    data['authors'].append(artist)
 
             data['genres'].extend(genre.strip() for genre in manga['genres'].split(','))
             if manga['status'] == 'ongoing':

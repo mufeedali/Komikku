@@ -501,7 +501,7 @@ class Manga:
                         gone_chapter.delete(db_conn)
                         nb_deleted_chapters += 1
                     else:
-                        # Keep track of rank
+                        # Keep track of rank freed
                         gone_chapters_ranks.append(gone_chapter.rank)
 
             # Then, add or update chapters
@@ -513,7 +513,7 @@ class Manga:
 
                 rank = get_free_rank(rank)
                 if row:
-                    # Update chapter
+                    # Update chapter rank
                     chapter_data['rank'] = rank
                     update_row(db_conn, 'chapters', row['id'], chapter_data)
                     rank += 1
