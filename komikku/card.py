@@ -226,11 +226,19 @@ class ChaptersList:
             - zero if they are equal
             - a positive integer if the second one should come before the firstone
             """
-            if child1.chapter.rank > child2.chapter.rank:
-                return -1 if self.card.sort_order == 'desc' else 1
+            if self.card.sort_order in ('asc', 'desc'):
+                if child1.chapter.rank > child2.chapter.rank:
+                    return -1 if self.card.sort_order == 'desc' else 1
 
-            if child1.chapter.rank < child2.chapter.rank:
-                return 1 if self.card.sort_order == 'desc' else -1
+                if child1.chapter.rank < child2.chapter.rank:
+                    return 1 if self.card.sort_order == 'desc' else -1
+
+            elif self.card.sort_order in ('date-asc', 'date-desc'):
+                if child1.chapter.date > child2.chapter.date and child1.chapter.id > child2.chapter.id:
+                    return -1 if self.card.sort_order == 'date-desc' else 1
+
+                if child1.chapter.date < child2.chapter.date and child1.chapter.id < child2.chapter.id:
+                    return 1 if self.card.sort_order == 'date-desc' else -1
 
             return 0
 

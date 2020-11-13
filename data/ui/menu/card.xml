@@ -20,14 +20,25 @@
                 <section>
                     <attribute name="id">card-sort-order</attribute>
                     <item>
-                        <attribute name="label" translatable="yes">By Chapter Number (9-0)</attribute>
+                        <attribute name="label" translatable="yes">⬆ By Source</attribute>
                         <attribute name="action">app.card.sort-order</attribute>
                         <attribute name="target">desc</attribute>
                     </item>
                     <item>
-                        <attribute name="label" translatable="yes">By Chapter Number (0-9)</attribute>
+                        <attribute name="label" translatable="yes">⬇ By Source</attribute>
                         <attribute name="action">app.card.sort-order</attribute>
                         <attribute name="target">asc</attribute>
+                    </item>
+
+                    <item>
+                        <attribute name="label" translatable="yes">⬆ By Date</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">date-desc</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">⬇ By Date</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">date-asc</attribute>
                     </item>
                 </section>
             </submenu>
