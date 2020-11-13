@@ -6,6 +6,7 @@
 
 from collections import OrderedDict
 from bs4 import BeautifulSoup
+import logging
 import requests
 import unidecode
 
@@ -21,6 +22,8 @@ headers = OrderedDict(
         ('User-Agent', USER_AGENT),
     ]
 )
+
+logger = logging.getLogger('komikku.servers.centraldemangas')
 
 
 class Centraldemangas(Server):
@@ -47,12 +50,11 @@ class Centraldemangas(Server):
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -72,8 +74,13 @@ class Centraldemangas(Server):
         data['name'] = soup.find('h1').text.strip()
 
         # Details
-        elements = soup.find('div', class_='relaxed').find_all('div', class_='item')
-        for element in elements:
+        container = soup.find('div', class_='relaxed')
+        if not container:
+            if soup.find('head').find('title').text.startswith('Página não encontrada'):
+                logger.warning('Manga info not found: slug may have changed')
+            return None
+
+        for element in container.find_all('div', class_='item'):
             label_element = element.find('div', class_='header')
             if not label_element:
                 continue
@@ -106,12 +113,17 @@ class Centraldemangas(Server):
                     data['status'] = 'hiatus'
             elif label == 'Capítulos':
                 for tr_element in reversed(value_element.find_all('div', class_='content')[0].table.tbody.find_all('tr')[1:]):
+                    class_ = tr_element.get('class')
+                    if class_ and class_[0] == 'active':
+                        # Skip volumes rows
+                        continue
                     tds_elements = tr_element.find_all('td')
+                    date = tds_elements[1].small.text.strip()
 
                     data['chapters'].append(dict(
                         slug=tds_elements[0].a.get('href').split('/')[-1],
                         title=tds_elements[0].a.text.strip(),
-                        date=convert_date_string(tds_elements[1].text.strip(), format='%d/%m/%Y'),
+                        date=convert_date_string(date, format='%d/%m/%Y') if date != '00/00/0000' else None,
                     ))
 
         return data
@@ -123,12 +135,11 @@ class Centraldemangas(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -171,11 +182,10 @@ class Centraldemangas(Server):
         url = page['image']
 
         r = self.session_get(url, headers={'Referer': self.chapter_url.format(manga_slug, chapter_slug)})
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
         if not mime_type.startswith('image'):
             return None
 
@@ -196,12 +206,11 @@ class Centraldemangas(Server):
         Returns TOP 10 manga
         """
         r = self.session_get(self.base_url)
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -217,8 +226,6 @@ class Centraldemangas(Server):
 
     def search(self, term):
         r = self.session_get(self.search_url, headers={'X-Requested-With': 'XMLHttpRequest'})
-        if r is None:
-            return None
 
         if r.status_code == 200:
             data = r.json(strict=False)
