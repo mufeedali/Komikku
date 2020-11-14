@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 00:31+0100\n"
+"POT-Creation-Date: 2020-11-14 14:16+0100\n"
 "PO-Revision-Date: 2020-09-29 17:20+0200\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
@@ -749,10 +749,6 @@ msgstr "Zuletzt aktualisiert"
 msgid "Info"
 msgstr "Info"
 
-#: ../data/ui/application_window.ui:669
-msgid "Chapters"
-msgstr "Kapitel"
-
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
 #: ../data/ui/application_window.ui:825
 msgid "An online/offline manga reader"
@@ -781,26 +777,24 @@ msgid "Order of Chapters"
 msgstr "Kapitelsortierung"
 
 #: ../data/ui/menu/card.xml:23
-msgid "By Chapter Number (9-0)"
-msgstr "Nach Kapitel-Nummer absteigend"
+msgid "⬆ By Source"
+msgstr ""
 
 #: ../data/ui/menu/card.xml:28
-msgid "By Chapter Number (0-9)"
-msgstr "Nach Kapitel-Nummer aufsteigend"
+msgid "⬇ By Source"
+msgstr ""
 
-#: ../data/ui/menu/card.xml:38
+#: ../data/ui/menu/card.xml:34
+msgid "⬆ By Date"
+msgstr ""
+
+#: ../data/ui/menu/card.xml:39
+msgid "⬇ By Date"
+msgstr ""
+
+#: ../data/ui/menu/card.xml:49
 msgid "Open in Browser"
 msgstr "Im Browser öffnen"
-
-#: ../data/ui/menu/card_selection_mode.xml:15
-#: ../data/ui/menu/library_selection_mode.xml:22
-msgid "Mark as Read"
-msgstr "Als gelesen markieren"
-
-#: ../data/ui/menu/card_selection_mode.xml:19
-#: ../data/ui/menu/library_selection_mode.xml:26
-msgid "Mark as Unread"
-msgstr "Als ungelesen markieren"
 
 #: ../data/ui/menu/card_selection_mode.xml:26
 #: ../data/ui/menu/library_selection_mode.xml:33
@@ -835,13 +829,9 @@ msgstr "Tastenkürzel"
 msgid "About Komikku"
 msgstr "Über Komikku"
 
-#: ../data/ui/menu/reader.xml:7
-msgid "Reading direction"
-msgstr "Leserichtung"
-
-#: ../data/ui/menu/reader.xml:27
-msgid "Webtoon ↓"
-msgstr "Webtoon ↓"
+#: ../data/ui/menu/reader.xml:7 ../data/ui/preferences_window.ui:218
+msgid "Reading Mode"
+msgstr ""
 
 #: ../data/ui/menu/reader.xml:35
 msgid "Type of Scaling"
@@ -936,10 +926,6 @@ msgstr ""
 #: ../data/ui/preferences_window.ui:209
 msgid "Reader"
 msgstr "Leser"
-
-#: ../data/ui/preferences_window.ui:218
-msgid "Reading Direction"
-msgstr "Leserichtung"
 
 #: ../data/ui/preferences_window.ui:225
 msgid "Scaling"
@@ -1118,31 +1104,31 @@ msgstr "Löschen?"
 msgid "Are you sure you want to delete this manga?"
 msgstr "Sind Sie sicher, dass Sie diesen Manga löschen wollen?"
 
-#: ../komikku/card.py:469
+#: ../komikku/card.py:488
 msgid "New"
 msgstr "Neu"
 
-#: ../komikku/card.py:485
+#: ../komikku/card.py:504
 msgid "%m/%d/%Y"
 msgstr "%d.%m.%Y"
 
-#: ../komikku/card.py:575
+#: ../komikku/card.py:594
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: ../komikku/card.py:577
+#: ../komikku/card.py:596
 msgid "Download"
 msgstr "Download"
 
-#: ../komikku/card.py:579
-msgid "Mark as read"
+#: ../komikku/card.py:598
+msgid "Mark as Read"
 msgstr "Als gelesen markieren"
 
-#: ../komikku/card.py:581
-msgid "Mark as unread"
+#: ../komikku/card.py:600
+msgid "Mark as Unread"
 msgstr "Als ungelesen markieren"
 
-#: ../komikku/card.py:754
+#: ../komikku/card.py:773
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Belegter Speicherplatz: {0}"
@@ -1173,85 +1159,89 @@ msgstr "Sind Sie sicher, dass sie die gewählten Manga löschen wollen?"
 msgid "Library"
 msgstr "Bibliothek"
 
-#: ../komikku/models/database.py:251
+#: ../komikku/models/database.py:256
 msgid "Complete"
 msgstr "Abgeschlossen"
 
-#: ../komikku/models/database.py:252
+#: ../komikku/models/database.py:257
 msgid "Ongoing"
 msgstr "Fortlaufend"
 
-#: ../komikku/models/database.py:253
+#: ../komikku/models/database.py:258
 msgid "Suspended"
 msgstr "Unterbrochen"
 
-#: ../komikku/models/database.py:254
+#: ../komikku/models/database.py:259
 msgid "Hiatus"
 msgstr "Pausiert"
 
-#: ../komikku/models/database.py:742
+#: ../komikku/models/database.py:780
 msgid "Download pending"
 msgstr "Download ausstehend"
 
-#: ../komikku/models/database.py:743
+#: ../komikku/models/database.py:781
 msgid "Downloaded"
 msgstr "Heruntergeladen"
 
-#: ../komikku/models/database.py:744
+#: ../komikku/models/database.py:782
 msgid "Downloading"
 msgstr "Wird heruntergeladen"
 
-#: ../komikku/models/database.py:745
+#: ../komikku/models/database.py:783
 msgid "Download error"
 msgstr "Download Fehler"
 
 #: ../komikku/preferences_window.py:110
-msgid "Right to Left ←"
-msgstr "Rechts nach Links ←"
+msgid "⬅ Right to Left"
+msgstr ""
 
 #: ../komikku/preferences_window.py:111
-msgid "Left to Right →"
-msgstr "Links nach Rechts →"
+msgid "➡ Left to Right"
+msgstr ""
 
 #: ../komikku/preferences_window.py:112
-msgid "Vertical ↓"
-msgstr "Vertikal ↓"
+msgid "⬇ Vertical"
+msgstr ""
 
-#: ../komikku/preferences_window.py:120
+#: ../komikku/preferences_window.py:113
+msgid "⬇ Webtoon"
+msgstr ""
+
+#: ../komikku/preferences_window.py:121
 msgid "Adapt to Screen"
 msgstr "An Bildschirm anpassen"
 
-#: ../komikku/preferences_window.py:121
+#: ../komikku/preferences_window.py:122
 msgid "Adapt to Width"
 msgstr "An Breite anpassen"
 
-#: ../komikku/preferences_window.py:122
+#: ../komikku/preferences_window.py:123
 msgid "Adapt to Height"
 msgstr "An Höhe anpassen"
 
-#: ../komikku/preferences_window.py:123
+#: ../komikku/preferences_window.py:124
 msgid "Original Size"
 msgstr "Originalgröße"
 
-#: ../komikku/preferences_window.py:131
+#: ../komikku/preferences_window.py:132
 msgid "White"
 msgstr "Weiß"
 
-#: ../komikku/preferences_window.py:132
+#: ../komikku/preferences_window.py:133
 msgid "Black"
 msgstr "Schwarz"
 
-#: ../komikku/preferences_window.py:366
+#: ../komikku/preferences_window.py:369
 msgid "User Account"
 msgstr "Benutzerkonto"
 
-#: ../komikku/preferences_window.py:386
+#: ../komikku/preferences_window.py:389
 msgid "System keyring service is disabled. Credential cannot be saved."
 msgstr ""
 "Der Schlüsselbund des Systems ist deaktiviert. Zugangsdaten konnten nicht "
 "gespeichert werden."
 
-#: ../komikku/preferences_window.py:391
+#: ../komikku/preferences_window.py:394
 msgid ""
 "No keyring backends were found to store credential. Use plaintext storage as "
 "fallback."
@@ -1259,7 +1249,7 @@ msgstr ""
 "Es wurde kein Schlüsselbund gefunden, um die Zugangsdaten zu speichern. "
 "Nutze die Klartext-Speicherung als Alternative."
 
-#: ../komikku/preferences_window.py:396
+#: ../komikku/preferences_window.py:399
 msgid ""
 "No keyring backends were found to store credential. Plaintext storage will "
 "be used as fallback."
@@ -1267,7 +1257,7 @@ msgstr ""
 "Es wurde kein Schlüsselbund gefunden, um die Zugangsdaten zu speichern. "
 "Klartext-Speicherung wird stattdessen genutzt."
 
-#: ../komikku/preferences_window.py:399
+#: ../komikku/preferences_window.py:402
 msgid "Test"
 msgstr "Test"
 
@@ -1289,27 +1279,27 @@ msgstr "Fehler beim Speichern der Seite: Kein Zugang zum Bilder-Verzeichnis"
 msgid "Page successfully saved to {0}"
 msgstr "Seite erfolgreich in {0} gespeichert."
 
-#: ../komikku/reader/pager/__init__.py:443
-#: ../komikku/reader/pager/__init__.py:472
-#: ../komikku/reader/pager/webtoon.py:151
+#: ../komikku/reader/pager/__init__.py:445
+#: ../komikku/reader/pager/__init__.py:474
+#: ../komikku/reader/pager/webtoon.py:257
 msgid "There is no previous chapter."
 msgstr "Kein vorheriges Kapitel vorhanden."
 
-#: ../komikku/reader/pager/__init__.py:445
-#: ../komikku/reader/pager/__init__.py:470
-#: ../komikku/reader/pager/webtoon.py:149
+#: ../komikku/reader/pager/__init__.py:447
+#: ../komikku/reader/pager/__init__.py:472
+#: ../komikku/reader/pager/webtoon.py:255
 msgid "It was the last chapter."
 msgstr "Das war das letzte Kapitel."
 
-#: ../komikku/reader/pager/__init__.py:499
+#: ../komikku/reader/pager/__init__.py:501
 msgid "This chapter is inaccessible."
 msgstr "Dieses Kapitel ist nicht verfügbar."
 
-#: ../komikku/reader/pager/page.py:272
+#: ../komikku/reader/pager/page.py:274
 msgid "Failed to load image"
 msgstr "Fehler beim Laden des Bildes"
 
-#: ../komikku/reader/pager/page.py:349
+#: ../komikku/reader/pager/page.py:351
 msgid "Retry"
 msgstr "Wiederholen"
 
@@ -1337,19 +1327,23 @@ msgstr "Ausgaben"
 msgid "Series"
 msgstr "Serien"
 
-#: ../komikku/servers/dynasty.py:49
+#: ../komikku/servers/dynasty.py:44
+msgid "Chapters"
+msgstr "Kapitel"
+
+#: ../komikku/servers/dynasty.py:50
 msgid "With Tags"
 msgstr "Mit Tags"
 
-#: ../komikku/servers/dynasty.py:50
+#: ../komikku/servers/dynasty.py:51
 msgid "Tags to search for"
 msgstr "Tags, nach denen gesucht werden soll"
 
-#: ../komikku/servers/dynasty.py:56
+#: ../komikku/servers/dynasty.py:57
 msgid "Without Tags"
 msgstr "Ohne Tags"
 
-#: ../komikku/servers/dynasty.py:57
+#: ../komikku/servers/dynasty.py:58
 msgid "Tags to exclude from search"
 msgstr "Tags, die von der Suche ausgeschlossen werden sollen"
 
@@ -1361,33 +1355,71 @@ msgstr "Unpassende Inhalte"
 msgid "Whether to show manga containing NSFW content"
 msgstr "Ob Manga mit unpassendem Inhalt angezeigt werden sollen"
 
-#: ../komikku/updater.py:83
+#: ../komikku/updater.py:87
+msgid "Library update completed with errors"
+msgstr ""
+
+#: ../komikku/updater.py:89
 msgid "Library update completed"
 msgstr "Aktualisierung der Bibliothek abgeschlossen"
 
-#: ../komikku/updater.py:85
+#: ../komikku/updater.py:92
+msgid "Update completed with errors"
+msgstr ""
+
+#: ../komikku/updater.py:94
 msgid "Update completed"
 msgstr "Aktualisierung abgeschlossen"
 
-#: ../komikku/updater.py:92
+#: ../komikku/updater.py:99
 msgid "No new chapter found"
 msgstr "Kein neues Kapitel gefunden"
 
-#: ../komikku/updater.py:117
+#: ../komikku/updater.py:130
 msgid "Oops, update has failed. Please try again."
 msgstr "Ups, das Update schlug fehl. Bitte erneut versuchen."
 
-#: ../komikku/updater.py:131
+#: ../komikku/updater.py:144
 msgid "Library update started"
 msgstr "Aktualisierung der Bibliothek gestartet"
 
-#: ../komikku/updater.py:133
+#: ../komikku/updater.py:146
 msgid "Update started"
 msgstr "Aktualisierung gestartet"
 
 #: ../komikku/utils.py:96
 msgid "No Internet connection, timeout or server down"
 msgstr "Keine Internetverbindung, Timeout oder Serverfehler"
+
+#~ msgid "Mark as read"
+#~ msgstr "Als gelesen markieren"
+
+#~ msgid "Mark as unread"
+#~ msgstr "Als ungelesen markieren"
+
+#~ msgid "Right to Left ←"
+#~ msgstr "Rechts nach Links ←"
+
+#~ msgid "Left to Right →"
+#~ msgstr "Links nach Rechts →"
+
+#~ msgid "Vertical ↓"
+#~ msgstr "Vertikal ↓"
+
+#~ msgid "Webtoon ↓"
+#~ msgstr "Webtoon ↓"
+
+#~ msgid "By Chapter Number (9-0)"
+#~ msgstr "Nach Kapitel-Nummer absteigend"
+
+#~ msgid "By Chapter Number (0-9)"
+#~ msgstr "Nach Kapitel-Nummer aufsteigend"
+
+#~ msgid "Reading direction"
+#~ msgstr "Leserichtung"
+
+#~ msgid "Reading Direction"
+#~ msgstr "Leserichtung"
 
 #~ msgid "Use desktop notifications for downloads"
 #~ msgstr "Nutzt Desktop-Benachrichtigungen für Downloads"

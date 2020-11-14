@@ -595,9 +595,9 @@ class ChaptersList:
         if not chapter.downloaded:
             menu.append(_('Download'), 'app.card.download-chapter')
         if not chapter.read:
-            menu.append(_('Mark as read'), 'app.card.mark-chapter-read')
+            menu.append(_('Mark as Read'), 'app.card.mark-chapter-read')
         if chapter.read or chapter.last_page_read_index is not None:
-            menu.append(_('Mark as unread'), 'app.card.mark-chapter-unread')
+            menu.append(_('Mark as Unread'), 'app.card.mark-chapter-unread')
 
         popover.bind_model(menu, None)
         popover.popup()
