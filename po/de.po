@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-14 14:16+0100\n"
-"PO-Revision-Date: 2020-09-29 17:20+0200\n"
+"PO-Revision-Date: 2020-11-14 14:46+0100\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -778,19 +778,19 @@ msgstr "Kapitelsortierung"
 
 #: ../data/ui/menu/card.xml:23
 msgid "⬆ By Source"
-msgstr ""
+msgstr "Nach Quelle ⬆"
 
 #: ../data/ui/menu/card.xml:28
 msgid "⬇ By Source"
-msgstr ""
+msgstr "Nach Quelle ⬇"
 
 #: ../data/ui/menu/card.xml:34
 msgid "⬆ By Date"
-msgstr ""
+msgstr "Nach Datum ⬆"
 
 #: ../data/ui/menu/card.xml:39
 msgid "⬇ By Date"
-msgstr ""
+msgstr "Nach Datum ⬇"
 
 #: ../data/ui/menu/card.xml:49
 msgid "Open in Browser"
@@ -831,7 +831,7 @@ msgstr "Über Komikku"
 
 #: ../data/ui/menu/reader.xml:7 ../data/ui/preferences_window.ui:218
 msgid "Reading Mode"
-msgstr ""
+msgstr "Lesemodus"
 
 #: ../data/ui/menu/reader.xml:35
 msgid "Type of Scaling"
@@ -1193,19 +1193,19 @@ msgstr "Download Fehler"
 
 #: ../komikku/preferences_window.py:110
 msgid "⬅ Right to Left"
-msgstr ""
+msgstr "Rechts nach Links ⬅"
 
 #: ../komikku/preferences_window.py:111
 msgid "➡ Left to Right"
-msgstr ""
+msgstr "Links nach Rechts ➡"
 
 #: ../komikku/preferences_window.py:112
 msgid "⬇ Vertical"
-msgstr ""
+msgstr "Vertikal ⬇"
 
 #: ../komikku/preferences_window.py:113
 msgid "⬇ Webtoon"
-msgstr ""
+msgstr "Webtoon ⬇"
 
 #: ../komikku/preferences_window.py:121
 msgid "Adapt to Screen"
@@ -1357,7 +1357,7 @@ msgstr "Ob Manga mit unpassendem Inhalt angezeigt werden sollen"
 
 #: ../komikku/updater.py:87
 msgid "Library update completed with errors"
-msgstr ""
+msgstr "Aktualisierung der Bibliothek mit Fehlern abgeschlossen"
 
 #: ../komikku/updater.py:89
 msgid "Library update completed"
@@ -1365,7 +1365,7 @@ msgstr "Aktualisierung der Bibliothek abgeschlossen"
 
 #: ../komikku/updater.py:92
 msgid "Update completed with errors"
-msgstr ""
+msgstr "Aktualisierung mit Fehlern abgeschlossen"
 
 #: ../komikku/updater.py:94
 msgid "Update completed"
