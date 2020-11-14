@@ -4,28 +4,28 @@
     <menu id="menu-reader">
         <section>
             <submenu>
-                <attribute name="label" translatable="yes">Reading direction</attribute>
+                <attribute name="label" translatable="yes">Reading Mode</attribute>
                 <section>
-                    <attribute name="id">reading-direction-section</attribute>
+                    <attribute name="id">reading-mode-section</attribute>
 
                     <item>
-                        <attribute name="label" translatable="yes">Right to Left ←</attribute>
-                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="label" translatable="yes">⬅ Right to Left</attribute>
+                        <attribute name="action">app.reader.reading-mode</attribute>
                         <attribute name="target">right-to-left</attribute>
                     </item>
                     <item>
-                        <attribute name="label" translatable="yes">Left to Right →</attribute>
-                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="label" translatable="yes">➡ Left to Right</attribute>
+                        <attribute name="action">app.reader.reading-mode</attribute>
                         <attribute name="target">left-to-right</attribute>
                     </item>
                     <item>
-                        <attribute name="label" translatable="yes">Vertical ↓</attribute>
-                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="label" translatable="yes">⬇ Vertical</attribute>
+                        <attribute name="action">app.reader.reading-mode</attribute>
                         <attribute name="target">vertical</attribute>
                     </item>
                     <item>
-                        <attribute name="label" translatable="yes">Webtoon ↓</attribute>
-                        <attribute name="action">app.reader.reading-direction</attribute>
+                        <attribute name="label" translatable="yes">⬇ Webtoon</attribute>
+                        <attribute name="action">app.reader.reading-mode</attribute>
                         <attribute name="target">webtoon</attribute>
                     </item>
                 </section>

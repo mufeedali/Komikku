@@ -4,7 +4,8 @@
         <value nick="white" value="0" />
         <value nick="black" value="1" />
     </enum>
-    <enum id="@appid@.ReadingDirection">
+    <enum id="@appid@.ReadingMode">
+        <value nick="--" value="-1" />
         <value nick="right-to-left" value="0" />
         <value nick="left-to-right" value="1" />
         <value nick="vertical" value="2" />
@@ -80,10 +81,15 @@
             <summary>Borders Crop</summary>
             <description>Crop white borders of images</description>
         </key>
-        <key enum="@appid@.ReadingDirection" name="reading-direction">
+        <key enum="@appid@.ReadingMode" name="reading-direction">
             <default>"right-to-left"</default>
             <summary>Reading Direction</summary>
-            <description>Reading direction in reader</description>
+            <description>Reading direction in reader (DEPRECATED since 0.22.0)</description>
+        </key>
+        <key enum="@appid@.ReadingMode" name="reading-mode">
+            <default>"right-to-left"</default>
+            <summary>Reading Mode</summary>
+            <description>Reading mode in reader</description>
         </key>
         <key enum="@appid@.Scaling" name="scaling">
             <default>"screen"</default>

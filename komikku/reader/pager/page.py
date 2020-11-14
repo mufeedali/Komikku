@@ -43,7 +43,7 @@ class Page(Gtk.Overlay):
 
         self.set_size()
 
-        policy_type = Gtk.PolicyType.AUTOMATIC if self.reader.reading_direction != 'webtoon' else Gtk.PolicyType.NEVER
+        policy_type = Gtk.PolicyType.AUTOMATIC if self.reader.reading_mode != 'webtoon' else Gtk.PolicyType.NEVER
         self.scrolledwindow = Gtk.ScrolledWindow()
         self.scrolledwindow.set_policy(policy_type, policy_type)
         self.viewport = Gtk.Viewport()
@@ -54,14 +54,14 @@ class Page(Gtk.Overlay):
         self.scrolledwindow.add(self.viewport)
         self.add(self.scrolledwindow)
 
-        if self.reader.reading_direction == 'vertical':
+        if self.reader.reading_mode == 'vertical':
             self.scrolledwindow.get_vadjustment().connect('changed', self.on_scroll_changed, 'vertical')
             self.scrolledwindow.get_vadjustment().connect('value-changed', self.on_scroll_value_changed, 'vertical')
-        elif self.reader.reading_direction != 'webtoon':
+        elif self.reader.reading_mode != 'webtoon':
             self.scrolledwindow.get_hadjustment().connect('changed', self.on_scroll_changed, 'horizontal')
             self.scrolledwindow.get_hadjustment().connect('value-changed', self.on_scroll_value_changed, 'horizontal')
 
-        if self.reader.reading_direction != 'webtoon':
+        if self.reader.reading_mode != 'webtoon':
             self.scrolledwindow.connect('edge-overshot', self.on_edge_overshotted)
 
         # Activity indicator
@@ -111,7 +111,7 @@ class Page(Gtk.Overlay):
         if self.pager.zoom['active']:
             return
 
-        if self.reader.reading_direction == 'vertical':
+        if self.reader.reading_mode == 'vertical':
             if position == Gtk.PositionType.BOTTOM:
                 self.set_image(crop='top')
             elif position == Gtk.PositionType.TOP:
@@ -280,7 +280,7 @@ class Page(Gtk.Overlay):
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
 
         # Adjust image
-        scaling = self.reader.scaling if self.reader.reading_direction not in ('vertical', 'webtoon') else 'width'
+        scaling = self.reader.scaling if self.reader.reading_mode not in ('vertical', 'webtoon') else 'width'
         if self.reader.scaling != 'original':
             adapt_to_width_height = imagebuf.height / (imagebuf.width / self.reader.size.width)
             adapt_to_height_width = imagebuf.width / (imagebuf.height / self.reader.size.height)
@@ -337,7 +337,7 @@ class Page(Gtk.Overlay):
             self.surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
             self.image.set_from_surface(self.surface)
 
-        if self.reader.reading_direction == 'webtoon':
+        if self.reader.reading_mode == 'webtoon':
             self.set_size_request(pixbuf.get_width() / self.window.hidpi_scale, pixbuf.get_height() / self.window.hidpi_scale)
 
     def set_size(self):

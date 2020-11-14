@@ -15,7 +15,7 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 
 * Online reading from servers
 * Offline reading of downloaded mangas
-* RTL, LTR and vertical reading directions
+* RTL, LTR, Vertical and Webtoon reading modes
 * Four types of navigation:
   * Keyboard arrow keys
   * Mouse click

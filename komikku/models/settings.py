@@ -144,9 +144,9 @@ class Settings(Gio.Settings):
         self.set_boolean('nsfw-content', state)
 
     @property
-    def reading_direction(self):
-        """Return the reader's reading direction"""
-        value = self.reading_direction_value
+    def reading_mode(self):
+        """Return the reader's reading mode"""
+        value = self.reading_mode_value
 
         if value == 0:
             return 'right-to-left'
@@ -154,26 +154,48 @@ class Settings(Gio.Settings):
             return 'left-to-right'
         if value == 2:
             return 'vertical'
+        if value == 3:
+            return 'webtoon'
 
     @property
-    def reading_direction_value(self):
-        """Return the reader's reading direction value"""
-        return self.get_enum('reading-direction')
+    def reading_mode_value(self):
+        """Return the reader's reading mode value"""
+        mode = -1
+        try:
+            # Before 0.22.0 reading mode was called reading direction
+            mode = self.get_enum('reading-direction')
+        except Exception:
+            pass
 
-    @reading_direction.setter
-    def reading_direction(self, direction):
-        """
-        Set the reader's reading direction
+        if mode < 0:
+            mode = self.get_enum('reading-mode')
 
-        :param direction: reader's reading direction
-        :type direction: string
+        return mode
+
+    @reading_mode.setter
+    def reading_mode(self, mode):
         """
-        if direction == 'right-to-left':
-            self.set_enum('reading-direction', 0)
-        elif direction == 'left-to-right':
-            self.set_enum('reading-direction', 1)
-        elif direction == 'vertical':
-            self.set_enum('reading-direction', 2)
+        Set the reader's reading mode
+
+        :param mode: reader's reading mode
+        :type mode: string
+        """
+        try:
+            # Before 0.22.0 reading mode was called reading direction
+            # Clear previous key with -1 value (unused)
+            self.get_enum('reading-direction')
+            self.set_enum('reading-direction', -1)
+        except Exception:
+            pass
+
+        if mode == 'right-to-left':
+            self.set_enum('reading-mode', 0)
+        elif mode == 'left-to-right':
+            self.set_enum('reading-mode', 1)
+        elif mode == 'vertical':
+            self.set_enum('reading-mode', 2)
+        elif mode == 'webtoon':
+            self.set_enum('reading-mode', 3)
 
     @property
     def scaling(self):

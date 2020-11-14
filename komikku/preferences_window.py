@@ -39,7 +39,7 @@ class PreferencesWindow(Handy.PreferencesWindow):
     servers_settings_subpage_group = Gtk.Template.Child('servers_settings_subpage_group')
     long_strip_detection_switch = Gtk.Template.Child('long_strip_detection_switch')
 
-    reading_direction_row = Gtk.Template.Child('reading_direction_row')
+    reading_mode_row = Gtk.Template.Child('reading_mode_row')
     scaling_row = Gtk.Template.Child('scaling_row')
     background_color_row = Gtk.Template.Child('background_color_row')
     borders_crop_switch = Gtk.Template.Child('borders_crop_switch')
@@ -105,15 +105,16 @@ class PreferencesWindow(Handy.PreferencesWindow):
         # Reader
         #
 
-        # Reading direction
+        # Reading mode
         liststore = Gio.ListStore.new(Handy.ValueObject)
-        liststore.insert(0, Handy.ValueObject.new(_('Right to Left ←')))
-        liststore.insert(1, Handy.ValueObject.new(_('Left to Right →')))
-        liststore.insert(2, Handy.ValueObject.new(_('Vertical ↓')))
+        liststore.insert(0, Handy.ValueObject.new(_('⬅ Right to Left')))
+        liststore.insert(1, Handy.ValueObject.new(_('➡ Left to Right')))
+        liststore.insert(2, Handy.ValueObject.new(_('⬇ Vertical')))
+        liststore.insert(3, Handy.ValueObject.new(_('⬇ Webtoon')))
 
-        self.reading_direction_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
-        self.reading_direction_row.set_selected_index(self.settings.reading_direction_value)
-        self.reading_direction_row.connect('notify::selected-index', self.on_reading_direction_changed)
+        self.reading_mode_row.bind_name_model(liststore, Handy.ValueObject.dup_string)
+        self.reading_mode_row.set_selected_index(self.settings.reading_mode_value)
+        self.reading_mode_row.connect('notify::selected-index', self.on_reading_mode_changed)
 
         # Image scaling
         liststore = Gio.ListStore.new(Handy.ValueObject)
@@ -194,15 +195,17 @@ class PreferencesWindow(Handy.PreferencesWindow):
         else:
             self.settings.nsfw_content = False
 
-    def on_reading_direction_changed(self, row, param):
+    def on_reading_mode_changed(self, row, param):
         index = row.get_selected_index()
 
         if index == 0:
-            self.settings.reading_direction = 'right-to-left'
+            self.settings.reading_mode = 'right-to-left'
         elif index == 1:
-            self.settings.reading_direction = 'left-to-right'
+            self.settings.reading_mode = 'left-to-right'
         elif index == 2:
-            self.settings.reading_direction = 'vertical'
+            self.settings.reading_mode = 'vertical'
+        elif index == 3:
+            self.settings.reading_mode = 'webtoon'
 
     def on_scaling_changed(self, row, param):
         index = row.get_selected_index()

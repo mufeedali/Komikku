@@ -110,7 +110,7 @@ class BasePager:
 
     def on_double_click(self, event):
         # Zoom/unzoom
-        if self.reader.reading_direction == 'webtoon':
+        if self.reader.reading_mode == 'webtoon':
             return
 
         def on_adjustment_change(hadj, vadj, h_value, v_value):
@@ -278,6 +278,8 @@ class BasePager:
 
 
 class Pager(Handy.Carousel, BasePager):
+    """Classic page by page pager (LTR, RTL, vertical)"""
+
     current_chapter_id = None
     init_flag = False
 
@@ -301,7 +303,7 @@ class Pager(Handy.Carousel, BasePager):
             self.pages[2].destroy()  # will remove it from carousel
 
             page = self.pages[0]
-            direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
+            direction = 1 if self.reader.reading_mode == 'right-to-left' else -1
             new_page = Page(self, page.chapter, page.index + direction)
             self.prepend(new_page)
         else:
@@ -309,7 +311,7 @@ class Pager(Handy.Carousel, BasePager):
             self.pages[0].destroy()  # will remove it from carousel
 
             page = self.pages[-1]
-            direction = -1 if self.reader.reading_direction == 'right-to-left' else 1
+            direction = -1 if self.reader.reading_mode == 'right-to-left' else 1
             new_page = Page(self, page.chapter, page.index + direction)
             self.insert(new_page, 2)
 
@@ -339,7 +341,7 @@ class Pager(Handy.Carousel, BasePager):
             else:
                 page_index = 0
 
-        direction = 1 if self.reader.reading_direction == 'right-to-left' else -1
+        direction = 1 if self.reader.reading_mode == 'right-to-left' else -1
 
         # Left page
         left_page = Page(self, chapter, page_index + direction)
@@ -400,7 +402,7 @@ class Pager(Handy.Carousel, BasePager):
             vadj = page.scrolledwindow.get_vadjustment()
 
             if event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                if self.reader.reading_direction == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
+                if self.reader.reading_mode == 'vertical' and vadj.get_value() + self.reader.size.height == vadj.get_upper():
                     self.scroll_to_direction('right')
                     return Gdk.EVENT_STOP
 
@@ -409,7 +411,7 @@ class Pager(Handy.Carousel, BasePager):
                 page.scrolledwindow.emit('scroll-child', Gtk.ScrollType.STEP_DOWN, False)
                 return Gdk.EVENT_STOP
 
-            if self.reader.reading_direction == 'vertical' and vadj.get_value() == 0:
+            if self.reader.reading_mode == 'vertical' and vadj.get_value() == 0:
                 self.scroll_to_direction('left')
 
                 # After switching pages, go to the end of the page that is now the current page

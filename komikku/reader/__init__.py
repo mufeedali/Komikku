@@ -58,8 +58,8 @@ class Reader:
         return Settings.get_default().borders_crop
 
     @property
-    def reading_direction(self):
-        return self.manga.reading_direction or Settings.get_default().reading_direction
+    def reading_mode(self):
+        return self.manga.reading_mode or Settings.get_default().reading_mode
 
     @property
     def scaling(self):
@@ -82,11 +82,11 @@ class Reader:
         self.window.application.set_accels_for_action('app.reader.save-page', ['<Control>s'])
 
     def add_actions(self):
-        # Reading direction
-        self.reading_direction_action = Gio.SimpleAction.new_stateful(
-            'reader.reading-direction', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
-        self.reading_direction_action.connect('change-state', self.on_reading_direction_changed)
-        self.window.application.add_action(self.reading_direction_action)
+        # Reading mode
+        self.reading_mode_action = Gio.SimpleAction.new_stateful(
+            'reader.reading-mode', GLib.VariantType.new('s'), GLib.Variant('s', 'right-to-left'))
+        self.reading_mode_action.connect('change-state', self.on_reading_mode_changed)
+        self.window.application.add_action(self.reading_mode_action)
 
         # Scaling
         self.scaling_action = Gio.SimpleAction.new_stateful(
@@ -117,7 +117,7 @@ class Reader:
         self.chapters_consulted = set()
 
         # Init settings
-        self.set_action_reading_direction()
+        self.set_action_reading_mode()
         self.set_action_scaling()
         self.set_action_borders_crop()
 
@@ -132,7 +132,7 @@ class Reader:
             self.pager.clear()
             self.pager.destroy()
 
-        if self.reading_direction == 'webtoon':
+        if self.reading_mode == 'webtoon':
             self.pager = WebtoonPager(self)
         else:
             self.pager = Pager(self)
@@ -156,20 +156,20 @@ class Reader:
         self.set_action_borders_crop()
         self.pager.crop_pages_borders()
 
-    def on_reading_direction_changed(self, action, variant):
+    def on_reading_mode_changed(self, action, variant):
         value = variant.get_string()
-        if value == self.reading_direction:
+        if value == self.reading_mode:
             return
 
-        prior_reading_direction = self.reading_direction
+        prior_reading_mode = self.reading_mode
 
-        self.manga.update(dict(reading_direction=value))
-        self.set_action_reading_direction()
+        self.manga.update(dict(reading_mode=value))
+        self.set_action_reading_mode()
 
-        if value == 'webtoon' or prior_reading_direction == 'webtoon':
+        if value == 'webtoon' or prior_reading_mode == 'webtoon':
             self.init_pager(self.pager.current_page.chapter)
         else:
-            if value == 'right-to-left' or prior_reading_direction == 'right-to-left':
+            if value == 'right-to-left' or prior_reading_mode == 'right-to-left':
                 self.pager.reverse_pages()
             self.set_orientation()
 
@@ -241,20 +241,20 @@ class Reader:
     def set_action_borders_crop(self):
         self.borders_crop_action.set_state(GLib.Variant('b', self.borders_crop))
 
-    def set_action_reading_direction(self):
-        self.reading_direction_action.set_state(GLib.Variant('s', self.reading_direction))
+    def set_action_reading_mode(self):
+        self.reading_mode_action.set_state(GLib.Variant('s', self.reading_mode))
 
-        # Scaling action is enabled in RTL and LTR reading directions only
-        self.scaling_action.set_enabled(self.reading_direction in ('right-to-left', 'left-to-right'))
+        # Scaling action is enabled in RTL and LTR reading modes only
+        self.scaling_action.set_enabled(self.reading_mode in ('right-to-left', 'left-to-right'))
 
         # Additionally, direction of page slider in controls must be updated
-        self.controls.set_scale_direction(inverted=self.reading_direction == 'right-to-left')
+        self.controls.set_scale_direction(inverted=self.reading_mode == 'right-to-left')
 
     def set_action_scaling(self, scaling=None):
         self.scaling_action.set_state(GLib.Variant('s', scaling or self.scaling))
 
     def set_orientation(self):
-        if self.reading_direction in ('right-to-left', 'left-to-right'):
+        if self.reading_mode in ('right-to-left', 'left-to-right'):
             orientation = Gtk.Orientation.HORIZONTAL
         else:
             orientation = Gtk.Orientation.VERTICAL
