@@ -40,6 +40,7 @@ class Card:
         self.info_grid = InfoGrid(self)
         self.chapters_list = ChaptersList(self)
 
+        self.window.read_button.connect('clicked', self.on_read_button_clicked)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
     @property
@@ -154,15 +155,33 @@ class Card:
         self.manga.update(dict(sort_order=value))
         self.set_sort_order()
 
+    def on_read_button_clicked(self, widget):
+        chapters = [child.chapter for child in self.chapters_list.listbox.get_children()]
+        if self.sort_order in ['desc', 'date-desc']:
+            chapters.reverse()
+
+        chapter = None
+        for chapter_ in chapters:
+            if not chapter_.read:
+                chapter = chapter_
+                break
+
+        if not chapter:
+            chapter = chapters[-1]
+
+        self.window.reader.init(self.manga, chapter)
+
     def on_update_menu_clicked(self, action, param):
         self.window.updater.add(self.manga)
         self.window.updater.start()
 
     def populate(self):
+        self.window.read_button.set_sensitive(False)
         self.chapters_list.populate()
         self.info_grid.populate()
 
         self.set_sort_order(invalidate=False)
+        self.window.read_button.set_sensitive(True)
 
     def set_actions_enabled(self, enabled):
         self.delete_action.set_enabled(enabled)
@@ -179,6 +198,7 @@ class Card:
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 
+        self.window.read_button.show()
         self.window.search_button.hide()
         self.window.fullscreen_button.hide()
 
