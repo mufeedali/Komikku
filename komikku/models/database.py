@@ -7,6 +7,7 @@ from functools import lru_cache
 from gettext import gettext as _
 import importlib
 import json
+import logging
 import os
 from PIL import Image
 import sqlite3
@@ -20,8 +21,9 @@ from komikku.servers import get_server_module_name_by_id
 from komikku.servers import unscramble_image
 from komikku.utils import get_data_dir
 
-VERSION = 6
+logger = logging.getLogger('komikku')
 
+VERSION = 6
 
 def adapt_json(data):
     return (json.dumps(data, sort_keys=True)).encode()
@@ -505,6 +507,12 @@ class Manga:
                         # Delete chapter
                         gone_chapter.delete(db_conn)
                         nb_deleted_chapters += 1
+
+                        logger.warning(
+                            '[UPDATE] {0} ({1}): Delete chapter {2} (no longer available)'.format(
+                                self.name, self.server_id, gone_chapter.title
+                            )
+                        )
                     else:
                         # Keep track of rank freed
                         gone_chapters_ranks.append(gone_chapter.rank)
@@ -535,6 +543,8 @@ class Manga:
                     if id is not None:
                         recent_chapters_ids.append(id)
                         rank += 1
+
+                        logger.info('[UPDATE] {0} ({1}): Add new chapter {2}'.format(self.name, self.server_id, chapter_data['title']))
 
             if len(recent_chapters_ids) > 0 or nb_deleted_chapters > 0:
                 data['last_update'] = datetime.datetime.now()

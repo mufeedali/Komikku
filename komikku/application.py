@@ -89,9 +89,9 @@ class Application(Gtk.Application):
     def get_logger(self):
         logging.basicConfig(
             format='%(asctime)s | %(levelname)s | %(name)s | %(message)s', datefmt='%d-%m-%y %H:%M:%S',
-            level=logging.DEBUG if self.development_mode else logging.WARNING,
+            level=logging.DEBUG if self.development_mode else logging.INFO
         )
-        logger = logging.getLogger()
+        logger = logging.getLogger('komikku')
 
         return logger
 

@@ -28,8 +28,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
-logger = logging.getLogger()
-
+logger = logging.getLogger('komikku')
 
 def folder_size(path):
     if not os.path.exists(path):
