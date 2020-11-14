@@ -1,9 +1,13 @@
+import logging
+
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
 SERVER_NAME = 'Crunchyroll'
+
+logger = logging.getLogger('komikku.servers.crunchyroll')
 
 
 class Crunchyroll(Server):
@@ -77,6 +81,10 @@ class Crunchyroll(Server):
         r = self.session_get(self.api_chapters_url.format(initial_data['slug']))
 
         json_data = r.json()
+        if 'error' in json_data:
+            logger.warning('Manga slug {0}: {1}'.format(initial_data['slug'], json_data['error']['msg']))
+            return None
+
         resp_data = json_data['series']
         chapters = json_data['chapters']
 
@@ -230,18 +238,21 @@ class Crunchyroll(Server):
             return False
         self._get_session_id()
 
-        login = self.session_post(self.login_url,
-                                  data={
-                                      'session_id': self.api_session_id,
-                                      'account': username,
-                                      'password': password
-                                  }).json()
+        login = self.session_post(
+            self.login_url,
+            data={
+                'session_id': self.api_session_id,
+                'account': username,
+                'password': password
+            }
+        ).json()
+
         if 'data' in login:
             self.api_auth_token = login['data']['auth']
             self.save_session()
             return True
+
         return False
 
     def search(self, term):
-        term_lower = term.lower()
-        return filter(lambda x: term_lower in x['name'].lower(), self.get_most_populars())
+        return filter(lambda x: term.lower() in x['name'].lower(), self.get_most_populars())
