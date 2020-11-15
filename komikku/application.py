@@ -38,6 +38,7 @@ CREDITS = dict(
         'Mufeed Ali (fushinari)',
         'Gerben Droogers (Tijder)',
         'GrownNed',
+        'ISO-morphism',
         'jaskaranSM',
         'Leo Prikler',
         'Romain Vaudois',
