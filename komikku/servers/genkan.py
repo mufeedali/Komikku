@@ -285,6 +285,7 @@ class Oneshotscans(Genkan):
     id = 'oneshotscans:genkan'
     name = 'One Shot Scans'
     lang = 'en'
+    status = 'disabled'
 
     base_url = 'https://oneshotscans.com'
     search_url = base_url + '/comics?query={0}'
