@@ -45,6 +45,27 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.22.0" date="2020-11-15">
+            <description>
+                <ul>
+                    <li>[Library] Allow bulk downloading of manga, as well as marking all chapters as (un)read</li>
+                    <li>[Card] Chapters list: Add sort by date</li>
+                    <li>[Reader] Add new pager for Webtoons: Vertical smooth/continuous scrolling (a.k.a. infinite canvas)</li>
+                    <li>[Download Manager] Adding downloads: Improve responsiveness</li>
+                    <li>[Preferences] Library: Add new option to allow user to enable/disable servers with NSFW only content</li>
+                    <li>[Servers] Add Mangahub</li>
+                    <li>[Servers] Add NHentai</li>
+                    <li>[Servers] Add Readmanhwa</li>
+                    <li>[Servers] Central de Mangás: Update</li>
+                    <li>[Servers] Crunchyroll: Update</li>
+                    <li>[Servers] Izneo: Update</li>
+                    <li>[Servers] MangaKawaii: Update</li>
+                    <li>[Servers] MangaNelo: Update</li>
+                    <li>[Servers] Dynasty: Improvements</li>
+                    <li>[L10n] Update French and German translations</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.21.1" date="2020-09-27">
             <description>
                 <ul>
