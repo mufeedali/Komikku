@@ -280,7 +280,7 @@ class Page(Gtk.Overlay):
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
 
         # Adjust image
-        scaling = self.reader.scaling if self.reader.reading_mode not in ('vertical', 'webtoon') else 'width'
+        scaling = self.reader.scaling if self.reader.reading_mode != 'webtoon' else 'width'
         if self.reader.scaling != 'original':
             adapt_to_width_height = imagebuf.height / (imagebuf.width / self.reader.size.width)
             adapt_to_height_width = imagebuf.width / (imagebuf.height / self.reader.size.height)

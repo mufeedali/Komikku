@@ -245,7 +245,7 @@ class Reader:
         self.reading_mode_action.set_state(GLib.Variant('s', self.reading_mode))
 
         # Scaling action is enabled in RTL and LTR reading modes only
-        self.scaling_action.set_enabled(self.reading_mode in ('right-to-left', 'left-to-right'))
+        self.scaling_action.set_enabled(self.reading_mode != 'webtoon')
 
         # Additionally, direction of page slider in controls must be updated
         self.controls.set_scale_direction(inverted=self.reading_mode == 'right-to-left')
