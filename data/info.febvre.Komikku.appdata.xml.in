@@ -45,6 +45,13 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.22.1" date="2020-11-17">
+            <description>
+                <ul>
+                    <li>[Reader] Re-allow page scaling in Vertical reading mode (disabled by mistake in 0.22.0)</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.22.0" date="2020-11-15">
             <description>
                 <ul>
