@@ -359,11 +359,7 @@ class PreferencesServersSettingsSubpage:
                     frame = Gtk.Frame()
                     vbox.add(frame)
 
-                    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-                    box.set_margin_top(6)
-                    box.set_margin_right(6)
-                    box.set_margin_bottom(6)
-                    box.set_margin_left(6)
+                    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin=12, spacing=12)
                     frame.add(box)
 
                     label = Gtk.Label(_('User Account'))

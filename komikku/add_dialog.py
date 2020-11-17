@@ -122,10 +122,7 @@ class AddDialog:
 
         # Manga page
         grid = self.builder.get_object('manga_page_grid')
-        grid.set_margin_top(6)
-        grid.set_margin_end(6)
-        grid.set_margin_bottom(6)
-        grid.set_margin_start(6)
+        grid.props.margin = 6
         self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
         self.add_button = self.builder.get_object('add_button')
         self.add_button.connect('clicked', self.on_add_button_clicked)
@@ -216,11 +213,7 @@ class AddDialog:
             return vbox
 
         popover = Gtk.Popover()
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, visible=True)
-        vbox.set_margin_top(6)
-        vbox.set_margin_end(6)
-        vbox.set_margin_bottom(6)
-        vbox.set_margin_start(6)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin=6, spacing=12, visible=True)
 
         last = None
         for filter in self.server.filters:
