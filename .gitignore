@@ -9,3 +9,4 @@ flatpak/*Devel*
 untracked
 .venv
 .vscode/
+.flatpak/
