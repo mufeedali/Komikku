@@ -109,8 +109,8 @@ class Mangadex(Server):
 
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
-    api_manga_url = base_url + '/api/manga/{0}'
-    api_chapter_url = base_url + '/api/chapter/{0}'
+    api_manga_url = base_url + '/api/v2/manga/{0}'
+    api_chapter_url = base_url + '/api/v2/chapter/{0}'
     search_url = base_url + '/search'
     most_populars_url = base_url + '/titles/7'
     manga_url = base_url + '/title/{0}'
@@ -136,6 +136,12 @@ class Mangadex(Server):
         # Removing this will break manga that were added before the change to the manga slug
         return slug.split('/')[0]
 
+    @staticmethod
+    def get_group_name(group_id, groups_list):
+        """Get group name from group id."""
+        matching_group = [group for group in groups_list if group['id'] == group_id]
+        return matching_group[0]['name']
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -151,12 +157,15 @@ class Mangadex(Server):
                 'Accept': '*/*',
                 'Referer': self.base_url,
                 'Origin': self.base_url,
+            },
+            params={
+                'include': 'chapters'
             }
         )
         if r is None or r.status_code != 200:
             return None
 
-        resp_data = r.json()
+        resp_data = r.json()['data']
 
         data = initial_data.copy()
         data.update(dict(
@@ -170,31 +179,31 @@ class Mangadex(Server):
         ))
 
         data['name'] = html.unescape(resp_data['manga']['title'])
-        data['cover'] = '{0}{1}'.format(self.base_url, resp_data['manga']['cover_url'])
+        data['cover'] = resp_data['manga']['mainCover']
 
-        data['authors'] += [t.strip() for t in resp_data['manga']['author'].split(',')]
-        data['authors'] += [t.strip() for t in resp_data['manga']['artist'].split(',') if t.strip() not in data['authors']]
-        data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['genres'] if str(genre_id) in GENRES]
+        data['authors'] += [t.strip() for t in resp_data['manga']['author']]
+        data['authors'] += [t.strip() for t in resp_data['manga']['artist'] if t.strip() not in data['authors']]
+        data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['tags'] if str(genre_id) in GENRES]
 
-        if resp_data['manga']['status'] == 1:
+        if resp_data['manga']['publication']['status'] == 1:
             data['status'] = 'ongoing'
-        elif resp_data['manga']['status'] == 2:
+        elif resp_data['manga']['publication']['status'] == 2:
             data['status'] = 'complete'
-        elif resp_data['manga']['status'] == 3:
+        elif resp_data['manga']['publication']['status'] == 3:
             data['status'] = 'suspended'
-        elif resp_data['manga']['status'] == 4:
+        elif resp_data['manga']['publication']['status'] == 4:
             data['status'] = 'hiatus'
 
         data['synopsis'] = html.unescape(resp_data['manga']['description'])
 
-        if 'chapter' not in resp_data:
+        if 'chapters' not in resp_data:
             logger.warning('Chapter information missing')
             return data
 
-        for slug, chapter in resp_data['chapter'].items():
-            if self.lang_code != chapter['lang_code']:
+        for chapter in resp_data['chapters']:
+            if self.lang_code != chapter['language']:
                 continue
-            if chapter['group_id'] == 9097:
+            if 9097 in chapter['groups']:
                 # Chapters from MANGA Plus can't be read from MangaDex
                 continue
             if datetime.fromtimestamp(chapter['timestamp']) > datetime.now():
@@ -202,10 +211,10 @@ class Mangadex(Server):
                 continue
 
             data['chapters'].append(dict(
-                slug=slug,
+                slug=str(chapter['id']),
                 title='#{0} - {1}'.format(chapter['chapter'], chapter['title']),
                 date=datetime.fromtimestamp(chapter['timestamp']).date(),
-                scanlators=[value for key, value in chapter.items() if key.startswith('group_name') and value],
+                scanlators=[self.get_group_name(group_id, resp_data['groups']) for group_id in chapter['groups']],
             ))
 
         data['chapters'].reverse()
@@ -228,12 +237,12 @@ class Mangadex(Server):
         if r is None or r.status_code != 200:
             return None
 
-        resp_data = r.json()
+        resp_data = r.json()['data']
 
         data = dict(
             pages=[],
         )
-        for page in resp_data['page_array']:
+        for page in resp_data['pages']:
             data['pages'].append(dict(
                 slug=None,
                 image='{0}{1}/{2}'.format(resp_data['server'], resp_data['hash'], page),
