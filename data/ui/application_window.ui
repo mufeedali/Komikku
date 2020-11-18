@@ -274,7 +274,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="fullscreen_button">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <child>
@@ -291,15 +290,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="search_button">
-                    <property name="visible">True</property>
+                  <object class="GtkButton" id="resume_read_button">
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <child>
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">edit-find-symbolic</property>
+                        <property name="icon_name">media-playback-start-symbolic</property>
                       </object>
                     </child>
                   </object>
@@ -309,14 +307,15 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="read_button">
+                  <object class="GtkToggleButton" id="search_button">
+                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <child>
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">media-playback-start-symbolic</property>
+                        <property name="icon_name">edit-find-symbolic</property>
                       </object>
                     </child>
                   </object>

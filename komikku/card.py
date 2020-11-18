@@ -35,12 +35,13 @@ class Card:
 
         self.title_label = self.window.card_title_label
         self.subtitle_label = self.window.card_subtitle_label
+        self.resume_read_button = self.window.resume_read_button
+        self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
 
         self.stack = self.window.card_stack
         self.info_grid = InfoGrid(self)
         self.chapters_list = ChaptersList(self)
 
-        self.window.read_button.connect('clicked', self.on_read_button_clicked)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
     @property
@@ -147,15 +148,7 @@ class Card:
     def on_open_in_browser_menu_clicked(self, action, param):
         Gtk.show_uri_on_window(None, self.manga.server.get_manga_url(self.manga.slug, self.manga.url), time.time())
 
-    def on_sort_order_changed(self, action, variant):
-        value = variant.get_string()
-        if value == self.manga.sort_order:
-            return
-
-        self.manga.update(dict(sort_order=value))
-        self.set_sort_order()
-
-    def on_read_button_clicked(self, widget):
+    def on_resume_read_button_clicked(self, widget):
         chapters = [child.chapter for child in self.chapters_list.listbox.get_children()]
         if self.sort_order in ['desc', 'date-desc']:
             chapters.reverse()
@@ -167,21 +160,27 @@ class Card:
                 break
 
         if not chapter:
-            chapter = chapters[-1]
+            chapter = chapters[0]
 
         self.window.reader.init(self.manga, chapter)
+
+    def on_sort_order_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.manga.sort_order:
+            return
+
+        self.manga.update(dict(sort_order=value))
+        self.set_sort_order()
 
     def on_update_menu_clicked(self, action, param):
         self.window.updater.add(self.manga)
         self.window.updater.start()
 
     def populate(self):
-        self.window.read_button.set_sensitive(False)
         self.chapters_list.populate()
         self.info_grid.populate()
 
         self.set_sort_order(invalidate=False)
-        self.window.read_button.set_sensitive(True)
 
     def set_actions_enabled(self, enabled):
         self.delete_action.set_enabled(enabled)
@@ -198,9 +197,9 @@ class Card:
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 
-        self.window.read_button.show()
-        self.window.search_button.hide()
-        self.window.fullscreen_button.hide()
+        self.window.library.search_button.hide()
+        self.resume_read_button.show()
+        self.window.reader.fullscreen_button.hide()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
@@ -401,6 +400,8 @@ class ChaptersList:
     def populate(self):
         self.clear()
 
+        self.card.resume_read_button.set_sensitive(False)
+
         if not self.card.manga.chapters:
             return
 
@@ -421,6 +422,7 @@ class ChaptersList:
 
             self.window.activity_indicator.stop()
             self.card.set_actions_enabled(True)
+            self.card.resume_read_button.set_sensitive(True)
 
         def run_generator(func):
             self.window.activity_indicator.start()

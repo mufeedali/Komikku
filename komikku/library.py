@@ -460,9 +460,9 @@ class Library:
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
-        self.window.read_button.hide()
-        self.window.search_button.show()
-        self.window.fullscreen_button.hide()
+        self.search_button.show()
+        self.window.card.resume_read_button.hide()
+        self.window.reader.fullscreen_button.hide()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
