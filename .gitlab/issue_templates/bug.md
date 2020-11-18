@@ -14,11 +14,18 @@
 
  - [ ] I used a Flatpak package. Please provide the version number.
 
- - [ ] I used a distribution package (e.g. Arch, Fedora, Debian, …). Please provide the version number.
+ - [ ] I used a distribution package (e.g. Arch, Fedora, GNU Guix, …). Please provide the version number.
 
 ```
   Komikku Version:
 ```
+
+# What windowing system are you running Komikku on?
+
+You can obtain the windowing system used by running ``echo $WAYLAND_DISPLAY``. If wayland-0 is returned, you are running Wayland. Otherwise, you are running X11.
+
+- [ ] Wayland
+- [ ] X11
 
 # What hardware are you running Komikku on?
 
