@@ -460,6 +460,7 @@ class Library:
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
+        self.window.read_button.hide()
         self.window.search_button.show()
         self.window.fullscreen_button.hide()
 

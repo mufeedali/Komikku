@@ -118,6 +118,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     fullscreen_button = Gtk.Template.Child('fullscreen_button')
     menu_button = Gtk.Template.Child('menu_button')
     menu_button_image = Gtk.Template.Child('menu_button_image')
+    read_button = Gtk.Template.Child('read_button')
 
     box = Gtk.Template.Child('box')
     overlay = Gtk.Template.Child('overlay')

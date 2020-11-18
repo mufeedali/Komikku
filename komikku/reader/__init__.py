@@ -265,6 +265,7 @@ class Reader:
         def on_menu_popover_closed(menu_button):
             self.pager.grab_focus()
 
+        self.window.read_button.hide()
         self.window.search_button.hide()
         self.window.fullscreen_button.show()
 
