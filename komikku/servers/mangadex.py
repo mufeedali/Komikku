@@ -162,7 +162,7 @@ class Mangadex(Server):
                 'include': 'chapters'
             }
         )
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['data']
@@ -181,8 +181,8 @@ class Mangadex(Server):
         data['name'] = html.unescape(resp_data['manga']['title'])
         data['cover'] = resp_data['manga']['mainCover']
 
-        data['authors'] += [t.strip() for t in resp_data['manga']['author']]
-        data['authors'] += [t.strip() for t in resp_data['manga']['artist'] if t.strip() not in data['authors']]
+        data['authors'] += resp_data['manga']['author']
+        data['authors'] += [t for t in resp_data['manga']['artist'] if t not in data['authors']]
         data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['tags'] if str(genre_id) in GENRES]
 
         if resp_data['manga']['publication']['status'] == 1:
@@ -234,7 +234,7 @@ class Mangadex(Server):
                 'Referer': self.chapter_url.format(chapter_slug),
             }
         )
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['data']
@@ -258,7 +258,7 @@ class Mangadex(Server):
             'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
             'Referer': self.page_url.format(chapter_slug, 1),
         })
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -282,12 +282,11 @@ class Mangadex(Server):
         Returns most popular mangas (bayesian rating)
         """
         r = self.session_get(self.most_populars_url)
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -331,11 +330,8 @@ class Mangadex(Server):
             title=term,
             s=2,
         ))
-        if r is None:
-            return None
 
         mime_type = get_buffer_mime_type(r.content)
-
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
