@@ -34,7 +34,7 @@ class Mangasee(Server):
     search_url = base_url + '/search/'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/read-online/{0}-chapter-{1}-page-1.html'
-    cover_url = 'https://cover.mangabeast01.com/cover/{0}.jpg'
+    cover_url = 'https://cover.nep.li/cover/{0}.jpg'
 
     mangas = None
 
