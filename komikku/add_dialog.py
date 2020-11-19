@@ -129,6 +129,8 @@ class AddDialog:
         self.read_button = self.builder.get_object('read_button')
         self.read_button.connect('clicked', self.on_read_button_clicked)
 
+        self.dialog.connect('key-press-event', self.on_key_press)
+
         self.show_page('servers')
 
     def clear_search(self):
@@ -284,6 +286,30 @@ class AddDialog:
             self.activity_indicator.stop()
             self.manga_slug = None
             self.show_page('search')
+
+    def on_key_press(self, _widget, event):
+        """Search entry of search page can be focused by simply typing a printable character"""
+
+        if event.keyval == Gdk.KEY_Escape:
+            if self.page == 'manga':
+                self.show_page('search')
+                return Gdk.EVENT_STOP
+            elif self.page == 'search':
+                self.show_page('servers')
+                return Gdk.EVENT_STOP
+
+            return Gdk.EVENT_PROPAGATE
+
+        if self.page != 'search':
+            return Gdk.EVENT_PROPAGATE
+
+        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
+        is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
+
+        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0) and not self.custom_title_search_page_searchentry.is_focus():
+            self.custom_title_search_page_searchentry.grab_focus_without_selecting()
+
+        return Gdk.EVENT_PROPAGATE
 
     def on_manga_clicked(self, listbox, row):
         if row.manga_data is None:
