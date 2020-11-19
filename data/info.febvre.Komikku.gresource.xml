@@ -58,10 +58,11 @@
         <file compressed="true">icons/ui/servers/submanga.ico</file>
         <file compressed="true">icons/ui/servers/thenonamesscans.ico</file>
         <file compressed="true">icons/ui/servers/unionmangas.ico</file>
-        <file compressed="true">icons/ui/servers/webtoon.ico</file>
-        <file compressed="true">icons/ui/servers/yieha.ico</file>
         <file compressed="true">icons/ui/servers/vizmanga.ico</file>
+        <file compressed="true">icons/ui/servers/webtoon.ico</file>
         <file compressed="true">icons/ui/servers/xkcd.ico</file>
+        <file compressed="true">icons/ui/servers/xoxocomics.ico</file>
+        <file compressed="true">icons/ui/servers/yieha.ico</file>
         <file compressed="true">icons/ui/servers/zeroscans.ico</file>
 
         <file compressed="true">images/logo.png</file>
