@@ -26,8 +26,8 @@ class Xoxocomics(Server):
     base_url = 'https://xoxocomics.com'
     most_populars_url = base_url + '/popular-comics'
     search_url = base_url + '/ajax/search'
-    manga_url = base_url + '/comic/{0}'
-    chapter_url = manga_url + '/{1}/all'
+    manga_url = base_url + '/comic/{0}?page={1}'
+    chapter_url = base_url + '/comic/{0}/{1}/all'
 
     def __init__(self):
         if self.session is None:
@@ -42,7 +42,7 @@ class Xoxocomics(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        r = self.session_get(self.manga_url.format(initial_data['slug']))
+        r = self.session_get(self.manga_url.format(initial_data['slug'], 1))
         if r.status_code != 200:
             return None
 
@@ -84,17 +84,37 @@ class Xoxocomics(Server):
         data['synopsis'] = soup.find('div', class_='detail-content').p.text.strip()
 
         # Chapters
-        for li_element in reversed(soup.find(id='nt_listchapter').find_all('li')):
-            if 'heading' in li_element.get('class'):
-                continue
+        def walk_chapters_pages(num=None, soup=None):
+            if soup is None and num is not None:
+                r = self.session_get(self.manga_url.format(initial_data['slug'], num))
+                if r.status_code != 200:
+                    return None
 
-            col_elements = li_element.find_all('div', recursive=False)
+                mime_type = get_buffer_mime_type(r.content)
+                if mime_type != 'text/html':
+                    return None
 
-            data['chapters'].append(dict(
-                slug='/'.join(col_elements[0].a.get('href').split('/')[-2:]),
-                title=col_elements[0].a.text.strip(),
-                date=convert_date_string(col_elements[1].text.strip(), '%m/%d/%Y'),
-            ))
+                soup = BeautifulSoup(r.content, 'html.parser')
+
+            for li_element in soup.find(id='nt_listchapter').find('ul').find_all('li'):
+                if 'heading' in li_element.get('class'):
+                    continue
+
+                col_elements = li_element.find_all('div', recursive=False)
+
+                data['chapters'].append(dict(
+                    slug='/'.join(col_elements[0].a.get('href').split('/')[-2:]),
+                    title=col_elements[0].a.text.strip(),
+                    date=convert_date_string(col_elements[1].text.strip(), '%m/%d/%Y'),
+                ))
+
+            next_element = soup.find('a', rel='next')
+            next_num = next_element.get('href')[-1] if next_element else None
+            if next_num:
+                walk_chapters_pages(num=next_num)
+
+        walk_chapters_pages(soup=soup)
+        data['chapters'] = list(reversed(data['chapters']))
 
         return data
 
@@ -147,7 +167,7 @@ class Xoxocomics(Server):
         """
         Returns comic absolute URL
         """
-        return self.manga_url.format(slug)
+        return self.manga_url.format(slug, 1)
 
     def get_most_populars(self):
         """
