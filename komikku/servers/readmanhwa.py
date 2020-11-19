@@ -53,7 +53,8 @@ class Readmanhwa(Server):
             self.session.headers.update({'user-agent': USER_AGENT})
 
         # Update NSFW filter default value according to current settings
-        self.filters[0]['default'] = Settings.get_default().nsfw_content
+        if Settings.instance:
+            self.filters[0]['default'] = Settings.get_default().nsfw_content
 
     def do_api_request(self, url):
         resp = self.session.get(url, headers={'X-Requested-With': 'XMLHttpRequest'})

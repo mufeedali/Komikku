@@ -14,12 +14,12 @@ def readmanhwa_server():
     return Readmanhwa()
 
 
-@test_steps('get_most_populars', 'search', 'get_manga_chapters_slug')
+@test_steps('get_most_populars', 'search', 'get_manga_data', 'get_manga_chapter_data', 'get_manga_chapter_page_image')
 def test_readmanhwa(readmanhwa_server):
-    # Get Most Popular
-    print('Get most popular')
+    # Get Most Populars
+    print('Get most populars')
     try:
-        response = readmanhwa_server.get_most_populars()
+        response = readmanhwa_server.get_most_populars(False)
     except Exception as e:
         response = None
         log_error_traceback(e)
@@ -29,7 +29,7 @@ def test_readmanhwa(readmanhwa_server):
     # Search
     print('Search')
     try:
-        response = readmanhwa_server.search('Solo leveling')
+        response = readmanhwa_server.search('Solo leveling', False)
         slug = response[0]['slug']
     except Exception as e:
         slug = None
@@ -37,14 +37,37 @@ def test_readmanhwa(readmanhwa_server):
     assert slug is not None
     yield
 
-    # Get Manga chapters by slug
-    print('Get manga chapters slug')
+    # Get manga data
+    print('Get manga data')
     try:
-        response = readmanhwa_server.get_manga_chapters_slug(slug)
-        chapter_slug = response[0]['slug']
+        response = readmanhwa_server.get_manga_data(dict(slug=slug))
+        chapter_slug = response['chapters'][1]['slug']
     except Exception as e:
         chapter_slug = None
         log_error_traceback(e)
+
     assert chapter_slug is not None
     yield
-    
+
+    # Get chapter data
+    print("Get chapter data")
+    try:
+        response = readmanhwa_server.get_manga_chapter_data(slug, None, chapter_slug, None)
+        page = response['pages'][0]
+    except Exception as e:
+        page = None
+        log_error_traceback(e)
+
+    assert page is not None
+    yield
+
+    # Get page image
+    print('Get page image')
+    try:
+        response = readmanhwa_server.get_manga_chapter_page_image(None, None, None, page)
+    except Exception as e:
+        response = None
+        log_error_traceback(e)
+
+    assert response is not None
+    yield
