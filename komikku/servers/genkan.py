@@ -270,6 +270,7 @@ class Leviatanscans_es(GenkanInitial):
     id = 'leviatanscans_es:genkan'
     name = 'Leviatan Scans'
     lang = 'es'
+    status = 'disabled'
 
     # Search is broken -> inherit from GenkanInitial instead of Genkan class
 
