@@ -18,7 +18,7 @@ class Readmanga(Server):
     name = 'Read Manga'
     lang = 'ru'
 
-    base_url = 'https://readmanga.me'
+    base_url = 'https://readmanga.live'
     search_url = base_url + '/search/advanced'
     most_populars_url = base_url + '/list?sortType=rate'
     manga_url = base_url + '/{0}'
@@ -37,12 +37,11 @@ class Readmanga(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
@@ -117,12 +116,11 @@ class Readmanga(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
@@ -158,7 +156,7 @@ class Readmanga(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'])
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -182,20 +180,21 @@ class Readmanga(Server):
         Returns best noted manga list
         """
         r = self.session_get(self.most_populars_url)
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
 
         results = []
-        for h3_element in soup.find_all('h3'):
+        for h3_element in soup.find('div', class_='tiles').find_all('h3'):
+            if not h3_element.a:
+                continue
             results.append(dict(
-                name=h3_element.a.text.strip(),
+                name=h3_element.a.get('title').strip(),
                 slug=h3_element.a.get('href')[1:],
             ))
 
@@ -203,12 +202,11 @@ class Readmanga(Server):
 
     def search(self, term):
         r = self.session_get(self.search_url, params=dict(q=term))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'lxml')
@@ -238,7 +236,7 @@ class Selfmanga(Readmanga):
     id = 'selfmanga:readmanga'
     name = 'Self Manga'
 
-    base_url = 'https://selfmanga.ru'
+    base_url = 'https://selfmanga.live'
     search_url = base_url + '/search/advanced'
     most_populars_url = base_url + '/list?sortType=rate'
     manga_url = base_url + '/{0}'
