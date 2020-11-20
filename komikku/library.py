@@ -84,6 +84,11 @@ class Library:
             if ret and self.search_menu_filters.get('recents'):
                 ret = manga.nb_recent_chapters > 0
 
+            if not ret and thumbnail._selected:
+                # Unselect thumbnail if it's selected
+                self.flowbox.unselect_child(thumbnail)
+                thumbnail._selected = False
+
             return ret
 
         def _sort(thumbnail1, thumbnail2):
@@ -219,17 +224,9 @@ class Library:
         self.window.downloader.start()
 
     def enter_search_mode(self):
-        if self.selection_mode:
-            # 'Search mode' is not allowed in 'Selection mode'
-            return
-
         self.search_button.set_active(True)
 
     def enter_selection_mode(self, x=None, y=None, selected_thumbnail=None):
-        if self.search_mode:
-            # 'Selection mode' is not allowed in 'Search mode'
-            return
-
         # Hide search button: disable search
         self.search_button.hide()
 
@@ -452,7 +449,7 @@ class Library:
             return
 
         for thumbnail in self.flowbox.get_children():
-            if thumbnail._selected:
+            if thumbnail._selected or thumbnail._hidden:
                 continue
             thumbnail._selected = True
             self.flowbox.select_child(thumbnail)
@@ -541,6 +538,7 @@ class Thumbnail(Gtk.FlowBoxChild):
         self._cover_pixbuf = None
         self._server_logo_pixbuf = None
         self._selected = False
+        self._hidden = False
 
         self.overlay = Gtk.Overlay(visible=True)
 
@@ -557,6 +555,9 @@ class Thumbnail(Gtk.FlowBoxChild):
         self.add(self.overlay)
         self.resize(width, height)
         self._draw_name()
+
+        self.connect('map', self.on_map)
+        self.connect('unmap', self.on_unmap)
 
     def _draw(self, _drawing_area, context):
         context.save()
@@ -661,6 +662,12 @@ class Thumbnail(Gtk.FlowBoxChild):
         surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
         context.set_source_surface(surface, 4, 4)
         context.paint()
+
+    def on_map(self, _widget):
+        self._hidden = False
+
+    def on_unmap(self, _widget):
+        self._hidden = True
 
     def resize(self, width, height):
         self.width = width
