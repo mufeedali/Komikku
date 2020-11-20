@@ -19,7 +19,7 @@ class Scanonepiece(Server):
     name = SERVER_NAME
     lang = 'fr'
 
-    base_url = 'https://www.scan-vf.co'
+    base_url = 'https://www.scan-vf.net'
     search_url = base_url + '/search'
     most_populars_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/{0}'
