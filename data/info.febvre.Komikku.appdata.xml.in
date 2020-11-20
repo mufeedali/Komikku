@@ -45,6 +45,22 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.23.0" date="2020-11-20">
+            <description>
+                <ul>
+                    <li>[Add dialog] Add Back navigation between pages via Esc key</li>
+                    <li>[Add dialog] Search page: Give keyboard focus to search entry when a printable character is typed</li>
+                    <li>[Card] Add 'Resume read' button</li>
+                    <li>[Servers] Add Xoxocomics (EN)</li>
+                    <li>[Servers] MangaSee: Update</li>
+                    <li>[Servers] MangaDex: Update to API v2 (more stable)</li>
+                    <li>[Servers] Read Manga: Update</li>
+                    <li>[Servers] ScanOnePiece: Update</li>
+                    <li>[Servers] Self Manga: Update</li>
+                    <li>[Servers] Disable Leviatan Scans (ES)</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.22.1" date="2020-11-17">
             <description>
                 <ul>
