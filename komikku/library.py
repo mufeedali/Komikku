@@ -89,6 +89,8 @@ class Library:
                 self.flowbox.unselect_child(thumbnail)
                 thumbnail._selected = False
 
+            thumbnail._filtered = not ret
+
             return ret
 
         def _sort(thumbnail1, thumbnail2):
@@ -449,7 +451,7 @@ class Library:
             return
 
         for thumbnail in self.flowbox.get_children():
-            if thumbnail._selected or thumbnail._hidden:
+            if thumbnail._selected or thumbnail._filtered:
                 continue
             thumbnail._selected = True
             self.flowbox.select_child(thumbnail)
@@ -537,8 +539,8 @@ class Thumbnail(Gtk.FlowBoxChild):
 
         self._cover_pixbuf = None
         self._server_logo_pixbuf = None
+        self._filtered = False
         self._selected = False
-        self._hidden = False
 
         self.overlay = Gtk.Overlay(visible=True)
 
@@ -555,9 +557,6 @@ class Thumbnail(Gtk.FlowBoxChild):
         self.add(self.overlay)
         self.resize(width, height)
         self._draw_name()
-
-        self.connect('map', self.on_map)
-        self.connect('unmap', self.on_unmap)
 
     def _draw(self, _drawing_area, context):
         context.save()
@@ -662,12 +661,6 @@ class Thumbnail(Gtk.FlowBoxChild):
         surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
         context.set_source_surface(surface, 4, 4)
         context.paint()
-
-    def on_map(self, _widget):
-        self._hidden = False
-
-    def on_unmap(self, _widget):
-        self._hidden = True
 
     def resize(self, width, height):
         self.width = width
