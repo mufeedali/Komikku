@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import dateparser
 import datetime
 from functools import lru_cache
-from gi.repository import Gio
 import importlib
 import inspect
 import io
@@ -107,8 +106,8 @@ class Server:
         return False
 
     @property
-    def logo_resource_path(self):
-        return get_server_logo_resource_path_by_id(self.id)
+    def logo_path(self):
+        return get_server_logo_path_by_id(self.id)
 
     @property
     def session(self):
@@ -313,17 +312,12 @@ def get_server_dir_name_by_id(id):
     return id.split(':')[0]
 
 
-def get_server_logo_resource_path_by_id(id):
-    path = '/info/febvre/Komikku/icons/ui/servers/{0}.ico'.format(get_server_main_id_by_id(id))
-    try:
-        res, _size, _flags = Gio.resources_get_info(path, 0)
-    except Exception:
-        res = None
+def get_server_logo_path_by_id(id):
+    path = os.path.join(os.path.dirname(__file__), get_server_module_name_by_id(id), get_server_main_id_by_id(id) + '.ico')
+    if os.path.exists(path):
+        return path
 
-    if res is None:
-        path = '/info/febvre/Komikku/icons/ui/servers/no_favicon.ico'
-
-    return path
+    return None
 
 
 def get_server_main_id_by_id(id):
