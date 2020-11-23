@@ -19,53 +19,6 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/library_selection_mode.xml</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/reader.xml</file>
 
-        <file compressed="true">icons/ui/servers/no_favicon.ico</file>
-        <file compressed="true">icons/ui/servers/centraldemangas.ico</file>
-        <file compressed="true">icons/ui/servers/crunchyroll.ico</file>
-        <file compressed="true">icons/ui/servers/dbmultiverse.ico</file>
-        <file compressed="true">icons/ui/servers/desu.ico</file>
-        <file compressed="true">icons/ui/servers/dynasty.ico</file>
-        <file compressed="true">icons/ui/servers/edelgardescans.ico</file>
-        <file compressed="true">icons/ui/servers/hatigarmscans.ico</file>
-        <file compressed="true">icons/ui/servers/hentailib.ico</file>
-        <file compressed="true">icons/ui/servers/izneo.ico</file>
-        <file compressed="true">icons/ui/servers/jaiminisbox.ico</file>
-        <file compressed="true">icons/ui/servers/japscan.ico</file>
-        <file compressed="true">icons/ui/servers/kireicake.ico</file>
-        <file compressed="true">icons/ui/servers/leviatanscans.ico</file>
-        <file compressed="true">icons/ui/servers/lupiteam.ico</file>
-        <file compressed="true">icons/ui/servers/mangadex.ico</file>
-        <file compressed="true">icons/ui/servers/mangaeden.ico</file>
-        <file compressed="true">icons/ui/servers/mangahub.ico</file>
-        <file compressed="true">icons/ui/servers/mangakawaii.ico</file>
-        <file compressed="true">icons/ui/servers/mangalib.ico</file>
-        <file compressed="true">icons/ui/servers/mangalife.ico</file>
-        <file compressed="true">icons/ui/servers/manganelo.ico</file>
-        <file compressed="true">icons/ui/servers/mangaplus.ico</file>
-        <file compressed="true">icons/ui/servers/mangarock.ico</file>
-        <file compressed="true">icons/ui/servers/mangasee.ico</file>
-        <file compressed="true">icons/ui/servers/mintmanga.ico</file>
-        <file compressed="true">icons/ui/servers/nhentai.ico</file>
-        <file compressed="true">icons/ui/servers/ninemanga.ico</file>
-        <file compressed="true">icons/ui/servers/oneshotscans.ico</file>
-        <file compressed="true">icons/ui/servers/peppercarrot.ico</file>
-        <file compressed="true">icons/ui/servers/readcomiconline.ico</file>
-        <file compressed="true">icons/ui/servers/readmanga.ico</file>
-        <file compressed="true">icons/ui/servers/readmanhwa.ico</file>
-        <file compressed="true">icons/ui/servers/reaperscans.ico</file>
-        <file compressed="true">icons/ui/servers/scanonepiece.ico</file>
-        <file compressed="true">icons/ui/servers/scantrad.ico</file>
-        <file compressed="true">icons/ui/servers/selfmanga.ico</file>
-        <file compressed="true">icons/ui/servers/submanga.ico</file>
-        <file compressed="true">icons/ui/servers/thenonamesscans.ico</file>
-        <file compressed="true">icons/ui/servers/unionmangas.ico</file>
-        <file compressed="true">icons/ui/servers/vizmanga.ico</file>
-        <file compressed="true">icons/ui/servers/webtoon.ico</file>
-        <file compressed="true">icons/ui/servers/xkcd.ico</file>
-        <file compressed="true">icons/ui/servers/xoxocomics.ico</file>
-        <file compressed="true">icons/ui/servers/yieha.ico</file>
-        <file compressed="true">icons/ui/servers/zeroscans.ico</file>
-
         <file compressed="true">images/logo.png</file>
         <file compressed="true">images/missing_file.png</file>
     </gresource>

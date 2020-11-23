@@ -655,12 +655,17 @@ class Thumbnail(Gtk.FlowBoxChild):
 
     def _draw_server_logo(self, context):
         if self._server_logo_pixbuf is None:
-            self._server_logo_pixbuf = Pixbuf.new_from_resource_at_scale(
-                self.manga.server.logo_resource_path, 20 * self.window.hidpi_scale, 20 * self.window.hidpi_scale, True)
+            logo_path = self.manga.server.logo_path
+            if logo_path is not None:
+                self._server_logo_pixbuf = Pixbuf.new_from_file_at_scale(
+                    logo_path, 20 * self.window.hidpi_scale, 20 * self.window.hidpi_scale, True)
+            else:
+                self._server_logo_pixbuf = 0
 
-        surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
-        context.set_source_surface(surface, 4, 4)
-        context.paint()
+        if self._server_logo_pixbuf:
+            surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
+            context.set_source_surface(surface, 4, 4)
+            context.paint()
 
     def resize(self, width, height):
         self.width = width
