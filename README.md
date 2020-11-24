@@ -5,8 +5,6 @@
 
 An online/offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
 
-**PLEASE NOTE**: *Komikku* is still in **an early stage of development**. Some design changes or unexpected errors may lead to data loss (even if everything is done for them not to happen).
-
 ## License
 
 Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html).
