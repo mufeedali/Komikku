@@ -18,7 +18,6 @@ from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
 from komikku.servers import get_buffer_mime_type
-from komikku.servers import get_server_logo_path_by_id
 from komikku.servers import get_server_main_id_by_id
 from komikku.servers import get_servers_list
 from komikku.servers import LANGUAGES
@@ -88,9 +87,9 @@ class AddDialog:
 
             # Server logo
             logo = Gtk.Image()
-            logo_path = get_server_logo_path_by_id(server_data['id'])
-            if logo_path is not None:
-                pixbuf = Pixbuf.new_from_file_at_scale(logo_path, 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
+            if server_data['logo_path']:
+                pixbuf = Pixbuf.new_from_file_at_scale(
+                    server_data['logo_path'], 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
                 logo.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
             else:
                 logo.set_size_request(24, 24)

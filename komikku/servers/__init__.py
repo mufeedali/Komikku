@@ -5,6 +5,7 @@
 from bs4 import BeautifulSoup
 import dateparser
 import datetime
+from functools import cached_property
 from functools import lru_cache
 import importlib
 import inspect
@@ -105,9 +106,15 @@ class Server:
     def login(self, username, password):
         return False
 
-    @property
+    @cached_property
     def logo_path(self):
-        return get_server_logo_path_by_id(self.id)
+        module_path = os.path.dirname(os.path.abspath(inspect.getfile(self.__class__)))
+
+        path = os.path.join(module_path, get_server_main_id_by_id(self.id) + '.ico')
+        if not os.path.exists(path):
+            return None
+
+        return path
 
     @property
     def session(self):
@@ -312,14 +319,6 @@ def get_server_dir_name_by_id(id):
     return id.split(':')[0]
 
 
-def get_server_logo_path_by_id(id):
-    path = os.path.join(os.path.dirname(__file__), get_server_module_name_by_id(id), get_server_main_id_by_id(id) + '.ico')
-    if os.path.exists(path):
-        return path
-
-    return None
-
-
 def get_server_main_id_by_id(id):
     return id.split(':')[0].split('_')[0]
 
@@ -352,12 +351,15 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
                 continue
 
             if inspect.isclass(obj) and obj.__module__.startswith('komikku.servers.'):
+                logo_path = os.path.join(os.path.dirname(os.path.abspath(module.__file__)), get_server_main_id_by_id(obj.id) + '.ico')
+
                 servers.append(dict(
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
                     is_nsfw=obj.is_nsfw,
                     class_name=get_server_class_name_by_id(obj.id),
+                    logo_path=logo_path if os.path.exists(logo_path) else None,
                     module=module,
                 ))
 
