@@ -25,6 +25,7 @@ logger = logging.getLogger('komikku')
 
 VERSION = 6
 
+
 def adapt_json(data):
     return (json.dumps(data, sort_keys=True)).encode()
 

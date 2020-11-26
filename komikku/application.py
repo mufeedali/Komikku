@@ -56,8 +56,8 @@ CREDITS = dict(
 
 
 class Application(Gtk.Application):
-    development_mode = False
     application_id = 'info.febvre.Komikku'
+    development_mode = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.FLAGS_NONE, **kwargs)

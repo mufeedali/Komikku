@@ -77,7 +77,7 @@ class Card:
 
     def init(self, manga, transition=True):
         # Default page is Chapters page
-        self.stack.set_visible_child_name('page_card_chapters')
+        self.stack.set_visible_child_name('chapters')
 
         self.manga = manga
         # Unref chapters to force a reload
@@ -578,7 +578,7 @@ class ChaptersList:
         self.card.leave_selection_mode()
 
     def select_all(self, action=None, param=None):
-        if self.card.stack.get_visible_child_name() != 'page_card_chapters':
+        if self.card.stack.get_visible_child_name() != 'chapters':
             return
 
         if not self.card.selection_mode:
@@ -594,9 +594,11 @@ class ChaptersList:
                 yield True
 
             self.window.activity_indicator.stop()
+            self.window.menu_button.set_sensitive(True)
 
         def run_generator(func):
             self.window.activity_indicator.start()
+            self.window.menu_button.set_sensitive(False)
 
             gen = func()
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
@@ -612,7 +614,7 @@ class ChaptersList:
         popover.set_relative_to(button)
 
         menu = Gio.Menu()
-        if chapter.downloaded or chapter.last_page_read_index is not None:
+        if chapter.pages:
             menu.append(_('Reset'), 'app.card.reset-chapter')
         if not chapter.downloaded:
             menu.append(_('Download'), 'app.card.download-chapter')

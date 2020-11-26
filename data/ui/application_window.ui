@@ -650,7 +650,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="name">page_card_info</property>
+                            <property name="name">info</property>
                             <property name="title" translatable="yes">Info</property>
                           </packing>
                         </child>
@@ -681,7 +681,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="name">page_card_chapters</property>
+                            <property name="name">chapters</property>
                             <property name="title" translatable="yes">Chapters</property>
                             <property name="position">1</property>
                           </packing>
