@@ -15,7 +15,7 @@ from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
 
 COOKIE_AGE_GATE_PASS = requests.cookies.create_cookie(
-    name='ageGatePass',
+    name='pagGDPR', # just why?
     value='true',
     domain='.webtoons.com',
     path='/',
@@ -25,6 +25,22 @@ COOKIE_AGE_GATE_PASS = requests.cookies.create_cookie(
 COOKIE_NEED_GDPR = requests.cookies.create_cookie(
     name='needGDPR',
     value='true',
+    domain='.webtoons.com',
+    path='/',
+    expires=None,
+)
+
+COOKIE_DISALLOW_ANALYSIS = requests.cookies.create_cookie(
+    name='tpaaGDPR',
+    value='',
+    domain='.webtoons.com',
+    path='/',
+    expires=None,
+)
+
+COOKIE_DISALLOW_MARKETING = requests.cookies.create_cookie(
+    name='tpaaGDPR',
+    value='',
     domain='.webtoons.com',
     path='/',
     expires=None,
@@ -59,6 +75,8 @@ class Webtoon(Server):
             self.session = requests.Session()
             self.session.cookies.set_cookie(COOKIE_AGE_GATE_PASS)
             self.session.cookies.set_cookie(COOKIE_NEED_GDPR)
+            self.session.cookies.set_cookie(COOKIE_DISALLOW_ANALYSIS)
+            self.session.cookies.set_cookie(COOKIE_DISALLOW_MARKETING)
 
     def get_manga_data(self, initial_data):
         """
