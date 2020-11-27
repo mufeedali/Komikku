@@ -16,7 +16,7 @@
 
     ```bash
     pip install --upgrade pip setuptools wheel
-    pip install PyGObject --no-use-pep517
+    pip install PyGObject
     pip install cloudscraper
     pip install lxml
     pip install beautifulsoup4
@@ -25,12 +25,13 @@
     pip install pillow
     pip install pure-protobuf
     pip install unidecode
+    pip install keyring
     pip install pytest
     pip install pytest-steps
     ```
 
 ## Run tests
 
-```bash
-python -m pytest -v
-```
+    ```bash
+    python -m pytest -v
+    ```
