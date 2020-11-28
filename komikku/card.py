@@ -644,14 +644,13 @@ class ChaptersList:
                     page['read'] = read
             else:
                 pages = None
-            last_page_read_index = None if chapter.read == read == 0 else chapter.last_page_read_index
 
             chapters_ids.append(chapter.id)
             chapters_data.append(dict(
+                last_page_read_index=None,
                 pages=pages,
                 read=read,
                 recent=False,
-                last_page_read_index=last_page_read_index,
             ))
 
         db_conn = create_db_connection()
@@ -670,8 +669,8 @@ class ChaptersList:
                     if chapter.pages:
                         for chapter_page in chapter.pages:
                             chapter_page['read'] = read
-                    if chapter.read == read == 0:
-                        chapter.last_page_read_index = None
+
+                    chapter.last_page_read_index = None
                     chapter.read = read
                     chapter.recent = False
 
@@ -698,12 +697,11 @@ class ChaptersList:
                 chapter_page['read'] = read
 
         data = dict(
+            last_page_read_index=None,
             pages=chapter.pages,
             read=read,
             recent=False,
         )
-        if chapter.read == read == 0:
-            data['last_page_read_index'] = None
 
         if chapter.update(data):
             self.populate_chapter_row(self.action_row)
