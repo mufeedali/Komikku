@@ -227,7 +227,6 @@ class ChaptersList:
 
         self.listbox = self.window.card_chapters_listbox
         self.listbox.get_style_context().add_class('list-bordered')
-        self.listbox.connect('button-press-event', self.on_button_pressed)
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
         self.listbox.connect('selected-rows-changed', self.on_selection_changed)
         self.listbox.connect('unselect-all', self.card.leave_selection_mode)
@@ -328,8 +327,8 @@ class ChaptersList:
         for row in self.listbox.get_children():
             row._selected = False
 
-    def on_button_pressed(self, _widget, event):
-        row = self.listbox.get_row_at_y(event.y)
+    def on_chapter_row_button_pressed(self, event_box, event):
+        row = event_box.get_parent()
         if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and row is not None:
             self.card.enter_selection_mode()
             self.on_chapter_row_clicked(None, row)
@@ -438,8 +437,11 @@ class ChaptersList:
         for child in row.get_children():
             child.destroy()
 
+        event_box = Gtk.EventBox.new()
+        event_box.connect('button-press-event', self.on_chapter_row_button_pressed)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        row.add(box)
+        event_box.add(box)
+        row.add(event_box)
 
         chapter = row.chapter
 
