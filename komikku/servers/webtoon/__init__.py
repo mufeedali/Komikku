@@ -39,7 +39,7 @@ COOKIE_DISALLOW_ANALYSIS = requests.cookies.create_cookie(
 )
 
 COOKIE_DISALLOW_MARKETING = requests.cookies.create_cookie(
-    name='tpaaGDPR',
+    name='tpamGDPR',
     value='',
     domain='.webtoons.com',
     path='/',
