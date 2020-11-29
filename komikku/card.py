@@ -330,54 +330,6 @@ class ChaptersList:
         for row in self.listbox.get_children():
             row._selected = False
 
-    def on_key_pressed(self, _widget, event):
-        modifiers = Gtk.accelerator_get_default_mod_mask()
-        if self.card.selection_mode:
-            walk_index = None
-            walk_row = None
-            is_single = event.state & modifiers != Gdk.ModifierType.SHIFT_MASK
-
-            if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
-                walk_index = self.selection_mode_last_row_index
-                walk_direction = -1
-            elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
-                walk_index = self.selection_mode_last_row_index
-                walk_direction = 1
-
-            if walk_index is not None:
-                # determine the row to select
-                if is_single or self.selection_mode_last_walk_direction in (None, walk_direction):
-                    walk_index += walk_direction
-                self.selection_mode_last_walk_direction = walk_direction
-                walk_row = self.listbox.get_row_at_index(walk_index)
-                if walk_row:
-                    self.selection_mode_last_row_index = walk_index
-                elif is_single:
-                    # out of bounds, but since we only mark that row it's fine
-                    # also we might be changing from multi to single select
-                    walk_row = self.listbox.get_row_at_index(self.selection_mode_last_row_index)
-                else:
-                    return Gdk.EVENT_STOP
-                # Actual selection
-                if is_single:
-                    walk_row._selected = True
-                    self.listbox.select_row(walk_row)
-                    for row in self.listbox.get_selected_rows():
-                        if row is not walk_row:
-                            self.listbox.unselect_row(row)
-                            row._selected = False
-                    self.selection_mode_last_walk_direction = None
-                elif walk_row._selected:
-                    self.listbox.unselect_row(walk_row)
-                    walk_row._selected = False
-                else:
-                    self.listbox.select_row(walk_row)
-                    walk_row._selected = True
-
-                return Gdk.EVENT_STOP
-
-        return Gdk.EVENT_PROPAGATE
-
     def on_chapter_row_button_pressed(self, event_box, event):
         row = event_box.get_parent()
         if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and row is not None:
@@ -438,6 +390,56 @@ class ChaptersList:
             self.selection_mode_range = True
         else:
             self.card.enter_selection_mode()
+
+    def on_key_pressed(self, _widget, event):
+        if event.keyval not in (Gdk.KEY_Up, Gdk.KEY_KP_Up, Gdk.KEY_Down, Gdk.KEY_KP_Down) or not self.card.selection_mode:
+            return Gdk.EVENT_STOP
+
+        modifiers = Gtk.accelerator_get_default_mod_mask()
+        is_single = event.state & modifiers != Gdk.ModifierType.SHIFT_MASK
+        walk_index = self.selection_mode_last_row_index
+        walk_row = None
+
+        if event.keyval in (Gdk.KEY_Up, Gdk.KEY_KP_Up):
+            walk_direction = -1
+        elif event.keyval in (Gdk.KEY_Down, Gdk.KEY_KP_Down):
+            walk_direction = 1
+
+        # Determine the row to select
+        if is_single or self.selection_mode_last_walk_direction in (None, walk_direction):
+            walk_index += walk_direction
+        self.selection_mode_last_walk_direction = walk_direction
+
+        walk_row = self.listbox.get_row_at_index(walk_index)
+        if walk_row:
+            self.selection_mode_last_row_index = walk_index
+        elif is_single:
+            # Out of bounds, but since we only mark that row it's fine
+            # also we might be changing from multi to single row selection and needed to unselect previously selected rows
+            walk_row = self.listbox.get_row_at_index(self.selection_mode_last_row_index)
+        else:
+            return Gdk.EVENT_STOP
+
+        # Actual selection
+        if is_single:
+            self.listbox.select_row(walk_row)
+            walk_row._selected = True
+
+            # Unselect previously selected rows in multi selection (with SHIFT modifier)
+            for row in self.listbox.get_selected_rows():
+                if row is not walk_row:
+                    self.listbox.unselect_row(row)
+                    row._selected = False
+
+            self.selection_mode_last_walk_direction = None
+        elif walk_row._selected:
+            self.listbox.unselect_row(walk_row)
+            walk_row._selected = False
+        else:
+            self.listbox.select_row(walk_row)
+            walk_row._selected = True
+
+        return Gdk.EVENT_STOP
 
     def on_selection_changed(self, _flowbox):
         number = len(self.listbox.get_selected_rows())
