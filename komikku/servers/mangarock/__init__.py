@@ -4,9 +4,9 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-import cloudscraper
 from datetime import datetime
 import json
+import requests
 
 from komikku.servers import convert_mri_data_to_webp_buffer
 from komikku.servers import get_buffer_mime_type
@@ -43,7 +43,7 @@ class Mangarock(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = cloudscraper.create_scraper()
+            self.session = requests.Session()
             self.session.headers.update(headers)
 
     def get_manga_data(self, initial_data):

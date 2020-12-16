@@ -5,8 +5,8 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import cloudscraper
 import json
+import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
@@ -19,7 +19,7 @@ from komikku.servers import USER_AGENT
 class Genkan(Server):
     def __init__(self):
         if self.session is None:
-            self.session = cloudscraper.create_scraper()
+            self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
     def get_manga_data(self, initial_data):

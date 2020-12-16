@@ -26,7 +26,7 @@
         "python3-unidecode.json",
         "python3-lxml.json",
         "python3-beautifulsoup4.json",
-        "python3-cloudscraper.json",
+        "python3-requests.json",
         {
             "name" : "libhandy",
             "buildsystem" : "meson",

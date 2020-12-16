@@ -17,7 +17,6 @@
     ```bash
     pip install --upgrade pip setuptools wheel
     pip install PyGObject
-    pip install cloudscraper
     pip install lxml
     pip install beautifulsoup4
     pip install dateparser
