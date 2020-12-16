@@ -58,6 +58,90 @@ class PreferencesWindow(Handy.PreferencesWindow):
         self.set_config_values()
         self.present()
 
+    def on_background_color_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            self.settings.background_color = 'white'
+        elif index == 1:
+            self.settings.background_color = 'black'
+
+    def on_borders_crop_changed(self, switch_button, gparam):
+        self.settings.borders_crop = switch_button.get_active()
+
+    def on_credentials_storage_plaintext_fallback_changed(self, switch_button, gparam):
+        self.settings.credentials_storage_plaintext_fallback = switch_button.get_active()
+
+    def on_desktop_notifications_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            self.settings.desktop_notifications = True
+        else:
+            self.settings.desktop_notifications = False
+
+    def on_fullscreen_changed(self, switch_button, gparam):
+        self.settings.fullscreen = switch_button.get_active()
+
+    def on_long_strip_detection_changed(self, switch_button, gparam):
+        self.settings.long_strip_detection = switch_button.get_active()
+
+    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            self.settings.new_chapters_auto_download = True
+        else:
+            self.settings.new_chapters_auto_download = False
+
+    def on_night_light_changed(self, switch_button, gparam):
+        self.settings.night_light = switch_button.get_active()
+
+        self.parent.init_theme()
+
+    def on_nsfw_content_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            self.settings.nsfw_content = True
+        else:
+            self.settings.nsfw_content = False
+
+    def on_reading_mode_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            self.settings.reading_mode = 'right-to-left'
+        elif index == 1:
+            self.settings.reading_mode = 'left-to-right'
+        elif index == 2:
+            self.settings.reading_mode = 'vertical'
+        elif index == 3:
+            self.settings.reading_mode = 'webtoon'
+
+    def on_scaling_changed(self, row, param):
+        index = row.get_selected_index()
+
+        if index == 0:
+            self.settings.scaling = 'screen'
+        elif index == 1:
+            self.settings.scaling = 'width'
+        elif index == 2:
+            self.settings.scaling = 'height'
+        elif index == 3:
+            self.settings.scaling = 'original'
+
+    def on_servers_language_activated(self, switch_button, gparam, code):
+        if switch_button.get_active():
+            self.settings.add_servers_language(code)
+        else:
+            self.settings.remove_servers_language(code)
+
+    def on_theme_changed(self, switch_button, gparam):
+        self.settings.dark_theme = switch_button.get_active()
+
+        self.parent.init_theme()
+
+    def on_update_at_startup_changed(self, switch_button, gparam):
+        if switch_button.get_active():
+            self.settings.update_at_startup = True
+        else:
+            self.settings.update_at_startup = False
+
     def set_config_values(self):
         #
         # General
@@ -151,90 +235,6 @@ class PreferencesWindow(Handy.PreferencesWindow):
         # Credentials storage: allow plaintext as fallback
         self.credentials_storage_plaintext_fallback_switch.set_active(self.settings.credentials_storage_plaintext_fallback)
         self.credentials_storage_plaintext_fallback_switch.connect('notify::active', self.on_credentials_storage_plaintext_fallback_changed)
-
-    def on_background_color_changed(self, row, param):
-        index = row.get_selected_index()
-
-        if index == 0:
-            self.settings.background_color = 'white'
-        elif index == 1:
-            self.settings.background_color = 'black'
-
-    def on_borders_crop_changed(self, switch_button, gparam):
-        self.settings.borders_crop = switch_button.get_active()
-
-    def on_credentials_storage_plaintext_fallback_changed(self, switch_button, gparam):
-        self.settings.credentials_storage_plaintext_fallback = switch_button.get_active()
-
-    def on_desktop_notifications_changed(self, switch_button, gparam):
-        if switch_button.get_active():
-            self.settings.desktop_notifications = True
-        else:
-            self.settings.desktop_notifications = False
-
-    def on_fullscreen_changed(self, switch_button, gparam):
-        self.settings.fullscreen = switch_button.get_active()
-
-    def on_long_strip_detection_changed(self, switch_button, gparam):
-        self.settings.long_strip_detection = switch_button.get_active()
-
-    def on_new_chapters_auto_download_changed(self, switch_button, gparam):
-        if switch_button.get_active():
-            self.settings.new_chapters_auto_download = True
-        else:
-            self.settings.new_chapters_auto_download = False
-
-    def on_night_light_changed(self, switch_button, gparam):
-        self.settings.night_light = switch_button.get_active()
-
-        self.parent.init_theme()
-
-    def on_nsfw_content_changed(self, switch_button, gparam):
-        if switch_button.get_active():
-            self.settings.nsfw_content = True
-        else:
-            self.settings.nsfw_content = False
-
-    def on_reading_mode_changed(self, row, param):
-        index = row.get_selected_index()
-
-        if index == 0:
-            self.settings.reading_mode = 'right-to-left'
-        elif index == 1:
-            self.settings.reading_mode = 'left-to-right'
-        elif index == 2:
-            self.settings.reading_mode = 'vertical'
-        elif index == 3:
-            self.settings.reading_mode = 'webtoon'
-
-    def on_scaling_changed(self, row, param):
-        index = row.get_selected_index()
-
-        if index == 0:
-            self.settings.scaling = 'screen'
-        elif index == 1:
-            self.settings.scaling = 'width'
-        elif index == 2:
-            self.settings.scaling = 'height'
-        elif index == 3:
-            self.settings.scaling = 'original'
-
-    def on_servers_language_activated(self, switch_button, gparam, code):
-        if switch_button.get_active():
-            self.settings.add_servers_language(code)
-        else:
-            self.settings.remove_servers_language(code)
-
-    def on_theme_changed(self, switch_button, gparam):
-        self.settings.dark_theme = switch_button.get_active()
-
-        self.parent.init_theme()
-
-    def on_update_at_startup_changed(self, switch_button, gparam):
-        if switch_button.get_active():
-            self.settings.update_at_startup = True
-        else:
-            self.settings.update_at_startup = False
 
 
 class PreferencesServersLanguagesSubpage:

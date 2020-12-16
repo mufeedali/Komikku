@@ -249,7 +249,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.reader = Reader(self)
 
         # Window
-        self.connect('check-resize', self.on_resize)
+        self.connect('size-allocate', self.on_resize)
         self.connect('delete-event', self.on_application_quit)
         self.connect('key-press-event', self.on_key_press)
         self.connect('window-state-event', self.on_window_state_event)
@@ -271,9 +271,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.init_theme()
 
         self.library.show()
-
-    def change_layout(self):
-        pass
 
     def confirm(self, title, message, callback):
         def on_response(dialog, response_id):
@@ -433,7 +430,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
             self.card.refresh(self.reader.chapters_consulted)
             self.card.show()
 
-    def on_resize(self, window):
+    def on_resize(self, _window, _allocation):
         size = self.get_size()
         if self._prev_size and self._prev_size.width == size.width and self._prev_size.height == size.height:
             return
@@ -444,16 +441,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         if self.page == 'reader':
             self.reader.on_resize()
 
-        if size.width < 700:
-            if self.mobile_width is True:
-                return
-
-            self.mobile_width = True
-            self.change_layout()
-        else:
-            if self.mobile_width is True:
-                self.mobile_width = False
-                self.change_layout()
+        self.mobile_width = size.width <= 800
 
     def on_preferences_menu_clicked(self, action, param):
         PreferencesWindow(self).open(action, param)
