@@ -5,7 +5,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-import cloudscraper
+import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
@@ -19,7 +19,7 @@ class Submanga(Server):
     name = SERVER_NAME
     lang = 'es'
 
-    base_url = 'https://submangas.net'
+    base_url = 'https://submanga.io'
     search_url = base_url + '/search'
     most_populars_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
     manga_url = base_url + '/manga/{0}'
@@ -29,7 +29,7 @@ class Submanga(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = cloudscraper.create_scraper()
+            self.session = requests.Session()
 
     def get_manga_data(self, initial_data):
         """
