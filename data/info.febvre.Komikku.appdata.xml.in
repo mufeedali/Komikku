@@ -45,6 +45,20 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.24.0" date="2020-12-17">
+            <description>
+                <ul>
+                    <li>[Library] Allow Selection mode while in search and search in Selection mode</li>
+                    <li>[Card] The chapter `Reset` action is now proposed as soon as chapter pages are known</li>
+                    <li>[Card] Improve chapters multiple selection</li>
+                    <li>[Servers] Add Read Comic Online (EN)</li>
+                    <li>[Servers] Webtoon: Update</li>
+                    <li>[Servers] Submanga: Update</li>
+                    <li>[Servers] Hunlight Scans: Add logo</li>
+                    <li>[L10n] Update German translation</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.23.0" date="2020-11-20">
             <description>
                 <ul>
