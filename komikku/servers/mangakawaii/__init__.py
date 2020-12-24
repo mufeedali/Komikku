@@ -97,7 +97,7 @@ class Mangakawaii(Server):
                     data['status'] = 'ongoing'
                 elif status == 'terminé':
                     data['status'] = 'complete'
-                elif status == 'abdandonné':
+                elif status == 'abandonné':
                     data['status'] = 'suspended'
                 elif status == 'en pause':
                     data['status'] = 'hiatus'
