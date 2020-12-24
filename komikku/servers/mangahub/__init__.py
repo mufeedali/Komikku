@@ -50,7 +50,7 @@ class Mangahub(Server):
     chapter_url = base_url + '/chapter/{0}/{1}'
     api_url = 'https://api.mghubcdn.com/graphql'
     img_url = 'https://img.mghubcdn.com/file/imghub/{0}'
-    thumb_url = 'https://thumb.mghubcdn.com/{0}'
+    cover_url = 'https://thumb.mghubcdn.com/{0}'
 
     def __init__(self):
         if self.session is None:
@@ -89,7 +89,7 @@ class Mangahub(Server):
             manga = resp.json()['data']['manga']
 
             data['name'] = manga['title']
-            data['cover'] = self.thumb_url.format(manga['image'])
+            data['cover'] = self.cover_url.format(manga['image'])
 
             for author in (s.strip() for s in manga['author'].split(',')):
                 data['authors'].append(author)
@@ -142,10 +142,7 @@ class Mangahub(Server):
             )
 
             pages = json.loads(resp.json()['data']['chapter']['pages'])
-            # pages is {"1": ".../1.jpg", "2": ".../2.jpg"} etc.
-            # Python doesn't guarantee that dictionaries iterate in insertion order
-            # until 3.7. Be a little paranoid and sort.
-            for _, path in sorted(list(pages.items()), key=lambda pair: pair[0]):
+            for path in pages.values():
                 data['pages'].append(dict(
                     slug=None,
                     image=self.img_url.format(path),
