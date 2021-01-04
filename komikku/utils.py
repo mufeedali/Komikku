@@ -134,6 +134,12 @@ def scale_pixbuf_animation(pixbuf, width, height, preserve_aspect_ratio, loop=Fa
     return pixbuf_scaled
 
 
+def skip_past(haystack, needle):
+    if (idx := haystack.find(needle)) >= 0:
+        return idx + len(needle)
+    return None
+
+
 class Imagebuf:
     def __init__(self, path, buffer, width, height):
         self._buffer = buffer

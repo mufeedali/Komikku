@@ -223,6 +223,12 @@ class Server:
 
         return r
 
+    @classmethod
+    def get_manga_slug(cls, url):
+        if url.startswith(cls.base_url):
+            return url.split('/')[-1]
+        return None
+
 
 def convert_date_string(date, format=None):
     if format is not None:

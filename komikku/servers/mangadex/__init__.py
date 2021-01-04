@@ -12,6 +12,7 @@ import logging
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.utils import skip_past
 
 logger = logging.getLogger('komikku.servers.mangadex')
 
@@ -276,6 +277,12 @@ class Mangadex(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    @classmethod
+    def get_manga_slug(cls, url):
+        if idx := skip_past(url, 'mangadex.org/title/'):
+            return Mangadex.convert_old_slug(url[idx:])
+        return None
 
     def get_most_populars(self):
         """
