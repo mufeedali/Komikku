@@ -5,6 +5,7 @@
 from gettext import gettext as _
 import threading
 
+from gi.repository import GObject
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
@@ -27,6 +28,7 @@ from komikku.utils import scale_pixbuf_animation
 
 
 class AddDialog:
+    prefilled = False
     page = None
     search_filters = None
     search_lock = False
@@ -36,7 +38,7 @@ class AddDialog:
     manga_data = None
     manga = None
 
-    def __init__(self, window):
+    def __init__(self, window, servers):
         self.window = window
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/add_dialog.ui')
@@ -64,21 +66,7 @@ class AddDialog:
         listbox.get_style_context().add_class('list-bordered')
         listbox.connect('row-activated', self.on_server_clicked)
 
-        settings = Settings.get_default()
-        servers_settings = settings.servers_settings
-        servers_languages = settings.servers_languages
-
-        for server_data in get_servers_list():
-            if servers_languages and server_data['lang'] not in servers_languages:
-                continue
-
-            server_settings = servers_settings.get(get_server_main_id_by_id(server_data['id']))
-            if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
-                continue
-
-            if settings.nsfw_content is False and server_data['is_nsfw']:
-                continue
-
+        for server_data in servers:
             row = Gtk.ListBoxRow()
             row.get_style_context().add_class('add-dialog-server-listboxrow')
             row.server_data = server_data
@@ -287,14 +275,20 @@ class AddDialog:
         elif self.page == 'manga':
             self.activity_indicator.stop()
             self.manga_slug = None
-            self.show_page('search')
+            if self.prefilled:
+                self.show_page('servers')
+            else:
+                self.show_page('search')
 
     def on_key_press(self, _widget, event):
         """Search entry of search page can be focused by simply typing a printable character"""
 
         if event.keyval == Gdk.KEY_Escape:
             if self.page == 'manga':
-                self.show_page('search')
+                if self.prefilled:
+                    self.show_page('servers')
+                else:
+                    self.show_page('search')
                 return Gdk.EVENT_STOP
             elif self.page == 'search':
                 self.show_page('servers')
@@ -325,9 +319,24 @@ class AddDialog:
 
     def on_server_clicked(self, listbox, row):
         self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
-        self.show_page('search')
+        if hasattr(row, 'manga_data'):
+            self.show_manga(row.manga_data)
+        else:
+            self.show_page('search')
 
-    def open(self, action, param):
+    def prefill(self, slugs):
+        rows = self.builder.get_object('servers_page_listbox').get_children()
+        # assert len(slugs) == len(rows), 'expecting one slug per row'
+        for row, slug in zip(rows, slugs):
+            row.manga_data = dict(slug=slug)
+
+        if len(rows) == 1:
+            row = rows[0]
+            self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
+            self.show_manga(row.manga_data)
+        self.prefilled = True
+
+    def open(self, action=None, param=None):
         self.dialog.set_modal(True)
         self.dialog.set_transient_for(self.window)
         self.dialog.present()

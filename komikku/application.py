@@ -30,6 +30,8 @@ from komikku.models import backup_db
 from komikku.models import Settings
 from komikku.preferences_window import PreferencesWindow
 from komikku.reader import Reader
+from komikku.servers import get_server_main_id_by_id
+from komikku.servers import get_servers_list
 from komikku.updater import Updater
 
 CREDITS = dict(
@@ -58,10 +60,20 @@ CREDITS = dict(
 class Application(Gtk.Application):
     application_id = 'info.febvre.Komikku'
     development_mode = False
+    servers = None
+    logger = None
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.FLAGS_NONE, **kwargs)
+        super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE, **kwargs)
+        # main option entries are required for handling command line, but we actually just want the default Gtk stuff
+        self.add_main_option_entries([GLib.OptionEntry()])
         self.window = None
+        self.logger = self.get_logger()
+
+        settings = Settings.get_default()
+        settings.connect('changed::servers-settings', self.on_server_settings_changed)
+        settings.connect('changed::servers-languages', self.on_server_settings_changed)
+        self.on_server_settings_changed(settings, None) # initial setup
 
     def add_actions(self):
         self.window.add_actions()
@@ -78,6 +90,25 @@ class Application(Gtk.Application):
         Handy.init()
         Notify.init(_('Komikku'))
 
+    def on_server_settings_changed(self, settings, _key):
+        servers_settings = settings.servers_settings
+        servers_languages = settings.servers_languages
+
+        servers = []
+        for server_data in get_servers_list():
+            if servers_languages and server_data['lang'] not in servers_languages:
+                continue
+            server_settings = servers_settings.get(get_server_main_id_by_id(server_data['id']))
+            if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
+                continue
+
+            if settings.nsfw_content is False and server_data['is_nsfw']:
+                continue
+
+            servers.append(server_data)
+
+        self.servers = servers
+
     def do_activate(self):
         if not self.window:
             self.window = ApplicationWindow(application=self, title='Komikku', icon_name=self.application_id)
@@ -86,6 +117,36 @@ class Application(Gtk.Application):
             self.add_actions()
 
         self.window.present()
+
+    def do_command_line(self, command_line):
+        args = command_line.get_arguments()
+        self.do_activate()
+
+        urls = args[1:]
+        if len(urls) > 1:
+            msg = _("Multiple URLs not supported")
+            self.logger.error(msg)
+            self.window.show_notification(msg)
+        elif len(urls) == 1:
+            url = urls[0]
+            servers = [(data, getattr(data['module'], data['class_name'])) for data in self.servers]
+            handlers = []
+            slugs = []
+            for data, cls in servers:
+                slug = cls.get_manga_slug(url)
+                if slug:
+                    slugs.append(slug)
+                    handlers.append(data)
+            if not slugs:
+                msg = _('Invalid URL {}, not handled by any server.').format(url)
+                self.logger.info(msg)
+                self.window.show_notification(msg)
+            else:
+                dialog = AddDialog(self.window, handlers)
+                dialog.prefill(slugs)
+                dialog.open()
+
+        return 0
 
     def get_logger(self):
         logging.basicConfig(
@@ -170,7 +231,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.builder = Gtk.Builder()
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/main.xml')
 
-        self.logging_manager = self.application.get_logger()
+        self.logging_manager = self.application.logger
         self.downloader = Downloader(self)
         self.updater = Updater(self, Settings.get_default().update_at_startup)
 
@@ -411,7 +472,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     def on_left_button_clicked(self, action=None, param=None):
         if self.page == 'library':
             if action and not self.library.selection_mode:
-                AddDialog(self).open(action, param)
+                AddDialog(self, self.application.servers).open(action, param)
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
             if self.library.search_mode and action is None:

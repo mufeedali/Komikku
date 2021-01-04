@@ -14,6 +14,7 @@ from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.utils import skip_past
 
 logger = logging.getLogger('komikku.servers.dynasty')
 
@@ -266,6 +267,12 @@ class Dynasty(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    @classmethod
+    def get_manga_slug(cls, url):
+        if idx := skip_past(url, 'dynasty-scans.com/'):
+            return url[idx:]
+        return None
 
     def resolve_tag(self, search_tag):
         r = self.session_post(self.tags_url, params=dict(query=search_tag))
