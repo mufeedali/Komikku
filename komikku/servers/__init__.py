@@ -20,6 +20,7 @@ import requests
 from requests.adapters import TimeoutSauce
 import struct
 
+from komikku.models.settings import Settings
 from komikku.utils import get_cache_dir
 from komikku.utils import KeyringHelper
 
@@ -83,6 +84,13 @@ class Server:
     base_url = None
 
     __sessions = {}  # to cache all existing sessions
+
+    @classmethod
+    def get_manga_slug(cls, url):
+        if not url.startswith(cls.base_url):
+            return None
+
+        return url.split('/')[-1]
 
     def init(self, username=None, password=None):
         if username and password:
@@ -223,12 +231,6 @@ class Server:
 
         return r
 
-    @classmethod
-    def get_manga_slug(cls, url):
-        if url.startswith(cls.base_url):
-            return url.split('/')[-1]
-        return None
-
 
 def convert_date_string(date, format=None):
     if format is not None:
@@ -293,6 +295,27 @@ def convert_image(image, format='jpeg', ret_type='image'):
         return io_buffer.getbuffer()
     io_buffer.seek(0)
     return Image.open(io_buffer)
+
+
+def get_allowed_servers_list():
+    servers_settings = Settings.get_default().servers_settings
+    servers_languages = Settings.get_default().servers_languages
+
+    servers = []
+    for server_data in get_servers_list():
+        if servers_languages and server_data['lang'] not in servers_languages:
+            continue
+
+        server_settings = servers_settings.get(get_server_main_id_by_id(server_data['id']))
+        if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
+            continue
+
+        if Settings.get_default().nsfw_content is False and server_data['is_nsfw']:
+            continue
+
+        servers.append(server_data)
+
+    return servers
 
 
 def get_buffer_mime_type(buffer):
