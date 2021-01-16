@@ -11,12 +11,17 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import GObject
 from gi.repository import Gtk
+from gi.repository import Handy
+from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
+from komikku.categories_editor import CategoriesEditorWindow
 from komikku.downloader import DownloadManagerDialog
+from komikku.models import Category
 from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import update_rows
@@ -49,6 +54,20 @@ class Library:
         self.search_entry.connect('changed', self.search)
         self.search_button = self.window.search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
+
+        # Flap (categories)
+        self.flap = self.window.library_flap
+        self.flap.props.transition_type = Handy.FlapTransitionType.OVER
+        self.flap.props.fold_policy = Handy.FlapFoldPolicy.ALWAYS
+        self.flap.props.modal = True
+        self.flap.props.swipe_to_close = True
+        self.flap.props.swipe_to_open = True
+        self.flap.connect('notify::reveal-flap', self.on_flap_revealed)
+        self.flap_reveal_button = self.window.library_flap_reveal_button
+        self.flap_reveal_button_toggled_handler_id = self.flap_reveal_button.connect('toggled', self.toggle_flap)
+
+        self.categories_list = CategoriesList(self)
+        self.categories_list.populate()
 
         # Mangas Flowbox
         self.flowbox = self.window.library_flowbox
@@ -125,6 +144,10 @@ class Library:
         download_manager_action = Gio.SimpleAction.new('library.download-manager', None)
         download_manager_action.connect('activate', self.open_download_manager)
         self.window.application.add_action(download_manager_action)
+
+        categories_editor_action = Gio.SimpleAction.new('library.categories-editor', None)
+        categories_editor_action.connect('activate', self.open_categories_editor)
+        self.window.application.add_action(categories_editor_action)
 
         # Search menu actions
         search_downloaded_action = Gio.SimpleAction.new_stateful('library.search.downloaded', None, GLib.Variant('b', False))
@@ -275,6 +298,10 @@ class Library:
 
         return Gdk.EVENT_PROPAGATE
 
+    def on_flap_revealed(self, _flap, _param):
+        with self.flap_reveal_button.handler_block(self.flap_reveal_button_toggled_handler_id):
+            self.flap_reveal_button.props.active = self.flap.get_reveal_flap()
+
     def on_gesture_long_press_activated(self, _gesture, x, y):
         if self.selection_mode:
             # Enter in 'Range' selection mode
@@ -405,14 +432,23 @@ class Library:
         for thumbnail in self.flowbox.get_children():
             thumbnail.resize(*self.thumbnails_size)
 
+    def open_categories_editor(self, action, param):
+        CategoriesEditorWindow(self.window).open(action, param)
+
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)
 
     def populate(self):
         db_conn = create_db_connection()
-        mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
+        if self.categories_list.selected_category:
+            mangas_rows = db_conn.execute(
+                'SELECT m.* FROM categories_mangas_association cma JOIN mangas m ON cma.manga_id = m.id WHERE cma.category_id = ? ORDER BY m.last_read DESC',
+                (self.categories_list.selected_category.id,)
+            ).fetchall()
+        else:
+            mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
-        if len(mangas_rows) == 0:
+        if len(mangas_rows) == 0 and not self.categories_list.selected_category:
             if self.window.overlay.is_ancestor(self.window.box):
                 self.window.box.remove(self.window.overlay)
 
@@ -459,6 +495,8 @@ class Library:
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
+        self.flap_reveal_button.show()
+
         self.search_button.show()
         self.window.card.resume_read_button.hide()
         self.window.reader.fullscreen_button.hide()
@@ -473,6 +511,9 @@ class Library:
             self.flowbox.invalidate_sort()
 
         self.window.show_page('library')
+
+    def toggle_flap(self, _button):
+        self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
 
     def toggle_search_mode(self, button):
         if button.get_active():
@@ -528,6 +569,65 @@ class Library:
         self.window.updater.start()
 
         self.leave_selection_mode()
+
+
+class CategoriesList(GObject.GObject):
+    selected_category = None
+
+    def __init__(self, library):
+        GObject.Object.__init__(self)
+
+        self.library = library
+        self.listbox = self.library.window.library_categories_listbox
+        self.stack = self.library.window.library_categories_stack
+
+    def clear(self):
+        for row in self.listbox.get_children():
+            row.destroy()
+
+    def on_category_clicked(self, button):
+        row = button.get_parent()
+        self.selected_category = row.category
+        self.listbox.unselect_all()
+        self.listbox.select_row(row)
+        self.library.populate()
+
+    def populate(self):
+        db_conn = create_db_connection()
+        records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
+        db_conn.close()
+
+        self.clear()
+
+        if records:
+            self.stack.set_visible_child_name('list')
+
+            for record in ['all'] + records:
+                if record == 'all':
+                    category = None
+                    label = _('All')
+                else:
+                    category = Category.get(record['id'])
+                    label = category.label
+
+                row = Gtk.ListBoxRow(visible=True)
+                row.category = category
+
+                button = Gtk.Button(label=label, visible=True)
+                button.set_relief(Gtk.ReliefStyle.NONE)
+                button.connect('clicked', self.on_category_clicked)
+
+                label = button.get_children()[0]
+                label.set_xalign(0)
+                label.props.width_chars = 20
+                label.props.max_width_chars = 0
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+
+                row.add(button)
+
+                self.listbox.add(row)
+        else:
+            self.stack.set_visible_child_name('empty')
 
 
 class Thumbnail(Gtk.FlowBoxChild):

@@ -23,7 +23,7 @@ from komikku.utils import get_data_dir
 
 logger = logging.getLogger('komikku')
 
-VERSION = 6
+VERSION = 7
 
 
 def adapt_json(data):
@@ -153,6 +153,18 @@ def init_db():
         UNIQUE (chapter_id)
     );"""
 
+    sql_create_categories_table = """CREATE TABLE IF NOT EXISTS categories (
+        id integer PRIMARY KEY,
+        label text NOT NULL,
+        UNIQUE (label)
+    );"""
+
+    sql_create_categories_mangas_association_table = """CREATE TABLE IF NOT EXISTS categories_mangas_association (
+        category_id integer REFERENCES categories(id) ON DELETE CASCADE,
+        manga_id integer REFERENCES mangas(id) ON DELETE CASCADE,
+        UNIQUE (category_id, manga_id)
+    );"""
+
     db_conn = create_db_connection()
     if db_conn is not None:
         db_version = db_conn.execute('PRAGMA user_version').fetchone()[0]
@@ -168,29 +180,34 @@ def init_db():
         if 0 < db_version <= 1:
             # Version 0.10.0
             if execute_sql(db_conn, 'ALTER TABLE downloads ADD COLUMN errors integer DEFAULT 0;'):
-                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+                db_conn.execute('PRAGMA user_version = {0}'.format(2))
 
         if 0 < db_version <= 2:
             # Version 0.12.0
             if execute_sql(db_conn, 'ALTER TABLE mangas ADD COLUMN borders_crop integer;'):
-                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+                db_conn.execute('PRAGMA user_version = {0}'.format(3))
 
         if 0 < db_version <= 3:
             # Version 0.15.0
             execute_sql(db_conn, 'CREATE INDEX idx_chapters_downloaded on chapters(manga_id, downloaded);')
             execute_sql(db_conn, 'CREATE INDEX idx_chapters_recent on chapters(manga_id, recent);')
             execute_sql(db_conn, 'CREATE INDEX idx_chapters_read on chapters(manga_id, read);')
-            db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+            db_conn.execute('PRAGMA user_version = {0}'.format(4))
 
         if 0 < db_version <= 4:
             # Version 0.16.0
             if execute_sql(db_conn, 'ALTER TABLE chapters ADD COLUMN scanlators json;'):
-                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+                db_conn.execute('PRAGMA user_version = {0}'.format(5))
 
         if 0 < db_version <= 5:
             # Version 0.22.0
             if execute_sql(db_conn, 'ALTER TABLE mangas RENAME COLUMN reading_direction TO reading_mode;'):
-                db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
+                db_conn.execute('PRAGMA user_version = {0}'.format(6))
+
+        if 0 < db_version <= 6:
+            # Version 0.25.0
+            if execute_sql(db_conn, sql_create_categories_table) and execute_sql(db_conn, sql_create_categories_mangas_association_table):
+                db_conn.execute('PRAGMA user_version = {0}'.format(7))
 
         print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
 
@@ -324,6 +341,22 @@ class Manga:
         return manga
 
     @property
+    def categories(self):
+        db_conn = create_db_connection()
+        rows = db_conn.execute(
+            'SELECT c.id FROM categories c JOIN categories_mangas_association cma ON cma.category_id = c.id WHERE cma.manga_id = ?',
+            (self.id,)
+        )
+
+        categories = []
+        for row in rows:
+            categories.append(row['id'])
+
+        db_conn.close()
+
+        return categories
+
+    @property
     def chapters(self):
         if self._chapters is None:
             db_conn = create_db_connection()
@@ -442,6 +475,19 @@ class Manga:
             return None
 
         return Chapter(row=row, manga=self)
+
+    def toggle_category(self, category_id, active):
+        db_conn = create_db_connection()
+        with db_conn:
+            if active:
+                insert_row(db_conn, 'categories_mangas_association', dict(category_id=category_id, manga_id=self.id))
+            else:
+                db_conn.execute(
+                    'DELETE FROM categories_mangas_association WHERE category_id = ? AND manga_id = ?',
+                    (category_id, self.id,)
+                )
+
+        db_conn.close()
 
     def update(self, data):
         """
@@ -614,9 +660,11 @@ class Chapter:
             with db_conn:
                 id = insert_row(db_conn, 'chapters', data)
 
-            db_conn.close()
+        chapter = cls.get(id, db_conn=db_conn) if id is not None else None
 
-        return cls.get(id, db_conn=db_conn) if id is not None else None
+        db_conn.close()
+
+        return chapter
 
     @property
     def manga(self):
@@ -749,6 +797,83 @@ class Chapter:
             return False
 
         return self.update(data)
+
+
+class Category:
+    def __init__(self, row=None):
+        if row is not None:
+            for key in row.keys():
+                setattr(self, key, row[key])
+
+    @classmethod
+    def get(cls, id, db_conn=None):
+        if db_conn is not None:
+            row = db_conn.execute('SELECT * FROM categories WHERE id = ?', (id,)).fetchone()
+        else:
+            db_conn = create_db_connection()
+            row = db_conn.execute('SELECT * FROM categories WHERE id = ?', (id,)).fetchone()
+            db_conn.close()
+
+        if row is None:
+            return None
+
+        return cls(row)
+
+    @classmethod
+    def new(cls, label, db_conn=None):
+        data = dict(
+            label=label,
+        )
+
+        if db_conn is not None:
+            id = insert_row(db_conn, 'categories', data)
+        else:
+            db_conn = create_db_connection()
+
+            with db_conn:
+                id = insert_row(db_conn, 'categories', data)
+
+        category = cls.get(id, db_conn=db_conn) if id is not None else None
+
+        db_conn.close()
+
+        return category
+
+    @property
+    def nb_mangas(self):
+        db_conn = create_db_connection()
+        row = db_conn.execute('SELECT count() AS count FROM categories_mangas_association WHERE category_id = ?', (self.id,)).fetchone()
+        db_conn.close()
+
+        return row['count']
+
+    def delete(self):
+        db_conn = create_db_connection()
+
+        with db_conn:
+            db_conn.execute('DELETE FROM categories WHERE id = ?', (self.id, ))
+
+        db_conn.close()
+
+    def update(self, data):
+        """
+        Updates specific fields
+
+        :param dict data: fields to update
+        :return: True on success False otherwise
+        """
+        ret = False
+
+        for key in data:
+            setattr(self, key, data[key])
+
+        db_conn = create_db_connection()
+        with db_conn:
+            ret = update_row(db_conn, 'categories', self.id, data)
+
+        db_conn.close()
+
+        return ret
 
 
 class Download:
