@@ -66,7 +66,7 @@ class CategoriesEditorWindow(Handy.Window):
         row.category.delete()
         row.destroy()
 
-        self.parent.library.categories_list.populate()
+        self.parent.library.categories_list.populate(refresh=True)
 
     def on_back_button_clicked(self, button=None):
         self.close()
