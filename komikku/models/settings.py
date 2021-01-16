@@ -233,6 +233,14 @@ class Settings(Gio.Settings):
         elif value == 'original':
             self.set_enum('scaling', 3)
 
+    @property
+    def selected_category(self):
+        return self.get_int('selected-category')
+
+    @selected_category.setter
+    def selected_category(self, state):
+        self.set_int('selected-category', state)
+
     def toggle_server(self, uid, state):
         settings = self.servers_settings
 

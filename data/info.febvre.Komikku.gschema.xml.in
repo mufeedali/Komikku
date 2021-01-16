@@ -40,6 +40,11 @@
             <description>Use desktop notifications for downloads and library updates</description>
         </key>
 
+        <key type="i" name="selected-category">
+            <default>0</default>
+            <summary>Selected Category</summary>
+            <description>Selected category in library</description>
+        </key>
         <key type="b" name="update-at-startup">
             <default>false</default>
             <summary>Update at Startup</summary>

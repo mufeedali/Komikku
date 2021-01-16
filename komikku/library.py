@@ -24,6 +24,7 @@ from komikku.downloader import DownloadManagerDialog
 from komikku.models import Category
 from komikku.models import create_db_connection
 from komikku.models import Manga
+from komikku.models import Settings
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
 from komikku.utils import scale_pixbuf_animation
@@ -440,15 +441,15 @@ class Library:
 
     def populate(self):
         db_conn = create_db_connection()
-        if self.categories_list.selected_category:
+        if Settings.get_default().selected_category:
             mangas_rows = db_conn.execute(
                 'SELECT m.* FROM categories_mangas_association cma JOIN mangas m ON cma.manga_id = m.id WHERE cma.category_id = ? ORDER BY m.last_read DESC',
-                (self.categories_list.selected_category.id,)
+                (Settings.get_default().selected_category,)
             ).fetchall()
         else:
             mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
-        if len(mangas_rows) == 0 and not self.categories_list.selected_category:
+        if len(mangas_rows) == 0 and not Settings.get_default().selected_category:
             if self.window.overlay.is_ancestor(self.window.box):
                 self.window.box.remove(self.window.overlay)
 
@@ -572,8 +573,6 @@ class Library:
 
 
 class CategoriesList(GObject.GObject):
-    selected_category = None
-
     def __init__(self, library):
         GObject.Object.__init__(self)
 
@@ -587,9 +586,11 @@ class CategoriesList(GObject.GObject):
 
     def on_category_clicked(self, button):
         row = button.get_parent()
-        self.selected_category = row.category
+        Settings.get_default().selected_category = row.category.id if row.category else 0
+
         self.listbox.unselect_all()
         self.listbox.select_row(row)
+
         self.library.populate()
 
     def populate(self):
@@ -612,6 +613,8 @@ class CategoriesList(GObject.GObject):
 
                 row = Gtk.ListBoxRow(visible=True)
                 row.category = category
+                if category and Settings.get_default().selected_category == category.id:
+                    self.listbox.select_row(row)
 
                 button = Gtk.Button(label=label, visible=True)
                 button.set_relief(Gtk.ReliefStyle.NONE)
