@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+from gettext import gettext as _
+
 from gi.repository import GObject
 from gi.repository import Gdk
 from gi.repository import Gtk
@@ -63,10 +65,17 @@ class CategoriesEditorWindow(Handy.Window):
         self.destroy()
 
     def delete_category(self, _button, row):
-        row.category.delete()
-        row.destroy()
+        def confirm_callback():
+            row.category.delete()
+            row.destroy()
 
-        self.parent.library.categories_list.populate(refresh=True)
+            self.parent.library.categories_list.populate(refresh=True)
+
+        self.parent.confirm(
+            _('Delete?'),
+            _('Are you sure you want to delete the "{0}" category?').format(row.category.label),
+            confirm_callback
+        )
 
     def on_back_button_clicked(self, button=None):
         self.close()
