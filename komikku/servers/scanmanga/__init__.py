@@ -40,7 +40,13 @@ class Scanmanga(Server):
         """
         assert 'url' in initial_data and 'slug' in initial_data, 'Manga url or slug are missing in initial data'
 
-        r = self.session_get(self.manga_url.format(initial_data['url']))
+        r = self.session_get(
+            self.manga_url.format(initial_data['url']),
+            headers={
+                'referer': self.base_url + '/?home',
+                'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+            }
+        )
         if r.status_code != 200:
             return None
 

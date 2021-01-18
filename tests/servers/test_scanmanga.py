@@ -14,10 +14,10 @@ def scanmanga_server():
     return Scanmanga()
 
 
-@test_steps('get_most_popular', 'search_1', 'get_manga_data_1', 'get_chapter_data_1', 'get_page_image_1')
+@test_steps('get_most_populars', 'search_1', 'get_manga_data_1', 'get_chapter_data_1', 'get_page_image_1')
 def test_scanmanga(scanmanga_server):
     # Get most popular
-    print('Get most popular')
+    print('Get most populars')
     try:
         response = scanmanga_server.get_most_populars()
     except Exception as e:
