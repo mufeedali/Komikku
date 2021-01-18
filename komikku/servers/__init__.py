@@ -20,7 +20,6 @@ import requests
 from requests.adapters import TimeoutSauce
 import struct
 
-from komikku.models.settings import Settings
 from komikku.utils import get_cache_dir
 from komikku.utils import KeyringHelper
 
@@ -297,9 +296,9 @@ def convert_image(image, format='jpeg', ret_type='image'):
     return Image.open(io_buffer)
 
 
-def get_allowed_servers_list():
-    servers_settings = Settings.get_default().servers_settings
-    servers_languages = Settings.get_default().servers_languages
+def get_allowed_servers_list(settings):
+    servers_settings = settings.servers_settings
+    servers_languages = settings.servers_languages
 
     servers = []
     for server_data in get_servers_list():
@@ -310,7 +309,7 @@ def get_allowed_servers_list():
         if server_settings is not None and (not server_settings['enabled'] or server_settings['langs'].get(server_data['lang']) is False):
             continue
 
-        if Settings.get_default().nsfw_content is False and server_data['is_nsfw']:
+        if settings.nsfw_content is False and server_data['is_nsfw']:
             continue
 
         servers.append(server_data)

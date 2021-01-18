@@ -16,6 +16,7 @@ from gi.repository import Pango
 from komikku.activity_indicator import ActivityIndicator
 from komikku.models import create_db_connection
 from komikku.models import Manga
+from komikku.models import Settings
 from komikku.servers import get_allowed_servers_list
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import LANGUAGES
@@ -64,7 +65,7 @@ class AddDialog:
         listbox.connect('row-activated', self.on_server_clicked)
 
         if not servers:
-            servers = get_allowed_servers_list()
+            servers = get_allowed_servers_list(Settings.get_default())
         else:
             self.preselection = True
 

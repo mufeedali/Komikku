@@ -13,7 +13,6 @@ from PIL import Image
 import sqlite3
 import shutil
 
-from komikku.models.settings import Settings
 from komikku.servers import convert_image
 from komikku.servers import get_server_class_name_by_id
 from komikku.servers import get_server_dir_name_by_id
@@ -282,7 +281,7 @@ class Manga:
         return manga
 
     @classmethod
-    def new(cls, data, server):
+    def new(cls, data, server, long_strip_detection):
         data = data.copy()
         chapters = data.pop('chapters')
         cover_url = data.pop('cover')
@@ -293,7 +292,7 @@ class Manga:
         ))
 
         # Long strip detection (Webtoon)
-        if Settings.get_default().long_strip_detection and server.long_strip_genres and data['genres']:
+        if long_strip_detection and server.long_strip_genres and data['genres']:
             for genre in server.long_strip_genres:
                 if genre in data['genres']:
                     data.update(dict(

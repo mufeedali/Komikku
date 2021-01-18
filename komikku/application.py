@@ -113,7 +113,7 @@ class Application(Gtk.Application):
 
         url = urls[0]
         servers = []
-        for data in get_allowed_servers_list():
+        for data in get_allowed_servers_list(Settings.get_default()):
             server_class = getattr(data['module'], data['class_name'])
             slug = server_class.get_manga_slug(url)
             if slug:
