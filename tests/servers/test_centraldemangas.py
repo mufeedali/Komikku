@@ -14,8 +14,8 @@ def centraldemangas_server():
     return Centraldemangas()
 
 
-@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
-def test_japscan(centraldemangas_server):
+@test_steps('get_most_populars', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+def test_centraldemangas(centraldemangas_server):
     # Get most popular
     print('Get most popular')
     try:
