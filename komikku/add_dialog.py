@@ -250,7 +250,7 @@ class AddDialog:
 
     def on_add_button_clicked(self, button):
         def run():
-            manga = Manga.new(self.manga_data, self.server)
+            manga = Manga.new(self.manga_data, self.server, Settings.get_default().long_strip_detection)
             GLib.idle_add(complete, manga)
 
         def complete(manga):
