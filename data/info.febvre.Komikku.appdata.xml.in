@@ -45,6 +45,13 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.25.1" date="2021-01-20">
+            <description>
+                <ul>
+                    <li>Fixing manga addition</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.25.0" date="2021-01-18">
             <description>
                 <ul>
