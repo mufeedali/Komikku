@@ -29,6 +29,8 @@ class Desu(Server):
     api_search_url = base_url + '/manga/api?limit=50&search={0}'
     api_most_populars_url = base_url + '/manga/api?limit=50&order=popular'
 
+    manga_title_css_selector = 'h1 > span.name'
+
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
@@ -43,7 +45,7 @@ class Desu(Server):
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
         r = self.session_get(self.api_manga_url.format(initial_data['slug']))
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['response']
@@ -63,7 +65,8 @@ class Desu(Server):
         data['url'] = resp_data['url']
         data['cover'] = resp_data['image']['original']
 
-        data['scanlators'] = [t['name'] for t in resp_data['translators']]
+        if resp_data.get('translators'):
+            data['scanlators'] = [t['name'] for t in resp_data['translators']]
         data['genres'] = [genre['russian'] for genre in resp_data['genres']]
         if resp_data['status'] == 'ongoing':
             data['status'] = 'ongoing'
@@ -91,7 +94,7 @@ class Desu(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.api_chapter_url.format(manga_slug, chapter_slug))
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['response']
@@ -112,7 +115,7 @@ class Desu(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'])
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -137,7 +140,7 @@ class Desu(Server):
         Returns most popular mangas (bayesian rating)
         """
         r = self.session_get(self.api_most_populars_url)
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['response']
@@ -146,7 +149,7 @@ class Desu(Server):
 
     def search(self, term):
         r = self.session_get(self.api_search_url.format(term))
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         resp_data = r.json()['response']

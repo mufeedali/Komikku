@@ -63,8 +63,7 @@ class Application(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id=self.application_id, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE, **kwargs)
-        # Main option entries are required for handling command line, but we actually just want the default GTK stuff
-        self.add_main_option_entries([GLib.OptionEntry()])
+
         self.window = None
 
         logging.basicConfig(
@@ -115,9 +114,11 @@ class Application(Gtk.Application):
         servers = []
         for data in get_allowed_servers_list(Settings.get_default()):
             server_class = getattr(data['module'], data['class_name'])
-            slug = server_class.get_manga_slug(url)
-            if slug:
-                data['manga_slug'] = slug
+            if not url.startswith(server_class.base_url):
+                continue
+
+            if initial_data := server_class.get_manga_initial_data_from_url(url):
+                data['manga_initial_data'] = initial_data
                 servers.append(data)
 
         if not servers:

@@ -32,6 +32,13 @@ class Scanmanga(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        return dict(
+            url=url.replace(cls.base_url, ''),
+            slug=url.split('/')[-1].replace('.html', ''),
+        )
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content

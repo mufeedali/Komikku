@@ -66,6 +66,13 @@ class Dynasty(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        if idx := skip_past(url, 'dynasty-scans.com/'):
+            return dict(slug=url[idx:])
+
+        return None
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
@@ -267,12 +274,6 @@ class Dynasty(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
-
-    @classmethod
-    def get_manga_slug(cls, url):
-        if idx := skip_past(url, 'dynasty-scans.com/'):
-            return url[idx:]
-        return None
 
     def resolve_tag(self, search_tag):
         r = self.session_post(self.tags_url, params=dict(query=search_tag))

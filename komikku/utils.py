@@ -138,6 +138,7 @@ def scale_pixbuf_animation(pixbuf, width, height, preserve_aspect_ratio, loop=Fa
 def skip_past(haystack, needle):
     if (idx := haystack.find(needle)) >= 0:
         return idx + len(needle)
+
     return None
 
 

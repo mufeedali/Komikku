@@ -74,8 +74,8 @@ class AddDialog:
             row.get_style_context().add_class('add-dialog-server-listboxrow')
 
             row.server_data = server_data
-            if 'manga_slug' in server_data:
-                row.manga_data = dict(slug=server_data.pop('manga_slug'))
+            if 'manga_initial_data' in server_data:
+                row.manga_data = server_data.pop('manga_initial_data')
 
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
             row.add(box)

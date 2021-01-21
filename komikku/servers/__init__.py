@@ -72,24 +72,42 @@ class Server:
     name = NotImplemented
     lang = NotImplemented
 
-    status = 'enabled'
+    has_login = False
+    headers = None
     is_nsfw = False
     logged_in = False
     long_strip_genres = []
-    has_login = False
-    headers = None
+    manga_title_css_selector = None  # Used to retrieve manga title from a manga URL
     session_expiration_cookies = []  # Session cookies for which validity (not expired) must be checked
+    status = 'enabled'
 
     base_url = None
 
     __sessions = {}  # to cache all existing sessions
 
     @classmethod
-    def get_manga_slug(cls, url):
-        if not url.startswith(cls.base_url):
-            return None
+    def get_manga_initial_data_from_url(cls, url):
+        if cls.manga_title_css_selector:
+            c = cls()
+            r = c.session_get(url)
+            if r.status_code != 200:
+                return None
 
-        return url.split('/')[-1]
+            soup = BeautifulSoup(r.content, 'html.parser')
+
+            title_element = soup.select_one(cls.manga_title_css_selector)
+            if not title_element:
+                return None
+
+            results = c.search(title_element.text.strip())
+            if not results:
+                return None
+
+            slug = results[0]['slug']
+        else:
+            slug = url.split('/')[-1]
+
+        return dict(slug=slug)
 
     def init(self, username=None, password=None):
         if username and password:

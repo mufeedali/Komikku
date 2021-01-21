@@ -132,6 +132,15 @@ class Mangadex(Server):
     def __init__(self, username=None, password=None):
         self.init(username, password)
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        if idx := skip_past(url, 'mangadex.org/title/'):
+            return dict(
+                slug=Mangadex.convert_old_slug(url[idx:]),
+            )
+
+        return None
+
     @staticmethod
     def convert_old_slug(slug):
         # Removing this will break manga that were added before the change to the manga slug
@@ -277,12 +286,6 @@ class Mangadex(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
-
-    @classmethod
-    def get_manga_slug(cls, url):
-        if idx := skip_past(url, 'mangadex.org/title/'):
-            return Mangadex.convert_old_slug(url[idx:])
-        return None
 
     def get_most_populars(self):
         """
