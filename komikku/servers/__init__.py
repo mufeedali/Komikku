@@ -105,7 +105,7 @@ class Server:
 
             slug = results[0]['slug']
         else:
-            slug = url.split('/')[-1]
+            slug = url.split('?')[0].split('/')[-1]
 
         return dict(slug=slug)
 

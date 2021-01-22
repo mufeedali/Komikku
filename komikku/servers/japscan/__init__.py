@@ -34,6 +34,10 @@ class Japscan(Server):
             self.session = requests.Session()
             self.session.headers.update({'user-agent': USER_AGENT})
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        return dict(slug=url.split('/')[-2])
+
     def compute_cipher_alphabet(self):
         """
         Substitution cipher: each letter is replaced with another letter (arbitrarily shuffled alphabet)

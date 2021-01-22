@@ -29,7 +29,7 @@ class Ninemanga(Server):
     name = SERVER_NAME
     lang = 'en'
 
-    base_url = 'http://www.ninemanga.com'
+    base_url = 'https://www.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -40,6 +40,10 @@ class Ninemanga(Server):
         if self.session is None:
             self.session = requests.Session()
             self.session.headers = headers
+
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        return dict(slug=url.split('?')[0].split('/')[-1].replace('.html', ''))
 
     def get_manga_data(self, initial_data):
         """

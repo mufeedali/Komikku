@@ -15,7 +15,7 @@ from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
 
 COOKIE_AGE_GATE_PASS = requests.cookies.create_cookie(
-    name='pagGDPR', # just why?
+    name='pagGDPR',  # just why?
     value='true',
     domain='.webtoons.com',
     path='/',

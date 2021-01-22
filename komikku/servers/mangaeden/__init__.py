@@ -40,6 +40,10 @@ class Mangaeden(Server):
             self.session = requests.Session()
             self.session.headers = headers
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        return dict(slug=url.split('/')[-2])
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
