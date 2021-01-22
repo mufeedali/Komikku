@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2019-2020 Valéry Febvre
+# Copyright (C) 2019-2021 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -78,6 +78,10 @@ class Webtoon(Server):
             self.session.cookies.set_cookie(COOKIE_DISALLOW_ANALYSIS)
             self.session.cookies.set_cookie(COOKIE_DISALLOW_MARKETING)
 
+    @classmethod
+    def get_manga_initial_data_from_url(cls, url):
+        return dict(url=url.replace(cls.base_url, ''), slug=url.split('=')[-1])
+
     def get_manga_data(self, initial_data):
         """
         Returns manga data by scraping manga HTML page content
@@ -87,12 +91,11 @@ class Webtoon(Server):
         assert 'url' in initial_data, 'Manga url is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['url']), headers={'user-agent': USER_AGENT})
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         # Get true URL after redirects
@@ -113,6 +116,8 @@ class Webtoon(Server):
             server_id=self.id,
             cover=None,
         ))
+
+        data['name'] = soup.find(class_='subj').text.strip()
 
         # Details
         info_element = soup.find('div', class_='info')
@@ -157,12 +162,11 @@ class Webtoon(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(chapter_url), headers={'user-agent': USER_AGENT})
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -186,12 +190,11 @@ class Webtoon(Server):
         """
         # Use a Mobile user agent
         r = self.session_get(self.chapters_url.format(url), headers={'user-agent': USER_AGENT_MOBILE})
-        if r is None:
+        if r.status_code != 200:
             return []
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return []
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -225,7 +228,7 @@ class Webtoon(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'], headers={'referer': self.base_url, 'user-agent': USER_AGENT})
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -249,12 +252,11 @@ class Webtoon(Server):
         Returns TOP 10 manga
         """
         r = self.session_get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -293,12 +295,11 @@ class Webtoon(Server):
         assert type in ('CHALLENGE', 'WEBTOON', ), 'Invalid type'
 
         r = self.session_get(self.search_url.format(LANGUAGES_CODES[self.lang]), params=dict(keyword=term, type=type))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
