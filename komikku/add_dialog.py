@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Valéry Febvre
+# Copyright (C) 2019-2021 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -77,7 +77,7 @@ class AddDialog:
             if 'manga_initial_data' in server_data:
                 row.manga_data = server_data.pop('manga_initial_data')
 
-            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
             row.add(box)
 
             # Server logo
@@ -97,6 +97,11 @@ class AddDialog:
                 title += ' (NSFW)'
             label.set_text(title)
             box.pack_start(label, True, True, 0)
+
+            # Server requires a user account
+            if server_data['has_login']:
+                label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.MENU)
+                box.pack_start(label, False, True, 0)
 
             # Server language
             label = Gtk.Label()

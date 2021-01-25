@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Valéry Febvre
+# Copyright (C) 2019-2021 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -408,6 +408,7 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
                     id=obj.id,
                     name=obj.name,
                     lang=obj.lang,
+                    has_login=obj.has_login,
                     is_nsfw=obj.is_nsfw,
                     class_name=get_server_class_name_by_id(obj.id),
                     logo_path=logo_path if os.path.exists(logo_path) else None,
