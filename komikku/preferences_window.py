@@ -448,7 +448,7 @@ class PreferencesServersSettingsSubpage:
         password = password_entry.get_text()
         if address_entry is not None:
             address = address_entry.get_text().strip()
-            if not address:
+            if not address.startswith(('http://', 'https://')):
                 return
 
             server = server_class(username=username, password=password, address=address)
