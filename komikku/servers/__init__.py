@@ -111,7 +111,11 @@ class Server:
 
     def init(self, username=None, password=None):
         if username and password:
+            # Username and password are provided only when user defines the credentials in the settings
             self.clear_session()
+        elif credential := KeyringHelper().get(get_server_main_id_by_id(self.id)):
+            if self.base_url is None:
+                self.base_url = credential.address
 
         if self.session is None:
             if self.load_session():
@@ -122,7 +126,6 @@ class Server:
                     self.session.headers = self.headers
 
                 if username is None and password is None:
-                    credential = KeyringHelper().get(get_server_main_id_by_id(self.id))
                     if credential:
                         self.logged_in = self.login(credential.username, credential.password)
                 else:

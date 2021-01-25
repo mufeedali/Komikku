@@ -366,6 +366,14 @@ class PreferencesServersSettingsSubpage:
                     label.set_valign(Gtk.Align.CENTER)
                     box.pack_start(label, True, True, 0)
 
+                    if server_class.base_url is None:
+                        # Server has a customizable address/base_url (ex. Komga)
+                        address_entry = Gtk.Entry()
+                        address_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'network-server-symbolic')
+                        box.pack_start(address_entry, True, True, 0)
+                    else:
+                        address_entry = None
+
                     username_entry = Gtk.Entry()
                     username_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, 'avatar-default-symbolic')
                     box.pack_start(username_entry, True, True, 0)
@@ -398,13 +406,15 @@ class PreferencesServersSettingsSubpage:
                     btn = Gtk.Button(_('Test'))
                     btn.connect(
                         'clicked', self.save_credential,
-                        server_main_id, server_class, username_entry, password_entry, plaintext_checkbutton
+                        server_main_id, server_class, username_entry, password_entry, address_entry, plaintext_checkbutton
                     )
                     btn.set_always_show_image(True)
                     box.pack_start(btn, False, False, 0)
 
                     credential = self.keyring_helper.get(server_main_id)
                     if credential:
+                        if address_entry is not None:
+                            address_entry.set_text(credential.address)
                         username_entry.set_text(credential.username)
                         password_entry.set_text(credential.password)
             else:
@@ -433,10 +443,17 @@ class PreferencesServersSettingsSubpage:
     def on_server_language_activated(self, switch_button, gparam, server_main_id, lang):
         self.settings.toggle_server_lang(server_main_id, lang, switch_button.get_active())
 
-    def save_credential(self, button, server_main_id, server_class, username_entry, password_entry, plaintext_checkbutton):
+    def save_credential(self, button, server_main_id, server_class, username_entry, password_entry, address_entry, plaintext_checkbutton):
         username = username_entry.get_text()
         password = password_entry.get_text()
-        server = server_class(username=username, password=password)
+        if address_entry is not None:
+            address = address_entry.get_text().strip()
+            if not address:
+                return
+
+            server = server_class(username=username, password=password, address=address)
+        else:
+            server = server_class(username=username, password=password)
 
         if server.logged_in:
             button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
@@ -447,6 +464,6 @@ class PreferencesServersSettingsSubpage:
                 # Save user agrees to save credentials in plaintext
                 self.parent.credentials_storage_plaintext_fallback_switch.set_active(True)
 
-            self.keyring_helper.store(server_main_id, username, password)
+            self.keyring_helper.store(server_main_id, username, password, address)
         else:
             button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.MENU))

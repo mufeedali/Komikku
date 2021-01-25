@@ -10,7 +10,7 @@ import gi
 import html
 import json
 import keyring
-from keyring.credentials import SimpleCredential
+from keyring.credentials import Credential
 import logging
 import os
 from PIL import Image
@@ -240,6 +240,27 @@ class Imagebuf:
         return self._buffer.scale_simple(width * hidpi_scale, height * hidpi_scale, InterpType.BILINEAR)
 
 
+class CustomCredential(Credential):
+    """Custom credentials implementation with an additional 'address' attribute"""
+
+    def __init__(self, username, password, address=None):
+        self._username = username
+        self._password = password
+        self._address = address
+
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def password(self):
+        return self._password
+
+    @property
+    def username(self):
+        return self._username
+
+
 class KeyringHelper:
     """Simple helper to store servers accounts credentials using Python keyring library"""
 
@@ -266,27 +287,30 @@ class KeyringHelper:
         if self.is_disabled:
             return None
 
-        credential = self.keyring.get_credential(service, None)
-
-        if isinstance(self.keyring, keyring.backends.SecretService.Keyring) and credential and credential.username is None:
-            # Try to find username in 'login' attribute instead of 'username'
-            # Backward compatibility with the previous implementation which used libsecret
+        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
             collection = self.keyring.get_preferred_collection()
 
+            credential = None
             with closing(collection.connection):
                 items = collection.search_items({'service': service})
                 for item in items:
                     self.keyring.unlock(item)
-                    username = item.get_attributes().get('login')
+                    username = item.get_attributes().get('username')
+                    if username is None:
+                        # Try to find username in 'login' attribute instead of 'username'
+                        # Backward compatibility with the previous implementation which used libsecret
+                        username = item.get_attributes().get('login')
                     if username:
-                        credential = SimpleCredential(username, item.get_secret().decode('utf-8'))
+                        credential = CustomCredential(username, item.get_secret().decode('utf-8'), item.get_attributes().get('address'))
+        else:
+            credential = self.keyring.get_credential(service, None)
 
         if credential is None or credential.username is None:
             return None
 
         return credential
 
-    def store(self, service, username, password):
+    def store(self, service, username, password, address=None):
         if self.is_disabled:
             return
 
@@ -298,10 +322,12 @@ class KeyringHelper:
                 'service': service,
                 'username': username,
             }
+            if address is not None:
+                attributes['address'] = address
             with closing(collection.connection):
                 collection.create_item(label, attributes, password, replace=True)
         else:
-            keyring.set_password(service, username, password)
+            self.keyring.set_password(service, username, password, address)
 
 
 class PlaintextKeyring(keyring.backend.KeyringBackend):
@@ -337,16 +363,18 @@ class PlaintextKeyring(keyring.backend.KeyringBackend):
     def get_credential(self, service, username):
         data = self._read()
         if service in data:
-            return SimpleCredential(data[service]['username'], data[service]['password'])
+            return CustomCredential(data[service]['username'], data[service]['password'], data[service].get('address'))
         return None
 
     def get_password(self, service, username):
         pass
 
-    def set_password(self, service, username, password):
+    def set_password(self, service, username, password, address=None):
         data = self._read()
         data[service] = dict(
             username=username,
             password=password,
         )
+        if address is not None:
+            data[service]['address'] = address
         self._save(data)
