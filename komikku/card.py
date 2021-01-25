@@ -603,8 +603,9 @@ class ChaptersList:
                 label = Gtk.Label(xalign=0.5, yalign=1)
                 label.set_valign(Gtk.Align.CENTER)
                 label.get_style_context().add_class('card-chapter-sublabel')
-                if chapter.pages is not None and chapter.last_page_read_index is not None:
-                    label.set_text(f'{chapter.last_page_read_index + 1}/{len(chapter.pages)}')
+                if chapter.last_page_read_index is not None:
+                    nb_pages = len(chapter.pages) if chapter.pages else '?'
+                    label.set_text(f'{chapter.last_page_read_index + 1}/{nb_pages}')
                 hbox.pack_start(label, False, True, 0)
 
         box.pack_start(hbox, True, True, 0)
