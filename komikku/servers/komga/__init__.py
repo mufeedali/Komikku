@@ -5,6 +5,10 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 # Komga is a free and open source media server for your comics, mangas, BDs and magazines.
+# Homepage: https://komga.org
+
+import functools
+import logging
 
 from requests.auth import HTTPBasicAuth
 
@@ -16,6 +20,25 @@ from komikku.servers import USER_AGENT
 headers = {
     'User-Agent': USER_AGENT,
 }
+
+logger = logging.getLogger('komikku.servers.komga')
+
+
+def is_ready(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        server = args[0]
+        if server.base_url is not None and server.logged_in:
+            return func(*args, **kwargs)
+        else:
+            if server.base_url is None:
+                logger.warning('Server base_url is not defined. Please check server address in Settings')
+            else:
+                logger.warning('Server is not logged in. Please check credential in Settings')
+
+            return None
+
+    return wrapper
 
 
 class Komga(Server):
@@ -64,6 +87,7 @@ class Komga(Server):
     def manga_url(self):
         return self.base_url + '/series/{0}'
 
+    @is_ready
     def get_manga_data(self, initial_data):
         """
         Returns manga data using API
@@ -113,16 +137,21 @@ class Komga(Server):
         resp_data = r.json()['content']
 
         for item in resp_data:
-            data['chapters'].append(dict(
+            chapter_data = dict(
                 slug=item['id'],
                 title='#{0} {1}'.format(item['metadata']['number'], item['metadata']['title'].replace('_', ' ')),
                 date=convert_date_string(item['metadata']['lastModified'].split('T')[0], format='%Y-%m-%d'),
-                read=item['readProgress']['completed'],
-                last_page_read_index=item['readProgress']['page'],
-            ))
+            )
+            if 'readProgress' in item:
+                chapter_data.update(dict(
+                    read=item['readProgress']['completed'],
+                    last_page_read_index=item['readProgress']['page'],
+                ))
+            data['chapters'].append(chapter_data)
 
         return data
 
+    @is_ready
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data
@@ -144,6 +173,7 @@ class Komga(Server):
 
         return data
 
+    @is_ready
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -162,6 +192,7 @@ class Komga(Server):
             name=page['image'],
         )
 
+    @is_ready
     def get_manga_url(self, slug, url):
         """
         Returns manga absolute URL
@@ -172,16 +203,20 @@ class Komga(Server):
         return self.search('')
 
     def login(self, username, password):
-        r = self.session.get(self.api_base_url, auth=HTTPBasicAuth(username, password))
+        try:
+            r = self.session.get(self.api_base_url, auth=HTTPBasicAuth(username, password))
+        except Exception:
+            return False
 
         mime_type = get_buffer_mime_type(r.content)
         if mime_type != 'text/html':
-            return None
+            return False
 
         self.save_session()
 
         return True
 
+    @is_ready
     def search(self, term):
         r = self.session.get(self.api_search_url, params=dict(search=term))
         if r.status_code != 200:
