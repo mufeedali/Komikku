@@ -3,16 +3,16 @@
 [![pipeline status](https://gitlab.com/valos/Komikku/badges/master/pipeline.svg)](https://gitlab.com/valos/Komikku/commits/master)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
-An online/offline manga reader for [GNOME](https://www.gnome.org), developed with the aim of being used with the *Librem 5* phone.
+A manga, comics and BDs reader for [GNOME](https://www.gnome.org). The aims of Komikku is to be adaptive (able to scale from desktop workstations to mobile phones).
 
 ## License
 
 Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html).
 
-## Features
+## Keys features
 
 * Online reading from servers
-* Offline reading of downloaded mangas
+* Offline reading of downloaded mangas/comics/BDs
 * RTL, LTR, Vertical and Webtoon reading modes
 * Four types of navigation:
   * Keyboard arrow keys
@@ -56,7 +56,7 @@ flatpak install info.febvre.Komikku.flatpak
 
 Open GNOME Builder, click the **Clone...** button, paste the repository url.
 
-Clone the project and hit the **Play** button to start building Manga Scan or test Flatpaks with **Export Bundle** button.
+Clone the project and hit the **Play** button to start building Komikku or test Flatpaks with **Export Bundle** button.
 
 ### Option 2: Testing with Meson
 
