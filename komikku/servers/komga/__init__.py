@@ -15,11 +15,6 @@ from requests.auth import HTTPBasicAuth
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
-from komikku.servers import USER_AGENT
-
-headers = {
-    'User-Agent': USER_AGENT,
-}
 
 logger = logging.getLogger('komikku.servers.komga')
 
@@ -49,6 +44,10 @@ class Komga(Server):
 
     base_url = None  # Customizable via the settings
 
+    headers = {
+        'User-Agent': 'Komikku Komga',
+    }
+
     def __init__(self, username=None, password=None, address=None):
         if address:
             self.base_url = address
@@ -69,7 +68,7 @@ class Komga(Server):
 
     @property
     def api_chapters_url(self):
-        return self.api_base_url + '/series/{0}/books'
+        return self.api_base_url + '/series/{0}/books?unpaged=true&media_status=READY'
 
     @property
     def api_cover_url(self):
@@ -100,11 +99,13 @@ class Komga(Server):
         if r.status_code != 200:
             return None
 
-        resp_data = r.json()['metadata']
+        resp_data = r.json()
+        metadata = resp_data['metadata']
+        books_metadata = resp_data['booksMetadata']
 
         data = initial_data.copy()
         data.update(dict(
-            authors=[],     # not available
+            authors=[],
             scanlators=[],  # not available
             genres=[],
             status=None,
@@ -114,35 +115,35 @@ class Komga(Server):
             cover=None,
         ))
 
-        data['name'] = resp_data['title']
+        data['name'] = metadata['title']
         data['cover'] = self.api_cover_url.format(data['slug'])
 
         # Details
-        data['genres'] = [genre.capitalize() for genre in resp_data['genres']]
-        if resp_data['status'] == 'ENDED':
+        data['authors'] = [author['name'] for author in books_metadata['authors']]
+        data['genres'] = [genre.capitalize() for genre in metadata['genres']]
+        if metadata['status'] == 'ENDED':
             data['status'] = 'complete'
-        elif resp_data['status'] == 'ABANDONED':
+        elif metadata['status'] == 'ABANDONED':
             data['status'] = 'suspended'
         else:
             # Ongoing and hiatus
-            data['status'] = resp_data['status'].lower()
+            data['status'] = metadata['status'].lower()
 
-        data['synopsis'] = resp_data['summary']
+        data['synopsis'] = metadata['summary'] or books_metadata['summary']
 
         # Chapters
         r = self.session_get(self.api_chapters_url.format(data['slug']))
         if r.status_code != 200:
             return data
 
-        resp_data = r.json()['content']
-
-        for item in resp_data:
+        items = r.json()['content']
+        for item in items:
             chapter_data = dict(
                 slug=item['id'],
                 title='#{0} {1}'.format(item['metadata']['number'], item['metadata']['title'].replace('_', ' ')),
                 date=convert_date_string(item['metadata']['lastModified'].split('T')[0], format='%Y-%m-%d'),
             )
-            if 'readProgress' in item:
+            if item.get('readProgress'):
                 chapter_data.update(dict(
                     read=item['readProgress']['completed'],
                     last_page_read_index=item['readProgress']['page'],
