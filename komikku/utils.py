@@ -316,6 +316,7 @@ class KeyringHelper:
 
         if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
             collection = self.keyring.get_preferred_collection()
+
             label = f'{self.appid}: {username}@{service}'
             attributes = {
                 'application': self.appid,
@@ -324,8 +325,14 @@ class KeyringHelper:
             }
             if address is not None:
                 attributes['address'] = address
+
             with closing(collection.connection):
-                collection.create_item(label, attributes, password, replace=True)
+                # Delete previous credential if exists
+                items = collection.search_items({'service': service})
+                for item in items:
+                    item.delete()
+
+                collection.create_item(label, attributes, password)
         else:
             self.keyring.set_password(service, username, password, address)
 
