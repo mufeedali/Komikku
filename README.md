@@ -70,7 +70,7 @@ Dependencies:
 * `libhandy` >= 1.0.0
 * `python-beautifulsoup4`
 * `python-dateparser`
-* `python-keyring` >= 21.2.1
+* `python-keyring` >= 21.6.0
 * `python-lxml`
 * `python-magic` or `file-magic`
 * `python-pillow`

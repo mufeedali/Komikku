@@ -28,6 +28,8 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
+keyring.core.init_backend()
+
 logger = logging.getLogger('komikku')
 
 
