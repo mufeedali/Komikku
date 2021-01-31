@@ -113,7 +113,7 @@ class Mangakawaii(Server):
                 continue
 
             a_element = element.find('td', class_='table__chapter').a
-            date = element.find('td', class_='table__date').text.strip()
+            date = list(element.find('td', class_='table__date').stripped_strings)[0]
 
             data['chapters'].append(dict(
                 slug=a_element.get('href').split('/')[-1],
