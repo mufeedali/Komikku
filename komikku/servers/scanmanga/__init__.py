@@ -29,8 +29,11 @@ class Scanmanga(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = requests.Session()
-            self.session.headers.update({'user-agent': USER_AGENT})
+            self.create_session()
+
+    def create_session(self):
+        self.session = requests.Session()
+        self.session.headers.update({'user-agent': USER_AGENT})
 
     @classmethod
     def get_manga_initial_data_from_url(cls, url):
@@ -124,6 +127,8 @@ class Scanmanga(Server):
 
         Currently, only pages are expected.
         """
+        self.create_session()  # Session must be refrehed each time
+
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
         if r.status_code != 200:
             return None
@@ -175,6 +180,8 @@ class Scanmanga(Server):
         """
         Returns chapter page scan (image) content
         """
+        self.create_session()  # Session must be refrehed each time
+
         r = self.session_get(
             page['image'],
             headers={
