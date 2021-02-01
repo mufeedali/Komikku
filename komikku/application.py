@@ -114,7 +114,7 @@ class Application(Gtk.Application):
         servers = []
         for data in get_allowed_servers_list(Settings.get_default()):
             server_class = getattr(data['module'], data['class_name'])
-            if not url.startswith(server_class.base_url):
+            if not server_class.base_url or not url.startswith(server_class.base_url):
                 continue
 
             if initial_data := server_class.get_manga_initial_data_from_url(url):
