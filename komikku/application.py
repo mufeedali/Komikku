@@ -21,14 +21,14 @@ from gi.repository import Handy
 from gi.repository import Notify
 from gi.repository.GdkPixbuf import Pixbuf
 
-from komikku.add_dialog import AddDialog
-from komikku.card import Card
 from komikku.activity_indicator import ActivityIndicator
+from komikku.card import Card
 from komikku.downloader import Downloader
+from komikku.explorer import Explorer
 from komikku.library import Library
 from komikku.models import backup_db
 from komikku.models import Settings
-from komikku.preferences_window import PreferencesWindow
+from komikku.preferences import PreferencesWindow
 from komikku.reader import Reader
 from komikku.servers import get_allowed_servers_list
 from komikku.updater import Updater
@@ -126,7 +126,7 @@ class Application(Gtk.Application):
             self.logger.info(msg)
             self.window.show_notification(msg)
         else:
-            dialog = AddDialog(self.window, servers)
+            dialog = Explorer(self.window, servers)
             dialog.open()
 
         return 0
@@ -446,7 +446,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     def on_left_button_clicked(self, action=None, param=None):
         if self.page == 'library':
             if action and not self.library.selection_mode:
-                AddDialog(self).open(action, param)
+                Explorer(self).open(action, param)
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
             if self.library.search_mode and action is None:

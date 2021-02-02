@@ -25,7 +25,7 @@ from komikku.utils import log_error_traceback
 from komikku.utils import scale_pixbuf_animation
 
 
-class AddDialog:
+class Explorer:
     page = None
     preselection = False
     search_filters = None
@@ -39,7 +39,7 @@ class AddDialog:
     def __init__(self, window, servers=None):
         self.window = window
         self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/add_dialog.ui')
+        self.builder.add_from_resource('/info/febvre/Komikku/ui/explorer_dialog.ui')
 
         self.dialog = self.builder.get_object('dialog')
         self.dialog.get_children()[0].set_border_width(0)
