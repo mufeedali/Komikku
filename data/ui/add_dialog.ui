@@ -418,7 +418,7 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
-                                    <property name="top_attach">10</property>
+                                    <property name="top_attach">12</property>
                                     <property name="width">2</property>
                                   </packing>
                                 </child>
@@ -433,7 +433,7 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
-                                    <property name="top_attach">11</property>
+                                    <property name="top_attach">13</property>
                                     <property name="width">2</property>
                                   </packing>
                                 </child>
@@ -463,6 +463,35 @@
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">7</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="last_chapter_label_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Last Chapter</property>
+                                    <property name="xalign">0</property>
+                                    <attributes>
+                                      <attribute name="weight" value="bold"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">10</property>
+                                    <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="last_chapter_value_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label">last chapter</property>
+                                    <property name="xalign">0</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">11</property>
+                                    <property name="width">2</property>
                                   </packing>
                                 </child>
                               </object>

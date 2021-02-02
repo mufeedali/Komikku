@@ -507,6 +507,10 @@ class AddDialog:
                 )
             )
 
+            self.builder.get_object('last_chapter_value_label').set_text(
+                self.manga_data['chapters'][-1]['title'] if self.manga_data['chapters'] else '-'
+            )
+
             self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
 
             self.activity_indicator.stop()
