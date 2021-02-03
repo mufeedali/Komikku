@@ -71,7 +71,7 @@ class Explorer:
 
         for server_data in servers:
             row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('add-dialog-server-listboxrow')
+            row.get_style_context().add_class('explorer-dialog-server-listboxrow')
 
             row.server_data = server_data
             if 'manga_initial_data' in server_data:
@@ -106,7 +106,7 @@ class Explorer:
             # Server language
             label = Gtk.Label()
             label.set_text(LANGUAGES[server_data['lang']])
-            label.get_style_context().add_class('add-dialog-server-language-label')
+            label.get_style_context().add_class('explorer-dialog-server-language-label')
             box.pack_start(label, False, True, 0)
 
             listbox.add(row)
@@ -392,7 +392,7 @@ class Explorer:
 
             if most_populars:
                 row = Gtk.ListBoxRow()
-                row.get_style_context().add_class('add-dialog-search-section-listboxrow')
+                row.get_style_context().add_class('explorer-dialog-search-section-listboxrow')
                 row.manga_data = None
                 box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
                 row.add(box)

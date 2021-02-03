@@ -69,17 +69,17 @@ flowbox flowboxchild {
     margin-bottom: 8px;
 }
 
-/* Add dialog - servers page */
-.add-dialog-server-listboxrow {
+/* Explorer - servers page */
+.explorer-dialog-server-listboxrow {
     padding: 16px;
 }
 
-.add-dialog-server-language-label {
+.explorer-dialog-server-language-label {
     font-size: 11px;
 }
 
-/* Add dialog - search page */
-.add-dialog-search-section-listboxrow {
+/* Explorer - search page */
+.explorer-dialog-search-section-listboxrow {
     font-weight: bold;
     color: @insensitive_fg_color;
     background: @insensitive_bg_color;
