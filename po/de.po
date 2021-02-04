@@ -1,13 +1,13 @@
 #
 # Sandor Odor <sandor@codingclouds.de>, 2020.
-# Leo Prikler <leo.prikler@student.tugraz.at>, 2020.
+# Leo Prikler <leo.prikler@student.tugraz.at>, 2020-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-04 02:06+0100\n"
-"PO-Revision-Date: 2020-11-24 16:21+0100\n"
+"PO-Revision-Date: 2021-02-04 19:54+0100\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -37,29 +37,33 @@ msgstr "Valéry Febvre"
 msgid ""
 "Refined the ability to add comics via the command line: more servers "
 "supported"
-msgstr ""
+msgstr "Hinzufügen von Comics via Kommandozeile: mehr Server unterstützt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:52
 msgid "[Explorer] Search: Add button to open server's Website in browser"
 msgstr ""
+"[Explorer] Suche: Knopf hinzugefügt, mit dem die Website des Servers "
+"geöffnet werden kann"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:53
 msgid ""
 "[Explorer] Servers list: Add a 'key' icon when a server requires a user "
 "account"
 msgstr ""
+"[Explorer] Serverliste: \"Schlüssel\"-Icon bei Servern hinzugefügt, die ein "
+"Benutzerkonto benötigen"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:54
 msgid "[Explorer] Manga card: Add last chapter"
-msgstr ""
+msgstr "[Explorer] Mangakarte: Letztes Kapitel hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:55
 msgid "[Servers] Add Komga (Free and open source comics/mangas media server)"
-msgstr ""
+msgstr "[Server] Komga hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:56
 msgid "[Servers] Add View Comics (EN)"
-msgstr ""
+msgstr "[Server] View Comics (EN) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:57
 #: ../data/info.febvre.Komikku.appdata.xml.in:131
@@ -68,66 +72,68 @@ msgstr "[Server] MangaKawaii: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:58
 msgid "[Servers] NineManga: Update"
-msgstr ""
+msgstr "[Server] NineManga: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:59
 msgid "[Servers] Scan Manga: Update"
-msgstr ""
+msgstr "[Server] Scan Manga: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:66
 msgid "Fixing manga addition"
-msgstr ""
+msgstr "Fehler beim Hinzufügen von Manga behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:73
 msgid "Added ability to add comics via the command line"
-msgstr ""
+msgstr "Manga können nun per Kommandozeile hinzugefügt werden"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:74
 msgid "[Servers] Add Scan Manga (FR)"
-msgstr ""
+msgstr "[Server] Scan Manga (FR) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:75
 msgid "[Servers] Scantrad France: Update"
-msgstr ""
+msgstr "[Server] Scantrad France: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:76
 msgid "[Servers] Mangahub: Fixed pages wrong order"
-msgstr ""
+msgstr "[Server] Mangahub: Fehler bei der Seitenreihenfolge behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:83
 msgid ""
 "[Library] Allow Selection mode while in search and search in Selection mode"
-msgstr ""
+msgstr "[Bibliothek] Erlaube Suche und Auswahlmodus gleichzeitig"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:84
 msgid ""
 "[Card] The chapter `Reset` action is now proposed as soon as chapter pages "
 "are known"
 msgstr ""
+"[Mangakarte] Kapitel können nun zurückgesetzt werden, sobald die Anzahl der "
+"Seiten bekannt ist"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:85
 msgid "[Card] Improve chapters multiple selection"
-msgstr ""
+msgstr "[Mangakarte] Auswahl mehrerer Kapitel verbessert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:86
 msgid "[Servers] Add Read Comic Online (EN)"
-msgstr ""
+msgstr "[Server] Read Comic Online (EN) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:87
 msgid "[Servers] Webtoon: Update"
-msgstr ""
+msgstr "[Server] Webtoon: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:88
 msgid "[Servers] Submanga: Update"
-msgstr ""
+msgstr "[Server] Submanga: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:89
 msgid "[Servers] Hunlight Scans: Add logo"
-msgstr ""
+msgstr "[Server] Hunlight Scans: Logo hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:90
 msgid "[L10n] Update German translation"
-msgstr ""
+msgstr "[L10n] Deutsche Übersetzung aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:97
 msgid "[Add dialog] Add Back navigation between pages via Esc key"
@@ -903,7 +909,7 @@ msgstr "@appid@"
 
 #: ../data/info.febvre.Komikku.desktop.in:13
 msgid "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;"
-msgstr ""
+msgstr "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;"
 
 #: ../data/ui/about_dialog.ui.in:11
 msgid ""
@@ -974,7 +980,7 @@ msgstr "Server auswählen"
 
 #: ../data/ui/explorer_dialog.ui:503
 msgid "Last Chapter"
-msgstr ""
+msgstr "Letztes Kapitel"
 
 #: ../data/ui/menu/card.xml:7
 #: ../data/ui/menu/download_manager_selection_mode.xml:7
@@ -1247,11 +1253,11 @@ msgstr "Komikku"
 
 #: ../komikku/application.py:109
 msgid "Multiple URLs not supported"
-msgstr ""
+msgstr "Mehrere URLs nicht unterstützt"
 
 #: ../komikku/application.py:125
 msgid "Invalid URL {}, not handled by any server."
-msgstr ""
+msgstr "Ungültige URL {}, von keinem Server behandelt."
 
 #: ../komikku/application.py:323 ../komikku/reader/__init__.py:208
 msgid "Cancel"
@@ -1302,7 +1308,7 @@ msgstr "Sind Sie sicher, dass Sie diesen Manga löschen wollen?"
 
 #: ../komikku/card.py:152
 msgid "Failed to get manga URL"
-msgstr ""
+msgstr "Konnte Manga-URL nicht feststellen"
 
 #: ../komikku/card.py:568
 msgid "New"
@@ -1358,7 +1364,7 @@ msgstr "Manga {0} hinzugefügt"
 
 #: ../komikku/explorer.py:350
 msgid "Oops, server website URL is unknown."
-msgstr ""
+msgstr "Ups, die URL des Servers ist unbekannt."
 
 #: ../komikku/explorer.py:408
 msgid "MOST POPULARS"
