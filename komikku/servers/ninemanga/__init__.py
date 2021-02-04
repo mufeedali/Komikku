@@ -243,7 +243,7 @@ class Ninemanga_br(Ninemanga):
     name = SERVER_NAME
     lang = 'pt_BR'
 
-    base_url = 'http://br.ninemanga.com'
+    base_url = 'https://br.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -256,7 +256,7 @@ class Ninemanga_de(Ninemanga):
     name = SERVER_NAME
     lang = 'de'
 
-    base_url = 'http://de.ninemanga.com'
+    base_url = 'https://de.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -269,7 +269,7 @@ class Ninemanga_es(Ninemanga):
     name = SERVER_NAME
     lang = 'es'
 
-    base_url = 'http://es.ninemanga.com'
+    base_url = 'https://es.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -282,7 +282,7 @@ class Ninemanga_fr(Ninemanga):
     name = SERVER_NAME
     lang = 'fr'
 
-    base_url = 'http://fr.ninemanga.com'
+    base_url = 'https://fr.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -295,7 +295,7 @@ class Ninemanga_it(Ninemanga):
     name = SERVER_NAME
     lang = 'it'
 
-    base_url = 'http://it.ninemanga.com'
+    base_url = 'https://it.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
@@ -308,7 +308,7 @@ class Ninemanga_ru(Ninemanga):
     name = SERVER_NAME
     lang = 'ru'
 
-    base_url = 'http://ru.ninemanga.com'
+    base_url = 'https://ru.ninemanga.com'
     search_url = base_url + '/search/ajax/'
     most_populars_url = base_url + '/list/Hot-Book/'
     manga_url = base_url + '/manga/{0}.html?waring=1'
