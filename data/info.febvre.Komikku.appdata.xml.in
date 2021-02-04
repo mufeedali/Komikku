@@ -45,6 +45,21 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.26.0" date="2021-02-04">
+            <description>
+                <ul>
+                    <li>Refined the ability to add comics via the command line: more servers supported</li>
+                    <li>[Explorer] Search: Add button to open server's website in browser</li>
+                    <li>[Explorer] Servers list: Add a 'key' icon when a server requires a user account</li>
+                    <li>[Explorer] Manga card: Add last chapter</li>
+                    <li>[Servers] Add Komga (Free and open source comics/mangas media server)</li>
+                    <li>[Servers] Add View Comics (EN)</li>
+                    <li>[Servers] MangaKawaii: Update</li>
+                    <li>[Servers] NineManga: Update</li>
+                    <li>[Servers] Scan Manga: Update</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.25.1" date="2021-01-20">
             <description>
                 <ul>
