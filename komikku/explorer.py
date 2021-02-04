@@ -344,7 +344,10 @@ class Explorer:
             self.show_page('search')
 
     def on_server_website_button_clicked(self, _button):
-        Gtk.show_uri_on_window(None, self.server.base_url, time.time())
+        if self.server.base_url:
+            Gtk.show_uri_on_window(None, self.server.base_url, time.time())
+        else:
+            self.show_notification(_('Oops, server website URL is unknown.'), 2)
 
     def open(self, action=None, param=None):
         self.dialog.set_modal(True)
