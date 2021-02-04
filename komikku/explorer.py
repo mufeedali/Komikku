@@ -4,6 +4,7 @@
 
 from gettext import gettext as _
 import threading
+import time
 
 from gi.repository import Gdk
 from gi.repository import Gio
@@ -117,6 +118,7 @@ class Explorer:
         self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
         self.custom_title_search_page_searchentry.connect('activate', self.search)
         self.custom_title_search_page_filter_menu_button = self.builder.get_object('custom_title_search_page_filter_menu_button')
+        self.builder.get_object('custom_title_search_page_server_website_button').connect('clicked', self.on_server_website_button_clicked)
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
         self.search_page_listbox.get_style_context().add_class('list-bordered')
@@ -340,6 +342,9 @@ class Explorer:
             self.show_manga(row.manga_data)
         else:
             self.show_page('search')
+
+    def on_server_website_button_clicked(self, _button):
+        Gtk.show_uri_on_window(None, self.server.base_url, time.time())
 
     def open(self, action=None, param=None):
         self.dialog.set_modal(True)
