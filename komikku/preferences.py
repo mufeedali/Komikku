@@ -453,6 +453,7 @@ class PreferencesServersSettingsSubpage:
 
             server = server_class(username=username, password=password, address=address)
         else:
+            address = None
             server = server_class(username=username, password=password)
 
         if server.logged_in:
