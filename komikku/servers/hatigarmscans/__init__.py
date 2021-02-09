@@ -12,17 +12,16 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-SERVER_NAME = 'Hatigarm Scans'
-
 #
-# BEWARE: This server is disabled
+# BEWARE: Hatigarmscans is disabled
 # Dead since 02/2020
+# The site has changed its address and is now available in the genkan server
 #
 
 
 class Hatigarmscans(Server):
     id = 'hatigarmscans'
-    name = SERVER_NAME
+    name = 'Hatigarm Scans'
     lang = 'en'
     status = 'disabled'
 
@@ -70,7 +69,7 @@ class Hatigarmscans(Server):
             cover=None,
         ))
 
-        data['name'] = soup.find('h2', class_='widget-title').text.strip()
+        data['name'] = soup.find('h2', class_='listmanga-header').text.strip()
         data['cover'] = self.cover_url.format(data['slug'])
 
         # Details
@@ -110,7 +109,9 @@ class Hatigarmscans(Server):
                 continue
 
             slug = h5.a.get('href').split('/')[-1]
-            title = '{0}: {1}'.format(h5.a.text.strip(), h5.em.text.strip())
+            title = h5.a.text.strip()
+            if h5.em:
+                title = '{0}: {1}'.format(title, h5.em.text.strip())
             date = element.div.div
 
             data['chapters'].append(dict(
@@ -223,3 +224,18 @@ class Hatigarmscans(Server):
                 return None
 
         return None
+
+
+class Readcomicsonline(Hatigarmscans):
+    id = 'readcomicsonline:hatigarmscans'
+    name = 'Read Comics Online'
+    lang = 'en'
+    status = 'enabled'
+
+    base_url = 'https://readcomicsonline.ru'
+    search_url = base_url + '/search'
+    most_populars_url = base_url + '/filterList?page=1&sortBy=views&asc=false'
+    manga_url = base_url + '/comic/{0}'
+    chapter_url = base_url + '/comic/{0}/{1}'
+    image_url = base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
+    cover_url = base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
