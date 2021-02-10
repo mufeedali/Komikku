@@ -79,15 +79,6 @@ class Application(Gtk.Application):
     def add_accelerators(self):
         self.window.add_accelerators()
 
-    def do_startup(self):
-        Gtk.Application.do_startup(self)
-
-        GLib.set_application_name(_('Komikku'))
-        GLib.set_prgname(self.application_id)
-
-        Handy.init()
-        Notify.init(_('Komikku'))
-
     def do_activate(self):
         if not self.window:
             self.window = ApplicationWindow(application=self, title='Komikku', icon_name=self.application_id)
@@ -130,6 +121,15 @@ class Application(Gtk.Application):
             dialog.open()
 
         return 0
+
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
+
+        GLib.set_application_name(_('Komikku'))
+        GLib.set_prgname(self.application_id)
+
+        Handy.init()
+        Notify.init(_('Komikku'))
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/application_window.ui')
