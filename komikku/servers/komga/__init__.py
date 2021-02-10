@@ -128,6 +128,7 @@ class Komga(Server):
         else:
             # Ongoing and hiatus
             data['status'] = metadata['status'].lower()
+        data['reading_mode'] = metadata['readingDirection'].lower().replace('_', '-')
 
         data['synopsis'] = metadata['summary'] or books_metadata['summary']
 
