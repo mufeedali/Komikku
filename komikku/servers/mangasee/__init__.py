@@ -184,6 +184,8 @@ class Mangasee(Server):
             return None
 
         image_prefix = chapter_slug[1:-1]
+        if chapter_slug[-1] != '0':
+            image_prefix = f'{image_prefix}.{chapter_slug[-1]}'
         if chapter['Directory']:
             image_prefix = f'{chapter["Directory"]}/{image_prefix}'
 
