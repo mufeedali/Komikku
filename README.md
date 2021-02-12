@@ -8,17 +8,8 @@ Major differences right now (in order of stability):
 
 * Chapters are downloaded in the order that you selected them in the Chapters list and not based on chapter list sorting. Seems stable, especially since it simply adds a variable and that's basically it.
 * Search within chapter lists, only accessible by beginning to type. There is no search button. The selection behavior during search works as I want and expect it to work, but it might not be ideal for everyone.
-* Selection and search handling in the Library is different from `master` and arguably better:
-  * In `master`, selection mode is inaccessible while in search mode and vice versa. However, in `personal`, selection mode is accessible while in search mode but not the other way around.
-  * The issues caused by keeping it enabled have been fixed or worked around because I find this to be essential.
-  * Also, `<Control>+A` action is now always enabled.
-  * The search button and search entry are completely hidden while in selection mode.
+* MangaDex BBCode support in synopsis or manga description and possible HTML support in other sites.
 * Experimental Tachiyomi backup import functionality. Not sure it'll work for anyone else and even if it does, it's not assured to properly work at least.
-
-Minor differences:
-
-* Enabled DeepSource analysis ([![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/fushinari/Komikku/?ref=repository-badge))
-* Minor changes in this README file.
 
 The actual README follows. It's mostly the same as the official README.
 
