@@ -7,6 +7,7 @@
 from functools import lru_cache
 import html
 import logging
+import re
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
@@ -158,10 +159,10 @@ class Mangadex(Server):
             data['status'] = 'hiatus'
 
         if self.lang_code in attributes['description']:
-            data['synopsis'] = html.unescape(attributes['description'][self.lang_code])
+            data['synopsis'] = self._clean(attributes['description'][self.lang_code])
         elif 'en' in attributes['description']:
             # Fall back to english synopsis
-            data['synopsis'] = html.unescape(attributes['description']['en'])
+            data['synopsis'] = self._clean(attributes['description']['en'])
         else:
             logger.warning('{}: No synopsis', data['name'])
 
@@ -316,6 +317,98 @@ class Mangadex(Server):
                 logger.warning("ignoring result {}, missing name".format(result['id']))
 
         return results
+
+    @staticmethod
+    def _clean(text):
+        # HTML escaping
+        text = html.unescape(text)
+
+        parsing_dict = {
+            # Pango escaping.
+            # TODO: Check if more characters need escaping.
+            r'&': r'&amp;',
+            r'<': r'&lt;',
+            r'>': r'&gt;',
+
+            # bold, italic, underline, strikethrough, subscript, superscript
+            r'\[\s*b\s*\]': r'<b>',
+            r'\[\s*/b\s*\]': r'</b>',
+
+            r'\[\s*i\s*\]': r'<i>',
+            r'\[\s*/i\s*\]': r'</i>',
+
+            r'\[\s*u\s*\]': r'<u>',
+            r'\[\s*/u\s*\]': r'</u>',
+
+            r'\[\s*s\s*\]': r'<s>',
+            r'\[\s*/s\s*\]': r'</s>',
+
+            r'\[\s*sub\s*\]': r'<sub>',
+            r'\[\s*/sub\s*\]': r'</sub>',
+
+            r'\[\s*sup\s*\]': r'<sup>',
+            r'\[\s*/sup\s*\]': r'</sup>',
+
+            # There's no "highlight" in Pango. Make it italic instead and pray it's somewhat suitable.
+            r'\[\s*h\s*\]': r'<i>',
+            r'\[\s*/h\s*\]': r'</i>',
+
+            # Same deal with quotes.
+            r'\[\s*quote\s*\]': r'<tt>',
+            r'\[\s*/quote\s*\]': r'</tt>',
+
+            # There's no equivalent to "code" either, but at least make it monospace.
+            r'\[\s*code\s*\]': r'<tt>',
+            r'\[\s*/code\s*\]': r'</tt>',
+
+            # links
+            r'\[\s*url=([^ \]]*)\s*\]': r'<a href="\1">',
+            r'\[\s*/url\s*\]': r'</a>',
+
+            # Remove images. (I don't think they're supported in descriptions anyway.)
+            r'\[\s*img\s*\](.*)\[\s*/img\s*\]': r'',
+
+            # Remove tags for left, right, center, justify, headings, rule, lists, etc.
+            r'\[\s*left\s*\]': r'',
+            r'\[\s*/left\s*\]': r'',
+
+            r'\[\s*right\s*\]': r'',
+            r'\[\s*/right\s*\]': r'',
+
+            r'\[\s*center\s*\]': r'',
+            r'\[\s*/center\s*\]': r'',
+
+            r'\[\s*justify\s*\]': r'',
+            r'\[\s*/justify\s*\]': r'',
+
+            r'\[\s*h\d\s*\]': r'',
+            r'\[\s*/h\d\s*\]': r'',
+
+            r'\[\s*hr\s*\]': '',
+            r'\[\s*/hr\s*\]': '',
+
+            r'\[\s*list\s*\]': '',
+            r'\[\s*/list\s*\]': '',
+
+            r'\[\s*ul\s*\]': '',
+            r'\[\s*/ul\s*\]': '',
+
+            r'\[\s*ol\s*\]': '',
+            r'\[\s*/ol\s*\]': '',
+
+            r'\[\s*\*\s*\]': '- ',
+        }
+
+        for key, value in parsing_dict.items():
+            text = re.sub(key, value, text, flags=re.IGNORECASE | re.DOTALL)
+
+        spoiler_matches = re.finditer(r'\[\s*spoiler\s*\](.*)\[\s*/spoiler\s*\]', text, flags=re.IGNORECASE | re.DOTALL)
+        for match in spoiler_matches:
+            captured_group = html.escape(match.group(1))
+            captured_group = re.sub('<[^<]+?>', '', captured_group)
+            text = text.replace(match.group(0), f'<a title="{captured_group}" href="#">SPOILER</a>')
+
+        return text
 
 
 class Mangadex_cs(Mangadex):
