@@ -363,7 +363,7 @@ class Library:
                 thumbnail.destroy()
                 break
 
-    def on_manga_updated(self, _updater, manga, _nb_recent_chapters, _nb_deleted_chapters):
+    def on_manga_updated(self, _updater, manga, _nb_recent_chapters, _nb_deleted_chapters, _synced):
         for thumbnail in self.flowbox.get_children():
             if thumbnail.manga.id != manga.id:
                 continue

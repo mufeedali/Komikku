@@ -136,11 +136,14 @@ class Card:
             confirm_callback
         )
 
-    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters):
+    def on_manga_updated(self, updater, manga, nb_recent_chapters, nb_deleted_chapters, synced):
         if self.window.page == 'card' and self.manga.id == manga.id:
             self.manga = manga
 
-            if nb_recent_chapters > 0 or nb_deleted_chapters > 0:
+            if manga.server.sync:
+                self.window.show_notification(_('Read progress synchronization with server completed successfully'))
+
+            if nb_recent_chapters > 0 or nb_deleted_chapters > 0 or synced:
                 self.chapters_list.populate()
 
             self.info_grid.populate()

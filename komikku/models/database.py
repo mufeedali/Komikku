@@ -482,9 +482,11 @@ class Manga:
 
             return get_free_rank(rank + 1)
 
-        data = self.server.get_manga_data(dict(slug=self.slug, url=self.url))
+        data = self.server.get_manga_data(dict(slug=self.slug, url=self.url, last_read=self.last_read))
         if data is None:
-            return False, 0, 0
+            return False, 0, 0, False
+
+        synced = self.server.sync and data['last_read'] != self.last_read
 
         db_conn = create_db_connection()
         with db_conn:
@@ -547,7 +549,7 @@ class Manga:
                         logger.info('[UPDATE] {0} ({1}): Add new chapter {2}'.format(self.name, self.server_id, chapter_data['title']))
 
             if len(recent_chapters_ids) > 0 or nb_deleted_chapters > 0:
-                data['last_update'] = datetime.datetime.now()
+                data['last_update'] = datetime.datetime.utcnow()
 
             self._chapters = None
 
@@ -566,7 +568,7 @@ class Manga:
 
         db_conn.close()
 
-        return True, recent_chapters_ids, nb_deleted_chapters
+        return True, recent_chapters_ids, nb_deleted_chapters, synced
 
 
 class Chapter:

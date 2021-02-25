@@ -7,6 +7,7 @@
 # Komga is a free and open source media server for your comics, mangas, BDs and magazines.
 # Homepage: https://komga.org
 
+from datetime import datetime
 import functools
 import logging
 
@@ -41,6 +42,7 @@ class Komga(Server):
     name = 'Komga'
     lang = 'en'
     has_login = True
+    sync = True
 
     base_url = None  # Customizable via the settings
 
@@ -65,6 +67,10 @@ class Komga(Server):
     @property
     def api_chapter_pages_url(self):
         return self.api_base_url + '/books/{0}/pages'
+
+    @property
+    def api_chapter_read_progress(self):
+        return self.api_base_url + '/books/{0}/read-progress'
 
     @property
     def api_chapters_url(self):
@@ -138,18 +144,26 @@ class Komga(Server):
             return data
 
         items = r.json()['content']
+        last_read = initial_data.get('last_read')  # only provided when updating
         for item in items:
             chapter_data = dict(
                 slug=item['id'],
                 title='#{0} {1}'.format(item['metadata']['number'], item['metadata']['title'].replace('_', ' ')),
                 date=convert_date_string(item['metadata']['lastModified'].split('T')[0], format='%Y-%m-%d'),
             )
+
             if item.get('readProgress'):
-                chapter_data.update(dict(
-                    read=item['readProgress']['completed'],
-                    last_page_read_index=item['readProgress']['page'],
-                ))
+                last_modified = datetime.fromisoformat(item['readProgress']['lastModified'])
+                if not last_read or last_modified > last_read:
+                    last_read = last_modified
+                    chapter_data.update(dict(
+                        read=item['readProgress']['completed'],
+                        last_page_read_index=item['readProgress']['page'] - 1,
+                    ))
+
             data['chapters'].append(chapter_data)
+
+        data['last_read'] = last_read
 
         return data
 
@@ -233,3 +247,9 @@ class Komga(Server):
             ))
 
         return results
+
+    @is_ready
+    def update_chapter_read_progress(self, data, manga_slug, manga_name, chapter_slug, chapter_url):
+        r = self.session_patch(self.api_chapter_read_progress.format(chapter_slug), json=data)
+
+        return r.status_code == 204

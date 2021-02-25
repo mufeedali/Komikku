@@ -77,9 +77,10 @@ class Server:
     is_nsfw = False
     logged_in = False
     long_strip_genres = []
-    manga_title_css_selector = None  # Used to retrieve manga title from a manga URL
+    manga_title_css_selector = None  # Used to extract manga title in a manga URL
     session_expiration_cookies = []  # Session cookies for which validity (not expired) must be checked
     status = 'enabled'
+    sync = False
 
     base_url = None
 
@@ -243,6 +244,14 @@ class Server:
 
         return r
 
+    def session_patch(self, *args, **kwargs):
+        try:
+            r = self.session.patch(*args, **kwargs)
+        except Exception:
+            raise
+
+        return r
+
     def session_post(self, *args, **kwargs):
         try:
             r = self.session.post(*args, **kwargs)
@@ -250,6 +259,9 @@ class Server:
             raise
 
         return r
+
+    def update_chapter_read_progress(self, data, manga_slug, manga_name, chapter_slug, chapter_url):
+        return False
 
 
 def convert_date_string(date, format=None):

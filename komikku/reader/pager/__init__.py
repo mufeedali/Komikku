@@ -266,6 +266,15 @@ class BasePager:
             recent=0,
         ))
 
+        # Sync read progress with server if function is supported
+        chapter.manga.server.update_chapter_read_progress(
+            dict(
+                page=page.index + 1,
+                completed=chapter_is_read,
+            ),
+            self.reader.manga.slug, self.reader.manga.name, chapter.slug, chapter.url
+        )
+
         return GLib.SOURCE_REMOVE
 
     @abstractmethod
