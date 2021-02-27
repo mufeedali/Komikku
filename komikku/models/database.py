@@ -288,7 +288,7 @@ class Manga:
 
         # Fill data with internal data
         data.update(dict(
-            last_read=datetime.datetime.now(),
+            last_read=datetime.datetime.utcnow(),
         ))
 
         # Long strip detection (Webtoon)

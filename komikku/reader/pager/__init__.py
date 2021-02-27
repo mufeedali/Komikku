@@ -246,7 +246,7 @@ class BasePager:
         chapter = page.chapter
 
         # Update manga last read time
-        self.reader.manga.update(dict(last_read=datetime.datetime.now()))
+        self.reader.manga.update(dict(last_read=datetime.datetime.utcnow()))
 
         # Mark page as read
         chapter.pages[page.index]['read'] = True

@@ -61,7 +61,7 @@ class Downloader(GObject.GObject):
                 chapter_id=chapter_id,
                 status='pending',
                 percent=0,
-                date=datetime.datetime.now(),
+                date=datetime.datetime.utcnow(),
             ))
             chapters_ids.append(chapter_id)
 

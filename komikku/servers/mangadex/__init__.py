@@ -216,7 +216,7 @@ class Mangadex(Server):
             if 9097 in chapter['groups']:
                 # Chapters from MANGA Plus can't be read from MangaDex
                 continue
-            if datetime.fromtimestamp(chapter['timestamp']) > datetime.now():
+            if datetime.fromtimestamp(chapter['timestamp']) > datetime.utcnow():
                 # Future chapter
                 continue
 
