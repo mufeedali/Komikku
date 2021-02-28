@@ -14,6 +14,7 @@ import logging
 from requests.auth import HTTPBasicAuth
 
 from komikku.servers import convert_date_string
+from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 
@@ -54,7 +55,8 @@ class Komga(Server):
         if address:
             self.base_url = address
 
-        self.init(username, password)
+        if username and password:
+            self.do_login(username, password)
 
     @property
     def api_base_url(self):
@@ -92,6 +94,7 @@ class Komga(Server):
     def manga_url(self):
         return self.base_url + '/series/{0}'
 
+    @do_login
     @is_ready
     def get_manga_data(self, initial_data):
         """
@@ -167,6 +170,7 @@ class Komga(Server):
 
         return data
 
+    @do_login
     @is_ready
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
@@ -189,6 +193,7 @@ class Komga(Server):
 
         return data
 
+    @do_login
     @is_ready
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
@@ -232,6 +237,7 @@ class Komga(Server):
 
         return True
 
+    @do_login
     @is_ready
     def search(self, term):
         r = self.session.get(self.api_search_url, params=dict(search=term))
@@ -248,6 +254,7 @@ class Komga(Server):
 
         return results
 
+    @do_login
     @is_ready
     def update_chapter_read_progress(self, data, manga_slug, manga_name, chapter_slug, chapter_url):
         r = self.session_patch(self.api_chapter_read_progress.format(chapter_slug), json=data)

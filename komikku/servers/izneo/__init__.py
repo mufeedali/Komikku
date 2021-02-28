@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 
+from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 
@@ -29,8 +30,10 @@ class Izneo(Server):
     user_collection_url = base_url + '/nl/api/library?offset={0}&order=3&text={1}'
 
     def __init__(self, username=None, password=None):
-        self.init(username, password)
+        if username and password:
+            self.do_login(username, password)
 
+    @do_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -82,6 +85,7 @@ class Izneo(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data
@@ -114,6 +118,7 @@ class Izneo(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -138,6 +143,7 @@ class Izneo(Server):
         """
         return self.base_url + url
 
+    @do_login
     def get_most_populars(self):
         """
         Returns all series available in user's collection
@@ -179,6 +185,7 @@ class Izneo(Server):
 
         return True
 
+    @do_login
     def search(self, term):
         return self.search_in_user_collection(term)
 

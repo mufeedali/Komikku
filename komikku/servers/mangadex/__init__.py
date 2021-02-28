@@ -9,6 +9,7 @@ from datetime import datetime
 import html
 import logging
 
+from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
@@ -130,7 +131,8 @@ class Mangadex(Server):
     }
 
     def __init__(self, username=None, password=None):
-        self.init(username, password)
+        if username and password:
+            self.do_login(username, password)
 
     @classmethod
     def get_manga_initial_data_from_url(cls, url):
@@ -152,6 +154,7 @@ class Mangadex(Server):
         matching_group = [group for group in groups_list if group['id'] == group_id]
         return matching_group[0]['name']
 
+    @do_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -231,6 +234,7 @@ class Mangadex(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data from API
@@ -260,6 +264,7 @@ class Mangadex(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -287,6 +292,7 @@ class Mangadex(Server):
         """
         return self.manga_url.format(slug)
 
+    @do_login
     def get_most_populars(self):
         """
         Returns most popular mangas (bayesian rating)
@@ -333,6 +339,7 @@ class Mangadex(Server):
 
         return True
 
+    @do_login
     def search(self, term):
         r = self.session_get(self.search_url, params=dict(
             tag_mode_exc='any',

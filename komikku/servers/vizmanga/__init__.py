@@ -2,8 +2,9 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import re
 
-from komikku.servers import Server
 from komikku.servers import convert_date_string
+from komikku.servers import do_login
+from komikku.servers import Server
 
 # Improved from https://github.com/manga-py/manga-py
 
@@ -15,7 +16,7 @@ class Vizmanga(Server):
     locale = 'enUS'
     has_login = True
 
-    base_url = 'http://www.viz.com'
+    base_url = 'https://www.viz.com'
     login_url = base_url + '/manga/try_manga_login'
     refresh_login_url = base_url + '/account/refresh_login_links'
     login_url = base_url + '/account/try_login'
@@ -33,9 +34,10 @@ class Vizmanga(Server):
     }
 
     def __init__(self, username=None, password=None):
-        self.init(username, password)
-        self.session.headers = self.headers
+        if username and password:
+            self.do_login(username, password)
 
+    @do_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -108,6 +110,7 @@ class Vizmanga(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data
@@ -132,6 +135,7 @@ class Vizmanga(Server):
         r = self.session_get(url)
         return r.text.strip()
 
+    @do_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -162,6 +166,7 @@ class Vizmanga(Server):
         """
         return url
 
+    @do_login
     def get_most_populars(self):
         """
         Returns full list of manga sorted by rank

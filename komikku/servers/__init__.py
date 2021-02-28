@@ -7,6 +7,7 @@ import dateparser
 import datetime
 from functools import cached_property
 from functools import lru_cache
+from functools import wraps
 import importlib
 import inspect
 import io
@@ -52,6 +53,18 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
 
 VERSION = 1
+
+
+def do_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        server = args[0]
+        if not server.logged_in:
+            server.do_login()
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 class CustomTimeout(TimeoutSauce):
@@ -110,7 +123,7 @@ class Server:
 
         return dict(slug=slug)
 
-    def init(self, username=None, password=None):
+    def do_login(self, username=None, password=None):
         if username and password:
             # Username and password are provided only when user defines the credentials in the settings
             self.clear_session()

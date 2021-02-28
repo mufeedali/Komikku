@@ -1,6 +1,7 @@
 import logging
 
 from komikku.servers import convert_date_string
+from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
@@ -49,7 +50,8 @@ class Crunchyroll(Server):
     }
 
     def __init__(self, username=None, password=None):
-        self.init(username, password)
+        if username and password:
+            self.do_login(username, password)
 
     def _get_session_id(self):
         if 'session_id' in self.session.cookies:
@@ -71,6 +73,7 @@ class Crunchyroll(Server):
         # Don't know why 66 is special
         return bytes(b ^ 66 for b in buffer)
 
+    @do_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -135,6 +138,7 @@ class Crunchyroll(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data
@@ -167,6 +171,7 @@ class Crunchyroll(Server):
 
         return data
 
+    @do_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -194,6 +199,7 @@ class Crunchyroll(Server):
         """
         return url
 
+    @do_login
     def get_most_populars(self):
         """
         Returns full list of manga sorted by rank
