@@ -14,6 +14,7 @@ from komikku.utils import log_error_traceback
 from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
+from komikku.utils import if_network_available
 
 
 class Updater(GObject.GObject):
@@ -27,27 +28,28 @@ class Updater(GObject.GObject):
     queue = []
     running = False
     stop_flag = False
+    update_at_startup_done = False
     update_library_flag = False
 
-    def __init__(self, window, update_at_startup=False):
+    def __init__(self, window):
         GObject.GObject.__init__(self)
 
         self.window = window
 
-        if update_at_startup:
-            self.update_library()
-
     def add(self, mangas):
         if not isinstance(mangas, list):
             mangas = [mangas, ]
+        mangas.reverse()
 
         for manga in mangas:
             if manga.id not in self.queue:
                 self.queue.append(manga.id)
 
+    @if_network_available
     def start(self):
         def show_notification(summary, body=''):
             if notification is None:
+                # Use in-app notification
                 self.window.show_notification('{0}\n{1}'.format(summary, body))
             else:
                 notification.update(summary, body)
@@ -160,8 +162,11 @@ class Updater(GObject.GObject):
         if self.running:
             self.stop_flag = True
 
-    def update_library(self):
+    @if_network_available
+    def update_library(self, startup=False):
         self.update_library_flag = True
+        if startup:
+            self.update_at_startup_done = True
 
         db_conn = create_db_connection()
         rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()

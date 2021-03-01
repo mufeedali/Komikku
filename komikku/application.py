@@ -138,6 +138,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     hidpi_scale = 1
     mobile_width = False
+    network_available = False
     page = None
 
     is_maximized = False
@@ -207,12 +208,17 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
         self.logging_manager = self.application.logger
         self.downloader = Downloader(self)
-        self.updater = Updater(self, Settings.get_default().update_at_startup)
+        self.updater = Updater(self)
 
         self.activity_indicator = ActivityIndicator()
         self.overlay.add_overlay(self.activity_indicator)
         self.overlay.set_overlay_pass_through(self.activity_indicator, True)
         self.activity_indicator.show_all()
+
+        Gio.NetworkMonitor.get_default().connect('network-changed', self.on_network_status_changed)
+        # Non-portal implementations of Gio.NetworkMonitor (app not running under Flatpak) don't actually change the value
+        # unless the network state actually changes
+        Gio.NetworkMonitor.get_default().emit('network-changed', None)
 
         self.assemble_window()
 
@@ -392,9 +398,11 @@ class ApplicationWindow(Handy.ApplicationWindow):
             about_dialog.hide()
 
     def on_application_quit(self, window, event):
-        def before_quit():
+        def quit():
             self.save_window_size()
             backup_db()
+
+            self.application.quit()
 
         if self.downloader.running or self.updater.running:
             def confirm_callback():
@@ -405,8 +413,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
                     time.sleep(0.1)
                     continue
 
-                before_quit()
-                self.application.quit()
+                quit()
 
             message = [
                 _('Are you sure you want to quit?'),
@@ -422,10 +429,9 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 confirm_callback
             )
 
-            return True
+            return
 
-        before_quit()
-        return False
+        quit()
 
     def on_headerbar_toggle(self, *args):
         if self.page == 'reader':
@@ -464,6 +470,25 @@ class ApplicationWindow(Handy.ApplicationWindow):
             # and update info like disk usage
             self.card.refresh(self.reader.chapters_consulted)
             self.card.show()
+
+    def on_network_status_changed(self, monitor, _connected):
+        self.network_available = monitor.get_connectivity() == Gio.NetworkConnectivity.FULL
+
+        if self.network_available:
+            # Automatically update library at startup
+            if Settings.get_default().update_at_startup and not self.updater.update_at_startup_done:
+                self.updater.update_library(startup=True)
+
+            # Start Downloader
+            if Settings.get_default().downloader_state:
+                self.downloader.start()
+        else:
+            # Stop Updater
+            self.updater.stop()
+
+            # Stop Downloader
+            if Settings.get_default().downloader_state:
+                self.downloader.stop()
 
     def on_resize(self, _window, _allocation):
         size = self.get_size()

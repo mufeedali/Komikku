@@ -5,6 +5,7 @@
 from contextlib import closing
 import datetime
 from functools import lru_cache
+from functools import wraps
 from gettext import gettext as _
 import gi
 import html
@@ -89,12 +90,28 @@ def html_escape(s):
     return html.escape(html.unescape(s), quote=False)
 
 
+def if_network_available(func):
+    """Decorator to disable an action when network is not avaibable"""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        window = args[0].parent if hasattr(args[0], 'parent') else args[0].window
+        if not window.network_available:
+            window.show_notification(_('You are currently offline'))
+            return None
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def is_flatpak():
     return os.path.exists(os.path.join(GLib.get_user_runtime_dir(), 'flatpak-info'))
 
 
 def log_error_traceback(e):
-    if isinstance(e, (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.ChunkedEncodingError)):
+    if isinstance(e, requests.exceptions.RequestException):
         return _('No Internet connection, timeout or server down')
 
     logger.info(traceback.format_exc())

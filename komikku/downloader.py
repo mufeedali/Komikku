@@ -20,6 +20,7 @@ from komikku.models import create_db_connection
 from komikku.models import Download
 from komikku.models import insert_rows
 from komikku.models import Settings
+from komikku.utils import if_network_available
 from komikku.utils import log_error_traceback
 
 DOWNLOAD_DELAY = 1  # in seconds
@@ -42,8 +43,6 @@ class Downloader(GObject.GObject):
         GObject.GObject.__init__(self)
 
         self.window = window
-        if Settings.get_default().downloader_state:
-            self.start()
 
     def add(self, chapters, emit_signal=False):
         chapters_ids = []
@@ -101,6 +100,7 @@ class Downloader(GObject.GObject):
         if was_running:
             self.start()
 
+    @if_network_available
     def start(self):
         def run(exclude_errors=False):
             db_conn = create_db_connection()
@@ -274,6 +274,8 @@ class DownloadManagerDialog(Gtk.Dialog):
 
     def __init__(self, window):
         Gtk.Dialog.__init__(self)
+
+        self.parent = window
 
         self.set_titlebar(self.titlebar)
         self.set_transient_for(window)
@@ -464,6 +466,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         else:
             self.subtitle_label.hide()
 
+    @if_network_available
     def on_start_stop_button_clicked(self, button):
         self.start_stop_button.set_sensitive(False)
 
