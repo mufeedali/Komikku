@@ -111,23 +111,19 @@ class Mangadex(Server):
 
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
-    api_manga_url = base_url + '/api/v2/manga/{0}'
-    api_chapter_url = base_url + '/api/v2/chapter/{0}'
+    api_base_url = 'https://api.mangadex.org/v2'
+    api_manga_url = api_base_url + '/manga/{0}'
+    api_chapter_url = api_base_url + '/chapter/{0}'
     search_url = base_url + '/search'
-    most_populars_url = base_url + '/titles/7'
+    most_populars_url = base_url + '/titles?s=7'
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
 
     headers = {
         'User-Agent': USER_AGENT,
-        'Host': 'mangadex.org',
-        'Referer': 'https://mangadex.org',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'fr-FR,en-US;q=0.7,en;q=0.3',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'DNT': '1',
-        'Connection': 'keep-alive',
+        'Host': base_url.split('/')[2],
+        'Referer': base_url,
     }
 
     def __init__(self, username=None, password=None):
@@ -166,13 +162,10 @@ class Mangadex(Server):
         r = self.session_get(
             self.api_manga_url.format(self.convert_old_slug(initial_data['slug'])),
             headers={
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': '*/*',
-                'Referer': self.base_url,
-                'Origin': self.base_url,
+                'Host': self.api_base_url.split('/')[2],
             },
             params={
-                'include': 'chapters'
+                'include': 'chapters',
             }
         )
         if r.status_code != 200:
@@ -245,7 +238,7 @@ class Mangadex(Server):
         r = self.session_get(
             self.api_chapter_url.format(chapter_slug),
             headers={
-                'Accept': '*/*',
+                'Host': self.api_base_url.split('/')[2],
                 'Referer': self.chapter_url.format(chapter_slug),
             }
         )

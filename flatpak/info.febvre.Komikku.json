@@ -26,6 +26,7 @@
         "python3-unidecode.json",
         "python3-lxml.json",
         "python3-beautifulsoup4.json",
+        "python3-brotli.json",
         "python3-requests.json",
         {
             "name" : "libhandy",
