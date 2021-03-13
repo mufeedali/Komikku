@@ -11,6 +11,10 @@
                 <attribute name="label" translatable="yes">Download Manager</attribute>
                 <attribute name="action">app.library.download-manager</attribute>
             </item>
+            <item>
+                <attribute name="label" translatable="yes">Categories</attribute>
+                <attribute name="action">app.library.categories-editor</attribute>
+            </item>
         </section>
         <section>
             <item>

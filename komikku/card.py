@@ -11,10 +11,12 @@ from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gtk
+from gi.repository import Handy
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.models import create_db_connection
+from komikku.models import Category
 from komikku.models import Download
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
@@ -40,6 +42,7 @@ class Card:
 
         self.stack = self.window.card_stack
         self.info_grid = InfoGrid(self)
+        self.categories_list = CategoriesList(self)
         self.chapters_list = ChaptersList(self)
 
         self.window.updater.connect('manga-updated', self.on_manga_updated)
@@ -185,6 +188,7 @@ class Card:
     def populate(self):
         self.chapters_list.populate()
         self.info_grid.populate()
+        self.categories_list.populate()
 
         self.set_sort_order(invalidate=False)
 
@@ -203,6 +207,8 @@ class Card:
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
 
+        self.window.library_flap_reveal_button.hide()
+
         self.window.library.search_button.hide()
         self.resume_read_button.show()
         self.window.reader.fullscreen_button.hide()
@@ -220,6 +226,54 @@ class Card:
     def refresh(self, chapters):
         self.info_grid.refresh()
         self.chapters_list.refresh(chapters)
+
+
+class CategoriesList:
+    def __init__(self, card):
+        self.card = card
+        self.window = card.window
+
+        self.stack = self.window.card_categories_stack
+        self.listbox = self.window.card_categories_listbox
+        self.listbox.get_style_context().add_class('list-bordered')
+
+    def clear(self):
+        for row in self.listbox.get_children():
+            row.destroy()
+
+    def populate(self):
+        self.clear()
+
+        db_conn = create_db_connection()
+        records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
+        db_conn.close()
+
+        if records:
+            self.stack.set_visible_child_name('list')
+
+            for record in records:
+                category = Category.get(record['id'])
+
+                action_row = Handy.ActionRow()
+                action_row.set_title(category.label)
+                action_row.set_activatable(True)
+
+                switch = Gtk.Switch.new()
+                switch.set_valign(Gtk.Align.CENTER)
+                switch.set_halign(Gtk.Align.CENTER)
+                switch.set_active(category.id in self.card.manga.categories)
+                switch.connect('notify::active', self.on_category_activated, category.id)
+                action_row.add(switch)
+                action_row.set_activatable_widget(switch)
+
+                self.listbox.add(action_row)
+
+            self.listbox.show_all()
+        else:
+            self.stack.set_visible_child_name('empty')
+
+    def on_category_activated(self, switch, _param, category_id):
+        self.card.manga.toggle_category(category_id, switch.get_active())
 
 
 class ChaptersList:
