@@ -63,13 +63,13 @@ def test_japscan(japscan_server):
     assert page is not None
     yield
 
-    # Get page image
-    print('Get page image')
-    try:
-        response = japscan_server.get_manga_chapter_page_image(None, None, None, page)
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
-
-    assert response is not None
-    yield
+    # Get page image: COMMENTED due to the fact that image scraping is currently done using a headless browser
+    # print('Get page image')
+    # try:
+    #     response = japscan_server.get_manga_chapter_page_image(None, None, None, page)
+    # except Exception as e:
+    #     response = None
+    #     log_error_traceback(e)
+    # 
+    # assert response is not None
+    # yield

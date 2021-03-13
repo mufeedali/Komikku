@@ -8,6 +8,7 @@ import datetime
 from functools import cached_property
 from functools import lru_cache
 from functools import wraps
+import gi
 import importlib
 import inspect
 import io
@@ -20,6 +21,12 @@ import pkgutil
 import requests
 from requests.adapters import TimeoutSauce
 import struct
+
+gi.require_version('WebKit2', '4.0')
+
+from gi.repository import GLib
+from gi.repository import Gtk
+from gi.repository import WebKit2
 
 from komikku.utils import get_cache_dir
 from komikku.utils import KeyringHelper
@@ -55,18 +62,6 @@ USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) App
 VERSION = 1
 
 
-def do_login(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        server = args[0]
-        if not server.logged_in:
-            server.do_login()
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
 class CustomTimeout(TimeoutSauce):
     def __init__(self, *args, **kwargs):
         if kwargs['connect'] is None:
@@ -78,6 +73,65 @@ class CustomTimeout(TimeoutSauce):
 
 # Set requests timeout globally, instead of specifying ``timeout=..`` kwarg on each call
 requests.adapters.TimeoutSauce = CustomTimeout
+
+
+class HeadlessBrowser(Gtk.Window):
+    load_failed_event = None
+    lock = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.scrolledwindow = Gtk.ScrolledWindow()
+        self.scrolledwindow.get_hscrollbar().hide()
+        self.scrolledwindow.get_vscrollbar().hide()
+
+        self.viewport = Gtk.Viewport()
+        self.scrolledwindow.add(self.viewport)
+        self.add(self.scrolledwindow)
+
+        self.webview = WebKit2.WebView()
+        self.viewport.add(self.webview)
+
+        self.webview.get_settings().set_user_agent(USER_AGENT)
+
+        self.web_context = self.webview.get_context()
+        self.web_context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
+        self.web_context.set_tls_errors_policy(WebKit2.TLSErrorsPolicy.IGNORE)
+
+        # Make window almost invisible
+        self.set_decorated(False)
+        self.set_focus_on_map(False)
+        self.set_keep_below(True)
+        self.resize(1, 1)
+
+        self.webview.connect('load-failed', self.on_load_failed)
+
+    def hide_and_blank(self):
+        self.lock = False
+
+        GLib.idle_add(self.webview.load_uri, 'about:blank')
+        self.hide()
+
+    def load(self, uri):
+        if self.lock:
+            return False
+
+        self.lock = True
+        self.load_failed_event = None
+
+        self.show_all()
+
+        GLib.idle_add(self.webview.load_uri, uri)
+
+        return True
+
+    def on_load_failed(self, _webview, event, uri, error):
+        self.load_failed_event = event
+        self.hide_and_blank()
+
+
+headless_browser = HeadlessBrowser()
 
 
 class Server:
@@ -340,6 +394,18 @@ def convert_image(image, format='jpeg', ret_type='image'):
         return io_buffer.getbuffer()
     io_buffer.seek(0)
     return Image.open(io_buffer)
+
+
+def do_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        server = args[0]
+        if not server.logged_in:
+            server.do_login()
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def get_allowed_servers_list(settings):
