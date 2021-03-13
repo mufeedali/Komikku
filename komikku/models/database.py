@@ -665,8 +665,6 @@ class Chapter:
 
         chapter = cls.get(id, db_conn=db_conn) if id is not None else None
 
-        db_conn.close()
-
         return chapter
 
     @property
