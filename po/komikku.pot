@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.26.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-01 14:15+0100\n"
+"POT-Creation-Date: 2021-03-13 02:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -856,40 +856,45 @@ msgstr ""
 msgid "Learn more about Komikku"
 msgstr ""
 
-#: ../data/ui/application_window.ui:436 ../data/ui/explorer_dialog.ui:332
+#: ../data/ui/application_window.ui:494 ../data/ui/application_window.ui:879
+#: ../data/ui/categories_editor_window.ui:161
+msgid "No categories"
+msgstr ""
+
+#: ../data/ui/application_window.ui:598 ../data/ui/explorer_dialog.ui:332
 msgid "Authors"
 msgstr ""
 
-#: ../data/ui/application_window.ui:464 ../data/ui/explorer_dialog.ui:360
+#: ../data/ui/application_window.ui:626 ../data/ui/explorer_dialog.ui:360
 msgid "Genres"
 msgstr ""
 
-#: ../data/ui/application_window.ui:492 ../data/ui/explorer_dialog.ui:388
+#: ../data/ui/application_window.ui:654 ../data/ui/explorer_dialog.ui:388
 msgid "Status"
 msgstr ""
 
-#: ../data/ui/application_window.ui:520 ../data/ui/explorer_dialog.ui:416
+#: ../data/ui/application_window.ui:682 ../data/ui/explorer_dialog.ui:416
 msgid "Server"
 msgstr ""
 
-#: ../data/ui/application_window.ui:549 ../data/ui/explorer_dialog.ui:444
+#: ../data/ui/application_window.ui:711 ../data/ui/explorer_dialog.ui:444
 msgid "Synopsis"
 msgstr ""
 
-#: ../data/ui/application_window.ui:579
+#: ../data/ui/application_window.ui:741
 msgid "Last update"
 msgstr ""
 
-#: ../data/ui/application_window.ui:634 ../data/ui/explorer_dialog.ui:475
+#: ../data/ui/application_window.ui:796 ../data/ui/explorer_dialog.ui:475
 msgid "Scanlators"
 msgstr ""
 
-#: ../data/ui/application_window.ui:654
+#: ../data/ui/application_window.ui:816
 msgid "Info"
 msgstr ""
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/application_window.ui:841
+#: ../data/ui/application_window.ui:1099
 msgid "An online/offline manga reader"
 msgstr ""
 
@@ -964,15 +969,15 @@ msgstr ""
 msgid "Update Library"
 msgstr ""
 
-#: ../data/ui/menu/main.xml:17
+#: ../data/ui/menu/main.xml:21
 msgid "Preferences"
 msgstr ""
 
-#: ../data/ui/menu/main.xml:21
+#: ../data/ui/menu/main.xml:25
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../data/ui/menu/main.xml:25
+#: ../data/ui/menu/main.xml:29
 msgid "About Komikku"
 msgstr ""
 
@@ -1184,35 +1189,35 @@ msgstr ""
 msgid "Komikku"
 msgstr ""
 
-#: ../komikku/application.py:329 ../komikku/reader/__init__.py:208
+#: ../komikku/application.py:335 ../komikku/reader/__init__.py:208
 msgid "Cancel"
 msgstr ""
 
-#: ../komikku/application.py:329
+#: ../komikku/application.py:335
 msgid "Yes"
 msgstr ""
 
-#: ../komikku/application.py:391
+#: ../komikku/application.py:397
 msgid "Contributors: Code, Patches, Debugging:"
 msgstr ""
 
-#: ../komikku/application.py:419
+#: ../komikku/application.py:425
 msgid "Are you sure you want to quit?"
 msgstr ""
 
-#: ../komikku/application.py:422
+#: ../komikku/application.py:428
 msgid "Some chapters are currently being downloaded."
 msgstr ""
 
-#: ../komikku/application.py:424
+#: ../komikku/application.py:430
 msgid "Some mangas are currently being updated."
 msgstr ""
 
-#: ../komikku/application.py:427
+#: ../komikku/application.py:433
 msgid "Quit?"
 msgstr ""
 
-#: ../komikku/card.py:88
+#: ../komikku/card.py:91
 #, python-brace-format
 msgid ""
 "NOTICE\n"
@@ -1220,49 +1225,55 @@ msgid ""
 "Please switch to another server."
 msgstr ""
 
-#: ../komikku/card.py:134 ../komikku/library.py:212
+#: ../komikku/card.py:137 ../komikku/categories_editor.py:75
+#: ../komikku/library.py:236
 msgid "Delete?"
 msgstr ""
 
-#: ../komikku/card.py:135
+#: ../komikku/card.py:138
 msgid "Are you sure you want to delete this manga?"
 msgstr ""
 
-#: ../komikku/card.py:144
+#: ../komikku/card.py:147
 msgid "Read progress synchronization with server completed successfully"
 msgstr ""
 
-#: ../komikku/card.py:155
+#: ../komikku/card.py:158
 msgid "Failed to get manga URL"
 msgstr ""
 
-#: ../komikku/card.py:571
+#: ../komikku/card.py:625
 msgid "New"
 msgstr ""
 
-#: ../komikku/card.py:587
+#: ../komikku/card.py:641
 msgid "%m/%d/%Y"
 msgstr ""
 
-#: ../komikku/card.py:680
+#: ../komikku/card.py:734
 msgid "Reset"
 msgstr ""
 
-#: ../komikku/card.py:682
+#: ../komikku/card.py:736
 msgid "Download"
 msgstr ""
 
-#: ../komikku/card.py:684
+#: ../komikku/card.py:738
 msgid "Mark as Read"
 msgstr ""
 
-#: ../komikku/card.py:686
+#: ../komikku/card.py:740
 msgid "Mark as Unread"
 msgstr ""
 
-#: ../komikku/card.py:857
+#: ../komikku/card.py:911
 #, python-brace-format
 msgid "Disk space used: {0}"
+msgstr ""
+
+#: ../komikku/categories_editor.py:76
+#, python-brace-format
+msgid "Are you sure you want to delete the \"{0}\" category?"
 msgstr ""
 
 #: ../komikku/downloader.py:191
@@ -1313,43 +1324,47 @@ msgstr ""
 msgid "Search in {0}…"
 msgstr ""
 
-#: ../komikku/library.py:213
+#: ../komikku/library.py:237
 msgid "Are you sure you want to delete selected mangas?"
 msgstr ""
 
-#: ../komikku/library.py:397
+#: ../komikku/library.py:425
 msgid "Library"
 msgstr ""
 
-#: ../komikku/models/database.py:258
+#: ../komikku/library.py:610
+msgid "All"
+msgstr ""
+
+#: ../komikku/models/database.py:275
 msgid "Complete"
 msgstr ""
 
-#: ../komikku/models/database.py:259
+#: ../komikku/models/database.py:276
 msgid "Ongoing"
 msgstr ""
 
-#: ../komikku/models/database.py:260
+#: ../komikku/models/database.py:277
 msgid "Suspended"
 msgstr ""
 
-#: ../komikku/models/database.py:261
+#: ../komikku/models/database.py:278
 msgid "Hiatus"
 msgstr ""
 
-#: ../komikku/models/database.py:759
+#: ../komikku/models/database.py:884
 msgid "Download pending"
 msgstr ""
 
-#: ../komikku/models/database.py:760
+#: ../komikku/models/database.py:885
 msgid "Downloaded"
 msgstr ""
 
-#: ../komikku/models/database.py:761
+#: ../komikku/models/database.py:886
 msgid "Downloading"
 msgstr ""
 
-#: ../komikku/models/database.py:762
+#: ../komikku/models/database.py:887
 msgid "Download error"
 msgstr ""
 

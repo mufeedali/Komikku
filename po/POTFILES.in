@@ -2,6 +2,7 @@ data/info.febvre.Komikku.appdata.xml.in
 data/info.febvre.Komikku.desktop.in
 data/ui/about_dialog.ui.in
 data/ui/application_window.ui
+data/ui/categories_editor_window.ui
 data/ui/download_manager_dialog.ui
 data/ui/explorer_dialog.ui
 data/ui/menu/card_selection_mode.xml
@@ -16,6 +17,7 @@ data/ui/preferences_window.ui
 data/ui/shortcuts_overview.ui
 komikku/application.py
 komikku/card.py
+komikku/categories_editor.py
 komikku/downloader.py
 komikku/explorer.py
 komikku/library.py
