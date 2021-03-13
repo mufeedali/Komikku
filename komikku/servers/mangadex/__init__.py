@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2019-2020 Valéry Febvre
+# Copyright (C) 2019-2021 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -341,9 +341,11 @@ class Mangadex(Server):
             title=term,
             s=2,
         ))
+        if r.status_code != 200:
+            return None
 
         mime_type = get_buffer_mime_type(r.content)
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')

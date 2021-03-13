@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2019-2020 Valéry Febvre
+# Copyright (C) 2019-2021 Valéry Febvre
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
@@ -180,7 +180,7 @@ class Scanmanga(Server):
         """
         Returns chapter page scan (image) content
         """
-        self.create_session()  # Session must be refrehed each time
+        self.create_session()  # Session must be refreshed each time
 
         r = self.session_get(
             page['image'],

@@ -69,15 +69,15 @@ Dependencies:
 * `gtk` >= 3.24.1
 * `libhandy` >= 1.0.0
 * `python-beautifulsoup4`
+* `python-brotli`
 * `python-dateparser`
 * `python-keyring` >= 21.6.0
 * `python-lxml`
 * `python-magic` or `file-magic`
 * `python-pillow`
 * `python-pure-protobuf`
-* `python-unidecode`
-* `python-brotli`
 * `python-requests`
+* `python-unidecode`
 
 This is the best practice to test Komikku without installing using meson and ninja.
 
