@@ -138,7 +138,7 @@
                       </object>
                       <packing>
                         <property name="name">empty</property>
-                        <property name="position">2</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
