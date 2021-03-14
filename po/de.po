@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-13 02:08+0100\n"
-"PO-Revision-Date: 2021-02-04 19:54+0100\n"
+"PO-Revision-Date: 2021-03-14 19:32+0100\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -35,7 +35,7 @@ msgstr "Valéry Febvre"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:51
 msgid "[Preferences] Fixed a bug in saving logins credentials"
-msgstr ""
+msgstr "[Einstellungen] Fehler beim Speichern von Zugangsdaten behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:58
 msgid ""
@@ -46,6 +46,7 @@ msgstr "Hinzufügen von Comics via Kommandozeile: mehr Server unterstützt"
 #: ../data/info.febvre.Komikku.appdata.xml.in:59
 msgid "[Explorer] Search: Add button to open server's website in browser"
 msgstr ""
+"[Explorer] Knopf hinzugefügt, der die Webseite des Servers im Browser anzeigt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:60
 msgid ""
@@ -934,7 +935,7 @@ msgstr "Mehr über Komikku erfahren"
 #: ../data/ui/application_window.ui:494 ../data/ui/application_window.ui:879
 #: ../data/ui/categories_editor_window.ui:161
 msgid "No categories"
-msgstr ""
+msgstr "Keine Kategorien"
 
 #: ../data/ui/application_window.ui:598 ../data/ui/explorer_dialog.ui:332
 msgid "Authors"
@@ -1316,7 +1317,7 @@ msgstr "Sind Sie sicher, dass Sie diesen Manga löschen wollen?"
 
 #: ../komikku/card.py:147
 msgid "Read progress synchronization with server completed successfully"
-msgstr ""
+msgstr "Lesefortschritt erfolgreich synchronisiert"
 
 #: ../komikku/card.py:158
 msgid "Failed to get manga URL"
@@ -1354,7 +1355,7 @@ msgstr "Belegter Speicherplatz: {0}"
 #: ../komikku/categories_editor.py:76
 #, python-brace-format
 msgid "Are you sure you want to delete the \"{0}\" category?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie die Kategorie \"{0}\" löschen wollen?"
 
 #: ../komikku/downloader.py:191
 msgid "Download completed"
@@ -1414,7 +1415,7 @@ msgstr "Bibliothek"
 
 #: ../komikku/library.py:610
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: ../komikku/models/database.py:275
 msgid "Complete"
@@ -1646,7 +1647,7 @@ msgstr "Aktualisierung gestartet"
 
 #: ../komikku/utils.py:101
 msgid "You are currently offline"
-msgstr ""
+msgstr "Sie sind zurzeit offline"
 
 #: ../komikku/utils.py:115
 msgid "No Internet connection, timeout or server down"
