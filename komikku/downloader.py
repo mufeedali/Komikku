@@ -276,6 +276,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         Gtk.Dialog.__init__(self)
 
         self.parent = window
+        self.downloader = window.downloader
 
         self.set_titlebar(self.titlebar)
         self.set_transient_for(window)
@@ -283,8 +284,6 @@ class DownloadManagerDialog(Gtk.Dialog):
         self.builder = window.builder
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager_selection_mode.xml')
-
-        self.downloader = window.downloader
 
         self.connect('key-press-event', self.on_key_press_event)
         self.back_button.connect('clicked', self.on_back_button_clicked)

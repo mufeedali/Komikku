@@ -69,6 +69,7 @@ class CategoriesEditorWindow(Handy.Window):
             row.category.delete()
             row.destroy()
 
+            self.populate()
             self.parent.library.categories_list.populate(refresh=True)
 
         self.parent.confirm(
