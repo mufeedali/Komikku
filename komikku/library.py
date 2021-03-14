@@ -498,6 +498,9 @@ class Library:
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
 
+        if self.window.overlay.is_ancestor(self.window):
+            self.flap_reveal_button.show()
+
         self.search_button.show()
         self.window.card.resume_read_button.hide()
         self.window.reader.fullscreen_button.hide()
