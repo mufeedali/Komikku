@@ -455,11 +455,13 @@ class Library:
 
             # Display first start message
             self.window.box.add(self.window.first_start_grid)
+            self.flap_reveal_button.hide()
 
             return
 
         if self.window.first_start_grid.is_ancestor(self.window):
             self.window.box.remove(self.window.first_start_grid)
+            self.flap_reveal_button.show()
 
         if not self.window.overlay.is_ancestor(self.window):
             self.window.box.add(self.window.overlay)
@@ -495,8 +497,6 @@ class Library:
 
     def show(self, invalidate_sort=False):
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
-
-        self.flap_reveal_button.show()
 
         self.search_button.show()
         self.window.card.resume_read_button.hide()

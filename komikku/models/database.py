@@ -173,6 +173,8 @@ def init_db():
             execute_sql(db_conn, sql_create_mangas_table)
             execute_sql(db_conn, sql_create_chapters_table)
             execute_sql(db_conn, sql_create_downloads_table)
+            execute_sql(db_conn, sql_create_categories_table)
+            execute_sql(db_conn, sql_create_categories_mangas_association_table)
 
             db_conn.execute('PRAGMA user_version = {0}'.format(VERSION))
 
@@ -662,8 +664,6 @@ class Chapter:
                 id = insert_row(db_conn, 'chapters', data)
 
         chapter = cls.get(id, db_conn=db_conn) if id is not None else None
-
-        db_conn.close()
 
         return chapter
 
