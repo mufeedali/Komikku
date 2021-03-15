@@ -31,12 +31,11 @@ class Genkan(Server):
         assert 'slug' in initial_data, 'Manga slug is missing in initial data'
 
         r = self.session_get(self.manga_url.format(initial_data['slug']))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -54,7 +53,11 @@ class Genkan(Server):
         ))
 
         data['name'] = soup.find_all('h5')[0].text.strip()
-        data['cover'] = self.image_url.format(soup.find('div', class_='media-comic-card').a.get('style').split('(')[-1][:-1])
+        cover_url = soup.find('div', class_='media-comic-card').a.get('style').split('(')[-1][:-1]
+        if cover_url.startswith('http'):
+            data['cover'] = cover_url
+        else:
+            data['cover'] = self.image_url.format(cover_url)
 
         # Details
         data['synopsis'] = soup.find('div', class_='col-lg-9').contents[2].strip()
@@ -87,7 +90,6 @@ class Genkan(Server):
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
         if r.status_code != 200 or mime_type != 'text/html':
             return None
 
@@ -121,8 +123,13 @@ class Genkan(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(self.image_url.format(page['image']))
-        if r is None or r.status_code != 200:
+        if page['image'].startswith('http'):
+            image_url = page['image']
+        else:
+            image_url = self.image_url.format(page['image'])
+
+        r = self.session_get(image_url, headers={'Referer': self.chapter_url.format(manga_slug, chapter_slug)})
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -146,8 +153,6 @@ class Genkan(Server):
         Returns new and/or recommended manga
         """
         r = self.session_get(self.most_populars_url)
-        if r is None:
-            return None
 
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -167,8 +172,6 @@ class Genkan(Server):
 
     def search(self, term):
         r = self.session_get(self.search_url.format(term))
-        if r is None:
-            return None
 
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -192,8 +195,6 @@ class GenkanInitial(Genkan):
 
     def search(self, term):
         r = self.session_get(self.search_url)
-        if r is None:
-            return None
 
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -257,6 +258,7 @@ class Leviatanscans(Genkan):
     id = 'leviatanscans:genkan'
     name = 'Leviatan Scans'
     lang = 'en'
+    status = 'disabled'  # Switch to Mandara (Wordpress)
 
     base_url = 'https://leviatanscans.com'
     search_url = base_url + '/comics?query={0}'

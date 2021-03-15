@@ -255,6 +255,13 @@ def test_hunlightscans(hunlightscans_server):
 
 @test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
 def test_leviatanscans(leviatanscans_server):
+    # Server is disabled
+    yield
+    yield
+    yield
+    yield
+    yield
+
     # Get most popular
     print('Get most popular')
     try:
