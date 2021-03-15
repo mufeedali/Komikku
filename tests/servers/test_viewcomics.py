@@ -30,7 +30,7 @@ def test_viewcomics(viewcomics_server):
     # Search
     print('Search')
     try:
-        response = viewcomics_server.search('amazing spider-man 1963')
+        response = viewcomics_server.search('amazing spider-man')
         slug = response[0]['slug']
     except Exception as e:
         slug = None
