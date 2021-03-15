@@ -109,6 +109,9 @@ class CategoriesEditorWindow(Handy.Window):
         records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
         db_conn.close()
 
+        for row in self.listbox.get_children():
+            row.destroy()
+
         if records:
             for record in records:
                 category = Category.get(record['id'])
