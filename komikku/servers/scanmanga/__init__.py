@@ -110,7 +110,8 @@ class Scanmanga(Server):
         # Chapters
         for element in reversed(soup.find_all('div', class_='chapitre_nom')):
             a_element = element.a
-            if not a_element:
+            if not a_element or element.find('p', class_='typcn'):
+                # Skip external chapters
                 continue
 
             data['chapters'].append(dict(
