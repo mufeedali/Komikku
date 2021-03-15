@@ -7,9 +7,6 @@
 from bs4 import BeautifulSoup
 import json
 import requests
-import time
-from urllib.parse import parse_qs
-from urllib.parse import urlparse
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
@@ -31,7 +28,9 @@ class Mangakawaii(Server):
     most_populars_referer_url = base_url + '/liste-manga'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
-    cover_url = 'https://cdn.mangakawaii.com/uploads/manga/{0}/cover/cover_250x350.jpg'
+    cdn_base_url = 'https://cdn.mangakawaii.com'
+    image_url = cdn_base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
+    cover_url = cdn_base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
 
     def __init__(self):
         if self.session is None:
@@ -156,7 +155,7 @@ class Mangakawaii(Server):
                 for index, page in enumerate(pages):
                     data['pages'].append(dict(
                         slug=None,
-                        image=page['url'],
+                        image=page['page_image'],
                         index=index,
                     ))
 
@@ -168,17 +167,7 @@ class Mangakawaii(Server):
         """
         Returns chapter page scan (image) content
         """
-        # Images URLs have an expire time with signature.
-        # We must re-fetch image URL from chapter data first if URL is expired
-        expires = parse_qs(urlparse(page['image']).query).get('expires')
-        if expires and int(expires[0]) < time.time():
-            data = self.get_manga_chapter_data(manga_slug, manga_name, chapter_slug, None)
-            if data is None or not data['pages']:
-                return None
-
-            page = data['pages'][page['index']]
-
-        r = self.session_get(page['image'])
+        r = self.session_get(self.image_url.format(manga_slug, chapter_slug, page['image']))
         if r.status_code != 200:
             return None
 
