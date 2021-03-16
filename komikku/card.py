@@ -18,6 +18,7 @@ from gi.repository.GdkPixbuf import PixbufAnimation
 from komikku.models import create_db_connection
 from komikku.models import Category
 from komikku.models import Download
+from komikku.models import Settings
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
 from komikku.utils import folder_size
@@ -274,7 +275,9 @@ class CategoriesList:
 
     def on_category_activated(self, switch, _param, category_id):
         self.card.manga.toggle_category(category_id, switch.get_active())
-        self.window.library.populate()
+
+        if Settings.get_default().selected_category:
+            self.window.library.populate()
 
 
 class ChaptersList:
