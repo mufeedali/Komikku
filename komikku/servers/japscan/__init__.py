@@ -171,8 +171,8 @@ class Japscan(Server):
             if not headless_browser.load(url):
                 return True
 
-            headless_browser.webview.connect('load-changed', on_load_changed)
-            headless_browser.webview.connect('notify::title', on_title_changed)
+            headless_browser.connect_signal('load-changed', on_load_changed)
+            headless_browser.connect_signal('notify::title', on_title_changed)
 
         def on_load_changed(_webview, event):
             if event != WebKit2.LoadEvent.FINISHED:
@@ -227,6 +227,9 @@ class Japscan(Server):
         while (headless_browser.lock or image_data is None) and headless_browser.load_failed_event is None:
             time.sleep(.1)
             continue
+
+        if headless_browser.load_failed_error:
+            raise requests.exceptions.RequestException()
 
         if image_data:
             return dict(

@@ -12,6 +12,7 @@ import gi
 import importlib
 import inspect
 import io
+import logging
 import magic
 from operator import itemgetter
 import os
@@ -62,6 +63,8 @@ USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) App
 
 VERSION = 1
 
+logger = logging.getLogger('komikku.servers')
+
 
 class CustomTimeout(TimeoutSauce):
     def __init__(self, *args, **kwargs):
@@ -77,11 +80,14 @@ requests.adapters.TimeoutSauce = CustomTimeout
 
 
 class HeadlessBrowser(Gtk.Window):
+    load_failed_error = None
     load_failed_event = None
     lock = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.__handlers_ids = []
 
         self.scrolledwindow = Gtk.ScrolledWindow()
         self.scrolledwindow.get_hscrollbar().hide()
@@ -108,11 +114,23 @@ class HeadlessBrowser(Gtk.Window):
 
         self.webview.connect('load-failed', self.on_load_failed)
 
+    def connect_signal(self, *args):
+        handler_id = self.webview.connect(*args)
+        self.__handlers_ids.append(handler_id)
+
+    def disconnect_all_signals(self):
+        for handler_id in self.__handlers_ids:
+            self.webview.disconnect(handler_id)
+
+        self.__handlers_ids = []
+
     def hide_and_blank(self):
-        self.lock = False
+        logger.debug('WebKit2 | Load page end (success or error)')
 
         GLib.idle_add(self.webview.load_uri, 'about:blank')
         self.hide()
+
+        self.lock = False
 
     def load(self, uri):
         if self.lock:
@@ -121,15 +139,24 @@ class HeadlessBrowser(Gtk.Window):
         self.lock = True
         self.load_failed_event = None
 
-        self.show_all()
+        logger.debug('WebKit2 | Load page %s' % uri)
 
+        self.disconnect_all_signals()
+        self.show_all()
         GLib.idle_add(self.webview.load_uri, uri)
 
         return True
 
     def on_load_failed(self, _webview, event, uri, error):
+        logger.debug('WebKit2 | Load page failed %s (%s)' % (uri, error.message))
+
+        self.load_failed_error = error
         self.load_failed_event = event
+
+        self.disconnect_all_signals()
         self.hide_and_blank()
+
+        return True
 
 
 headless_browser = HeadlessBrowser()
