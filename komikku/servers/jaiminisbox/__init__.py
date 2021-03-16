@@ -150,13 +150,19 @@ class Jaiminisbox(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_post(self.chapter_url.format(manga_slug, chapter_slug), data=dict(adult='true'))
-        if r is None:
+        r = self.session_post(
+            self.chapter_url.format(manga_slug, chapter_slug),
+            data=dict(adult='true'),
+            headers={
+                'Accept-Encoding': 'gzip, deflate',
+                'Accept-Language': '{0}-{1},{0};q=0.9,en-US;q=0.8,en;q=0.7'.format(self.lang, self.lang.upper()),
+            }
+        )
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -210,7 +216,7 @@ class Jaiminisbox(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'])
-        if r is None or r.status_code != 200:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -231,12 +237,11 @@ class Jaiminisbox(Server):
 
     def get_mangas(self, page=1):
         r = self.session_get('{0}/{1}'.format(self.mangas_url, page))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -257,12 +262,11 @@ class Jaiminisbox(Server):
         Returns list of all mangas
         """
         r = self.session_get(self.mangas_url)
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -280,9 +284,14 @@ class Jaiminisbox(Server):
         return results
 
     def search(self, term):
-        r = self.session_post(self.search_url, data=dict(search=term))
-        if r is None:
-            return None
+        r = self.session_post(
+            self.search_url,
+            data=dict(search=term),
+            headers={
+                'Accept-Encoding': 'gzip, deflate',
+                'Accept-Language': '{0}-{1},{0};q=0.9,en-US;q=0.8,en;q=0.7'.format(self.lang, self.lang.upper()),
+            }
+        )
 
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
