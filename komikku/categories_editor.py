@@ -67,7 +67,6 @@ class CategoriesEditorWindow(Handy.Window):
     def delete_category(self, _button, row):
         def confirm_callback():
             row.category.delete()
-            row.destroy()
 
             self.populate()
             self.parent.library.categories_list.populate(refresh=True)
@@ -108,6 +107,9 @@ class CategoriesEditorWindow(Handy.Window):
         db_conn = create_db_connection()
         records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
         db_conn.close()
+
+        for row in self.listbox.get_children():
+            row.destroy()
 
         if records:
             for record in records:
