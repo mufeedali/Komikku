@@ -274,6 +274,7 @@ class CategoriesList:
 
     def on_category_activated(self, switch, _param, category_id):
         self.card.manga.toggle_category(category_id, switch.get_active())
+        self.window.library.populate()
 
 
 class ChaptersList:

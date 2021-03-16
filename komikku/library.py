@@ -596,7 +596,7 @@ class CategoriesList(GObject.GObject):
 
         self.library.populate()
 
-    def populate(self, refresh=False):
+    def populate(self, refresh_library=False):
         db_conn = create_db_connection()
         records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
         db_conn.close()
@@ -639,11 +639,12 @@ class CategoriesList(GObject.GObject):
                 # Selected category (saved in Settings) doesn't exist anymore
                 Settings.get_default().selected_category = 0
                 self.listbox.select_row(self.listbox.get_children()[0])
-
-                if refresh:
-                    self.library.populate()
         else:
+            Settings.get_default().selected_category = 0
             self.stack.set_visible_child_name('empty')
+
+        if refresh_library:
+            self.library.populate()
 
 
 class Thumbnail(Gtk.FlowBoxChild):
