@@ -50,6 +50,7 @@ CREDITS = dict(
         'Valéry Febvre (French)',
         'GrownNed (Russian)',
         'Leo Prikler (German)',
+        'Mek101 (Italian)',
         'Heimen Stoffels (Dutch)',
         'VaGNaroK (Brazilian Portuguese)',
     ),

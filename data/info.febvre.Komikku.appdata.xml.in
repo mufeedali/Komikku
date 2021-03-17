@@ -45,6 +45,24 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.27.0" date="2021-03-17">
+            <description>
+                <ul>
+                    <li>[Library] Add Categories to organize the library</li>
+                    <li>[Servers] Add Read Comics Online (EN)</li>
+                    <li>[Servers] Komga: Add sync (read progress) with server</li>
+                    <li>[Servers] JapScan: Partial fix (Webtoons chapters in single page are not handled)</li>
+                    <li>[Servers] MangaDex: Update</li>
+                    <li>[Servers] MangaKawaii: Update</li>
+                    <li>[Servers] MangaSee: Fix page download for chapters with decimals in name</li>
+                    <li>[Servers] Reaper Scans: Update</li>
+                    <li>[Servers] Scan Manga: Skip chapters coming from external servers</li>
+                    <li>[Servers] Tutto Anime Manga: Update</li>
+                    <li>[L10n] Add Italian translation</li>
+                    <li>[L10n] Update German translation</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.26.1" date="2021-02-08">
             <description>
                 <ul>
