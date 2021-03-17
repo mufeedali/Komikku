@@ -278,6 +278,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         self.parent = window
         self.downloader = window.downloader
 
+        self.get_children()[0].set_border_width(0)  # internal vertical Box
         self.set_titlebar(self.titlebar)
         self.set_transient_for(window)
 

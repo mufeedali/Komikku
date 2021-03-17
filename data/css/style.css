@@ -87,7 +87,7 @@ flowbox flowboxchild {
 
 /* Download manager dialog */
 .download-manager-download-listboxrow {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid @borders;
     padding: 6px 6px 12px 6px;
 }
 .download-manager-download-label {
