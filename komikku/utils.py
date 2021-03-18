@@ -300,13 +300,18 @@ class KeyringHelper:
 
     @property
     def keyring(self):
-        return keyring.get_keyring()
+        current_keyring = keyring.get_keyring()
+        if isinstance(current_keyring, keyring.backends.chainer.ChainerBackend):
+            # If several backends are available, use first (the one with the highest priority)
+            current_keyring = self.keyring.backends[0]
+
+        return current_keyring
 
     def get(self, service):
         if self.is_disabled:
             return None
 
-        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
+        if not isinstance(self.keyring, PlaintextKeyring):
             collection = self.keyring.get_preferred_collection()
 
             credential = None
@@ -333,7 +338,7 @@ class KeyringHelper:
         if self.is_disabled:
             return
 
-        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
+        if not isinstance(self.keyring, PlaintextKeyring):
             collection = self.keyring.get_preferred_collection()
 
             label = f'{self.appid}: {username}@{service}'
@@ -363,6 +368,9 @@ class PlaintextKeyring(keyring.backend.KeyringBackend):
     """
 
     priority = 1
+
+    def __init__(self):
+        super().__init__()
 
     @property
     def filename(self):
