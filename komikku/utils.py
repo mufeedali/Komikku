@@ -292,7 +292,7 @@ class KeyringHelper:
 
     @property
     def has_recommended_backend(self):
-        return not isinstance(self.keyring, keyring.backends.fail.Keyring)
+        return self.keyring is not None and not isinstance(self.keyring, keyring.backends.fail.Keyring)
 
     @property
     def is_disabled(self):
@@ -300,18 +300,23 @@ class KeyringHelper:
 
     @property
     def keyring(self):
-        current_keyring = keyring.get_keyring()
-        if isinstance(current_keyring, keyring.backends.chainer.ChainerBackend):
-            # If several backends are available, use first (the one with the highest priority)
-            current_keyring = self.keyring.backends[0]
+        current_keyring_backend = keyring.get_keyring()
 
-        return current_keyring
+        if isinstance(current_keyring_backend, keyring.backends.chainer.ChainerBackend):
+            # Search SecretService backend
+            for backend in current_keyring_backend.backends:
+                if isinstance(backend, keyring.backends.SecretService.Keyring):
+                    return backend
+
+            return None
+
+        return current_keyring_backend
 
     def get(self, service):
         if self.is_disabled:
             return None
 
-        if not isinstance(self.keyring, PlaintextKeyring):
+        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
             collection = self.keyring.get_preferred_collection()
 
             credential = None
@@ -327,6 +332,7 @@ class KeyringHelper:
                     if username:
                         credential = CustomCredential(username, item.get_secret().decode('utf-8'), item.get_attributes().get('address'))
         else:
+            # Fallback on PlaintextKeyring
             credential = self.keyring.get_credential(service, None)
 
         if credential is None or credential.username is None:
@@ -338,7 +344,16 @@ class KeyringHelper:
         if self.is_disabled:
             return
 
-        if not isinstance(self.keyring, PlaintextKeyring):
+        if isinstance(self.keyring, keyring.backends.SecretService.Keyring):
+            # At this time, SecretService is the only backend that support a collection of items with arbitrary attributes
+            # Known working implementations are:
+            # - GNOME Keyring
+            # - KeePassXC Secret Service integration (tested, work well)
+
+            # Freedesktop.org Secret Service specification was written by both GNOME and KDE projects together
+            # but it’s supported by the GNOME Keyring only
+            # ksecretservice (https://community.kde.org/KDE_Utils/ksecretsservice) exists but is unfinished and seems unmaintained
+
             collection = self.keyring.get_preferred_collection()
 
             label = f'{self.appid}: {username}@{service}'
@@ -358,6 +373,7 @@ class KeyringHelper:
 
                 collection.create_item(label, attributes, password)
         else:
+            # Fallback on PlaintextKeyring
             self.keyring.set_password(service, username, password, address)
 
 
