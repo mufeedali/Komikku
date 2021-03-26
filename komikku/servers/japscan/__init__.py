@@ -165,13 +165,15 @@ class Japscan(Server):
         """
         Returns chapter page scan (image) content
         """
-        image_data = None
+        error = None
+        image_buffer = None
 
         def load_page(url):
-            if not headless_browser.load(url):
+            if not headless_browser.open(url):
                 return True
 
             headless_browser.connect_signal('load-changed', on_load_changed)
+            headless_browser.connect_signal('load-failed', on_load_failed)
             headless_browser.connect_signal('notify::title', on_title_changed)
 
         def on_load_changed(_webview, event):
@@ -194,6 +196,13 @@ class Japscan(Server):
             """
             headless_browser.webview.run_javascript(js, None, None)
 
+        def on_load_failed(_webview, _event, _uri, gerror):
+            nonlocal error
+
+            error = gerror
+
+            headless_browser.close()
+
         def on_title_changed(_webview, title):
             try:
                 size = json.loads(headless_browser.webview.props.title)
@@ -208,15 +217,15 @@ class Japscan(Server):
                     WebKit2.SnapshotRegion.FULL_DOCUMENT, WebKit2.SnapshotOptions.NONE, None, on_snapshot_finished)
 
             def on_snapshot_finished(_webview, result):
-                nonlocal image_data
+                nonlocal image_buffer
 
                 # Get image data
                 surface = headless_browser.webview.get_snapshot_finish(result)
                 io_buffer = BytesIO()
                 surface.write_to_png(io_buffer)
-                image_data = io_buffer.getbuffer()
+                image_buffer = io_buffer.getbuffer()
 
-                headless_browser.hide_and_blank()
+                headless_browser.close()
 
             GLib.timeout_add(100, do_snapshot)
 
@@ -224,21 +233,17 @@ class Japscan(Server):
         image_name = page_url.split('/')[-1].replace('html', 'png')
         GLib.timeout_add(100, load_page, page_url)
 
-        while (headless_browser.lock or image_data is None) and headless_browser.load_failed_event is None:
+        while image_buffer is None and error is None:
             time.sleep(.1)
-            continue
 
-        if headless_browser.load_failed_error:
+        if error:
             raise requests.exceptions.RequestException()
 
-        if image_data:
-            return dict(
-                buffer=image_data,
-                mime_type='image/png',
-                name=image_name,
-            )
-        else:
-            return None
+        return dict(
+            buffer=image_buffer,
+            mime_type='image/png',
+            name=image_name,
+        )
 
     def get_manga_url(self, slug, url):
         """
