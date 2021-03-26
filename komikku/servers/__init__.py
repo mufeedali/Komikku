@@ -58,7 +58,7 @@ LANGUAGES = dict(
 
 REQUESTS_TIMEOUT = 5
 
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0'
 USER_AGENT_MOBILE = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30'
 
 VERSION = 1
@@ -80,8 +80,6 @@ requests.adapters.TimeoutSauce = CustomTimeout
 
 
 class HeadlessBrowser(Gtk.Window):
-    load_failed_error = None
-    load_failed_event = None
     lock = False
 
     def __init__(self, *args, **kwargs):
@@ -100,7 +98,9 @@ class HeadlessBrowser(Gtk.Window):
         self.webview = WebKit2.WebView()
         self.viewport.add(self.webview)
 
-        self.webview.get_settings().set_user_agent(USER_AGENT)
+        self.settings = self.webview.get_settings()
+        self.settings.set_user_agent(USER_AGENT)
+        self.settings.set_enable_dns_prefetching(True)
 
         self.web_context = self.webview.get_context()
         self.web_context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
@@ -112,7 +112,16 @@ class HeadlessBrowser(Gtk.Window):
         self.set_keep_below(True)
         self.resize(1, 1)
 
-        self.webview.connect('load-failed', self.on_load_failed)
+    def close(self, blank=True):
+        logger.debug('WebKit2 | Load page end (success or error)')
+
+        self.disconnect_all_signals()
+
+        if blank:
+            GLib.idle_add(self.webview.load_uri, 'about:blank')
+        self.hide()
+
+        self.lock = False
 
     def connect_signal(self, *args):
         handler_id = self.webview.connect(*args)
@@ -124,15 +133,7 @@ class HeadlessBrowser(Gtk.Window):
 
         self.__handlers_ids = []
 
-    def hide_and_blank(self):
-        logger.debug('WebKit2 | Load page end (success or error)')
-
-        GLib.idle_add(self.webview.load_uri, 'about:blank')
-        self.hide()
-
-        self.lock = False
-
-    def load(self, uri):
+    def open(self, uri):
         if self.lock:
             return False
 
@@ -141,20 +142,8 @@ class HeadlessBrowser(Gtk.Window):
 
         logger.debug('WebKit2 | Load page %s' % uri)
 
-        self.disconnect_all_signals()
         self.show_all()
         GLib.idle_add(self.webview.load_uri, uri)
-
-        return True
-
-    def on_load_failed(self, _webview, event, uri, error):
-        logger.debug('WebKit2 | Load page failed %s (%s)' % (uri, error.message))
-
-        self.load_failed_error = error
-        self.load_failed_event = event
-
-        self.disconnect_all_signals()
-        self.hide_and_blank()
 
         return True
 
