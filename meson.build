@@ -1,12 +1,11 @@
 project('komikku',
     version: '0.27.0',
     meson_version: '>= 0.50.0',
-    license: 'GPL3'
+    license: 'GPL3-or-later'
 )
 
-description = 'An online/offline manga reader'
+description = 'A manga, comics and BDs reader for GNOME'
 prettyname = 'Komikku'
-prettylicense = 'GPL-3.0+'
 
 authornickname = 'valos'
 authorfullname = 'Valéry Febvre'

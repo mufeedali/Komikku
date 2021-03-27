@@ -3,7 +3,7 @@
 [![pipeline status](https://gitlab.com/valos/Komikku/badges/master/pipeline.svg)](https://gitlab.com/valos/Komikku/commits/master)
 [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
-A manga, comics and BDs reader for [GNOME](https://www.gnome.org). The aims of Komikku is to be adaptive (able to scale from desktop workstations to mobile phones).
+Komikku is a manga, comics and BDs reader for [GNOME](https://www.gnome.org). It focuses on providing a clean, intuitive and responsive interface.
 
 ## License
 
@@ -13,6 +13,7 @@ Komikku is licensed under the [GPLv3+](https://www.gnu.org/licenses/gpl-3.0.html
 
 * Online reading from servers
 * Offline reading of downloaded mangas/comics/BDs
+* Categories to organize your library
 * RTL, LTR, Vertical and Webtoon reading modes
 * Four types of navigation:
   * Keyboard arrow keys

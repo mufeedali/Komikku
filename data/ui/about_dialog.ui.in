@@ -7,8 +7,8 @@
     <property name="type_hint">dialog</property>
     <property name="program_name">@prettyname@</property>
     <property name="version">@VERSION@</property>
-    <property name="copyright">© 2019-2020 @authorfullname@</property>
-    <property name="comments" translatable="yes">An online/offline manga reader.
+    <property name="copyright">© 2019-2021 @authorfullname@</property>
+    <property name="comments" translatable="yes">A manga, comics and BDs reader for GNOME
 
 Never forget, you can support the authors
 by buying the official comics when they are

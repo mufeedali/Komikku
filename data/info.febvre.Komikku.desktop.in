@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@prettyname@
-Comment=An online/offline manga reader
+Comment=A manga, comics and BDs reader
 Exec=@bindir@/@projectname@ %U
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=@appid@

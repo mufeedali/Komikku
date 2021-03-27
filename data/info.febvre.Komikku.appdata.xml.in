@@ -6,9 +6,9 @@
     <content_rating type="oars-1.1" />
 
     <name>Komikku</name>
-    <summary>An online/offline manga reader for GNOME</summary>
+    <summary>A manga, comics and BDs reader for GNOME</summary>
     <description>
-        <p>An online/offline manga reader for GNOME developed with the aim of being used with the Librem 5 phone</p>
+        <p>Komikku is a manga, comics and BDs reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
     </description>
 
     <custom>
