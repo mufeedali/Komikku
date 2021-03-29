@@ -16,7 +16,7 @@ domainname = 'febvre'
 domainext = 'info'
 
 gitrepo = 'https://gitlab.com/' + authornickname + '/' + prettyname
-website = gitrepo
+website = 'https://valos.gitlab.io/Komikku/'
 
 python = import('python')
 py_installation = python.find_installation('python3')
