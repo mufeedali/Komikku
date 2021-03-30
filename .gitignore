@@ -10,3 +10,5 @@ untracked
 .venv
 .vscode/
 .flatpak/
+
+themes/

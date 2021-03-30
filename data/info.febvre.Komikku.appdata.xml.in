@@ -6,9 +6,9 @@
     <content_rating type="oars-1.1" />
 
     <name>Komikku</name>
-    <summary>A manga, comics and BDs reader for GNOME</summary>
+    <summary>A manga, comic and BD reader for GNOME</summary>
     <description>
-        <p>Komikku is a manga, comics and BDs reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
+        <p>Komikku is a manga, comic and BD reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
     </description>
 
     <custom>
