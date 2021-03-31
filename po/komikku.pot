@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.27.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-27 02:04+0100\n"
+"POT-Creation-Date: 2021-03-31 09:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:9
-msgid "A manga, comics and BDs reader for GNOME"
+msgid "A manga, comic and BD reader for GNOME"
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:11
 msgid ""
-"Komikku is a manga, comics and BDs reader for GNOME. It focuses on providing "
-"a clean, intuitive and responsive interface."
+"Komikku is a manga, comic and BD reader for GNOME. It focuses on providing a "
+"clean, intuitive and responsive interface."
 msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:40
@@ -890,7 +890,7 @@ msgstr ""
 
 #: ../data/ui/about_dialog.ui.in:11
 msgid ""
-"A manga, comics and BDs reader for GNOME\n"
+"A manga, comic and BD reader for GNOME\n"
 "\n"
 "Never forget, you can support the authors\n"
 "by buying the official comics when they are\n"
@@ -940,7 +940,7 @@ msgstr ""
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
 #: ../data/ui/application_window.ui:1019
-msgid "A manga, comics and BDs reader"
+msgid "A manga, comic and BD reader"
 msgstr ""
 
 #: ../data/ui/download_manager_dialog.ui:32 ../data/ui/menu/main.xml:11
