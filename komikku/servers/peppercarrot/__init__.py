@@ -110,6 +110,7 @@ class Peppercarrot(Server):
         chapters_data = r.json()
         for chapter_data in chapters_data:
             if chapter_data['name'] == chapter_slug:
+                pages = chapter_data['pages']
                 break
 
         data = dict(
@@ -118,23 +119,29 @@ class Peppercarrot(Server):
 
         # Cover & Title pages are first
         data['pages'].append(dict(
-            slug=chapter_data['pages']['cover'],
+            slug=pages.pop('cover'),
             image=None,
         ))
         data['pages'].append(dict(
-            slug=chapter_data['pages']['title'],
+            slug=pages.pop('title'),
             image=None,
         ))
+        credits_slug = pages.pop('credits')
 
-        for key, page_name in chapter_data['pages'].items():
-            if key in ('cover', 'title', ):
-                # Skipped cover and title pages
-                continue
+        # Sort pages
+        pages = dict(sorted(pages.items(), key=lambda x: int(x[0])))
 
+        for key, page_name in pages.items():
             data['pages'].append(dict(
                 slug=page_name,
                 image=None,
             ))
+
+        # Credits page at end
+        data['pages'].append(dict(
+            slug=credits_slug,
+            image=None,
+        ))
 
         return data
 
