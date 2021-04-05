@@ -5,7 +5,7 @@
 # Author: GrownNed <grownned@gmail.com>
 
 from bs4 import BeautifulSoup
-import re
+import json
 import requests
 
 from komikku.servers import convert_date_string
@@ -139,12 +139,17 @@ class Readmanga(Server):
                 if not line.startswith('rm_h.init'):
                     continue
 
-                pattern = re.compile('\'.*?\',\'.*?\',".*?"')
-                for urls in pattern.findall(line):
-                    urls = urls.replace('\'', '').replace('"', '').split(',')
+                pages_data = '[{0}]'.format(line[11:-2].replace('\'', '"'))
+                urls = json.loads(pages_data)[0]
+                for split_url in urls:
+                    url = split_url[0] + split_url[2]
+                    if not url.startswith('http'):
+                        # Required by AllHentai
+                        url = self.base_url.split('://')[0] + ':' + url
+
                     data['pages'].append(dict(
                         slug=None,
-                        image=urls[0] + urls[2],
+                        image=url,
                     ))
                 break
             break
@@ -219,6 +224,18 @@ class Readmanga(Server):
             ))
 
         return sorted(results, key=lambda m: m['name'])
+
+
+class Allhentai(Readmanga):
+    id = 'allhentai:readmanga'
+    name = 'AllHentai'
+    is_nsfw = True
+
+    base_url = 'http://wwv.allhen.me'
+    search_url = base_url + '/search/advanced'
+    most_populars_url = base_url + '/list?sortType=rate'
+    manga_url = base_url + '/{0}'
+    chapter_url = manga_url + '/{1}?mtr=1'
 
 
 class Mintmanga(Readmanga):
