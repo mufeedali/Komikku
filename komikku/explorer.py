@@ -9,6 +9,7 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
@@ -61,9 +62,9 @@ class Explorer:
         self.activity_indicator.show_all()
 
         # Servers page
-        listbox = self.builder.get_object('servers_page_listbox')
-        listbox.get_style_context().add_class('list-bordered')
-        listbox.connect('row-activated', self.on_server_clicked)
+        self.listbox = self.builder.get_object('servers_page_listbox')
+        self.listbox.get_style_context().add_class('list-bordered')
+        self.listbox.connect('row-activated', self.on_server_clicked)
 
         if not servers:
             servers = get_allowed_servers_list(Settings.get_default())
@@ -110,9 +111,24 @@ class Explorer:
             label.get_style_context().add_class('explorer-dialog-server-language-label')
             box.pack_start(label, False, True, 0)
 
-            listbox.add(row)
+            self.listbox.add(row)
 
-        listbox.show_all()
+        self.listbox.show_all()
+
+        self.servers_page_search_bar = self.builder.get_object('servers_page_search_bar')
+        self.servers_page_search_entry = self.builder.get_object('servers_page_search_entry')
+        self.servers_page_search_entry.connect('changed', self.servers_search)
+        self.servers_page_search_entry.connect('activate', self.on_search_activate)
+
+        self.custom_title_servers_page_searchbutton = self.builder.get_object(
+            'custom_title_servers_page_searchbutton'
+        )
+        self.servers_page_search_bar.bind_property(
+            'search-mode-enabled', self.custom_title_servers_page_searchbutton, "active",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
+
+        self.listbox.set_filter_func(self._listbox_filter_func)
 
         # Search page
         self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
@@ -136,7 +152,7 @@ class Explorer:
         self.dialog.connect('key-press-event', self.on_key_press)
 
         if self.preselection and len(servers) == 1:
-            row = listbox.get_children()[0]
+            row = self.listbox.get_children()[0]
             self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
             self.show_manga(row.manga_data)
         else:
@@ -312,17 +328,26 @@ class Explorer:
             elif self.page == 'search':
                 self.show_page('servers')
                 return Gdk.EVENT_STOP
+            elif self.page == 'servers' and self.servers_search_mode:
+                self.servers_search_mode = False
+                return Gdk.EVENT_STOP
 
             return Gdk.EVENT_PROPAGATE
 
-        if self.page != 'search':
+        if self.page not in ['search', 'servers']:
             return Gdk.EVENT_PROPAGATE
 
         modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
         is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
 
-        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0) and not self.custom_title_search_page_searchentry.is_focus():
-            self.custom_title_search_page_searchentry.grab_focus_without_selecting()
+        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0):
+            if self.page == 'search' and not self.custom_title_search_page_searchentry.is_focus():
+                self.custom_title_search_page_searchentry.grab_focus_without_selecting()
+            elif self.page == 'servers':
+                if self.servers_search_mode:
+                    self.servers_page_search_entry.grab_focus_without_selecting()
+                else:
+                    return self.servers_page_search_bar.handle_event(event)
 
         return Gdk.EVENT_PROPAGATE
 
@@ -335,6 +360,11 @@ class Explorer:
     def on_read_button_clicked(self, button):
         self.window.card.init(self.manga, transition=False)
         self.dialog.close()
+
+    def on_search_activate(self, _entry):
+        row = self.listbox.get_row_at_y(0)
+        if row:
+            self.on_server_clicked(self.listbox, row)
 
     def on_server_clicked(self, listbox, row):
         self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
@@ -449,6 +479,17 @@ class Explorer:
         thread = threading.Thread(target=run, args=(self.server, ))
         thread.daemon = True
         thread.start()
+
+    def servers_search(self, _entry):
+        self.listbox.invalidate_filter()
+
+    @property
+    def servers_search_mode(self):
+        return self.servers_page_search_bar.get_search_mode()
+
+    @servers_search_mode.setter
+    def servers_search_mode(self, state):
+        self.servers_page_search_bar.set_search_mode(state)
 
     def show_manga(self, manga_data):
         def run(server, manga_slug):
@@ -584,3 +625,23 @@ class Explorer:
         self.custom_title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)
         self.page = name
+
+    def _listbox_filter_func(self, row):
+        """
+        This function gets one row and has to return:
+        - True if the row should be displayed
+        - False if the row should not be displayed
+        """
+        ret = True
+        server_name = row.server_data['name']
+        server_lang = row.server_data['lang']
+        term = self.servers_page_search_entry.get_text().lower()
+
+        # Search in name
+        ret = (
+            term in server_name.lower() or
+            term in LANGUAGES[server_lang].lower() or
+            term in server_lang.lower()
+        )
+
+        return ret
