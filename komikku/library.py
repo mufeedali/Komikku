@@ -51,7 +51,7 @@ class Library:
         self.search_menu_button = self.window.library_search_menu_button
         self.search_menu_button.set_menu_model(self.builder.get_object('menu-library-search'))
         self.search_entry = self.window.library_searchentry
-        self.search_entry.connect('activate', self.on_search_entry_activate)
+        self.search_entry.connect('activate', self.on_search_entry_activated)
         self.search_entry.connect('changed', self.search)
         self.search_button = self.window.search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
@@ -399,7 +399,7 @@ class Library:
             thumbnail.update(manga)
             break
 
-    def on_search_entry_activate(self, _entry):
+    def on_search_entry_activated(self, _entry):
         """Open first manga in search when <Enter> is pressed"""
         thumbnail = self.flowbox.get_child_at_pos(0, 0)
         if thumbnail:

@@ -9,7 +9,6 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
-from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
@@ -32,6 +31,7 @@ class Explorer:
     preselection = False
     search_filters = None
     search_lock = False
+    servers_search_mode = False
 
     server = None
     manga_slug = None
@@ -48,10 +48,7 @@ class Explorer:
 
         # Header bar
         self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
-        self.custom_title_stack = self.builder.get_object('custom_title_stack')
-
-        # Make title centered
-        self.builder.get_object('custom_title_servers_page_label').set_margin_end(38)
+        self.title_stack = self.builder.get_object('custom_title_stack')
 
         self.overlay = self.builder.get_object('overlay')
         self.stack = self.builder.get_object('stack')
@@ -62,9 +59,35 @@ class Explorer:
         self.activity_indicator.show_all()
 
         # Servers page
-        self.listbox = self.builder.get_object('servers_page_listbox')
-        self.listbox.get_style_context().add_class('list-bordered')
-        self.listbox.connect('row-activated', self.on_server_clicked)
+        self.servers_title_stack = self.builder.get_object('custom_title_servers_page_title_stack')
+        self.servers_page_searchentry = self.builder.get_object('custom_title_servers_page_searchentry')
+        self.servers_page_searchentry.connect('activate', self.on_servers_search_activated)
+        self.servers_page_searchentry.connect('changed', self.search_servers)
+
+        self.servers_page_searchbutton = self.builder.get_object('custom_title_servers_page_searchbutton')
+        self.servers_page_searchbutton.connect('clicked', self.toggle_servers_search)
+
+        def _servers_filter(row):
+            """
+            This function gets one row and has to return:
+            - True if the row should be displayed
+            - False if the row should not be displayed
+            """
+            server_name = row.server_data['name']
+            server_lang = row.server_data['lang']
+            term = self.servers_page_searchentry.get_text().lower()
+
+            # Search in name and language
+            return (
+                term in server_name.lower() or
+                term in LANGUAGES[server_lang].lower() or
+                term in server_lang.lower()
+            )
+
+        self.servers_page_listbox = self.builder.get_object('servers_page_listbox')
+        self.servers_page_listbox.get_style_context().add_class('list-bordered')
+        self.servers_page_listbox.connect('row-activated', self.on_server_clicked)
+        self.servers_page_listbox.set_filter_func(_servers_filter)
 
         if not servers:
             servers = get_allowed_servers_list(Settings.get_default())
@@ -111,29 +134,14 @@ class Explorer:
             label.get_style_context().add_class('explorer-dialog-server-language-label')
             box.pack_start(label, False, True, 0)
 
-            self.listbox.add(row)
+            self.servers_page_listbox.add(row)
 
-        self.listbox.show_all()
-
-        self.servers_page_search_bar = self.builder.get_object('servers_page_search_bar')
-        self.servers_page_search_entry = self.builder.get_object('servers_page_search_entry')
-        self.servers_page_search_entry.connect('changed', self.servers_search)
-        self.servers_page_search_entry.connect('activate', self.on_search_activate)
-
-        self.custom_title_servers_page_searchbutton = self.builder.get_object(
-            'custom_title_servers_page_searchbutton'
-        )
-        self.servers_page_search_bar.bind_property(
-            'search-mode-enabled', self.custom_title_servers_page_searchbutton, "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
-        )
-
-        self.listbox.set_filter_func(self._listbox_filter_func)
+        self.servers_page_listbox.show_all()
 
         # Search page
-        self.custom_title_search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
-        self.custom_title_search_page_searchentry.connect('activate', self.search)
-        self.custom_title_search_page_filter_menu_button = self.builder.get_object('custom_title_search_page_filter_menu_button')
+        self.search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
+        self.search_page_searchentry.connect('activate', self.search)
+        self.search_page_filter_menu_button = self.builder.get_object('custom_title_search_page_filter_menu_button')
         self.builder.get_object('custom_title_search_page_server_website_button').connect('clicked', self.on_server_website_button_clicked)
 
         self.search_page_listbox = self.builder.get_object('search_page_listbox')
@@ -143,7 +151,7 @@ class Explorer:
         # Manga page
         grid = self.builder.get_object('manga_page_grid')
         grid.props.margin = 6
-        self.custom_title_manga_page_label = self.builder.get_object('custom_title_manga_page_label')
+        self.manga_page_label = self.builder.get_object('custom_title_manga_page_label')
         self.add_button = self.builder.get_object('add_button')
         self.add_button.connect('clicked', self.on_add_button_clicked)
         self.read_button = self.builder.get_object('read_button')
@@ -152,14 +160,14 @@ class Explorer:
         self.dialog.connect('key-press-event', self.on_key_press)
 
         if self.preselection and len(servers) == 1:
-            row = self.listbox.get_children()[0]
+            row = self.servers_page_listbox.get_children()[0]
             self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
             self.show_manga(row.manga_data)
         else:
             self.show_page('servers')
 
     def clear_search(self):
-        self.custom_title_search_page_searchentry.set_text('')
+        self.search_page_searchentry.set_text('')
         self.clear_results()
         self.init_filters()
 
@@ -269,7 +277,7 @@ class Explorer:
 
         popover.add(vbox)
 
-        self.custom_title_search_page_filter_menu_button.set_popover(popover)
+        self.search_page_filter_menu_button.set_popover(popover)
 
     def on_add_button_clicked(self, button):
         def run():
@@ -316,7 +324,7 @@ class Explorer:
                 self.show_page('search')
 
     def on_key_press(self, _widget, event):
-        """Search entry of search page can be focused by simply typing a printable character"""
+        """Search entry of servers/search pages can be focused by simply typing a printable character"""
 
         if event.keyval == Gdk.KEY_Escape:
             if self.page == 'manga':
@@ -329,7 +337,7 @@ class Explorer:
                 self.show_page('servers')
                 return Gdk.EVENT_STOP
             elif self.page == 'servers' and self.servers_search_mode:
-                self.servers_search_mode = False
+                self.servers_page_searchbutton.emit('clicked')
                 return Gdk.EVENT_STOP
 
             return Gdk.EVENT_PROPAGATE
@@ -341,13 +349,13 @@ class Explorer:
         is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
 
         if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0):
-            if self.page == 'search' and not self.custom_title_search_page_searchentry.is_focus():
-                self.custom_title_search_page_searchentry.grab_focus_without_selecting()
+            if self.page == 'search' and not self.search_page_searchentry.is_focus():
+                self.search_page_searchentry.grab_focus_without_selecting()
             elif self.page == 'servers':
                 if self.servers_search_mode:
-                    self.servers_page_search_entry.grab_focus_without_selecting()
+                    self.servers_page_searchentry.grab_focus_without_selecting()
                 else:
-                    return self.servers_page_search_bar.handle_event(event)
+                    self.servers_page_searchbutton.emit('clicked')
 
         return Gdk.EVENT_PROPAGATE
 
@@ -361,10 +369,10 @@ class Explorer:
         self.window.card.init(self.manga, transition=False)
         self.dialog.close()
 
-    def on_search_activate(self, _entry):
-        row = self.listbox.get_row_at_y(0)
+    def on_servers_search_activated(self, _entry):
+        row = self.servers_page_listbox.get_row_at_y(0)
         if row:
-            self.on_server_clicked(self.listbox, row)
+            self.on_server_clicked(self.servers_page_listbox, row)
 
     def on_server_clicked(self, listbox, row):
         self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
@@ -388,7 +396,7 @@ class Explorer:
         if self.search_lock:
             return
 
-        term = self.custom_title_search_page_searchentry.get_text().strip()
+        term = self.search_page_searchentry.get_text().strip()
 
         # Find manga by Id
         if term.startswith('id:'):
@@ -480,16 +488,8 @@ class Explorer:
         thread.daemon = True
         thread.start()
 
-    def servers_search(self, _entry):
-        self.listbox.invalidate_filter()
-
-    @property
-    def servers_search_mode(self):
-        return self.servers_page_search_bar.get_search_mode()
-
-    @servers_search_mode.setter
-    def servers_search_mode(self, state):
-        self.servers_page_search_bar.set_search_mode(state)
+    def search_servers(self, _entry):
+        self.servers_page_listbox.invalidate_filter()
 
     def show_manga(self, manga_data):
         def run(server, manga_slug):
@@ -597,13 +597,13 @@ class Explorer:
     def show_page(self, name):
         if name == 'search':
             if self.page == 'servers':
-                self.custom_title_search_page_searchentry.set_placeholder_text(_('Search in {0}…').format(self.server.name))
+                self.search_page_searchentry.set_placeholder_text(_('Search in {0}…').format(self.server.name))
                 self.clear_search()
                 self.search()
             else:
-                self.custom_title_search_page_searchentry.grab_focus_without_selecting()
+                self.search_page_searchentry.grab_focus_without_selecting()
         elif name == 'manga':
-            self.custom_title_manga_page_label.set_text(self.manga_data['name'])
+            self.manga_page_label.set_text(self.manga_data['name'])
 
             # Check if selected manga is already in library
             db_conn = create_db_connection()
@@ -622,26 +622,19 @@ class Explorer:
                 self.add_button.show()
                 self.read_button.hide()
 
-        self.custom_title_stack.set_visible_child_name(name)
+        self.title_stack.set_visible_child_name(name)
         self.stack.set_visible_child_name(name)
         self.page = name
 
-    def _listbox_filter_func(self, row):
-        """
-        This function gets one row and has to return:
-        - True if the row should be displayed
-        - False if the row should not be displayed
-        """
-        ret = True
-        server_name = row.server_data['name']
-        server_lang = row.server_data['lang']
-        term = self.servers_page_search_entry.get_text().lower()
+    def toggle_servers_search(self, button):
+        if button.get_active():
+            self.servers_search_mode = True
 
-        # Search in name
-        ret = (
-            term in server_name.lower() or
-            term in LANGUAGES[server_lang].lower() or
-            term in server_lang.lower()
-        )
+            self.servers_title_stack.set_visible_child_name('searchentry')
+            self.servers_page_searchentry.grab_focus()
+        else:
+            self.servers_search_mode = False
 
-        return ret
+            self.servers_title_stack.set_visible_child_name('title')
+            self.servers_page_searchentry.set_text('')
+            self.servers_page_searchentry.grab_remove()
