@@ -156,7 +156,7 @@ class CategoryRow(Gtk.ListBoxRow):
         self.category = category
 
         label = category.label
-        if nb_mangas := category.nb_mangas:
+        if nb_mangas := len(category.mangas):
             label = f'{label} ({nb_mangas})'
         self.label = Gtk.Label(label, visible=True)
         self.label.set_halign(Gtk.Align.START)

@@ -6,6 +6,7 @@ from copy import deepcopy
 from gettext import gettext as _
 from gettext import ngettext as n_
 import math
+import threading
 import time
 
 from gi.repository import Gdk
@@ -23,6 +24,8 @@ from komikku.categories_editor import CategoriesEditorWindow
 from komikku.downloader import DownloadManagerDialog
 from komikku.models import Category
 from komikku.models import create_db_connection
+from komikku.models import delete_rows
+from komikku.models import insert_rows
 from komikku.models import Manga
 from komikku.models import Settings
 from komikku.models import update_rows
@@ -184,6 +187,10 @@ class Library:
         mark_selected_unread_action.connect('activate', self.toggle_selected_read_status, 0)
         self.window.application.add_action(mark_selected_unread_action)
 
+        edit_categories_selected_action = Gio.SimpleAction.new('library.edit-categories-selected', None)
+        edit_categories_selected_action.connect('activate', self.edit_categories_selected)
+        self.window.application.add_action(edit_categories_selected_action)
+
         select_all_action = Gio.SimpleAction.new('library.select-all', None)
         select_all_action.connect('activate', self.select_all)
         self.window.application.add_action(select_all_action)
@@ -249,6 +256,10 @@ class Library:
         self.window.downloader.add(chapters)
         self.window.downloader.start()
 
+    def edit_categories_selected(self, _action, _param):
+        # Edit categories of selected mangas
+        self.categories_list.enter_edit_mode()
+
     def enter_search_mode(self):
         self.search_button.set_active(True)
 
@@ -277,7 +288,7 @@ class Library:
     def leave_search_mode(self):
         self.search_button.set_active(False)
 
-    def leave_selection_mode(self, _param=None):
+    def leave_selection_mode(self, param=None):
         self.selection_mode = False
 
         # Show search button: re-enable search
@@ -286,6 +297,10 @@ class Library:
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for thumbnail in self.flowbox.get_children():
             thumbnail._selected = False
+
+        if self.categories_list.edit_mode:
+            refresh_library = param == 'refresh_library'
+            self.categories_list.leave_edit_mode(refresh_library=refresh_library)
 
         self.window.headerbar.get_style_context().remove_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
@@ -302,6 +317,9 @@ class Library:
     def on_flap_revealed(self, _flap, _param):
         with self.flap_reveal_button.handler_block(self.flap_reveal_button_toggled_handler_id):
             self.flap_reveal_button.props.active = self.flap.get_reveal_flap()
+
+        if self.categories_list.edit_mode and not self.flap.get_reveal_flap():
+            self.categories_list.leave_edit_mode()
 
     def on_gesture_long_press_activated(self, _gesture, x, y):
         if self.selection_mode:
@@ -576,19 +594,37 @@ class Library:
 
 
 class CategoriesList(GObject.GObject):
+    edit_mode = False  # mode to edit categories (of a manga selection) in bulk
+
     def __init__(self, library):
         GObject.Object.__init__(self)
 
         self.library = library
         self.listbox = self.library.window.library_categories_listbox
         self.stack = self.library.window.library_categories_stack
+        self.edit_mode_buttonbox = self.library.window.library_categories_edit_mode_buttonbox
+
+        self.listbox.connect('row-activated', self.on_category_activated)
+        self.library.window.library_categories_edit_mode_ok_button.connect('clicked', self.on_edit_mode_ok_button_clicked)
+        self.library.window.library_categories_edit_mode_cancel_button.connect('clicked', self.on_edit_mode_cancel_button_clicked)
 
     def clear(self):
         for row in self.listbox.get_children():
             row.destroy()
 
-    def on_category_clicked(self, button):
-        row = button.get_parent()
+    def enter_edit_mode(self):
+        self.populate(edit_mode=True)
+
+        self.library.flap.set_modal(False)
+        self.library.flap.set_reveal_flap(True)
+        self.library.flap.set_modal(True)
+
+    def leave_edit_mode(self, refresh_library=False):
+        self.library.flap.set_reveal_flap(False)
+
+        self.populate(refresh_library=refresh_library)
+
+    def on_category_activated(self, _listbox, row):
         Settings.get_default().selected_category = row.category.id if row.category else 0
 
         self.listbox.unselect_all()
@@ -596,12 +632,77 @@ class CategoriesList(GObject.GObject):
 
         self.library.populate()
 
-    def populate(self, refresh_library=False):
+    def on_edit_mode_cancel_button_clicked(self, _button):
+        self.library.flap.set_reveal_flap(False)
+
+    def on_edit_mode_ok_button_clicked(self, _button):
+        def run():
+            insert_data = []
+            delete_data = []
+
+            # List of selected manga
+            manga_ids = []
+            for thumbnail in self.library.flowbox.get_selected_children():
+                manga_ids.append(thumbnail.manga.id)
+
+            for row in self.listbox.get_children():
+                if row.get_activatable_widget().get_active():
+                    if Settings.get_default().selected_category == row.category.id:
+                        # No insert, we are sure that category is already associated with all selected manga
+                        continue
+
+                    associated_manga_ids = row.category.mangas
+                    for manga_id in manga_ids:
+                        if manga_id in associated_manga_ids:
+                            # No insert, category is already associated with this manga
+                            continue
+
+                        insert_data.append(dict(
+                            manga_id=manga_id,
+                            category_id=row.category.id,
+                        ))
+                elif Settings.get_default().selected_category == row.category.id:
+                    for manga_id in manga_ids:
+                        delete_data.append(dict(
+                            manga_id=manga_id,
+                            category_id=row.category.id,
+                        ))
+
+            db_conn = create_db_connection()
+            with db_conn:
+                if insert_data:
+                    insert_rows(db_conn, 'categories_mangas_association', insert_data)
+                if delete_data:
+                    delete_rows(db_conn, 'categories_mangas_association', delete_data)
+
+            db_conn.close()
+
+            GLib.idle_add(complete)
+
+        def complete():
+            self.library.window.activity_indicator.stop()
+            # Leave library section mode, leave edit mode and refresh library
+            self.library.leave_selection_mode('refresh_library')
+
+        self.library.window.activity_indicator.start()
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
+
+    def populate(self, edit_mode=False, refresh_library=False):
         db_conn = create_db_connection()
         records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
         db_conn.close()
 
         self.clear()
+
+        if edit_mode:
+            self.edit_mode = True
+            self.edit_mode_buttonbox.show()
+        else:
+            self.edit_mode = False
+            self.edit_mode_buttonbox.hide()
 
         if records:
             self.stack.set_visible_child_name('list')
@@ -609,29 +710,30 @@ class CategoriesList(GObject.GObject):
             selected_category_found = False
             for record in ['all'] + records:
                 if record == 'all':
+                    if edit_mode:
+                        continue
+
                     category = None
                     label = _('All')
                 else:
                     category = Category.get(record['id'])
                     label = category.label
 
-                row = Gtk.ListBoxRow(visible=True)
+                row = Handy.ActionRow(visible=True, activatable=True)
                 row.category = category
+                row.set_title(label)
+                row.set_hexpand(False)
+
                 if category and Settings.get_default().selected_category == category.id:
                     self.listbox.select_row(row)
                     selected_category_found = True
 
-                button = Gtk.Button(label=label, visible=True)
-                button.set_relief(Gtk.ReliefStyle.NONE)
-                button.connect('clicked', self.on_category_clicked)
-
-                label = button.get_children()[0]
-                label.set_xalign(0)
-                label.props.width_chars = 20
-                label.props.max_width_chars = 0
-                label.set_ellipsize(Pango.EllipsizeMode.END)
-
-                row.add(button)
+                if edit_mode:
+                    switch = Gtk.Switch(visible=True)
+                    switch.set_active(Settings.get_default().selected_category == category.id)
+                    switch.set_valign(Gtk.Align.CENTER)
+                    row.set_activatable_widget(switch)
+                    row.add(switch)
 
                 self.listbox.add(row)
 

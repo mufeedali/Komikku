@@ -26,6 +26,10 @@
                 <attribute name="label" translatable="yes">Mark as Unread</attribute>
                 <attribute name="action">app.library.mark-selected-unread</attribute>
             </item>
+            <item>
+                <attribute name="label" translatable="yes">Edit categories</attribute>
+                <attribute name="action">app.library.edit-categories-selected</attribute>
+            </item>
         </section>
 
         <section>

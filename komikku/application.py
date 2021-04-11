@@ -169,6 +169,9 @@ class ApplicationWindow(Handy.ApplicationWindow):
     library_flap = Gtk.Template.Child('library_flap')
     library_categories_stack = Gtk.Template.Child('library_categories_stack')
     library_categories_listbox = Gtk.Template.Child('library_categories_listbox')
+    library_categories_edit_mode_buttonbox = Gtk.Template.Child('library_categories_edit_mode_buttonbox')
+    library_categories_edit_mode_cancel_button = Gtk.Template.Child('library_categories_edit_mode_cancel_button')
+    library_categories_edit_mode_ok_button = Gtk.Template.Child('library_categories_edit_mode_ok_button')
     library_flowbox = Gtk.Template.Child('library_flowbox')
 
     card_title_label = Gtk.Template.Child('card_title_label')

@@ -215,6 +215,28 @@ def init_db():
         db_conn.close()
 
 
+def delete_rows(db_conn, table, ids):
+    seq = []
+    if type(ids[0]) == dict:
+        # Several keys (secondary) are used to delete a row
+        sql = 'DELETE FROM {0} WHERE {1}'.format(table, ' AND '.join(f'{skey} = ?' for skey in ids[0].keys()))
+
+        for i in range(len(ids)):
+            seq.append(tuple(ids[i].values()))
+    else:
+        sql = 'DELETE FROM {0} WHERE id = ?'.format(table)
+
+        for i in range(len(ids)):
+            seq.append((ids[i], ))
+
+    try:
+        db_conn.executemany(sql, seq)
+        return True
+    except Exception as e:
+        print('SQLite-error:', e, ids)
+        return False
+
+
 def insert_row(db_conn, table, data):
     try:
         cursor = db_conn.execute(
@@ -841,12 +863,12 @@ class Category:
         return category
 
     @property
-    def nb_mangas(self):
+    def mangas(self):
         db_conn = create_db_connection()
-        row = db_conn.execute('SELECT count() AS count FROM categories_mangas_association WHERE category_id = ?', (self.id,)).fetchone()
+        rows = db_conn.execute('SELECT manga_id FROM categories_mangas_association WHERE category_id = ?', (self.id,)).fetchall()
         db_conn.close()
 
-        return row['count']
+        return [row['manga_id'] for row in rows] if rows else []
 
     def delete(self):
         db_conn = create_db_connection()

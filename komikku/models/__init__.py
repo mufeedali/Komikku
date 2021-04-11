@@ -6,6 +6,7 @@ from .database import backup_db
 from .database import Category
 from .database import Chapter
 from .database import create_db_connection
+from .database import delete_rows
 from .database import Download
 from .database import init_db
 from .database import insert_rows
