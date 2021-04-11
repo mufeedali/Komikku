@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Komikku 0.16.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-31 09:26+0200\n"
+"POT-Creation-Date: 2021-04-11 03:42+0200\n"
 "PO-Revision-Date: 2020-06-03 14:41+0300\n"
 "Last-Translator: Ege Çelikçi <egecelikci@gmail.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -896,45 +896,49 @@ msgstr ""
 msgid "Learn more about Komikku"
 msgstr "Komikku hakkında daha fazla bilgi edinin"
 
-#: ../data/ui/application_window.ui:558 ../data/ui/explorer_dialog.ui:332
+#: ../data/ui/application_window.ui:503
+msgid "OK"
+msgstr ""
+
+#: ../data/ui/application_window.ui:596 ../data/ui/explorer_dialog.ui:385
 msgid "Authors"
 msgstr "Yazarlar"
 
-#: ../data/ui/application_window.ui:586 ../data/ui/explorer_dialog.ui:360
+#: ../data/ui/application_window.ui:624 ../data/ui/explorer_dialog.ui:413
 msgid "Genres"
 msgstr "Türler"
 
-#: ../data/ui/application_window.ui:614 ../data/ui/explorer_dialog.ui:388
+#: ../data/ui/application_window.ui:652 ../data/ui/explorer_dialog.ui:441
 msgid "Status"
 msgstr "Durum"
 
-#: ../data/ui/application_window.ui:642 ../data/ui/explorer_dialog.ui:416
+#: ../data/ui/application_window.ui:680 ../data/ui/explorer_dialog.ui:469
 msgid "Server"
 msgstr "Sunucu"
 
-#: ../data/ui/application_window.ui:671 ../data/ui/explorer_dialog.ui:444
+#: ../data/ui/application_window.ui:709 ../data/ui/explorer_dialog.ui:497
 msgid "Synopsis"
 msgstr "Özet"
 
-#: ../data/ui/application_window.ui:701
+#: ../data/ui/application_window.ui:739
 msgid "Last update"
 msgstr "Son güncelleme"
 
-#: ../data/ui/application_window.ui:756 ../data/ui/explorer_dialog.ui:475
+#: ../data/ui/application_window.ui:794 ../data/ui/explorer_dialog.ui:528
 msgid "Scanlators"
 msgstr "Çevirenler"
 
-#: ../data/ui/application_window.ui:776
+#: ../data/ui/application_window.ui:814
 msgid "Info"
 msgstr "Bilgi"
 
-#: ../data/ui/application_window.ui:812
+#: ../data/ui/application_window.ui:850
 #: ../data/ui/categories_editor_window.ui:136
 msgid "No categories"
 msgstr ""
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/application_window.ui:1019
+#: ../data/ui/application_window.ui:1057
 msgid "A manga, comic and BD reader"
 msgstr ""
 
@@ -946,11 +950,11 @@ msgstr "İndirme Yöneticisi"
 msgid "No downloads"
 msgstr "İndirme yok"
 
-#: ../data/ui/explorer_dialog.ui:46
+#: ../data/ui/explorer_dialog.ui:55
 msgid "Select a server"
 msgstr "Sunucu seç"
 
-#: ../data/ui/explorer_dialog.ui:503
+#: ../data/ui/explorer_dialog.ui:556
 msgid "Last Chapter"
 msgstr ""
 
@@ -989,7 +993,7 @@ msgid "Open in Browser"
 msgstr "Tarayıcıda aç"
 
 #: ../data/ui/menu/card_selection_mode.xml:26
-#: ../data/ui/menu/library_selection_mode.xml:33
+#: ../data/ui/menu/library_selection_mode.xml:37
 msgid "Select All"
 msgstr "Hepsini Seç"
 
@@ -1003,6 +1007,10 @@ msgstr ""
 
 #: ../data/ui/menu/library_search.xml:15
 msgid "Recents"
+msgstr ""
+
+#: ../data/ui/menu/library_selection_mode.xml:30
+msgid "Edit Categories"
 msgstr ""
 
 #: ../data/ui/menu/main.xml:7
@@ -1229,31 +1237,31 @@ msgstr ""
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/application.py:336 ../komikku/reader/__init__.py:208
+#: ../komikku/application.py:339 ../komikku/reader/__init__.py:208
 msgid "Cancel"
 msgstr ""
 
-#: ../komikku/application.py:336
+#: ../komikku/application.py:339
 msgid "Yes"
 msgstr ""
 
-#: ../komikku/application.py:398
+#: ../komikku/application.py:401
 msgid "Contributors: Code, Patches, Debugging:"
 msgstr "Katkıda Bulunanlar: Kodlama, Yamalar, Hata Ayıklama:"
 
-#: ../komikku/application.py:426
+#: ../komikku/application.py:429
 msgid "Are you sure you want to quit?"
 msgstr "Çıkmak istediğinden emin misin?"
 
-#: ../komikku/application.py:429
+#: ../komikku/application.py:432
 msgid "Some chapters are currently being downloaded."
 msgstr "Bazı bölümler şu anda indiriliyor."
 
-#: ../komikku/application.py:431
+#: ../komikku/application.py:434
 msgid "Some mangas are currently being updated."
 msgstr "Bazı mangalar şu anda güncellenmekte."
 
-#: ../komikku/application.py:434
+#: ../komikku/application.py:437
 msgid "Quit?"
 msgstr "Çık?"
 
@@ -1269,7 +1277,7 @@ msgstr ""
 "Lütfen başka bir sunucuya geçin."
 
 #: ../komikku/card.py:138 ../komikku/categories_editor.py:78
-#: ../komikku/library.py:236
+#: ../komikku/library.py:243
 msgid "Delete?"
 msgstr "Sil?"
 
@@ -1337,77 +1345,77 @@ msgstr "{0}/{1} sayfa indirildi"
 msgid "error"
 msgstr "hata"
 
-#: ../komikku/explorer.py:266
+#: ../komikku/explorer.py:290
 #, python-brace-format
 msgid "{0} manga added"
 msgstr "{0} manga eklendi"
 
-#: ../komikku/explorer.py:350
+#: ../komikku/explorer.py:388
 msgid "Oops, server website URL is unknown."
 msgstr ""
 
-#: ../komikku/explorer.py:408
+#: ../komikku/explorer.py:446
 msgid "MOST POPULARS"
 msgstr "EN POPÜLER"
 
-#: ../komikku/explorer.py:441
+#: ../komikku/explorer.py:479
 msgid "Oops, search failed. Please try again."
 msgstr "Ups, arama başarısız oldu. Lütfen tekrar deneyin."
 
-#: ../komikku/explorer.py:443
+#: ../komikku/explorer.py:481
 msgid "No results"
 msgstr "Sonuç yok"
 
-#: ../komikku/explorer.py:535
+#: ../komikku/explorer.py:576
 msgid "Oops, failed to retrieve manga's information."
 msgstr "Ups, manga bilgileri alınamadı."
 
-#: ../komikku/explorer.py:559
+#: ../komikku/explorer.py:600
 #, python-brace-format
 msgid "Search in {0}…"
 msgstr "{0} içinde arama yap…"
 
-#: ../komikku/library.py:237
+#: ../komikku/library.py:244
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Seçilen mangaları silmek istediğinizden emin misiniz?"
 
-#: ../komikku/library.py:425
+#: ../komikku/library.py:443
 msgid "Library"
 msgstr "Kütüphane"
 
-#: ../komikku/library.py:613
+#: ../komikku/library.py:717
 msgid "All"
 msgstr ""
 
-#: ../komikku/models/database.py:277
+#: ../komikku/models/database.py:299
 msgid "Complete"
 msgstr "Tamamlandı"
 
-#: ../komikku/models/database.py:278
+#: ../komikku/models/database.py:300
 msgid "Ongoing"
 msgstr "Devam etmekte"
 
-#: ../komikku/models/database.py:279
+#: ../komikku/models/database.py:301
 msgid "Suspended"
 msgstr "Askıya alındı"
 
-#: ../komikku/models/database.py:280
+#: ../komikku/models/database.py:302
 msgid "Hiatus"
 msgstr ""
 
-#: ../komikku/models/database.py:884
+#: ../komikku/models/database.py:906
 msgid "Download pending"
 msgstr "İndirme bekleniyor"
 
-#: ../komikku/models/database.py:885
+#: ../komikku/models/database.py:907
 msgid "Downloaded"
 msgstr "İndirildi"
 
-#: ../komikku/models/database.py:886
+#: ../komikku/models/database.py:908
 msgid "Downloading"
 msgstr "İndiriliyor"
 
-#: ../komikku/models/database.py:887
+#: ../komikku/models/database.py:909
 msgid "Download error"
 msgstr "İndirme hatası"
 

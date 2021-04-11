@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-31 09:26+0200\n"
+"POT-Creation-Date: 2021-04-11 03:42+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -968,45 +968,49 @@ msgstr ""
 msgid "Learn more about Komikku"
 msgstr "En savoir plus sur Komikku"
 
-#: ../data/ui/application_window.ui:558 ../data/ui/explorer_dialog.ui:332
+#: ../data/ui/application_window.ui:503
+msgid "OK"
+msgstr "OK"
+
+#: ../data/ui/application_window.ui:596 ../data/ui/explorer_dialog.ui:385
 msgid "Authors"
 msgstr "Auteurs"
 
-#: ../data/ui/application_window.ui:586 ../data/ui/explorer_dialog.ui:360
+#: ../data/ui/application_window.ui:624 ../data/ui/explorer_dialog.ui:413
 msgid "Genres"
 msgstr "Genres"
 
-#: ../data/ui/application_window.ui:614 ../data/ui/explorer_dialog.ui:388
+#: ../data/ui/application_window.ui:652 ../data/ui/explorer_dialog.ui:441
 msgid "Status"
 msgstr "Status"
 
-#: ../data/ui/application_window.ui:642 ../data/ui/explorer_dialog.ui:416
+#: ../data/ui/application_window.ui:680 ../data/ui/explorer_dialog.ui:469
 msgid "Server"
 msgstr "Serveur"
 
-#: ../data/ui/application_window.ui:671 ../data/ui/explorer_dialog.ui:444
+#: ../data/ui/application_window.ui:709 ../data/ui/explorer_dialog.ui:497
 msgid "Synopsis"
 msgstr "Synopsis"
 
-#: ../data/ui/application_window.ui:701
+#: ../data/ui/application_window.ui:739
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
-#: ../data/ui/application_window.ui:756 ../data/ui/explorer_dialog.ui:475
+#: ../data/ui/application_window.ui:794 ../data/ui/explorer_dialog.ui:528
 msgid "Scanlators"
 msgstr "Scantrad"
 
-#: ../data/ui/application_window.ui:776
+#: ../data/ui/application_window.ui:814
 msgid "Info"
 msgstr "Infos"
 
-#: ../data/ui/application_window.ui:812
+#: ../data/ui/application_window.ui:850
 #: ../data/ui/categories_editor_window.ui:136
 msgid "No categories"
 msgstr "Aucune catégorie"
 
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/application_window.ui:1019
+#: ../data/ui/application_window.ui:1057
 msgid "A manga, comic and BD reader"
 msgstr "Un lecteur de manga, comics et BDs"
 
@@ -1018,11 +1022,11 @@ msgstr "Gestionnaire de téléchargement"
 msgid "No downloads"
 msgstr "Aucun téléchargement"
 
-#: ../data/ui/explorer_dialog.ui:46
+#: ../data/ui/explorer_dialog.ui:55
 msgid "Select a server"
 msgstr "Choisissez un serveur"
 
-#: ../data/ui/explorer_dialog.ui:503
+#: ../data/ui/explorer_dialog.ui:556
 msgid "Last Chapter"
 msgstr "Dernier chapitre"
 
@@ -1061,7 +1065,7 @@ msgid "Open in Browser"
 msgstr "Ouvrir dans le navigateur"
 
 #: ../data/ui/menu/card_selection_mode.xml:26
-#: ../data/ui/menu/library_selection_mode.xml:33
+#: ../data/ui/menu/library_selection_mode.xml:37
 msgid "Select All"
 msgstr "Tout sélectionner"
 
@@ -1076,6 +1080,10 @@ msgstr "Non lus"
 #: ../data/ui/menu/library_search.xml:15
 msgid "Recents"
 msgstr "Récents"
+
+#: ../data/ui/menu/library_selection_mode.xml:30
+msgid "Edit Categories"
+msgstr "Éditer les catégories"
 
 #: ../data/ui/menu/main.xml:7
 msgid "Update Library"
@@ -1303,31 +1311,31 @@ msgstr "URL invalide {}, gérée par aucun serveur."
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/application.py:336 ../komikku/reader/__init__.py:208
+#: ../komikku/application.py:339 ../komikku/reader/__init__.py:208
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../komikku/application.py:336
+#: ../komikku/application.py:339
 msgid "Yes"
 msgstr "Oui"
 
-#: ../komikku/application.py:398
+#: ../komikku/application.py:401
 msgid "Contributors: Code, Patches, Debugging:"
 msgstr "Contributeurs: Code, correctifs, débogage :"
 
-#: ../komikku/application.py:426
+#: ../komikku/application.py:429
 msgid "Are you sure you want to quit?"
 msgstr "Êtes-vous sûr de vouloir quitter ?"
 
-#: ../komikku/application.py:429
+#: ../komikku/application.py:432
 msgid "Some chapters are currently being downloaded."
 msgstr "Certains chapitres sont en cours de téléchargement."
 
-#: ../komikku/application.py:431
+#: ../komikku/application.py:434
 msgid "Some mangas are currently being updated."
 msgstr "Certains mangas sont en cours de mise à jour."
 
-#: ../komikku/application.py:434
+#: ../komikku/application.py:437
 msgid "Quit?"
 msgstr "Quitter ?"
 
@@ -1343,7 +1351,7 @@ msgstr ""
 "Veuillez basculer vers un autre serveur."
 
 #: ../komikku/card.py:138 ../komikku/categories_editor.py:78
-#: ../komikku/library.py:236
+#: ../komikku/library.py:243
 msgid "Delete?"
 msgstr "Supprimer ?"
 
@@ -1413,77 +1421,77 @@ msgstr "{0}/{1} pages téléchargées"
 msgid "error"
 msgstr "erreur"
 
-#: ../komikku/explorer.py:266
+#: ../komikku/explorer.py:290
 #, python-brace-format
 msgid "{0} manga added"
 msgstr "{0} manga ajouté"
 
-#: ../komikku/explorer.py:350
+#: ../komikku/explorer.py:388
 msgid "Oops, server website URL is unknown."
 msgstr "Oups, l'URL du site web du serveur est inconnue."
 
-#: ../komikku/explorer.py:408
+#: ../komikku/explorer.py:446
 msgid "MOST POPULARS"
 msgstr "LES PLUS POPULAIRES"
 
-#: ../komikku/explorer.py:441
+#: ../komikku/explorer.py:479
 msgid "Oops, search failed. Please try again."
 msgstr "Oups, la recherche a échoué. Veuillez réessayer."
 
-#: ../komikku/explorer.py:443
+#: ../komikku/explorer.py:481
 msgid "No results"
 msgstr "Aucun résultat"
 
-#: ../komikku/explorer.py:535
+#: ../komikku/explorer.py:576
 msgid "Oops, failed to retrieve manga's information."
 msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
 
-#: ../komikku/explorer.py:559
+#: ../komikku/explorer.py:600
 #, python-brace-format
 msgid "Search in {0}…"
 msgstr "Rechercher dans {0}…"
 
-#: ../komikku/library.py:237
+#: ../komikku/library.py:244
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 
-#: ../komikku/library.py:425
+#: ../komikku/library.py:443
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: ../komikku/library.py:613
+#: ../komikku/library.py:717
 msgid "All"
 msgstr "Toutes"
 
-#: ../komikku/models/database.py:277
+#: ../komikku/models/database.py:299
 msgid "Complete"
 msgstr "Terminé"
 
-#: ../komikku/models/database.py:278
+#: ../komikku/models/database.py:300
 msgid "Ongoing"
 msgstr "En cours"
 
-#: ../komikku/models/database.py:279
+#: ../komikku/models/database.py:301
 msgid "Suspended"
 msgstr "Suspendu"
 
-#: ../komikku/models/database.py:280
+#: ../komikku/models/database.py:302
 msgid "Hiatus"
 msgstr "Hiatus"
 
-#: ../komikku/models/database.py:884
+#: ../komikku/models/database.py:906
 msgid "Download pending"
 msgstr "Téléchargement en attente"
 
-#: ../komikku/models/database.py:885
+#: ../komikku/models/database.py:907
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: ../komikku/models/database.py:886
+#: ../komikku/models/database.py:908
 msgid "Downloading"
 msgstr "Téléchargement en cours"
 
-#: ../komikku/models/database.py:887
+#: ../komikku/models/database.py:909
 msgid "Download error"
 msgstr "Erreur de téléchargement"
 
