@@ -625,6 +625,9 @@ class CategoriesList(GObject.GObject):
         self.populate(refresh_library=refresh_library)
 
     def on_category_activated(self, _listbox, row):
+        if self.edit_mode:
+            return
+
         Settings.get_default().selected_category = row.category.id if row.category else 0
 
         self.listbox.unselect_all()
