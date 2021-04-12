@@ -221,8 +221,9 @@ class Explorer:
             last = None
             for option in filter['options']:
                 is_active = option['key'] == filter['default']
-                radio_button = Gtk.RadioButton(label=option['name'], active=is_active, visible=True)
+                radio_button = Gtk.RadioButton(label=option['name'], visible=True)
                 radio_button.join_group(last)
+                radio_button.set_active(is_active)
                 radio_button.connect('notify::active', toggle_option, option['key'])
                 vbox.add(radio_button)
                 last = radio_button
