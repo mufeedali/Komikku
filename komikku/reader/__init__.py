@@ -213,7 +213,9 @@ class Reader:
             )
             chooser.set_do_overwrite_confirmation(True)
             chooser.set_current_name(filename)
-            chooser.set_current_folder(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES))
+            xdg_pictures_dir = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
+            if xdg_pictures_dir is not None:
+                chooser.set_current_folder(xdg_pictures_dir)
 
             response = chooser.run()
             if response == Gtk.ResponseType.ACCEPT:
