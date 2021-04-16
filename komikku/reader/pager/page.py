@@ -93,9 +93,13 @@ class Page(Gtk.Overlay):
 
         self.status = 'cleaned'
         self.loadable = False
+        old_imagebuf = self.imagebuf
+        old_surface = self.surface
         self.imagebuf = None
         self.surface = None
         self.image.clear()
+        del old_surface
+        del old_imagebuf
 
     def on_button_retry_clicked(self, button):
         button.destroy()
