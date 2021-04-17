@@ -199,6 +199,7 @@ class Reader:
         filename = f'{self.manga.name}_{page.chapter.title}_{str(page.index + 1)}.{extension}'
 
         success = False
+        xdg_pictures_dir = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
         if not is_flatpak():
             chooser = Gtk.FileChooserDialog(
                 _('Please choose a file'),
@@ -213,7 +214,6 @@ class Reader:
             )
             chooser.set_do_overwrite_confirmation(True)
             chooser.set_current_name(filename)
-            xdg_pictures_dir = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
             if xdg_pictures_dir is not None:
                 chooser.set_current_folder(xdg_pictures_dir)
 
@@ -223,9 +223,8 @@ class Reader:
                 success = True
             chooser.destroy()
         else:
-            destdir_path = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
-            if destdir_path:
-                dest_path = os.path.join(destdir_path, filename)
+            if xdg_pictures_dir:
+                dest_path = os.path.join(xdg_pictures_dir, filename)
                 success = True
             else:
                 self.window.show_notification(_('Failed to save page: missing permission to access the XDG pictures directory'))
