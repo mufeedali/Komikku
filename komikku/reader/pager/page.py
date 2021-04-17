@@ -279,6 +279,12 @@ class Page(Gtk.Overlay):
 
                     self.error = 'corrupt_file'
                     self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+        else:
+            old_surface = self.surface
+            self.image.clear()
+            self.surface = None
+            del old_surface
+
 
         # Crop image borders
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
