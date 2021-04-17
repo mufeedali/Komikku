@@ -66,19 +66,30 @@ class Catmanga(Server):
             server_id=self.id,
             cover=None,
         ))
-        data['name'] = json_data['props']['pageProps']['series']['title']
-        data['authors'] = json_data['props']['pageProps']['series']['authors']
-        data['genres'] = json_data['props']['pageProps']['series']['genres']
-        data['synopsis'] = json_data['props']['pageProps']['series']['description']
-        data['cover'] = json_data['props']['pageProps']['series']['cover_art']['source']
-        if json_data['props']['pageProps']['series']['status'] == 'completed':
+
+        props = json_data['props']['pageProps']['series']
+        data['name'] = props['title']
+        data['cover'] = props['cover_art']['source']
+
+        # Details
+        data['authors'] = props['authors']
+        data['genres'] = props['genres']
+        if props['status'] == 'completed':
             data['status'] = 'complete'
-        elif json_data['props']['pageProps']['series']['status'] == 'dropped':
+        elif props['status'] == 'dropped':
             data['status'] = 'suspended'
         else:
-            data['status'] = json_data['props']['pageProps']['series']['status']
+            data['status'] = props['status']
 
-        for chapter in json_data['props']['pageProps']['series']['chapters']:
+        data['synopsis'] = props['description']
+
+        # Chapters + scanlators
+        for chapter in props['chapters']:
+            if title := chapter.get('title'):
+                title = f"{chapter['number']} - {title}"
+            else:
+                title = f"Chapter {chapter['number']}"
+
             if chapter.get('date'):
                 date = convert_date_string(chapter.get('date'), format='%B %d, %Y')
             else:
@@ -86,7 +97,7 @@ class Catmanga(Server):
 
             data['chapters'].append(dict(
                 slug=str(chapter['number']),
-                title=chapter.get('title', f"Chapter {chapter['number']}"),
+                title=title,
                 date=date,
                 scanlators=chapter.get('groups'),
             ))
