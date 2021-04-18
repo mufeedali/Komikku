@@ -93,9 +93,13 @@ class Page(Gtk.Overlay):
 
         self.status = 'cleaned'
         self.loadable = False
+        old_imagebuf = self.imagebuf
+        old_surface = self.surface
         self.imagebuf = None
         self.surface = None
         self.image.clear()
+        del old_surface
+        del old_imagebuf
 
     def on_button_retry_clicked(self, button):
         button.destroy()
@@ -275,6 +279,12 @@ class Page(Gtk.Overlay):
 
                     self.error = 'corrupt_file'
                     self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
+        else:
+            old_surface = self.surface
+            self.image.clear()
+            self.surface = None
+            del old_surface
+
 
         # Crop image borders
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf

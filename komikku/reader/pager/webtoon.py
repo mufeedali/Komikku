@@ -127,6 +127,8 @@ class WebtoonPager(Gtk.Box, BasePager):
         self.init(self.current_page.chapter, index)
 
     def init(self, chapter, page_index=None):
+        BasePager.clear(self)
+
         if page_index is None:
             if chapter.read:
                 page_index = 0
