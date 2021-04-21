@@ -5,13 +5,13 @@
 from gettext import gettext as _
 import threading
 
-from gi.repository import Gdk
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import PixbufAnimation
 
 from komikku.activity_indicator import ActivityIndicator
+from komikku.utils import create_cairo_surface_from_pixbuf
 from komikku.utils import crop_pixbuf
 from komikku.utils import Imagebuf
 from komikku.utils import log_error_traceback
@@ -93,13 +93,9 @@ class Page(Gtk.Overlay):
 
         self.status = 'cleaned'
         self.loadable = False
-        old_imagebuf = self.imagebuf
-        old_surface = self.surface
         self.imagebuf = None
         self.surface = None
         self.image.clear()
-        del old_surface
-        del old_imagebuf
 
     def on_button_retry_clicked(self, button):
         button.destroy()
@@ -280,11 +276,10 @@ class Page(Gtk.Overlay):
                     self.error = 'corrupt_file'
                     self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
         else:
-            old_surface = self.surface
+            # old_surface = self.surface
             self.image.clear()
             self.surface = None
-            del old_surface
-
+            # del old_surface
 
         # Crop image borders
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
@@ -344,7 +339,7 @@ class Page(Gtk.Overlay):
         if isinstance(pixbuf, PixbufAnimation):
             self.image.set_from_animation(pixbuf)
         else:
-            self.surface = Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale)
+            self.surface = create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale)
             self.image.set_from_surface(self.surface)
 
         if self.reader.reading_mode == 'webtoon':

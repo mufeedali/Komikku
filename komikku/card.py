@@ -21,6 +21,7 @@ from komikku.models import Download
 from komikku.models import Settings
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
+from komikku.utils import create_cairo_surface_from_pixbuf
 from komikku.utils import folder_size
 from komikku.utils import html_escape
 from komikku.utils import scale_pixbuf_animation
@@ -878,10 +879,11 @@ class InfoGrid:
                 pixbuf = Pixbuf.new_from_resource_at_scale(
                     '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
 
+        self.cover_image.clear()
         if isinstance(pixbuf, PixbufAnimation):
             self.cover_image.set_from_animation(pixbuf)
         else:
-            self.cover_image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
+            self.cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
         authors = html_escape(', '.join(manga.authors)) if manga.authors else '-'
         self.authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))

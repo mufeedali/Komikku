@@ -15,7 +15,6 @@ from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Handy
-from gi.repository import Pango
 from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
@@ -30,6 +29,7 @@ from komikku.models import Manga
 from komikku.models import Settings
 from komikku.models import update_rows
 from komikku.servers import get_file_mime_type
+from komikku.utils import create_cairo_surface_from_pixbuf
 from komikku.utils import scale_pixbuf_animation
 
 
@@ -885,7 +885,7 @@ class Thumbnail(Gtk.FlowBoxChild):
                 self._server_logo_pixbuf = 0
 
         if self._server_logo_pixbuf:
-            surface = Gdk.cairo_surface_create_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
+            surface = create_cairo_surface_from_pixbuf(self._server_logo_pixbuf, self.window.hidpi_scale)
             context.set_source_surface(surface, 4, 4)
             context.paint()
 

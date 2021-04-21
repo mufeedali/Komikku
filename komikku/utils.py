@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+import cairo
 from contextlib import closing
 import datetime
 from functools import lru_cache
@@ -22,6 +23,7 @@ import traceback
 
 gi.require_version('GdkPixbuf', '2.0')
 
+from gi.repository import Gdk
 from gi.repository import GLib
 from gi.repository.GdkPixbuf import Colorspace
 from gi.repository.GdkPixbuf import InterpType
@@ -32,6 +34,23 @@ from gi.repository.GdkPixbuf import PixbufSimpleAnim
 keyring.core.init_backend()
 
 logger = logging.getLogger('komikku')
+
+
+def create_cairo_surface_from_pixbuf(pixbuf, hidpi_scale):
+    if pixbuf.get_n_channels() == 3:
+        format = cairo.Format.RGB24
+    else:
+        format = cairo.Format.ARGB32
+
+    surface = cairo.ImageSurface(format, pixbuf.get_width(), pixbuf.get_height())
+    surface.set_device_scale(hidpi_scale, hidpi_scale)
+
+    context = cairo.Context(surface)
+    context.scale(1 / hidpi_scale, 1 / hidpi_scale)
+    Gdk.cairo_set_source_pixbuf(context, pixbuf, 0, 0)
+    context.paint()
+
+    return surface
 
 
 def folder_size(path):

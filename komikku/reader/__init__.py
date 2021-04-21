@@ -129,9 +129,7 @@ class Reader:
         self.show()
 
     def init_pager(self, chapter, reverse_pages=False):
-        if self.pager:
-            self.pager.clear()
-            self.pager.destroy()
+        self.remove_pager()
 
         if self.reading_mode == 'webtoon':
             self.pager = WebtoonPager(self)
@@ -186,6 +184,12 @@ class Reader:
         self.set_action_scaling()
 
         self.pager.rescale_pages()
+
+    def remove_pager(self):
+        if self.pager:
+            self.pager.clear()
+            self.pager.destroy()
+            self.pager = None
 
     def save_page(self, action, param):
         if self.window.page != 'reader':

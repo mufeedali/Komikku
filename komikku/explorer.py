@@ -21,6 +21,7 @@ from komikku.models import Settings
 from komikku.servers import get_allowed_servers_list
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import LANGUAGES
+from komikku.utils import create_cairo_surface_from_pixbuf
 from komikku.utils import html_escape
 from komikku.utils import log_error_traceback
 from komikku.utils import scale_pixbuf_animation
@@ -110,7 +111,7 @@ class Explorer:
             if server_data['logo_path']:
                 pixbuf = Pixbuf.new_from_file_at_scale(
                     server_data['logo_path'], 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
-                logo.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
+                logo.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
             else:
                 logo.set_size_request(24, 24)
             box.pack_start(logo, False, True, 0)
@@ -530,11 +531,12 @@ class Explorer:
                 else:
                     pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_stream(cover_stream), 174, -1, True, True)
 
+            cover_image = self.builder.get_object('cover_image')
+            cover_image.clear()
             if isinstance(pixbuf, PixbufAnimation):
-                self.builder.get_object('cover_image').set_from_animation(pixbuf)
+                cover_image.set_from_animation(pixbuf)
             else:
-                self.builder.get_object('cover_image').set_from_surface(
-                    Gdk.cairo_surface_create_from_pixbuf(pixbuf, self.window.hidpi_scale))
+                cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
             authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
             self.builder.get_object('authors_value_label').set_markup('<span size="small">{0}</span>'.format(authors))

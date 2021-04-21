@@ -13,6 +13,7 @@ from gi.repository import Handy
 from gi.repository.GdkPixbuf import InterpType
 
 from komikku.reader.pager.page import Page
+from komikku.utils import create_cairo_surface_from_pixbuf
 
 
 class BasePager:
@@ -165,7 +166,7 @@ class BasePager:
             scaled_pixbuf = pixbuf.scale_simple(
                 zoom_width * self.window.hidpi_scale, zoom_height * self.window.hidpi_scale, InterpType.BILINEAR)
 
-            image.set_from_surface(Gdk.cairo_surface_create_from_pixbuf(scaled_pixbuf, self.window.hidpi_scale))
+            image.set_from_surface(create_cairo_surface_from_pixbuf(scaled_pixbuf, self.window.hidpi_scale))
 
             self.zoom['active'] = True
         else:

@@ -474,6 +474,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 self.card.stop_populate()
                 self.library.show(invalidate_sort=True)
         elif self.page == 'reader':
+            self.reader.remove_pager()
             self.set_unfullscreen()
 
             # Refresh to update all previously chapters consulted (last page read may have changed)
