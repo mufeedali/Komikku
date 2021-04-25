@@ -53,7 +53,11 @@ class Madara(Server):
             server_id=self.id,
         ))
 
-        data['name'] = soup.find('h1').text.strip()
+        name_element = soup.find('h1')
+        if name_element.span:
+            # Present with AkuManga
+            name_element.span.extract()
+        data['name'] = name_element.text.strip()
         data['cover'] = soup.find('div', class_='summary_image').a.img.get('data-src')
         if data['cover'] is None:
             data['cover'] = soup.find('div', class_='summary_image').a.img.get('src')
@@ -63,19 +67,24 @@ class Madara(Server):
             label = element.find('div', class_='summary-heading').text.strip()
             content_element = element.find('div', class_='summary-content')
 
-            if label.startswith(('Author', 'Artist')):
-                for a_element in content_element.find_all('a'):
-                    author = a_element.text.strip()
+            if label.startswith(('Author', 'Artist', 'Autor', 'Artista', 'Yazar', 'Sanatçı', 'Çizer', 'الرسام', 'المؤلف')):
+                for author in content_element.text.strip().split(','):
+                    author = author.strip()
+                    if author in ('', 'Updating'):
+                        continue
                     if author not in data['authors']:
-                        data['authors'].append(a_element.text.strip())
-            elif label.startswith('Genre'):
-                for a_element in content_element.find_all('a'):
-                    data['genres'].append(a_element.text.strip())
-            elif label.startswith('Status'):
+                        data['authors'].append(author)
+            elif label.startswith(('Genre', 'Gênero', 'Tür', 'Kategoriler', 'التصنيف')):
+                for genre in content_element.text.strip().split(','):
+                    genre = genre.strip()
+                    if genre == '':
+                        continue
+                    data['genres'].append(genre)
+            elif label.startswith(('Status', 'Durum', 'الحالة')):
                 status = content_element.text.strip()
-                if status in ('Completed', 'Completo', 'Concluído'):
+                if status in ('Completed', 'Completo', 'Concluído', 'Tamamlandı', 'مكتملة'):
                     data['status'] = 'complete'
-                elif status in ('OnGoing', 'Продолжается', 'Updating', 'Em Lançamento', 'Em andamento'):
+                elif status in ('OnGoing', 'Продолжается', 'Updating', 'Devam Ediyor', 'Em Lançamento', 'Em andamento', 'مستمرة'):
                     data['status'] = 'ongoing'
 
         summary_container = soup.find('div', class_='summary__content')
@@ -86,32 +95,37 @@ class Madara(Server):
                 data['synopsis'] = summary_container.text.strip()
 
         # Chapters
-        manga_id = soup.find('div', id='manga-chapters-holder').get('data-id')
-        r = self.session_post(
-            self.api_url,
-            data=dict(
-                action='manga_get_chapters',
-                manga=manga_id,
-            ),
-            headers={
-                'origin': self.base_url,
-                'referer': self.manga_url.format(data['slug']),
-                'x-requested-with': 'XMLHttpRequest',
-            }
-        )
+        chapters_container = soup.find('div', id='manga-chapters-holder')
+        if chapters_container:
+            # Chapters list is empty and is loaded via an Ajax call
+            manga_id = chapters_container.get('data-id')
+            if manga_id:
+                r = self.session_post(
+                    self.api_url,
+                    data=dict(
+                        action='manga_get_chapters',
+                        manga=manga_id,
+                    ),
+                    headers={
+                        'origin': self.base_url,
+                        'referer': self.manga_url.format(data['slug']),
+                        'x-requested-with': 'XMLHttpRequest',
+                    }
+                )
 
-        soup = BeautifulSoup(r.text, 'html.parser')
+                soup = BeautifulSoup(r.text, 'html.parser')
 
         elements = soup.find_all('li', class_='wp-manga-chapter')
         for element in reversed(elements):
+            a_element = element.find('a', recursive=False)
             if date := element.span.text.strip():
                 date = convert_date_string(date, format='%B %d, %Y')
             else:
                 date = datetime.date.today().strftime('%Y-%m-%d')
 
             data['chapters'].append(dict(
-                slug=element.a.get('href').split('/')[-2],
-                title=element.a.text.strip(),
+                slug=a_element.get('href').split('/')[-2],
+                title=a_element.text.strip(),
                 date=date,
             ))
 
@@ -222,6 +236,14 @@ class Madara(Server):
         return results
 
 
+class Akumanga(Madara):
+    id = 'akumanga:madara'
+    name = 'AkuManga'
+    lang = 'ar'
+
+    base_url = 'https://akumanga.com/'
+
+
 class Aloalivn(Madara):
     id = 'aloalivn:madara'
     name = 'Aloalivn'
@@ -236,6 +258,38 @@ class Apollcomics(Madara):
     lang = 'es'
 
     base_url = 'https://apollcomics.xyz/'
+
+
+class Araznovel(Madara):
+    id = 'araznovel:madara'
+    name = 'ArazNovel'
+    lang = 'tr'
+
+    base_url = 'https://araznovel.com/'
+
+
+class Argosscan(Madara):
+    id = 'argosscan:madara'
+    name = 'Argos Scan'
+    lang = 'pt'
+
+    base_url = 'https://argosscan.com/'
+
+
+class Atikrost(Madara):
+    id = 'atikrost:madara'
+    name = 'Atikrost'
+    lang = 'tr'
+
+    base_url = 'https://atikrost.com/'
+
+
+class Romance24h(Madara):
+    id = 'romance24h:madara'
+    name = '24hRomance'
+    lang = 'en'
+
+    base_url = 'https://24hromance.com/'
 
 
 class Wakascan(Madara):

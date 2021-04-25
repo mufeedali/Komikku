@@ -35,6 +35,7 @@ from komikku.utils import KeyringHelper
 
 # https://www.localeplanet.com/icu/
 LANGUAGES = dict(
+    ar='Arabe',
     id='Bahasa Indonesia',
     cs='Čeština',
     de='Deutsch',
@@ -49,6 +50,7 @@ LANGUAGES = dict(
     pt_BR='Português (Brasil)',
     ru='Русский',
     vi='Tiếng Việt',
+    tr='Türkçe',
     ja='日本語',
     ko='한국어',
     th='ไทย',
