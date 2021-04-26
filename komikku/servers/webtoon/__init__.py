@@ -238,7 +238,7 @@ class Webtoon(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['image'].split('/')[-1].split('?')[0],
+            name=urlsplit(page['image']).path.split('/')[-1],
         )
 
     def get_manga_url(self, slug, url):
@@ -251,7 +251,10 @@ class Webtoon(Server):
         """
         Returns TOP 10 manga
         """
-        r = self.session_get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
+        if self.lang in LANGUAGES_CODES:
+            r = self.session_get(self.most_populars_url.format(LANGUAGES_CODES[self.lang]))
+        else:
+            r = self.session_get(self.most_populars_url)
         if r.status_code != 200:
             return None
 
@@ -320,6 +323,19 @@ class Webtoon(Server):
             ))
 
         return results
+
+
+class Dongmanmanhua(Webtoon):
+    id = 'dongmanmanhua:webtoon'
+    name = 'Dongman Manhua'
+    lang = 'zh_Hans'
+
+    base_url = 'https://www.dongmanmanhua.cn'
+    search_url = base_url + '/{0}/search'
+    most_populars_url = base_url + '/top'
+    manga_url = base_url + '{0}'
+    chapters_url = 'https://m.dongmanmanhua.cn/{0}'
+    chapter_url = base_url + '{0}'
 
 
 class Webtoon_es(Webtoon):
