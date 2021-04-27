@@ -10,6 +10,7 @@ import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
+from komikku.servers import get_soup_element_inner_text
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -53,11 +54,7 @@ class Madara(Server):
             server_id=self.id,
         ))
 
-        name_element = soup.find('h1')
-        if name_element.span:
-            # Present with AkuManga
-            name_element.span.extract()
-        data['name'] = name_element.text.strip()
+        data['name'] = get_soup_element_inner_text(soup.find('h1'))
         data['cover'] = soup.find('div', class_='summary_image').a.img.get('data-src')
         if data['cover'] is None:
             data['cover'] = soup.find('div', class_='summary_image').a.img.get('src')

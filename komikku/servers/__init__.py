@@ -3,6 +3,7 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
+from bs4 import NavigableString
 import dateparser
 import datetime
 from functools import cached_property
@@ -526,6 +527,10 @@ def get_servers_list(include_disabled=False, order_by=('lang', 'name')):
                 ))
 
     return sorted(servers, key=itemgetter(*order_by))
+
+
+def get_soup_element_inner_text(outer):
+    return ''.join([el for el in outer if isinstance(el, NavigableString)]).strip()
 
 
 def search_duckduckgo(site, term):
