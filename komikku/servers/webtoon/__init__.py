@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
+from komikku.servers import get_soup_element_inner_text
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 from komikku.servers import USER_AGENT_MOBILE
@@ -117,35 +118,38 @@ class Webtoon(Server):
             cover=None,
         ))
 
-        data['name'] = soup.find(class_='subj').text.strip()
+        data['name'] = get_soup_element_inner_text(soup.find(class_='subj'))
 
         # Details
         info_element = soup.find('div', class_='info')
         for element in info_element.find_all(class_='genre'):
-            if element.span:
-                element.span.extract()
-            data['genres'].append(element.text.strip())
+            data['genres'].append(get_soup_element_inner_text(element))
 
-        for element in info_element.find_all(class_='author'):
-            if element.span:
-                element.span.extract()
-            if element.a:
-                element.a.extract()
-            data['authors'].append(element.text.strip())
-
-        detail_element = soup.find('div', class_='detail_body')
         if 'challenge' in data['url']:
-            # Challenge (Canvas)
+            # Challenge (aka Canvas)
+            detail_element = soup.find('div', class_='detail')
+
             data['cover'] = soup.find('div', class_='detail_header').img.get('src')
+
+            for element in info_element.find_all(class_='author'):
+                data['authors'].append(get_soup_element_inner_text(element))
         else:
             # Original
+            detail_element = soup.find('div', class_='detail_body')
+
             data['cover'] = detail_element.get('style').split(' ')[1][4:-1].split('?')[0] + '?type=q90'
 
-            # Status
-            value = detail_element.find('p', class_='day_info').text.strip()
-            if value.find('COMPLETED') >= 0:
+            try:
+                for element in soup.find('div', class_='_authorInnerContent').find_all('h3'):
+                    data['authors'].append(element.text.strip())
+            except Exception:
+                for element in info_element.find_all(class_='author'):
+                    data['authors'].append(get_soup_element_inner_text(element))
+
+            status_class = ''.join(detail_element.find('p', class_='day_info').span.get('class'))
+            if 'completed' in status_class:
                 data['status'] = 'complete'
-            elif value.find('UP') >= 0:
+            else:
                 data['status'] = 'ongoing'
 
         data['synopsis'] = detail_element.find('p', class_='summary').text.strip()
