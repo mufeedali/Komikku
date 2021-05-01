@@ -68,15 +68,24 @@ class Explorer:
         self.servers_page_searchbutton = self.builder.get_object('custom_title_servers_page_searchbutton')
         self.servers_page_searchbutton.connect('clicked', self.toggle_servers_search)
 
+        self.servers_page_pinned_listbox = self.builder.get_object('servers_page_pinned_listbox')
+        self.servers_page_pinned_listbox.get_style_context().add_class('list-bordered')
+        self.servers_page_pinned_listbox.connect('row-activated', self.on_server_clicked)
+
         def _servers_filter(row):
             """
             This function gets one row and has to return:
             - True if the row should be displayed
             - False if the row should not be displayed
             """
+            term = self.servers_page_searchentry.get_text().strip().lower()
+
+            if not hasattr(row, 'server_data'):
+                # Languages headers should be displayed when term is empty
+                return True if term == '' else False
+
             server_name = row.server_data['name']
             server_lang = row.server_data['lang']
-            term = self.servers_page_searchentry.get_text().lower()
 
             # Search in name and language
             return (
@@ -91,50 +100,27 @@ class Explorer:
         self.servers_page_listbox.set_filter_func(_servers_filter)
 
         if not servers:
-            servers = get_allowed_servers_list(Settings.get_default())
+            self.servers = get_allowed_servers_list(Settings.get_default())
+            self.populate_pinned_servers()
         else:
+            self.servers = servers
             self.preselection = True
 
-        for server_data in servers:
-            row = Gtk.ListBoxRow()
-            row.get_style_context().add_class('explorer-dialog-server-listboxrow')
+        last_lang = None
+        for server_data in self.servers:
+            if server_data['lang'] != last_lang:
+                # Add language header
+                last_lang = server_data['lang']
 
-            row.server_data = server_data
-            if 'manga_initial_data' in server_data:
-                row.manga_data = server_data.pop('manga_initial_data')
+                row = Gtk.ListBoxRow(activatable=False)
+                row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
+                label = Gtk.Label(xalign=0)
+                label.get_style_context().add_class('subtitle')
+                label.set_text(LANGUAGES[server_data['lang']].upper())
+                row.add(label)
+                self.servers_page_listbox.add(row)
 
-            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-            row.add(box)
-
-            # Server logo
-            logo = Gtk.Image()
-            if server_data['logo_path']:
-                pixbuf = Pixbuf.new_from_file_at_scale(
-                    server_data['logo_path'], 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
-                logo.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
-            else:
-                logo.set_size_request(24, 24)
-            box.pack_start(logo, False, True, 0)
-
-            # Server title
-            label = Gtk.Label(xalign=0)
-            title = server_data['name']
-            if server_data['is_nsfw']:
-                title += ' (NSFW)'
-            label.set_text(title)
-            box.pack_start(label, True, True, 0)
-
-            # Server requires a user account
-            if server_data['has_login']:
-                label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.MENU)
-                box.pack_start(label, False, True, 0)
-
-            # Server language
-            label = Gtk.Label()
-            label.set_text(LANGUAGES[server_data['lang']])
-            label.get_style_context().add_class('explorer-dialog-server-language-label')
-            box.pack_start(label, False, True, 0)
-
+            row = self.build_server_row(server_data)
             self.servers_page_listbox.add(row)
 
         self.servers_page_listbox.show_all()
@@ -160,12 +146,64 @@ class Explorer:
 
         self.dialog.connect('key-press-event', self.on_key_press)
 
-        if self.preselection and len(servers) == 1:
+        if self.preselection and len(self.servers) == 1:
             row = self.servers_page_listbox.get_children()[0]
             self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
             self.show_manga(row.manga_data)
         else:
             self.show_page('servers')
+
+    def build_server_row(self, data):
+        row = Gtk.ListBoxRow()
+        row.get_style_context().add_class('explorer-dialog-server-listboxrow')
+
+        row.server_data = data
+        if 'manga_initial_data' in data:
+            row.manga_data = data.pop('manga_initial_data')
+
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        row.add(box)
+
+        # Server logo
+        logo = Gtk.Image()
+        if data['logo_path']:
+            pixbuf = Pixbuf.new_from_file_at_scale(
+                data['logo_path'], 24 * self.window.hidpi_scale, 24 * self.window.hidpi_scale, True)
+            logo.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
+        else:
+            logo.set_size_request(24, 24)
+        box.pack_start(logo, False, True, 0)
+
+        # Server title & language
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+
+        label = Gtk.Label(xalign=0)
+        title = data['name']
+        if data['is_nsfw']:
+            title += ' (NSFW)'
+        label.set_text(title)
+        vbox.pack_start(label, True, True, 0)
+
+        label = Gtk.Label(xalign=0)
+        label.set_text(LANGUAGES[data['lang']])
+        label.get_style_context().add_class('subtitle')
+        vbox.pack_start(label, False, True, 0)
+
+        box.pack_start(vbox, True, True, 0)
+
+        # Server requires a user account
+        if data['has_login']:
+            label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.MENU)
+            box.pack_start(label, False, True, 0)
+
+        # Button to pin/unpin
+        button = Gtk.ToggleButton()
+        button.set_image(Gtk.Image.new_from_icon_name('view-pin-symbolic', Gtk.IconSize.BUTTON))
+        button.set_active(data['id'] in Settings.get_default().pinned_servers)
+        button.connect('toggled', self.toggle_server_pinned_state, row)
+        box.pack_start(button, False, True, 0)
+
+        return row
 
     def clear_search(self):
         self.search_page_searchentry.set_text('')
@@ -393,6 +431,32 @@ class Explorer:
         self.dialog.set_modal(True)
         self.dialog.set_transient_for(self.window)
         self.dialog.present()
+
+    def populate_pinned_servers(self):
+        for row in self.servers_page_pinned_listbox.get_children():
+            row.destroy()
+
+        pinned_servers = Settings.get_default().pinned_servers
+        if len(pinned_servers) == 0:
+            return
+
+        # Add header
+        row = Gtk.ListBoxRow(activatable=False)
+        row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
+        label = Gtk.Label(xalign=0)
+        label.get_style_context().add_class('subtitle')
+        label.set_text(_('Pinned').upper())
+        row.add(label)
+        self.servers_page_pinned_listbox.add(row)
+
+        for server_data in self.servers:
+            if server_data['id'] not in pinned_servers:
+                continue
+
+            row = self.build_server_row(server_data)
+            self.servers_page_pinned_listbox.add(row)
+
+        self.servers_page_pinned_listbox.show_all()
 
     def search(self, entry=None):
         if self.search_lock:
@@ -629,15 +693,34 @@ class Explorer:
         self.stack.set_visible_child_name(name)
         self.page = name
 
+    def toggle_server_pinned_state(self, button, row):
+        if button.get_active():
+            Settings.get_default().add_pinned_server(row.server_data['id'])
+        else:
+            Settings.get_default().remove_pinned_server(row.server_data['id'])
+
+        if row.get_parent().get_name() == 'pinned_servers':
+            for child_row in self.servers_page_listbox.get_children():
+                if not hasattr(child_row, 'server_data'):
+                    continue
+
+                if child_row.server_data['id'] == row.server_data['id']:
+                    child_row.get_children()[0].get_children()[-1].set_active(button.get_active())
+                    break
+
+        self.populate_pinned_servers()
+
     def toggle_servers_search(self, button):
         if button.get_active():
             self.servers_search_mode = True
 
             self.servers_title_stack.set_visible_child_name('searchentry')
             self.servers_page_searchentry.grab_focus()
+            self.servers_page_pinned_listbox.hide()
         else:
             self.servers_search_mode = False
 
             self.servers_title_stack.set_visible_child_name('title')
             self.servers_page_searchentry.set_text('')
             self.servers_page_searchentry.grab_remove()
+            self.servers_page_pinned_listbox.show()

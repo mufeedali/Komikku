@@ -143,6 +143,29 @@ class Settings(Gio.Settings):
     def nsfw_content(self, state):
         self.set_boolean('nsfw-content', state)
 
+    def add_pinned_server(self, id):
+        ids = self.pinned_servers
+        if id not in ids:
+            ids.append(id)
+
+        self.pinned_servers = ids
+
+    def remove_pinned_server(self, id):
+        ids = self.pinned_servers
+        if id in ids:
+            ids.remove(id)
+
+        self.pinned_servers = ids
+
+    @property
+    def pinned_servers(self):
+        return list(self.get_value('pinned-servers'))
+
+    @pinned_servers.setter
+    def pinned_servers(self, ids):
+        ids = GLib.Variant('as', ids)
+        self.set_value('pinned-servers', ids)
+
     @property
     def reading_mode(self):
         """Return the reader's reading mode"""

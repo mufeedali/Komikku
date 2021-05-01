@@ -71,11 +71,14 @@ flowbox flowboxchild {
 
 /* Explorer - servers page */
 .explorer-dialog-server-listboxrow {
-    padding: 16px;
+    padding: 16px 12px;
 }
 
-.explorer-dialog-server-language-label {
-    font-size: 11px;
+.explorer-dialog-server-header-listboxrow {
+    padding: 12px;
+    font-size: 14pt;
+    font-weight: bold;
+    background: @insensitive_bg_color;
 }
 
 /* Explorer - search page */

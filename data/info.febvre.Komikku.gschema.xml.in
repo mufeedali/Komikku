@@ -18,12 +18,34 @@
         <value nick="original" value="3" />
     </enum>
     <schema path="/@apppath@/" id="@appid@" gettext-domain="@projectname@">
+        <key type="ai" name="window-size">
+            <default>[768, 600]</default>
+            <summary>Window Size</summary>
+            <description>Remember the window size</description>
+        </key>
+
+        <!-- Downloader -->
         <key type="b" name="downloader-state">
             <default>true</default>
             <summary>Downloader State</summary>
-            <description>State of the downloader: ON (true) or OFF (false).</description>
+            <description>State of Downloader: ON (true) or OFF (false)</description>
         </key>
 
+        <!-- Explorer -->
+        <key type="as" name="pinned-servers">
+            <default>[]</default>
+            <summary>Pinned Servers</summary>
+            <description>List of pinned servers in Explorer</description>
+        </key>
+
+        <!-- Library -->
+        <key type="i" name="selected-category">
+            <default>0</default>
+            <summary>Selected Category</summary>
+            <description>Selected category in Library</description>
+        </key>
+
+        <!-- Preferences: General -->
         <key type="b" name="dark-theme">
             <default>false</default>
             <summary>Dark Theme</summary>
@@ -40,11 +62,7 @@
             <description>Use desktop notifications for downloads and library updates</description>
         </key>
 
-        <key type="i" name="selected-category">
-            <default>0</default>
-            <summary>Selected Category</summary>
-            <description>Selected category in library</description>
-        </key>
+        <!-- Preferences: Library -->
         <key type="b" name="update-at-startup">
             <default>false</default>
             <summary>Update at Startup</summary>
@@ -76,6 +94,7 @@
             <description>Whether to enable servers with NSFW only content</description>
         </key>
 
+        <!-- Preferences: Reader -->
         <key enum="@appid@.BackgroundColor" name="background-color">
             <default>"white"</default>
             <summary>Background Color</summary>
@@ -107,16 +126,11 @@
             <description>Automatically enter fullscreen mode in reader</description>
         </key>
 
+        <!-- Preferences: Advanced -->
         <key type="b" name="credentials-storage-plaintext-fallback">
             <default>false</default>
             <summary>Allow plaintext storage as fallback</summary>
             <description>Used when no keyring backends are found</description>
-        </key>
-
-        <key type="ai" name="window-size">
-            <default>[768, 600]</default>
-            <summary>Window Size</summary>
-            <description>Remember the window size.</description>
         </key>
     </schema>
 </schemalist>
