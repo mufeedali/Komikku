@@ -162,7 +162,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     overlay = Gtk.Template.Child('overlay')
     stack = Gtk.Template.Child('stack')
 
-    library_title_stack = Gtk.Template.Child('library_title_stack')
+    library_searchbar = Gtk.Template.Child('library_searchbar')
     library_search_menu_button = Gtk.Template.Child('library_search_menu_button')
     library_searchentry = Gtk.Template.Child('library_searchentry')
     library_subtitle_label = Gtk.Template.Child('library_subtitle_label')
@@ -452,6 +452,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         Go back navigation with <Escape> key:
         - Library <- Manga <- Reader
         - Exit selection mode (Library and Manga chapters)
+        - Leave Library search mode
         """
         if event.keyval == Gdk.KEY_Escape:
             self.on_left_button_clicked()
@@ -465,8 +466,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 Explorer(self).open(action, param)
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            if self.library.search_mode and action is None:
-                self.library.leave_search_mode()
+            if action is None:
+                self.library.searchbar.set_search_mode(False)
         elif self.page == 'card':
             if self.card.selection_mode:
                 self.card.leave_selection_mode()

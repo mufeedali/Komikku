@@ -35,7 +35,6 @@ from komikku.utils import scale_pixbuf_animation
 
 class Library:
     search_menu_filters = {}
-    search_mode = False
     selection_mode = False
     selection_mode_range = False
     selection_mode_last_thumbnail_index = None
@@ -47,17 +46,21 @@ class Library:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_search.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_selection_mode.xml')
 
-        self.title_stack = self.window.library_title_stack
         self.subtitle_label = self.window.library_subtitle_label
 
         # Search
+        self.searchbar = self.window.library_searchbar
         self.search_menu_button = self.window.library_search_menu_button
         self.search_menu_button.set_menu_model(self.builder.get_object('menu-library-search'))
         self.search_entry = self.window.library_searchentry
         self.search_entry.connect('activate', self.on_search_entry_activated)
         self.search_entry.connect('changed', self.search)
+        self.searchbar.connect_entry(self.search_entry)
         self.search_button = self.window.search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
+        self.searchbar.bind_property(
+            'search-mode-enabled', self.search_button, 'active', GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
 
         # Flap (categories)
         self.flap = self.window.library_flap
@@ -260,9 +263,6 @@ class Library:
         # Edit categories of selected mangas
         self.categories_list.enter_edit_mode()
 
-    def enter_search_mode(self):
-        self.search_button.set_active(True)
-
     def enter_selection_mode(self, x=None, y=None, selected_thumbnail=None):
         # Hide search button: disable search
         self.search_button.hide()
@@ -284,9 +284,6 @@ class Library:
         self.window.headerbar.get_style_context().add_class('selection-mode')
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
-
-    def leave_search_mode(self):
-        self.search_button.set_active(False)
 
     def leave_selection_mode(self, param=None):
         self.selection_mode = False
@@ -339,12 +336,7 @@ class Library:
         if self.window.page != 'library':
             return Gdk.EVENT_PROPAGATE
 
-        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
-        is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
-        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0) and not self.search_mode:
-            self.enter_search_mode()
-
-        return Gdk.EVENT_PROPAGATE
+        return self.searchbar.handle_event(event)
 
     def on_manga_added(self, manga):
         """Called from 'Add dialog' when user clicks on [+] button"""
@@ -526,7 +518,7 @@ class Library:
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
 
-        if self.search_mode:
+        if self.searchbar.get_search_mode():
             self.search_entry.grab_focus_without_selecting()
 
         if invalidate_sort:
@@ -538,17 +530,7 @@ class Library:
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
 
     def toggle_search_mode(self, button):
-        if button.get_active():
-            self.search_mode = True
-
-            self.title_stack.set_visible_child_name('searchbox')
-            self.search_entry.grab_focus()
-        else:
-            self.search_mode = False
-
-            self.title_stack.set_visible_child_name('title')
-            self.search_entry.set_text('')
-            self.search_entry.grab_remove()
+        self.searchbar.set_search_mode(button.get_active())
 
     def toggle_selected_read_status(self, _action, _param, read):
         chapters_ids = []
