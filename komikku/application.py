@@ -23,6 +23,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 from komikku.activity_indicator import ActivityIndicator
 from komikku.card import Card
+from komikku.categories_editor import CategoriesEditor
 from komikku.downloader import Downloader
 from komikku.explorer import Explorer
 from komikku.library import Library
@@ -301,6 +302,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.card = Card(self)
         self.reader = Reader(self)
         self.preferences = Preferences(self)
+        self.categories_editor = CategoriesEditor(self)
 
         # Window
         self.connect('size-allocate', self.on_resize)
@@ -490,6 +492,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 self.library.show()
             else:
                 self.preferences.navigate(Handy.NavigationDirection.BACK)
+        elif self.page == 'categories_editor':
+            self.library.show()
 
     def on_network_status_changed(self, monitor, _connected):
         self.network_available = monitor.get_connectivity() == Gio.NetworkConnectivity.FULL

@@ -73,7 +73,6 @@
                       </object>
                       <packing>
                         <property name="name">library</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
@@ -117,7 +116,7 @@
                       </object>
                       <packing>
                         <property name="name">card</property>
-                        <property name="position">2</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
@@ -163,7 +162,7 @@
                       </object>
                       <packing>
                         <property name="name">reader</property>
-                        <property name="position">3</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -207,6 +206,20 @@
                       </object>
                       <packing>
                         <property name="name">preferences</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="categories_editor_title_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Categories</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="name">categories_editor</property>
                         <property name="position">4</property>
                       </packing>
                     </child>

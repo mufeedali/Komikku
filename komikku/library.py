@@ -19,7 +19,6 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
-from komikku.categories_editor import CategoriesEditorWindow
 from komikku.downloader import DownloadManagerDialog
 from komikku.models import Category
 from komikku.models import create_db_connection
@@ -444,7 +443,7 @@ class Library:
             thumbnail.resize(*self.thumbnails_size)
 
     def open_categories_editor(self, action, param):
-        CategoriesEditorWindow(self.window).open(action, param)
+        self.window.categories_editor.show()
 
     def open_download_manager(self, action, param):
         DownloadManagerDialog(self.window).open(action, param)

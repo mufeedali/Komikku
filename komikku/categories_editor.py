@@ -5,7 +5,6 @@
 from gettext import gettext as _
 
 from gi.repository import GObject
-from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import Handy
 
@@ -13,14 +12,13 @@ from komikku.models import Category
 from komikku.models import create_db_connection
 
 
-@Gtk.Template.from_resource('/info/febvre/Komikku/ui/categories_editor_window.ui')
-class CategoriesEditorWindow(Handy.Window):
-    __gtype_name__ = 'CategoriesEditorWindow'
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/categories_editor.ui')
+class CategoriesEditor(Handy.Clamp):
+    __gtype_name__ = 'CategoriesEditor'
 
-    parent = NotImplemented
+    window = NotImplemented
     edited_row = None
 
-    back_button = Gtk.Template.Child('back_button')
     add_entry = Gtk.Template.Child('add_entry')
     add_button = Gtk.Template.Child('add_button')
 
@@ -28,15 +26,14 @@ class CategoriesEditorWindow(Handy.Window):
     listbox = Gtk.Template.Child('listbox')
 
     def __init__(self, window):
-        Handy.Window.__init__(self)
+        Handy.Clamp.__init__(self)
 
-        self.parent = window
+        self.window = window
 
-        self.back_button.connect('clicked', self.on_back_button_clicked)
         self.add_entry.connect('activate', self.add_category)
         self.add_button.connect('clicked', self.add_category)
 
-        self.connect('key-press-event', self.on_key_press)
+        self.window.stack.add_named(self, 'categories_editor')
 
     @property
     def rows(self):
@@ -59,10 +56,7 @@ class CategoriesEditorWindow(Handy.Window):
 
             self.listbox.add(row)
 
-            self.parent.library.categories_list.populate()
-
-    def close(self):
-        self.destroy()
+            self.window.library.categories_list.populate()
 
     def delete_category(self, _button, row):
         def confirm_callback():
@@ -72,16 +66,13 @@ class CategoriesEditorWindow(Handy.Window):
             if not self.rows:
                 self.stack.set_visible_child_name('empty')
 
-            self.parent.library.categories_list.populate(refresh_library=True)
+            self.window.library.categories_list.populate(refresh_library=True)
 
-        self.parent.confirm(
+        self.window.confirm(
             _('Delete?'),
-            _('Are you sure you want to delete the "{0}" category?').format(row.category.label),
+            _('Are you sure you want to delete\n"{0}" category?').format(row.category.label),
             confirm_callback
         )
-
-    def on_back_button_clicked(self, button=None):
-        self.close()
 
     def on_category_edit_mode_changed(self, row, active):
         if not active:
@@ -94,19 +85,10 @@ class CategoriesEditorWindow(Handy.Window):
 
         self.edited_row = row
 
-    def on_key_press(self, _widget, event):
-        if event.keyval == Gdk.KEY_Escape:
-            self.close()
-            return Gdk.EVENT_STOP
-
-        return Gdk.EVENT_PROPAGATE
-
-    def open(self, _action, _param):
-        self.set_transient_for(self.parent)
-        self.populate()
-        self.present()
-
     def populate(self):
+        for row in self.rows:
+            row.destroy()
+
         db_conn = create_db_connection()
         records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
         db_conn.close()
@@ -126,6 +108,20 @@ class CategoriesEditorWindow(Handy.Window):
         else:
             self.stack.set_visible_child_name('empty')
 
+    def show(self, transition=True):
+        self.populate()
+
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.library_flap_reveal_button.hide()
+
+        self.window.library.search_button.hide()
+        self.window.card.resume_read_button.hide()
+        self.window.reader.fullscreen_button.hide()
+
+        self.window.menu_button.hide()
+
+        self.window.show_page('categories_editor', transition=transition)
+
     def update_category(self, _button, row):
         label = row.edit_entry.get_text().strip()
         if not label:
@@ -138,7 +134,7 @@ class CategoriesEditorWindow(Handy.Window):
             row.set_label(label)
             row.set_edit_mode(active=False)
 
-            self.parent.library.categories_list.populate()
+            self.window.library.categories_list.populate()
 
 
 class CategoryRow(Gtk.ListBoxRow):
