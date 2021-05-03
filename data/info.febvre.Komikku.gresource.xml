@@ -8,7 +8,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/categories_editor_window.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/download_manager_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/explorer_dialog.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/preferences_window.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_overview.ui</file>
 
         <file compressed="true" preprocess="xml-stripblanks">ui/menu/main.xml</file>

@@ -28,7 +28,7 @@ from komikku.explorer import Explorer
 from komikku.library import Library
 from komikku.models import backup_db
 from komikku.models import Settings
-from komikku.preferences import PreferencesWindow
+from komikku.preferences import Preferences
 from komikku.reader import Reader
 from komikku.servers import get_allowed_servers_list
 from komikku.updater import Updater
@@ -148,10 +148,10 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     headerbar_revealer = Gtk.Template.Child('headerbar_revealer')
     headerbar = Gtk.Template.Child('headerbar')
-    title_stack = Gtk.Template.Child('title_stack')
     left_button = Gtk.Template.Child('left_button')
     left_button_image = Gtk.Template.Child('left_button_image')
     library_flap_reveal_button = Gtk.Template.Child('library_flap_reveal_button')
+    title_stack = Gtk.Template.Child('title_stack')
     search_button = Gtk.Template.Child('search_button')
     resume_read_button = Gtk.Template.Child('resume_read_button')
     fullscreen_button = Gtk.Template.Child('fullscreen_button')
@@ -196,6 +196,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
     reader_viewport = Gtk.Template.Child('reader_viewport')
     reader_title_label = Gtk.Template.Child('reader_title_label')
     reader_subtitle_label = Gtk.Template.Child('reader_subtitle_label')
+
+    preferences_subtitle_label = Gtk.Template.Child('preferences_subtitle_label')
 
     notification_label = Gtk.Template.Child('notification_label')
     notification_revealer = Gtk.Template.Child('notification_revealer')
@@ -298,6 +300,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.library = Library(self)
         self.card = Card(self)
         self.reader = Reader(self)
+        self.preferences = Preferences(self)
 
         # Window
         self.connect('size-allocate', self.on_resize)
@@ -482,6 +485,11 @@ class ApplicationWindow(Handy.ApplicationWindow):
             # and update info like disk usage
             self.card.refresh(self.reader.chapters_consulted)
             self.card.show()
+        elif self.page == 'preferences':
+            if self.preferences.get_visible_child_name() == 'pages':
+                self.library.show()
+            else:
+                self.preferences.navigate(Handy.NavigationDirection.BACK)
 
     def on_network_status_changed(self, monitor, _connected):
         self.network_available = monitor.get_connectivity() == Gio.NetworkConnectivity.FULL
@@ -516,7 +524,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.mobile_width = size.width <= 800
 
     def on_preferences_menu_clicked(self, action, param):
-        PreferencesWindow(self).open(action, param)
+        self.preferences.show()
 
     def on_shortcuts_menu_clicked(self, action, param):
         builder = Gtk.Builder()

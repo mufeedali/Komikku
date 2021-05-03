@@ -517,6 +517,7 @@ class Library:
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button.show()
 
         if self.searchbar.get_search_mode():
             self.search_entry.grab_focus_without_selecting()
