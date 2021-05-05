@@ -6,7 +6,7 @@
         <file compressed="true" preprocess="xml-stripblanks">about_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/application_window.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/categories_editor.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/download_manager_dialog.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/download_manager.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/explorer_dialog.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/preferences.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts_overview.ui</file>

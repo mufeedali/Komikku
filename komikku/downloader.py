@@ -253,9 +253,9 @@ class Downloader(GObject.GObject):
                 Settings.get_default().downloader_state = False
 
 
-@Gtk.Template.from_resource('/info/febvre/Komikku/ui/download_manager_dialog.ui')
-class DownloadManagerDialog(Gtk.Dialog):
-    __gtype_name__ = 'DownloadManagerDialog'
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/download_manager.ui')
+class DownloadManager(Gtk.ScrolledWindow):
+    __gtype_name__ = 'DownloadManager'
     __gsignals_handlers_ids__ = None
 
     selection_mode = False
@@ -263,33 +263,24 @@ class DownloadManagerDialog(Gtk.Dialog):
     selection_mode_range = False
     selection_mode_last_row_index = None
 
-    titlebar = Gtk.Template.Child('titlebar')
-    back_button = Gtk.Template.Child('back_button')
-    subtitle_label = Gtk.Template.Child('subtitle_label')
-    start_stop_button = Gtk.Template.Child('start_stop_button')
-    start_stop_button_image = Gtk.Template.Child('start_stop_button_image')
-    menu_button = Gtk.Template.Child('menu_button')
     stack = Gtk.Template.Child('stack')
     listbox = Gtk.Template.Child('listbox')
 
     def __init__(self, window):
-        Gtk.Dialog.__init__(self)
+        Gtk.ScrolledWindow.__init__(self)
 
-        self.parent = window
-        self.downloader = window.downloader
-
-        self.get_children()[0].set_border_width(0)  # internal vertical Box
-        self.set_titlebar(self.titlebar)
-        self.set_transient_for(window)
+        self.window = window
+        self.downloader = self.window.downloader
 
         self.builder = window.builder
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager_selection_mode.xml')
 
+        self.subtitle_label = self.window.download_manager_subtitle_label
+        self.start_stop_button = self.window.start_stop_download_button
+
         self.connect('key-press-event', self.on_key_press_event)
-        self.back_button.connect('clicked', self.on_back_button_clicked)
         self.start_stop_button.connect('clicked', self.on_start_stop_button_clicked)
-        self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
         self.listbox.connect('button-press-event', self.on_button_pressed)
         self.listbox.connect('row-activated', self.on_download_row_clicked)
         self.listbox.connect('selected-rows-changed', self.on_selection_changed)
@@ -305,30 +296,22 @@ class DownloadManagerDialog(Gtk.Dialog):
             self.downloader.connect('started', self.update_headerbar),
         ]
 
-        action_group = Gio.SimpleActionGroup.new()
-
-        # Delete All action
-        delete_all_action = Gio.SimpleAction.new('delete-all', None)
-        delete_all_action.connect('activate', self.on_menu_delete_all_clicked)
-        action_group.add_action(delete_all_action)
-
-        # Delete Selected action
-        delete_selected_action = Gio.SimpleAction.new('delete-selected', None)
-        delete_selected_action.connect('activate', self.on_menu_delete_selected_clicked)
-        action_group.add_action(delete_selected_action)
-
-        self.insert_action_group('download-manager', action_group)
+        self.window.stack.add_named(self, 'download_manager')
 
     @property
     def rows(self):
         return self.listbox.get_children()
 
-    def close(self):
-        # Disconnect from signals
-        for handler_id in self.__gsignals_handlers_ids__:
-            self.downloader.disconnect(handler_id)
+    def add_actions(self):
+        # Delete All action
+        delete_all_action = Gio.SimpleAction.new('download-manager.delete-all', None)
+        delete_all_action.connect('activate', self.on_menu_delete_all_clicked)
+        self.window.application.add_action(delete_all_action)
 
-        self.destroy()
+        # Delete Selected action
+        delete_selected_action = Gio.SimpleAction.new('download-manager.delete-selected', None)
+        delete_selected_action.connect('activate', self.on_menu_delete_selected_clicked)
+        self.window.application.add_action(delete_selected_action)
 
     def enter_selection_mode(self):
         self.selection_mode = True
@@ -336,8 +319,8 @@ class DownloadManagerDialog(Gtk.Dialog):
 
         self.listbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
 
-        self.titlebar.set_selection_mode(True)
-        self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager-selection-mode'))
+        self.window.headerbar.get_style_context().add_class('selection-mode')
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-download-manager-selection-mode'))
 
     def leave_selection_mode(self):
         self.selection_mode = False
@@ -346,14 +329,8 @@ class DownloadManagerDialog(Gtk.Dialog):
         for row in self.rows:
             row._selected = False
 
-        self.titlebar.set_selection_mode(False)
-        self.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
-
-    def on_back_button_clicked(self, button=None):
-        if self.selection_mode:
-            self.leave_selection_mode()
-        else:
-            self.close()
+        self.window.headerbar.get_style_context().remove_class('selection-mode')
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
 
     def on_button_pressed(self, _widget, event):
         row = self.listbox.get_row_at_y(event.y)
@@ -364,7 +341,7 @@ class DownloadManagerDialog(Gtk.Dialog):
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_download_row_clicked(self, listbox, row):
+    def on_download_row_clicked(self, _listbox, row):
         _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
@@ -412,7 +389,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         if self.selection_mode_count == 0:
             self.leave_selection_mode()
 
-    def on_gesture_long_press_activated(self, gesture, x, y):
+    def on_gesture_long_press_activated(self, _gesture, _x, _y):
         if self.selection_mode:
             # Enter in 'Range' selection mode
             # Long press on a download row then long press on another to select everything in between
@@ -420,7 +397,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         else:
             self.enter_selection_mode()
 
-    def on_key_press_event(self, widget, event):
+    def on_key_press_event(self, _widget, event):
         modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
 
         # <Control>+Key
@@ -432,7 +409,7 @@ class DownloadManagerDialog(Gtk.Dialog):
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_menu_delete_all_clicked(self, action, param):
+    def on_menu_delete_all_clicked(self, _action, _param):
         chapters = []
         for row in self.rows:
             chapters.append(row.download.chapter)
@@ -444,7 +421,7 @@ class DownloadManagerDialog(Gtk.Dialog):
         self.update_headerbar()
         GLib.idle_add(self.stack.set_visible_child_name, 'empty')
 
-    def on_menu_delete_selected_clicked(self, action, param):
+    def on_menu_delete_selected_clicked(self, _action, _param):
         chapters = []
         for row in self.rows:
             if row._selected:
@@ -467,7 +444,7 @@ class DownloadManagerDialog(Gtk.Dialog):
             self.subtitle_label.hide()
 
     @if_network_available
-    def on_start_stop_button_clicked(self, button):
+    def on_start_stop_button_clicked(self, _button):
         self.start_stop_button.set_sensitive(False)
 
         if self.downloader.running:
@@ -475,14 +452,10 @@ class DownloadManagerDialog(Gtk.Dialog):
         else:
             self.downloader.start()
 
-    def open(self, action, param):
-        self.populate()
-        self.update_headerbar()
-
-        if self.run() in (Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT, ):
-            self.on_back_button_clicked()
-
     def populate(self):
+        for row in self.rows:
+            row.destroy()
+
         db_conn = create_db_connection()
         records = db_conn.execute('SELECT * FROM downloads ORDER BY date ASC').fetchall()
         db_conn.close()
@@ -511,21 +484,41 @@ class DownloadManagerDialog(Gtk.Dialog):
             self.listbox.select_row(row)
             row._selected = True
 
+    def show(self, transition=True):
+        self.populate()
+
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.library_flap_reveal_button.hide()
+
+        self.window.library.search_button.hide()
+        self.window.card.resume_read_button.hide()
+        self.window.reader.fullscreen_button.hide()
+
+        self.window.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+
+        self.window.show_page('download_manager', transition=transition)
+
+        self.update_headerbar()
+
     def update_headerbar(self, *args):
+        if self.window.page != 'download_manager':
+            return
+
         if self.rows:
             if self.downloader.running:
-                self.start_stop_button_image.set_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
+                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
             else:
-                self.start_stop_button_image.set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
 
             self.start_stop_button.set_sensitive(True)
             self.start_stop_button.show()
-            self.menu_button.show()
+            self.window.menu_button.show()
         else:
             self.start_stop_button.hide()
-            self.menu_button.hide()
+            self.window.menu_button.hide()
 
-    def update_row(self, downloader, download, chapter):
+    def update_row(self, _downloader, download, chapter):
         chapter_id = chapter.id if chapter is not None else download.chapter.id
 
         for row in self.rows:

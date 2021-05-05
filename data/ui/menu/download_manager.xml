@@ -5,7 +5,7 @@
         <section>
             <item>
                 <attribute name="label" translatable="yes">Delete All</attribute>
-                <attribute name="action">download-manager.delete-all</attribute>
+                <attribute name="action">app.download-manager.delete-all</attribute>
             </item>
         </section>
     </menu>

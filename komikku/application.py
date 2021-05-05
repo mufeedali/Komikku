@@ -25,6 +25,7 @@ from komikku.activity_indicator import ActivityIndicator
 from komikku.card import Card
 from komikku.categories_editor import CategoriesEditor
 from komikku.downloader import Downloader
+from komikku.downloader import DownloadManager
 from komikku.explorer import Explorer
 from komikku.library import Library
 from komikku.models import backup_db
@@ -156,6 +157,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     search_button = Gtk.Template.Child('search_button')
     resume_read_button = Gtk.Template.Child('resume_read_button')
     fullscreen_button = Gtk.Template.Child('fullscreen_button')
+    start_stop_download_button = Gtk.Template.Child('start_stop_download_button')
     menu_button = Gtk.Template.Child('menu_button')
     menu_button_image = Gtk.Template.Child('menu_button_image')
 
@@ -199,6 +201,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
     reader_subtitle_label = Gtk.Template.Child('reader_subtitle_label')
 
     preferences_subtitle_label = Gtk.Template.Child('preferences_subtitle_label')
+
+    download_manager_subtitle_label = Gtk.Template.Child('download_manager_subtitle_label')
 
     notification_label = Gtk.Template.Child('notification_label')
     notification_revealer = Gtk.Template.Child('notification_revealer')
@@ -277,6 +281,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.library.add_actions()
         self.card.add_actions()
         self.reader.add_actions()
+        self.download_manager.add_actions()
 
     def assemble_window(self):
         # Default size
@@ -303,6 +308,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.reader = Reader(self)
         self.preferences = Preferences(self)
         self.categories_editor = CategoriesEditor(self)
+        self.download_manager = DownloadManager(self)
 
         # Window
         self.connect('size-allocate', self.on_resize)
@@ -494,6 +500,11 @@ class ApplicationWindow(Handy.ApplicationWindow):
                 self.preferences.navigate(Handy.NavigationDirection.BACK)
         elif self.page == 'categories_editor':
             self.library.show()
+        elif self.page == 'download_manager':
+            if self.download_manager.selection_mode:
+                self.download_manager.leave_selection_mode()
+            else:
+                self.library.show()
 
     def on_network_status_changed(self, monitor, _connected):
         self.network_available = monitor.get_connectivity() == Gio.NetworkConnectivity.FULL
@@ -573,19 +584,17 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     def show_page(self, name, transition=True):
         if not transition:
-            # Save defined transition type
-            transition_type = self.stack.get_transition_type()
-            # Set transition type to NONE
-            self.stack.set_transition_type(Gtk.StackTransitionType.NONE)
-            self.title_stack.set_transition_type(Gtk.StackTransitionType.NONE)
+            transition_type = Gtk.StackTransitionType.NONE
+        elif name in ('categories_editor', 'download_manager', 'explorer', 'preferences'):
+            transition_type = Gtk.StackTransitionType.SLIDE_RIGHT
+        else:
+            if self.page in ('categories_editor', 'download_manager', 'explorer', 'preferences'):
+                transition_type = Gtk.StackTransitionType.SLIDE_LEFT
+            else:
+                transition_type = self.stack.get_transition_type()
 
-        self.stack.set_visible_child_name(name)
-        self.title_stack.set_visible_child_name(name)
-
-        if not transition:
-            # Restore transition type
-            self.stack.set_transition_type(transition_type)
-            self.title_stack.set_transition_type(transition_type)
+        self.stack.set_visible_child_full(name, transition_type)
+        self.title_stack.set_visible_child_full(name, transition_type)
 
         self.page = name
 

@@ -19,7 +19,6 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
-from komikku.downloader import DownloadManagerDialog
 from komikku.models import Category
 from komikku.models import create_db_connection
 from komikku.models import delete_rows
@@ -446,7 +445,7 @@ class Library:
         self.window.categories_editor.show()
 
     def open_download_manager(self, action, param):
-        DownloadManagerDialog(self.window).open(action, param)
+        self.window.download_manager.show()
 
     def populate(self):
         db_conn = create_db_connection()
@@ -513,6 +512,7 @@ class Library:
         self.search_button.show()
         self.window.card.resume_read_button.hide()
         self.window.reader.fullscreen_button.hide()
+        self.window.download_manager.start_stop_button.hide()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
