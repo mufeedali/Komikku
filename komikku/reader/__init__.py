@@ -36,7 +36,8 @@ class Reader:
         # Headerbar
         self.title_label = self.window.reader_title_label
         self.subtitle_label = self.window.reader_subtitle_label
-        self.fullscreen_button = self.window.fullscreen_button
+        self.fullscreen_button = self.window.reader_fullscreen_button
+        self.fullscreen_button.connect('clicked', self.window.toggle_fullscreen, None)
 
         # Page number indicator
         self.page_number_label = Gtk.Label()
@@ -271,9 +272,7 @@ class Reader:
         def on_menu_popover_closed(menu_button):
             self.pager.grab_focus()
 
-        self.window.library.search_button.hide()
-        self.window.card.resume_read_button.hide()
-        self.fullscreen_button.show()
+        self.window.right_button_stack.set_visible_child_name('reader')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-reader'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)

@@ -267,6 +267,20 @@
                         <property name="position">5</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkLabel" id="explorer_title_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="ellipsize">end</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="name">explorer</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -284,15 +298,21 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="library_flap_reveal_button">
+                  <object class="GtkStack">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImage">
+                      <object class="GtkToggleButton" id="library_flap_reveal_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="icon_name">user-bookmarks-symbolic</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">user-bookmarks-symbolic</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -319,11 +339,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkStack">
+                  <object class="GtkStack" id="right_button_stack">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkToggleButton" id="search_button">
+                      <object class="GtkToggleButton" id="library_search_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -335,9 +355,13 @@
                           </object>
                         </child>
                       </object>
+                      <packing>
+                        <property name="name">library</property>
+                      </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="resume_read_button">
+                      <object class="GtkButton" id="card_resume_read_button">
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <child>
@@ -349,11 +373,13 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="name">card</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="fullscreen_button">
+                      <object class="GtkButton" id="reader_fullscreen_button">
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <child>
@@ -365,11 +391,13 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="name">reader</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="start_stop_download_button">
+                      <object class="GtkButton" id="download_manager_start_stop_button">
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <child>
@@ -377,13 +405,70 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="icon_name">media-playback-start-symbolic</property>
-                            <property name="icon_size">1</property>
                           </object>
                         </child>
                       </object>
                       <packing>
+                        <property name="name">download_manager</property>
                         <property name="position">3</property>
                       </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="explorer_search_page_server_website_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">web-browser-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">explorer.search</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="explorer_card_page_add_read_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">list-add-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">explorer.card</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="explorer_servers_page_search_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">edit-find-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">explorer.servers</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>

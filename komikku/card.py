@@ -39,7 +39,7 @@ class Card:
 
         self.title_label = self.window.card_title_label
         self.subtitle_label = self.window.card_subtitle_label
-        self.resume_read_button = self.window.resume_read_button
+        self.resume_read_button = self.window.card_resume_read_button
         self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
 
         self.stack = self.window.card_stack
@@ -208,12 +208,8 @@ class Card:
         self.title_label.set_text(self.manga.name)
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
-
         self.window.library_flap_reveal_button.hide()
-
-        self.window.library.search_button.hide()
-        self.resume_read_button.show()
-        self.window.reader.fullscreen_button.hide()
+        self.window.right_button_stack.set_visible_child_name('card')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)

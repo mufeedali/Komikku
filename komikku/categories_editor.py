@@ -114,9 +114,7 @@ class CategoriesEditor(Handy.Clamp):
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.library_flap_reveal_button.hide()
 
-        self.window.library.search_button.hide()
-        self.window.card.resume_read_button.hide()
-        self.window.reader.fullscreen_button.hide()
+        self.window.right_button_stack.hide()
 
         self.window.menu_button.hide()
 

@@ -9,12 +9,12 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 from gi.repository import Pango
 
-from komikku.activity_indicator import ActivityIndicator
 from komikku.models import create_db_connection
 from komikku.models import Manga
 from komikku.models import Settings
@@ -27,7 +27,10 @@ from komikku.utils import log_error_traceback
 from komikku.utils import scale_pixbuf_animation
 
 
-class Explorer:
+@Gtk.Template.from_resource('/info/febvre/Komikku/ui/explorer.ui')
+class Explorer(Gtk.Stack):
+    __gtype_name__ = 'Explorer'
+
     page = None
     preselection = False
     search_filters = None
@@ -35,40 +38,48 @@ class Explorer:
     servers_search_mode = False
 
     server = None
-    manga_slug = None
-    manga_data = None
     manga = None
+    manga_data = None
+    manga_slug = None
 
-    def __init__(self, window, servers=None):
+    servers_page_searchbar = Gtk.Template.Child('servers_page_searchbar')
+    servers_page_searchentry = Gtk.Template.Child('servers_page_searchentry')
+    servers_page_listbox = Gtk.Template.Child('servers_page_listbox')
+    servers_page_pinned_listbox = Gtk.Template.Child('servers_page_pinned_listbox')
+
+    search_page_searchbar = Gtk.Template.Child('search_page_searchbar')
+    search_page_searchentry = Gtk.Template.Child('search_page_searchentry')
+    search_page_filter_menu_button = Gtk.Template.Child('search_page_filter_menu_button')
+    search_page_listbox = Gtk.Template.Child('search_page_listbox')
+
+    card_page_grid = Gtk.Template.Child('card_page_grid')
+    card_page_cover_image = Gtk.Template.Child('card_page_cover_image')
+    card_page_authors_value_label = Gtk.Template.Child('card_page_authors_value_label')
+    card_page_genres_value_label = Gtk.Template.Child('card_page_genres_value_label')
+    card_page_status_value_label = Gtk.Template.Child('card_page_status_value_label')
+    card_page_server_value_label = Gtk.Template.Child('card_page_server_value_label')
+    card_page_synopsis_value_label = Gtk.Template.Child('card_page_synopsis_value_label')
+    card_page_scanlators_value_label = Gtk.Template.Child('card_page_scanlators_value_label')
+    card_page_last_chapter_value_label = Gtk.Template.Child('card_page_last_chapter_value_label')
+
+    def __init__(self, window):
+        Gtk.Stack.__init__(self)
+
         self.window = window
-        self.builder = Gtk.Builder()
-        self.builder.add_from_resource('/info/febvre/Komikku/ui/explorer_dialog.ui')
 
-        self.dialog = self.builder.get_object('dialog')
-        self.dialog.get_children()[0].set_border_width(0)
-
-        # Header bar
-        self.builder.get_object('back_button').connect('clicked', self.on_back_button_clicked)
-        self.title_stack = self.builder.get_object('custom_title_stack')
-
-        self.overlay = self.builder.get_object('overlay')
-        self.stack = self.builder.get_object('stack')
-
-        self.activity_indicator = ActivityIndicator()
-        self.overlay.add_overlay(self.activity_indicator)
-        self.overlay.set_overlay_pass_through(self.activity_indicator, True)
-        self.activity_indicator.show_all()
+        self.title_label = self.window.explorer_title_label
 
         # Servers page
-        self.servers_title_stack = self.builder.get_object('custom_title_servers_page_title_stack')
-        self.servers_page_searchentry = self.builder.get_object('custom_title_servers_page_searchentry')
-        self.servers_page_searchentry.connect('activate', self.on_servers_search_activated)
+        self.servers_page_search_button = self.window.explorer_servers_page_search_button
+        self.servers_page_searchbar.connect_entry(self.servers_page_searchentry)
+        self.servers_page_searchbar.bind_property(
+            'search-mode-enabled', self.servers_page_search_button, 'active', GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
+        self.servers_page_searchentry.connect('activate', self.on_servers_page_searchentry_activated)
         self.servers_page_searchentry.connect('changed', self.search_servers)
 
-        self.servers_page_searchbutton = self.builder.get_object('custom_title_servers_page_searchbutton')
-        self.servers_page_searchbutton.connect('clicked', self.toggle_servers_search)
+        self.servers_page_search_button.connect('clicked', self.toggle_servers_search)
 
-        self.servers_page_pinned_listbox = self.builder.get_object('servers_page_pinned_listbox')
         self.servers_page_pinned_listbox.get_style_context().add_class('list-bordered')
         self.servers_page_pinned_listbox.connect('row-activated', self.on_server_clicked)
 
@@ -94,64 +105,27 @@ class Explorer:
                 term in server_lang.lower()
             )
 
-        self.servers_page_listbox = self.builder.get_object('servers_page_listbox')
         self.servers_page_listbox.get_style_context().add_class('list-bordered')
         self.servers_page_listbox.connect('row-activated', self.on_server_clicked)
         self.servers_page_listbox.set_filter_func(_servers_filter)
 
-        if not servers:
-            self.servers = get_allowed_servers_list(Settings.get_default())
-            self.populate_pinned_servers()
-        else:
-            self.servers = servers
-            self.preselection = True
-
-        last_lang = None
-        for server_data in self.servers:
-            if server_data['lang'] != last_lang:
-                # Add language header
-                last_lang = server_data['lang']
-
-                row = Gtk.ListBoxRow(activatable=False)
-                row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
-                label = Gtk.Label(xalign=0)
-                label.get_style_context().add_class('subtitle')
-                label.set_text(LANGUAGES[server_data['lang']].upper())
-                row.add(label)
-                self.servers_page_listbox.add(row)
-
-            row = self.build_server_row(server_data)
-            self.servers_page_listbox.add(row)
-
-        self.servers_page_listbox.show_all()
-
         # Search page
-        self.search_page_searchentry = self.builder.get_object('custom_title_search_page_searchentry')
+        self.search_page_server_website_button = self.window.explorer_search_page_server_website_button
+        self.search_page_server_website_button.connect('clicked', self.on_search_page_server_website_button_clicked)
+        self.search_page_searchbar.connect_entry(self.search_page_searchentry)
         self.search_page_searchentry.connect('activate', self.search)
-        self.search_page_filter_menu_button = self.builder.get_object('custom_title_search_page_filter_menu_button')
-        self.builder.get_object('custom_title_search_page_server_website_button').connect('clicked', self.on_server_website_button_clicked)
 
-        self.search_page_listbox = self.builder.get_object('search_page_listbox')
         self.search_page_listbox.get_style_context().add_class('list-bordered')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
-        # Manga page
-        grid = self.builder.get_object('manga_page_grid')
-        grid.props.margin = 6
-        self.manga_page_label = self.builder.get_object('custom_title_manga_page_label')
-        self.add_button = self.builder.get_object('add_button')
-        self.add_button.connect('clicked', self.on_add_button_clicked)
-        self.read_button = self.builder.get_object('read_button')
-        self.read_button.connect('clicked', self.on_read_button_clicked)
+        # Card page
+        self.card_page_grid.props.margin = 6
+        self.card_page_add_read_button = self.window.explorer_card_page_add_read_button
+        self.card_page_add_read_button.connect('clicked', self.on_card_page_add_read_button_clicked)
 
-        self.dialog.connect('key-press-event', self.on_key_press)
+        self.window.connect('key-press-event', self.on_key_press)
 
-        if self.preselection and len(self.servers) == 1:
-            row = self.servers_page_listbox.get_children()[0]
-            self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
-            self.show_manga(row.manga_data)
-        else:
-            self.show_page('servers')
+        self.window.stack.add_named(self, 'explorer')
 
     def build_server_row(self, data):
         row = Gtk.ListBoxRow()
@@ -205,19 +179,16 @@ class Explorer:
 
         return row
 
-    def clear_search(self):
-        self.search_page_searchentry.set_text('')
-        self.clear_results()
-        self.init_filters()
-
-    def clear_results(self):
+    def clear_search_page_results(self):
         for child in self.search_page_listbox.get_children():
             self.search_page_listbox.remove(child)
 
-    def hide_notification(self):
-        self.builder.get_object('notification_revealer').set_reveal_child(False)
+    def clear_search_page_search(self):
+        self.search_page_searchentry.set_text('')
+        self.clear_search_page_results()
+        self.init_search_page_filters()
 
-    def init_filters(self):
+    def init_search_page_filters(self):
         self.search_filters = {}
 
         if getattr(self.server, 'filters', None) is None:
@@ -319,7 +290,38 @@ class Explorer:
 
         self.search_page_filter_menu_button.set_popover(popover)
 
-    def on_add_button_clicked(self, button):
+    def navigate_back(self, source):
+        if self.page == 'servers':
+            # Back to Library if:
+            # - user click on 'Back' button
+            # - or use 'Esc' key and 'severs' page in not in search mode
+            if source == 'click' or not self.servers_page_searchbar.get_search_mode():
+                self.window.library.show()
+
+            # Leave search mode
+            if self.servers_page_searchbar.get_search_mode():
+                self.servers_page_searchbar.set_search_mode(False)
+        elif self.page == 'search':
+            self.search_lock = False
+            self.server = None
+
+            # Restore focus to search entry in search mode
+            if self.servers_page_searchbar.get_search_mode():
+                self.servers_page_searchentry.grab_focus_without_selecting()
+
+            self.show_page('servers')
+        elif self.page == 'card':
+            self.manga_slug = None
+
+            # Restore focus to search entry
+            self.search_page_searchentry.grab_focus_without_selecting()
+
+            if self.preselection:
+                self.show_page('servers')
+            else:
+                self.show_page('search')
+
+    def on_card_page_add_button_clicked(self):
         def run():
             manga = Manga.new(self.manga_data, self.server, Settings.get_default().long_strip_detection)
             GLib.idle_add(complete, manga)
@@ -327,75 +329,42 @@ class Explorer:
         def complete(manga):
             self.manga = manga
 
-            self.show_notification(_('{0} manga added').format(self.manga.name))
+            self.window.show_notification(_('{0} manga added').format(self.manga.name))
 
             self.window.library.on_manga_added(self.manga)
 
-            self.add_button.set_sensitive(True)
-            self.add_button.hide()
-            self.read_button.show()
-            self.activity_indicator.stop()
+            self.card_page_add_read_button.set_sensitive(True)
+            self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+            self.window.activity_indicator.stop()
 
             return False
 
-        self.activity_indicator.start()
-        self.add_button.set_sensitive(False)
+        self.window.activity_indicator.start()
+        self.card_page_add_read_button.set_sensitive(False)
 
         thread = threading.Thread(target=run)
         thread.daemon = True
         thread.start()
 
-    def on_back_button_clicked(self, button):
-        if self.page == 'servers':
-            self.dialog.close()
+    def on_card_page_add_read_button_clicked(self, _button):
+        if self.manga:
+            self.on_card_page_read_button_clicked()
+        else:
+            self.on_card_page_add_button_clicked()
 
-        elif self.page == 'search':
-            self.activity_indicator.stop()
-            self.search_lock = False
-            self.server = None
-            self.show_page('servers')
-
-        elif self.page == 'manga':
-            self.activity_indicator.stop()
-            self.manga_slug = None
-            if self.preselection:
-                self.show_page('servers')
-            else:
-                self.show_page('search')
+    def on_card_page_read_button_clicked(self):
+        self.window.card.init(self.manga, transition=False)
 
     def on_key_press(self, _widget, event):
         """Search entry of servers/search pages can be focused by simply typing a printable character"""
 
-        if event.keyval == Gdk.KEY_Escape:
-            if self.page == 'manga':
-                if self.preselection:
-                    self.show_page('servers')
-                else:
-                    self.show_page('search')
-                return Gdk.EVENT_STOP
-            elif self.page == 'search':
-                self.show_page('servers')
-                return Gdk.EVENT_STOP
-            elif self.page == 'servers' and self.servers_search_mode:
-                self.servers_page_searchbutton.emit('clicked')
-                return Gdk.EVENT_STOP
-
+        if self.window.page != 'explorer':
             return Gdk.EVENT_PROPAGATE
 
-        if self.page not in ['search', 'servers']:
-            return Gdk.EVENT_PROPAGATE
-
-        modifiers = event.get_state() & Gtk.accelerator_get_default_mod_mask()
-        is_printable = GLib.unichar_isgraph(chr(Gdk.keyval_to_unicode(event.keyval)))
-
-        if is_printable and modifiers in (Gdk.ModifierType.SHIFT_MASK, 0):
-            if self.page == 'search' and not self.search_page_searchentry.is_focus():
-                self.search_page_searchentry.grab_focus_without_selecting()
-            elif self.page == 'servers':
-                if self.servers_search_mode:
-                    self.servers_page_searchentry.grab_focus_without_selecting()
-                else:
-                    self.servers_page_searchbutton.emit('clicked')
+        if self.page == 'servers':
+            return self.servers_page_searchbar.handle_event(event)
+        elif self.page == 'search':
+            return self.search_page_searchbar.handle_event(event)
 
         return Gdk.EVENT_PROPAGATE
 
@@ -403,34 +372,118 @@ class Explorer:
         if row.manga_data is None:
             return
 
-        self.show_manga(row.manga_data)
+        self.populate_card(row.manga_data)
 
-    def on_read_button_clicked(self, button):
-        self.window.card.init(self.manga, transition=False)
-        self.dialog.close()
-
-    def on_servers_search_activated(self, _entry):
-        row = self.servers_page_listbox.get_row_at_y(0)
-        if row:
-            self.on_server_clicked(self.servers_page_listbox, row)
+    def on_search_page_server_website_button_clicked(self, _button):
+        if self.server.base_url:
+            Gtk.show_uri_on_window(None, self.server.base_url, time.time())
+        else:
+            self.window.show_notification(_('Oops, server website URL is unknown.'), 2)
 
     def on_server_clicked(self, listbox, row):
         self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
         if hasattr(row, 'manga_data'):
-            self.show_manga(row.manga_data)
+            self.populate_card(row.manga_data)
         else:
             self.show_page('search')
 
-    def on_server_website_button_clicked(self, _button):
-        if self.server.base_url:
-            Gtk.show_uri_on_window(None, self.server.base_url, time.time())
-        else:
-            self.show_notification(_('Oops, server website URL is unknown.'), 2)
+    def on_servers_page_searchentry_activated(self, _entry):
+        row = self.servers_page_listbox.get_row_at_y(0)
+        if row:
+            self.on_server_clicked(self.servers_page_listbox, row)
 
-    def open(self, action=None, param=None):
-        self.dialog.set_modal(True)
-        self.dialog.set_transient_for(self.window)
-        self.dialog.present()
+    def populate_card(self, manga_data):
+        def run(server, manga_slug):
+            try:
+                current_manga_data = server.get_manga_data(manga_data)
+
+                if current_manga_data is not None:
+                    GLib.idle_add(complete, current_manga_data, server)
+                else:
+                    GLib.idle_add(error, server, manga_slug)
+            except Exception as e:
+                user_error_message = log_error_traceback(e)
+                GLib.idle_add(error, server, manga_slug, user_error_message)
+
+        def complete(manga_data, server):
+            if server != self.server or manga_data['slug'] != self.manga_slug:
+                return False
+
+            self.manga_data = manga_data
+
+            # Populate manga card
+            try:
+                cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
+            except Exception as e:
+                cover_data = None
+                user_error_message = log_error_traceback(e)
+                if user_error_message:
+                    self.window.show_notification(user_error_message)
+
+            if cover_data is None:
+                pixbuf = Pixbuf.new_from_resource_at_scale(
+                    '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
+            else:
+                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
+                if get_buffer_mime_type(cover_data) != 'image/gif':
+                    pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174 * self.window.hidpi_scale, -1, True, None)
+                else:
+                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_stream(cover_stream), 174, -1, True, True)
+
+            self.card_page_cover_image.clear()
+            if isinstance(pixbuf, PixbufAnimation):
+                self.card_page_cover_image.set_from_animation(pixbuf)
+            else:
+                self.card_page_cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
+
+            authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
+            self.card_page_authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))
+
+            genres = html_escape(', '.join(self.manga_data['genres'])) if self.manga_data['genres'] else '-'
+            self.card_page_genres_value_label.set_markup('<span size="small">{0}</span>'.format(genres))
+
+            status = _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-'
+            self.card_page_status_value_label.set_markup('<span size="small">{0}</span>'.format(status))
+
+            scanlators = html_escape(', '.join(self.manga_data['scanlators'])) if self.manga_data['scanlators'] else '-'
+            self.card_page_scanlators_value_label.set_markup('<span size="small">{0}</span>'.format(scanlators))
+
+            self.card_page_server_value_label.set_markup(
+                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
+                    self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
+                    html_escape(self.server.name),
+                    self.server.lang.upper(),
+                    len(self.manga_data['chapters'])
+                )
+            )
+
+            self.card_page_last_chapter_value_label.set_text(
+                self.manga_data['chapters'][-1]['title'] if self.manga_data['chapters'] else '-'
+            )
+
+            self.card_page_synopsis_value_label.set_text(self.manga_data['synopsis'] or '-')
+
+            self.window.activity_indicator.stop()
+            self.show_page('card')
+
+            return False
+
+        def error(server, manga_slug, message=None):
+            if server != self.server or manga_slug != self.manga_slug:
+                return False
+
+            self.window.activity_indicator.stop()
+
+            self.window.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
+
+            return False
+
+        self.manga_slug = manga_data['slug']
+        self.window.activity_indicator.start()
+
+        thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
+        thread.daemon = True
+        thread.start()
 
     def populate_pinned_servers(self):
         for row in self.servers_page_pinned_listbox.get_children():
@@ -458,6 +511,43 @@ class Explorer:
 
         self.servers_page_pinned_listbox.show_all()
 
+    def populate_servers(self, servers=None):
+        if not servers:
+            self.servers = get_allowed_servers_list(Settings.get_default())
+            self.populate_pinned_servers()
+        else:
+            self.servers = servers
+            self.preselection = True
+
+        for row in self.servers_page_listbox.get_children():
+            row.destroy()
+
+        last_lang = None
+        for server_data in self.servers:
+            if server_data['lang'] != last_lang:
+                # Add language header
+                last_lang = server_data['lang']
+
+                row = Gtk.ListBoxRow(activatable=False)
+                row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
+                label = Gtk.Label(xalign=0)
+                label.get_style_context().add_class('subtitle')
+                label.set_text(LANGUAGES[server_data['lang']].upper())
+                row.add(label)
+                self.servers_page_listbox.add(row)
+
+            row = self.build_server_row(server_data)
+            self.servers_page_listbox.add(row)
+
+        self.servers_page_listbox.show_all()
+
+        if self.preselection and len(self.servers) == 1:
+            row = self.servers_page_listbox.get_children()[1]
+            self.server = getattr(row.server_data['module'], row.server_data['class_name'])()
+            self.populate_card(row.manga_data)
+        else:
+            self.show_page('servers')
+
     def search(self, entry=None):
         if self.search_lock:
             return
@@ -471,7 +561,7 @@ class Explorer:
             if not slug:
                 return
 
-            self.show_manga(dict(slug=slug))
+            self.populate_card(dict(slug=slug))
             return
 
         if not term and getattr(self.server, 'get_most_populars', None) is None:
@@ -500,7 +590,7 @@ class Explorer:
             if server != self.server:
                 return False
 
-            self.activity_indicator.stop()
+            self.window.activity_indicator.stop()
 
             if most_populars:
                 row = Gtk.ListBoxRow()
@@ -536,19 +626,19 @@ class Explorer:
             if server != self.server:
                 return
 
-            self.activity_indicator.stop()
+            self.window.activity_indicator.stop()
             self.search_lock = False
 
             if message:
-                self.show_notification(message)
+                self.window.show_notification(message)
             elif result is None:
-                self.show_notification(_('Oops, search failed. Please try again.'), 2)
+                self.window.show_notification(_('Oops, search failed. Please try again.'), 2)
             elif len(result) == 0:
-                self.show_notification(_('No results'))
+                self.window.show_notification(_('No results'))
 
         self.search_lock = True
-        self.clear_results()
-        self.activity_indicator.start()
+        self.clear_search_page_results()
+        self.window.activity_indicator.start()
 
         thread = threading.Thread(target=run, args=(self.server, ))
         thread.daemon = True
@@ -557,120 +647,39 @@ class Explorer:
     def search_servers(self, _entry):
         self.servers_page_listbox.invalidate_filter()
 
-    def show_manga(self, manga_data):
-        def run(server, manga_slug):
-            try:
-                current_manga_data = server.get_manga_data(manga_data)
+    def show(self, transition=True, servers=None):
+        self.page = None
 
-                if current_manga_data is not None:
-                    GLib.idle_add(complete, current_manga_data, server)
-                else:
-                    GLib.idle_add(error, server, manga_slug)
-            except Exception as e:
-                user_error_message = log_error_traceback(e)
-                GLib.idle_add(error, server, manga_slug, user_error_message)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.library_flap_reveal_button.hide()
 
-        def complete(manga_data, server):
-            if server != self.server or manga_data['slug'] != self.manga_slug:
-                return False
+        self.window.menu_button.hide()
 
-            self.manga_data = manga_data
-
-            # Populate manga card
-            try:
-                cover_data = self.server.get_manga_cover_image(self.manga_data.get('cover'))
-            except Exception as e:
-                cover_data = None
-                user_error_message = log_error_traceback(e)
-                if user_error_message:
-                    self.show_notification(user_error_message)
-
-            if cover_data is None:
-                pixbuf = Pixbuf.new_from_resource_at_scale(
-                    '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
-            else:
-                cover_stream = Gio.MemoryInputStream.new_from_data(cover_data, None)
-                if get_buffer_mime_type(cover_data) != 'image/gif':
-                    pixbuf = Pixbuf.new_from_stream_at_scale(cover_stream, 174 * self.window.hidpi_scale, -1, True, None)
-                else:
-                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_stream(cover_stream), 174, -1, True, True)
-
-            cover_image = self.builder.get_object('cover_image')
-            cover_image.clear()
-            if isinstance(pixbuf, PixbufAnimation):
-                cover_image.set_from_animation(pixbuf)
-            else:
-                cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
-
-            authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
-            self.builder.get_object('authors_value_label').set_markup('<span size="small">{0}</span>'.format(authors))
-
-            genres = html_escape(', '.join(self.manga_data['genres'])) if self.manga_data['genres'] else '-'
-            self.builder.get_object('genres_value_label').set_markup('<span size="small">{0}</span>'.format(genres))
-
-            status = _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-'
-            self.builder.get_object('status_value_label').set_markup('<span size="small">{0}</span>'.format(status))
-
-            scanlators = html_escape(', '.join(self.manga_data['scanlators'])) if self.manga_data['scanlators'] else '-'
-            self.builder.get_object('scanlators_value_label').set_markup('<span size="small">{0}</span>'.format(scanlators))
-
-            self.builder.get_object('server_value_label').set_markup(
-                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
-                    self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
-                    html_escape(self.server.name),
-                    self.server.lang.upper(),
-                    len(self.manga_data['chapters'])
-                )
-            )
-
-            self.builder.get_object('last_chapter_value_label').set_text(
-                self.manga_data['chapters'][-1]['title'] if self.manga_data['chapters'] else '-'
-            )
-
-            self.builder.get_object('synopsis_value_label').set_text(self.manga_data['synopsis'] or '-')
-
-            self.activity_indicator.stop()
-            self.show_page('manga')
-
-            return False
-
-        def error(server, manga_slug, message=None):
-            if server != self.server or manga_slug != self.manga_slug:
-                return False
-
-            self.activity_indicator.stop()
-
-            self.show_notification(message or _("Oops, failed to retrieve manga's information."), 2)
-
-            return False
-
-        self.manga_slug = manga_data['slug']
-        self.activity_indicator.start()
-
-        thread = threading.Thread(target=run, args=(self.server, self.manga_slug, ))
-        thread.daemon = True
-        thread.start()
-
-    def show_notification(self, message, interval=5):
-        if not message:
-            return
-
-        self.builder.get_object('notification_label').set_text(message)
-        self.builder.get_object('notification_revealer').set_reveal_child(True)
-
-        revealer_timer = threading.Timer(interval, GLib.idle_add, args=[self.hide_notification])
-        revealer_timer.start()
+        self.populate_servers(servers)
+        self.window.show_page('explorer', transition=transition)
 
     def show_page(self, name):
-        if name == 'search':
+        self.servers_page_search_button.hide()
+        self.search_page_server_website_button.hide()
+        self.card_page_add_read_button.hide()
+
+        if name == 'servers':
+            self.title_label.set_text(_('Servers'))
+            self.servers_page_search_button.show()
+
+            if self.page is None and self.servers_page_searchbar.get_search_mode():
+                self.servers_page_searchbar.set_search_mode(False)
+
+        elif name == 'search':
+            self.title_label.set_text(self.server.name)
+            self.search_page_server_website_button.show()
+
             if self.page == 'servers':
-                self.search_page_searchentry.set_placeholder_text(_('Search in {0}…').format(self.server.name))
-                self.clear_search()
+                self.clear_search_page_search()
                 self.search()
-            else:
-                self.search_page_searchentry.grab_focus_without_selecting()
-        elif name == 'manga':
-            self.manga_page_label.set_text(self.manga_data['name'])
+
+        elif name == 'card':
+            self.title_label.set_text(self.manga_data['name'])
 
             # Check if selected manga is already in library
             db_conn = create_db_connection()
@@ -683,14 +692,13 @@ class Explorer:
             if row:
                 self.manga = Manga.get(row['id'], self.server)
 
-                self.read_button.show()
-                self.add_button.hide()
+                self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
             else:
-                self.add_button.show()
-                self.read_button.hide()
+                self.card_page_add_read_button.get_children()[0].set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+            self.card_page_add_read_button.show()
 
-        self.title_stack.set_visible_child_name(name)
-        self.stack.set_visible_child_name(name)
+        self.window.right_button_stack.set_visible_child_name('explorer.' + name)
+        self.set_visible_child_name(name)
         self.page = name
 
     def toggle_server_pinned_state(self, button, row):
@@ -711,16 +719,9 @@ class Explorer:
         self.populate_pinned_servers()
 
     def toggle_servers_search(self, button):
-        if button.get_active():
-            self.servers_search_mode = True
+        self.servers_page_searchbar.set_search_mode(button.get_active())
 
-            self.servers_title_stack.set_visible_child_name('searchentry')
-            self.servers_page_searchentry.grab_focus()
+        if button.get_active():
             self.servers_page_pinned_listbox.hide()
         else:
-            self.servers_search_mode = False
-
-            self.servers_title_stack.set_visible_child_name('title')
-            self.servers_page_searchentry.set_text('')
-            self.servers_page_searchentry.grab_remove()
             self.servers_page_pinned_listbox.show()

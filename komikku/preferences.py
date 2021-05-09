@@ -57,7 +57,13 @@ class Preferences(Handy.Deck):
         self.set_config_values()
 
         self.window.stack.add_named(self, 'preferences')
-        self.connect('notify::visible-child', self.on_visible_child_changed)
+        self.connect('notify::visible-child', self.on_page_changed)
+
+    def navigate_back(self, source):
+        if self.get_visible_child_name() == 'pages':
+            self.window.library.show()
+        else:
+            self.navigate(Handy.NavigationDirection.BACK)
 
     def on_background_color_changed(self, row, param):
         index = row.get_selected_index()
@@ -102,6 +108,12 @@ class Preferences(Handy.Deck):
         else:
             self.settings.nsfw_content = False
 
+    def on_page_changed(self, _deck, _child):
+        if self.get_visible_child_name() == 'pages':
+            self.subtitle_label.hide()
+        else:
+            self.subtitle_label.show()
+
     def on_reading_mode_changed(self, row, param):
         index = row.get_selected_index()
 
@@ -142,12 +154,6 @@ class Preferences(Handy.Deck):
             self.settings.update_at_startup = True
         else:
             self.settings.update_at_startup = False
-
-    def on_visible_child_changed(self, _deck, _child):
-        if self.get_visible_child_name() == 'pages':
-            self.subtitle_label.hide()
-        else:
-            self.subtitle_label.show()
 
     def set_config_values(self):
         #
@@ -251,9 +257,7 @@ class Preferences(Handy.Deck):
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.library_flap_reveal_button.hide()
 
-        self.window.library.search_button.hide()
-        self.window.card.resume_read_button.hide()
-        self.window.reader.fullscreen_button.hide()
+        self.window.right_button_stack.hide()
 
         self.window.menu_button.hide()
 

@@ -54,7 +54,7 @@ class Library:
         self.search_entry.connect('activate', self.on_search_entry_activated)
         self.search_entry.connect('changed', self.search)
         self.searchbar.connect_entry(self.search_entry)
-        self.search_button = self.window.search_button
+        self.search_button = self.window.library_search_button
         self.search_button.connect('toggled', self.toggle_search_mode)
         self.searchbar.bind_property(
             'search-mode-enabled', self.search_button, 'active', GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
@@ -509,10 +509,8 @@ class Library:
         if self.window.overlay.is_ancestor(self.window):
             self.flap_reveal_button.show()
 
-        self.search_button.show()
-        self.window.card.resume_read_button.hide()
-        self.window.reader.fullscreen_button.hide()
-        self.window.download_manager.start_stop_button.hide()
+        self.window.right_button_stack.show()
+        self.window.right_button_stack.set_visible_child_name('library')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
         self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)

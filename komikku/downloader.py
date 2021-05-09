@@ -277,7 +277,7 @@ class DownloadManager(Gtk.ScrolledWindow):
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/download_manager_selection_mode.xml')
 
         self.subtitle_label = self.window.download_manager_subtitle_label
-        self.start_stop_button = self.window.start_stop_download_button
+        self.start_stop_button = self.window.download_manager_start_stop_button
 
         self.connect('key-press-event', self.on_key_press_event)
         self.start_stop_button.connect('clicked', self.on_start_stop_button_clicked)
@@ -490,9 +490,7 @@ class DownloadManager(Gtk.ScrolledWindow):
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
         self.window.library_flap_reveal_button.hide()
 
-        self.window.library.search_button.hide()
-        self.window.card.resume_read_button.hide()
-        self.window.reader.fullscreen_button.hide()
+        self.window.right_button_stack.set_visible_child_name('download_manager')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
@@ -506,16 +504,17 @@ class DownloadManager(Gtk.ScrolledWindow):
             return
 
         if self.rows:
+            self.window.right_button_stack.show()
             if self.downloader.running:
-                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
+                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.BUTTON)
             else:
-                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+                self.start_stop_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.BUTTON)
 
             self.start_stop_button.set_sensitive(True)
             self.start_stop_button.show()
             self.window.menu_button.show()
         else:
-            self.start_stop_button.hide()
+            self.window.right_button_stack.hide()
             self.window.menu_button.hide()
 
     def update_row(self, _downloader, download, chapter):

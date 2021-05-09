@@ -120,8 +120,7 @@ class Application(Gtk.Application):
             self.logger.info(msg)
             self.window.show_notification(msg)
         else:
-            dialog = Explorer(self.window, servers)
-            dialog.open()
+            self.window.explorer.show(servers=servers)
 
         return 0
 
@@ -152,12 +151,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
     headerbar = Gtk.Template.Child('headerbar')
     left_button = Gtk.Template.Child('left_button')
     left_button_image = Gtk.Template.Child('left_button_image')
-    library_flap_reveal_button = Gtk.Template.Child('library_flap_reveal_button')
     title_stack = Gtk.Template.Child('title_stack')
-    search_button = Gtk.Template.Child('search_button')
-    resume_read_button = Gtk.Template.Child('resume_read_button')
-    fullscreen_button = Gtk.Template.Child('fullscreen_button')
-    start_stop_download_button = Gtk.Template.Child('start_stop_download_button')
+    right_button_stack = Gtk.Template.Child('right_button_stack')
     menu_button = Gtk.Template.Child('menu_button')
     menu_button_image = Gtk.Template.Child('menu_button_image')
 
@@ -165,6 +160,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
     overlay = Gtk.Template.Child('overlay')
     stack = Gtk.Template.Child('stack')
 
+    library_flap_reveal_button = Gtk.Template.Child('library_flap_reveal_button')
+    library_search_button = Gtk.Template.Child('library_search_button')
     library_searchbar = Gtk.Template.Child('library_searchbar')
     library_search_menu_button = Gtk.Template.Child('library_search_menu_button')
     library_searchentry = Gtk.Template.Child('library_searchentry')
@@ -177,6 +174,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     library_categories_edit_mode_ok_button = Gtk.Template.Child('library_categories_edit_mode_ok_button')
     library_flowbox = Gtk.Template.Child('library_flowbox')
 
+    card_resume_read_button = Gtk.Template.Child('card_resume_read_button')
     card_title_label = Gtk.Template.Child('card_title_label')
     card_subtitle_label = Gtk.Template.Child('card_subtitle_label')
     card_stack = Gtk.Template.Child('card_stack')
@@ -194,15 +192,22 @@ class ApplicationWindow(Handy.ApplicationWindow):
     card_synopsis_value_label = Gtk.Template.Child('card_synopsis_value_label')
     card_more_label = Gtk.Template.Child('card_more_label')
 
+    reader_fullscreen_button = Gtk.Template.Child('reader_fullscreen_button')
     reader_overlay = Gtk.Template.Child('reader_overlay')
     reader_scrolledwindow = Gtk.Template.Child('reader_scrolledwindow')
     reader_viewport = Gtk.Template.Child('reader_viewport')
     reader_title_label = Gtk.Template.Child('reader_title_label')
     reader_subtitle_label = Gtk.Template.Child('reader_subtitle_label')
 
-    preferences_subtitle_label = Gtk.Template.Child('preferences_subtitle_label')
-
     download_manager_subtitle_label = Gtk.Template.Child('download_manager_subtitle_label')
+    download_manager_start_stop_button = Gtk.Template.Child('download_manager_start_stop_button')
+
+    explorer_title_label = Gtk.Template.Child('explorer_title_label')
+    explorer_servers_page_search_button = Gtk.Template.Child('explorer_servers_page_search_button')
+    explorer_search_page_server_website_button = Gtk.Template.Child('explorer_search_page_server_website_button')
+    explorer_card_page_add_read_button = Gtk.Template.Child('explorer_card_page_add_read_button')
+
+    preferences_subtitle_label = Gtk.Template.Child('preferences_subtitle_label')
 
     notification_label = Gtk.Template.Child('notification_label')
     notification_revealer = Gtk.Template.Child('notification_revealer')
@@ -295,8 +300,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.set_geometry_hints(None, geom, Gdk.WindowHints.MIN_SIZE)
 
         # Titlebar
-        self.left_button.connect('clicked', self.on_left_button_clicked, None)
-        self.fullscreen_button.connect('clicked', self.toggle_fullscreen, None)
+        self.left_button.connect('clicked', self.on_left_button_clicked)
 
         # Fisrt start grid
         pix = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/logo.png', 256, 256, True)
@@ -306,9 +310,10 @@ class ApplicationWindow(Handy.ApplicationWindow):
         self.library = Library(self)
         self.card = Card(self)
         self.reader = Reader(self)
-        self.preferences = Preferences(self)
         self.categories_editor = CategoriesEditor(self)
         self.download_manager = DownloadManager(self)
+        self.explorer = Explorer(self)
+        self.preferences = Preferences(self)
 
         # Window
         self.connect('size-allocate', self.on_resize)
@@ -462,8 +467,11 @@ class ApplicationWindow(Handy.ApplicationWindow):
         """
         Go back navigation with <Escape> key:
         - Library <- Manga <- Reader
-        - Exit selection mode (Library and Manga chapters)
-        - Leave Library search mode
+        - Explorer: Library <- Servers <- Search <- Card
+        - Preferences: Library <- Page <- Subpage
+        - Categories Editor: Library <-
+        - Exit selection mode: Library, Card chapters, Download Manager
+        - Exit search mode: Library, Explorer 'servers' and 'search' pages
         """
         if event.keyval == Gdk.KEY_Escape:
             self.on_left_button_clicked()
@@ -471,20 +479,29 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_left_button_clicked(self, action=None, param=None):
+    def on_left_button_clicked(self, action_or_button=None, _param=None):
+        if type(action_or_button) == Gio.SimpleAction:
+            source = 'shortcut'
+        elif type(action_or_button) == Gtk.Button:
+            source = 'click'
+        else:
+            source = 'esc-key'
+
         if self.page == 'library':
-            if action and not self.library.selection_mode:
-                Explorer(self).open(action, param)
+            if source in ('click', 'shortcut') and not self.library.selection_mode:
+                self.explorer.show()
             if self.library.selection_mode:
                 self.library.leave_selection_mode()
-            if action is None:
+            if source == 'esc-key':
                 self.library.searchbar.set_search_mode(False)
+
         elif self.page == 'card':
             if self.card.selection_mode:
                 self.card.leave_selection_mode()
             else:
                 self.card.stop_populate()
                 self.library.show(invalidate_sort=True)
+
         elif self.page == 'reader':
             self.reader.remove_pager()
             self.set_unfullscreen()
@@ -493,18 +510,21 @@ class ApplicationWindow(Handy.ApplicationWindow):
             # and update info like disk usage
             self.card.refresh(self.reader.chapters_consulted)
             self.card.show()
-        elif self.page == 'preferences':
-            if self.preferences.get_visible_child_name() == 'pages':
-                self.library.show()
-            else:
-                self.preferences.navigate(Handy.NavigationDirection.BACK)
+
         elif self.page == 'categories_editor':
             self.library.show()
+
         elif self.page == 'download_manager':
             if self.download_manager.selection_mode:
                 self.download_manager.leave_selection_mode()
             else:
                 self.library.show()
+
+        elif self.page == 'explorer':
+            self.explorer.navigate_back(source)
+
+        elif self.page == 'preferences':
+            self.preferences.navigate_back(source)
 
     def on_network_status_changed(self, monitor, _connected):
         self.network_available = monitor.get_connectivity() == Gio.NetworkConnectivity.FULL
@@ -583,6 +603,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
         revealer_timer.start()
 
     def show_page(self, name, transition=True):
+        self.activity_indicator.stop()
+
         if not transition:
             transition_type = Gtk.StackTransitionType.NONE
         elif name in ('categories_editor', 'download_manager', 'explorer', 'preferences'):
