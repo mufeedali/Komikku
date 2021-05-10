@@ -6,10 +6,11 @@
 
 from bs4 import BeautifulSoup
 import requests
-import unidecode
+from urllib.parse import urlsplit
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
+from komikku.servers import get_soup_element_inner_text
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
@@ -22,7 +23,8 @@ class Scantrad(Server):
     lang = 'fr'
 
     base_url = 'https://scantrad.net'
-    search_url = base_url + '/mangas'
+    search_url = base_url
+    most_populars_url = base_url + '/mangas'
     manga_url = base_url + '/{0}'
     chapter_url = base_url + '/mangas/{0}/{1}'
     image_url = 'https://scan-trad.fr/{0}'
@@ -63,32 +65,42 @@ class Scantrad(Server):
             cover=None,
         ))
 
-        div_info = soup.find('div', class_='mf-info')
-        data['name'] = div_info.find('div', class_='titre').text.strip()
-        data['cover'] = '{0}/{1}'.format(self.base_url, div_info.find('div', class_='poster').img.get('src'))
+        container_element = soup.find('div', id='chap-top')
+        title_element = container_element.find('div', class_='titre')
+        data['name'] = get_soup_element_inner_text(title_element)
+        data['cover'] = container_element.find('div', class_='ctt-img').img.get('src')
 
-        status = div_info.find_all('div', class_='sub-i')[-1].span.text.strip().lower()
-        if status == 'en cours':
-            data['status'] = 'ongoing'
-        elif status == 'terminé':
-            data['status'] = 'complete'
+        # Details
+        if authors_element := title_element.find('div', class_='titre-sub'):
+            data['authors'] = authors_element.text.strip()[3:].split(', ')
 
-        data['synopsis'] = div_info.find('div', class_='synopsis').text.strip()
+        for element in container_element.find('div', class_='info').find_all('div', class_='sub-i'):
+            label = get_soup_element_inner_text(element)
+
+            if label.startswith('Genre'):
+                data['genres'] = [span_element.text.strip() for span_element in element.find_all('span', class_='snm-button')]
+            elif label.startswith('Status'):
+                status = element.span.text.strip()
+                if status == 'Arrêté':
+                    data['status'] = 'suspended'
+                elif status == 'En cours':
+                    data['status'] = 'ongoing'
+                elif status == 'Terminé':
+                    data['status'] = 'complete'
+
+        data['synopsis'] = container_element.find_all('div', class_='new-main')[0].p.text.strip()
 
         # Chapters
-        for div_element in reversed(soup.find('div', id='chap-top').find_all('div', class_='chapitre')):
-            btns_elements = div_element.find('div', class_='ch-right').find_all('a')
-            if len(btns_elements) < 2:
-                continue
-
-            data['chapters'].append(dict(
-                slug=btns_elements[0].get('href').split('/')[-1],
-                date=convert_date_string(div_element.find('div', class_='chl-date').text),
-                title='{0} {1}'.format(
-                    div_element.find('span', class_='chl-num').text.strip(),
-                    div_element.find('span', class_='chl-titre').text.strip()
-                ),
-            ))
+        if chapitres_container_element := soup.find('div', id='chapitres'):
+            for element in reversed(chapitres_container_element.find_all('div', class_='chapitre')):
+                data['chapters'].append(dict(
+                    slug=element.a.get('href').split('/')[-1],
+                    date=convert_date_string(element.find('div', class_='chl-date').text),
+                    title='{0} {1}'.format(
+                        element.find('span', class_='chl-num').text.strip(),
+                        get_soup_element_inner_text(element.find('div', class_='chl-titre'))
+                    ),
+                ))
 
         return data
 
@@ -99,15 +111,11 @@ class Scantrad(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.chapter_url.format(manga_slug, chapter_slug))
-        if r is None:
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.url[:-1] == self.base_url:
-            # Chapter page doesn't exist, we have been redirected to homepage
-            return None
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -133,8 +141,15 @@ class Scantrad(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(self.image_url.format(page['image']))
-        if r is None or r.status_code != 200:
+        r = self.session_get(
+            self.image_url.format(page['image']),
+            headers={
+                'Referer': self.base_url + '/',
+                'Host': urlsplit(self.image_url).netloc,
+                'Accept': 'image/webp,*/*',
+            }
+        )
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -154,28 +169,45 @@ class Scantrad(Server):
         return self.manga_url.format(slug)
 
     def get_most_populars(self):
-        return self.search()
-
-    def search(self, term=None):
-        r = self.session_get(self.search_url)
-        if r is None:
+        r = self.session_get(self.most_populars_url)
+        if r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
-
-        if r.status_code != 200 or mime_type != 'text/html':
+        if mime_type != 'text/html':
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
         results = []
-        for a_element in soup.find('div', class_='h-left').find_all('a'):
-            name = a_element.find('div', class_='hmi-titre').text.strip()
+        for element in soup.find_all('div', class_='manga'):
+            a_element = element.find('div', class_='mr-info').a
 
-            if term is None or unidecode.unidecode(term).lower() in unidecode.unidecode(name).lower():
-                results.append(dict(
-                    slug=a_element.get('href').split('/')[-1],
-                    name=name,
-                ))
+            results.append(dict(
+                slug=a_element.get('href').split('/')[-1],
+                name=a_element.text.strip(),
+            ))
+
+        return results
+
+    def search(self, term=None):
+        r = self.session_post(self.search_url, data=dict(q=term))
+        if r.status_code != 200:
+            return None
+
+        mime_type = get_buffer_mime_type(r.content)
+        if mime_type != 'text/html':
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        results = []
+        for a_element in soup.find_all('a'):
+            name = a_element.find('div', class_='rgr-titre').text.strip()
+
+            results.append(dict(
+                slug=a_element.get('href').split('/')[-1],
+                name=name,
+            ))
 
         return results
