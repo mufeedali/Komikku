@@ -305,7 +305,10 @@ class Explorer(Gtk.Stack):
             self.search_lock = False
             self.server = None
 
-            # Restore focus to search entry in search mode
+            # Stop activity indicator in case of search page is left before the end of a search
+            self.window.activity_indicator.stop()
+
+            # Restore focus to search entry if in search mode
             if self.servers_page_searchbar.get_search_mode():
                 self.servers_page_searchentry.grab_focus_without_selecting()
 
@@ -388,6 +391,9 @@ class Explorer(Gtk.Stack):
             self.show_page('search')
 
     def on_servers_page_searchentry_activated(self, _entry):
+        if not self.servers_page_searchbar.get_search_mode():
+            return
+
         row = self.servers_page_listbox.get_row_at_y(0)
         if row:
             self.on_server_clicked(self.servers_page_listbox, row)
