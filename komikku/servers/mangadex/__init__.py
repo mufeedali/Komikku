@@ -9,6 +9,7 @@ from datetime import datetime
 from functools import lru_cache
 import html
 import logging
+from uuid import UUID
 
 from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
@@ -70,10 +71,21 @@ class Mangadex(Server):
 
         return None
 
-    @staticmethod
-    def convert_old_slug(slug):
+    def convert_old_slug(self, slug):
         # Removing this will break manga that were added before the change to the manga slug
-        return slug.split('/')[0]
+        slug = slug.split('/')[0]
+        try:
+            return str(UUID(slug, version=4))
+        except ValueError:
+            r = self.session_post(self.api_base_url + '/legacy/mapping', json={
+                'type': 'manga',
+                'ids': [int(slug)],
+            })
+            if r.status_code != 200:
+                return None
+            for result in r.json():
+                if str(result['data']['attributes']['legacyId']) == slug:
+                    return result['data']['attributes']['newId']
 
     @staticmethod
     def get_group_name(group_id, groups_list):
