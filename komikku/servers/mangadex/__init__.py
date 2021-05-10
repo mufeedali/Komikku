@@ -101,26 +101,37 @@ class Mangadex(Server):
             return None
         return [result['data']['attributes']['name'] for result in r.json()['results']]
 
-    def list_chapters(self, chapters):
-        r = self.session.get(self.api_chapter_url.format(''), params={'ids[]': chapters})
-        if r.status_code != 200:
-            return None
+    def list_chapters(self, manga_slug):
+        offset=0
         chapters = []
-        for chapter in r.json()['results']:
-            attributes = chapter['data']['attributes']
-            translated_language = attributes['translatedLanguage'] or 'en'
-            if translated_language != self.lang_code:
-                continue
-            data=dict(
-                slug=chapter['data']['id'],
-                title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
-                pages=[dict(slug=attributes['hash']+'/'+page, image=None)
-                       for page in attributes['data']],
-                scanlators=[])
-            rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlator']
-            for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
-                data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
-            chapters.append(data)
+        while True:
+            r = self.session.get(self.api_chapter_url.format(''), params={
+                'manga': manga_slug,
+                'translatedLanguage': self.lang_code,
+                'limit': CHAPTERS_PER_REQUEST,
+                'offset': offset
+            })
+            if r.status_code == 204:
+                break
+            elif r.status_code != 200:
+                return None
+            results = r.json()['results']
+
+            for chapter in results:
+                attributes = chapter['data']['attributes']
+                data=dict(
+                    slug=chapter['data']['id'],
+                    title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
+                    pages=[dict(slug=attributes['hash']+'/'+page, image=None)
+                           for page in attributes['data']],
+                    scanlators=[])
+                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlator']
+                for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
+                    data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
+                chapters.append(data)
+
+            if len(results) < CHAPTERS_PER_REQUEST:
+                break
 
         return chapters
 
@@ -133,9 +144,9 @@ class Mangadex(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        r = self.session_get(
-            self.api_manga_url.format(self.convert_old_slug(initial_data['slug'])),
-        )
+        new_slug = self.convert_old_slug(initial_data['slug'])
+
+        r = self.session_get(self.api_manga_url.format(new_slug))
         if r.status_code != 200:
             return None
 
@@ -143,6 +154,7 @@ class Mangadex(Server):
 
         data = initial_data.copy()
         data.update(dict(
+            slug=new_slug,
             authors=[],
             scanlators=[],
             genres=[],
@@ -170,19 +182,15 @@ class Mangadex(Server):
         data['synopsis'] = html.unescape(attributes['description']['en'])
 
         rel_authors = []
-        rel_chapters = []
 
         for relationship in resp_json['relationships']:
             if relationship['type'] == 'author':
                 rel_authors.append(relationship['id'])
-            elif relationship['type'] == 'chapter':
-                rel_chapters.append(relationship['id'])
 
         for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
             data['authors'] += self.list_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
 
-        for n in range(0, len(rel_chapters), CHAPTERS_PER_REQUEST):
-            data['chapters'] += self.list_chapters(rel_chapters[n:n + CHAPTERS_PER_REQUEST])
+        data['chapters'] += self.list_chapters(data['slug'])
 
         return data
 
@@ -205,12 +213,6 @@ class Mangadex(Server):
 
         resp_json = r.json()
         attributes = resp_json['data']['attributes']
-
-        # Filter chapters based on language.
-        # Assume English unless specified
-        translated_language = attributes['translatedLanguage'] or 'en'
-        if translated_language != self.lang_code:
-            return None
 
         data = dict(
             slug=chapter_slug,
