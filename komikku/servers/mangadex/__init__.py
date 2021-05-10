@@ -184,8 +184,10 @@ class Mangadex(Server):
 
         attributes = resp_json['data']['attributes']
 
+        # FIXME: Should probably be lang_code, but the API returns weird stuff
         data['name'] = html.unescape(attributes['title']['en'])
         data['cover'] = None # not yet supported
+        # FIXME: Same lang_code weirdness
         data['genres'] = [tag['attributes']['name']['en'] for tag in attributes['tags']]
 
         if attributes['status'] == 'ongoing':
@@ -197,6 +199,7 @@ class Mangadex(Server):
         elif attributes['status'] == 'hiatus':
             data['status'] = 'hiatus'
 
+        # FIXME: lang_code
         data['synopsis'] = html.unescape(attributes['description']['en'])
 
         rel_authors = []
@@ -329,6 +332,7 @@ class Mangadex(Server):
                 continue
             results.append(dict(
                 slug=result['id'],
+                # FIXME: lang_code
                 name=result['attributes']['title']['en']
             ))
 
