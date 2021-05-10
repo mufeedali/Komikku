@@ -17,94 +17,20 @@ from komikku.utils import skip_past
 
 logger = logging.getLogger('komikku.servers.mangadex')
 
-GENRES = {
-    '1': '4-koma',
-    '2': 'Action',
-    '3': 'Adventure',
-    '4': 'Award Winning',
-    '5': 'Comedy',
-    '6': 'Cooking',
-    '7': 'Doujinshi',
-    '8': 'Drama',
-    '9': 'Ecchi',
-    '10': 'Fantasy',
-    '11': 'Gyaru',
-    '12': 'Harem',
-    '13': 'Historical',
-    '14': 'Horror',
-    '16': 'Martial Arts',
-    '17': 'Mecha',
-    '18': 'Medical',
-    '19': 'Music',
-    '20': 'Mystery',
-    '21': 'Oneshot',
-    '22': 'Psychological',
-    '23': 'Romance',
-    '24': 'School Life',
-    '25': 'Sci-Fi',
-    '28': 'Shoujo Ai',
-    '30': 'Shounen Ai',
-    '31': 'Slice of Life',
-    '32': 'Smut',
-    '33': 'Sports',
-    '34': 'Supernatural',
-    '35': 'Tragedy',
-    '36': 'Long Strip',
-    '37': 'Yaoi',
-    '38': 'Yuri',
-    '40': 'Video Games',
-    '41': 'Isekai',
-    '42': 'Adaptation',
-    '43': 'Anthology',
-    '44': 'Web Comic',
-    '45': 'Full Color',
-    '46': 'User Created',
-    '47': 'Official Colored',
-    '48': 'Fan Colored',
-    '49': 'Gore',
-    '50': 'Sexual Violence',
-    '51': 'Crime',
-    '52': 'Magical Girls',
-    '53': 'Philosophical',
-    '54': 'Superhero',
-    '55': 'Thriller',
-    '56': 'Wuxia',
-    '57': 'Aliens',
-    '58': 'Animals',
-    '59': 'Crossdressing',
-    '60': 'Demons',
-    '61': 'Delinquents',
-    '62': 'Genderswap',
-    '63': 'Ghosts',
-    '64': 'Monster Girls',
-    '65': 'Loli',
-    '66': 'Magic',
-    '67': 'Military',
-    '68': 'Monsters',
-    '69': 'Ninja',
-    '70': 'Office Workers',
-    '71': 'Police',
-    '72': 'Post-Apocalyptic',
-    '73': 'Reincarnation',
-    '74': 'Reverse Harem',
-    '75': 'Samurai',
-    '76': 'Shota',
-    '77': 'Survival',
-    '78': 'Time Travel',
-    '79': 'Vampires',
-    '80': 'Traditional Games',
-    '81': 'Virtual Reality',
-    '82': 'Zombies',
-    '83': 'Incest',
-}
+
 SERVER_NAME = 'MangaDex'
+
+
+CHAPTERS_PER_REQUEST = 100
+AUTHORS_PER_REQUEST = 100
+SCANLATORS_PER_REQUEST = 100
 
 
 class Mangadex(Server):
     id = 'mangadex'
     name = SERVER_NAME
     lang = 'en'
-    lang_code = 'gb'
+    lang_code = 'en'
     long_strip_genres = ['Long Strip', ]
     has_login = True
     session_expiration_cookies = ['mangadex_rememberme_token', ]
@@ -114,6 +40,8 @@ class Mangadex(Server):
     api_base_url = 'https://api.mangadex.org'
     api_manga_url = api_base_url + '/manga/{0}'
     api_chapter_url = api_base_url + '/chapter/{0}'
+    api_author_url = api_base_url + '/author/{0}'
+    api_scanlator_url = api_base_url + '/group/{0}'
     most_populars_url = base_url + '/titles?s=7'
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
@@ -149,6 +77,46 @@ class Mangadex(Server):
         matching_group = [group for group in groups_list if group['id'] == group_id]
         return matching_group[0]['name']
 
+
+    def list_authors(self, authors):
+        if authors == []:
+            return []
+        r = self.session_get(self.api_author_url.format(''), params={'ids[]': authors})
+        if r.status_code != 200:
+            return None
+        return [result['data']['attributes']['name'] for result in r.json()['results']]
+
+    def list_scanlators(self, scanlators):
+        if scanlators == []:
+            return []
+        r = self.session_get(self.api_scanlator_url.format(''), params={'ids[]': scanlators})
+        if r.status_code != 200:
+            return None
+        return [result['data']['attributes']['name'] for result in r.json()['results']]
+
+    def list_chapters(self, chapters):
+        r = self.session.get(self.api_chapter_url.format(''), params={'ids[]': chapters})
+        if r.status_code != 200:
+            return None
+        chapters = []
+        for chapter in r.json()['results']:
+            attributes = chapter['data']['attributes']
+            translated_language = attributes['translatedLanguage'] or 'en'
+            if translated_language != self.lang_code:
+                continue
+            data=dict(
+                slug=chapter['data']['id'],
+                title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
+                pages=[dict(slug=attributes['hash']+'/'+page, image=None)
+                       for page in attributes['data']],
+                scanlators=[])
+            rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlator']
+            for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
+                data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
+            chapters.append(data)
+
+        return chapters
+
     @do_login
     def get_manga_data(self, initial_data):
         """
@@ -160,17 +128,11 @@ class Mangadex(Server):
 
         r = self.session_get(
             self.api_manga_url.format(self.convert_old_slug(initial_data['slug'])),
-            headers={
-                'Host': self.api_base_url.split('/')[2],
-            },
-            params={
-                'include': 'chapters',
-            }
         )
         if r.status_code != 200:
             return None
 
-        resp_data = r.json()['data']
+        resp_json = r.json()
 
         data = initial_data.copy()
         data.update(dict(
@@ -183,47 +145,37 @@ class Mangadex(Server):
             server_id=self.id,
         ))
 
-        data['name'] = html.unescape(resp_data['manga']['title'])
-        data['cover'] = resp_data['manga']['mainCover']
+        attributes = resp_json['data']['attributes']
 
-        data['authors'] += resp_data['manga']['author']
-        data['authors'] += [t for t in resp_data['manga']['artist'] if t not in data['authors']]
-        data['genres'] = [GENRES[str(genre_id)] for genre_id in resp_data['manga']['tags'] if str(genre_id) in GENRES]
+        data['name'] = html.unescape(attributes['title']['en'])
+        data['cover'] = None # not yet supported
+        data['genres'] = [tag['attributes']['name']['en'] for tag in attributes['tags']]
 
-        if resp_data['manga']['publication']['status'] == 1:
+        if attributes['status'] == 'ongoing':
             data['status'] = 'ongoing'
-        elif resp_data['manga']['publication']['status'] == 2:
+        elif attributes['status'] == 'completed':
             data['status'] = 'complete'
-        elif resp_data['manga']['publication']['status'] == 3:
+        elif attributes['status'] == 'cancelled':
             data['status'] = 'suspended'
-        elif resp_data['manga']['publication']['status'] == 4:
+        elif attributes['status'] == 'hiatus':
             data['status'] = 'hiatus'
 
-        data['synopsis'] = html.unescape(resp_data['manga']['description'])
+        data['synopsis'] = html.unescape(attributes['description']['en'])
 
-        if 'chapters' not in resp_data:
-            logger.warning('Chapter information missing')
-            return data
+        rel_authors = []
+        rel_chapters = []
 
-        for chapter in resp_data['chapters']:
-            if self.lang_code != chapter['language']:
-                continue
-            if 9097 in chapter['groups']:
-                # Chapters from MANGA Plus can't be read from MangaDex
-                continue
-            if datetime.fromtimestamp(chapter['timestamp']) > datetime.now():
-                # Future chapter
-                # BEWARE: MangaDex returns timestamps in the user's time-zone
-                continue
+        for relationship in resp_json['relationships']:
+            if relationship['type'] == 'author':
+                rel_authors.append(relationship['id'])
+            elif relationship['type'] == 'chapter':
+                rel_chapters.append(relationship['id'])
 
-            data['chapters'].append(dict(
-                slug=str(chapter['id']),
-                title='#{0} - {1}'.format(chapter['chapter'], chapter['title']),
-                date=datetime.fromtimestamp(chapter['timestamp']).date(),
-                scanlators=[self.get_group_name(group_id, resp_data['groups']) for group_id in chapter['groups']],
-            ))
+        for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
+            data['authors'] += self.list_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
 
-        data['chapters'].reverse()
+        for n in range(0, len(rel_chapters), CHAPTERS_PER_REQUEST):
+            data['chapters'] += self.list_chapters(rel_chapters[n:n + CHAPTERS_PER_REQUEST])
 
         return data
 
