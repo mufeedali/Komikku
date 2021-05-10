@@ -266,30 +266,6 @@ class Mangadex(Server):
         """
         return self.manga_url.format(slug)
 
-    @do_login
-    def get_most_populars(self):
-        """
-        Returns most popular mangas (bayesian rating)
-        """
-        r = self.session_get(self.most_populars_url)
-        if r.status_code != 200:
-            return None
-
-        mime_type = get_buffer_mime_type(r.content)
-        if mime_type != 'text/html':
-            return None
-
-        soup = BeautifulSoup(r.text, 'html.parser')
-
-        results = []
-        for element in soup.find_all('a', class_='manga_title'):
-            results.append(dict(
-                slug=element.get('href').replace('/title/', '').split('/')[0],
-                name=element.text.strip(),
-            ))
-
-        return results
-
     def login(self, username, password):
         r = self.session_post(
             self.action_url.format('login'),
