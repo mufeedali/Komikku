@@ -369,7 +369,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     def enter_search_mode(self, action, param):
         if self.page == 'library':
-            self.library.enter_search_mode()
+            self.library.toggle_search_mode()
 
     def hide_notification(self):
         self.notification_revealer.set_reveal_child(False)
@@ -460,7 +460,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         quit()
 
     def on_headerbar_toggle(self, *args):
-        if self.page == 'reader':
+        if self.page == 'reader' and self.reader.pager:
             self.reader.pager.resize_pages()
 
     def on_key_press(self, widget, event):
