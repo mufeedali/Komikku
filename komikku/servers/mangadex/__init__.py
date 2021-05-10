@@ -396,7 +396,7 @@ class Mangadex_pt_br(Mangadex):
     id = 'mangadex_pt_br'
     name = SERVER_NAME
     lang = 'pt_BR'
-    lang_code = 'br'
+    lang_code = 'pt-br'
 
 
 class Mangadex_ru(Mangadex):
