@@ -1,6 +1,6 @@
 import logging
 import pytest
-from pytest_steps import test_steps
+from pytest_steps import test_steps, optional_step
 
 from komikku.utils import log_error_traceback
 
@@ -14,18 +14,19 @@ def mangadex_server():
     return Mangadex()
 
 
-@test_steps('get_most_popular', 'search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
+@test_steps('search', 'get_manga_data', 'get_chapter_data', 'get_page_image')
 def test_mangadex(mangadex_server):
     # Get most popular
     print('Get most popular')
-    try:
-        response = mangadex_server.get_most_populars()
-    except Exception as e:
-        response = None
-        log_error_traceback(e)
+    with optional_step('get_most_popular') as step:
+        try:
+            response = mangadex_server.get_most_populars()
+        except Exception as e:
+            response = None
+            log_error_traceback(e)
 
-    assert response is not None
-    yield
+        assert response is not None
+        yield step
 
     # Search
     print('Search')
@@ -67,7 +68,7 @@ def test_mangadex(mangadex_server):
     # Get page image
     print('Get page image')
     try:
-        response = mangadex_server.get_manga_chapter_page_image(None, None, None, page)
+        response = mangadex_server.get_manga_chapter_page_image(None, None, chapter_slug, page)
     except Exception as e:
         response = None
         log_error_traceback(e)
