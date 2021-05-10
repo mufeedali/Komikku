@@ -6,6 +6,7 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from functools import lru_cache
 import html
 import logging
 
@@ -42,6 +43,9 @@ class Mangadex(Server):
     api_chapter_url = api_base_url + '/chapter/{0}'
     api_author_url = api_base_url + '/author/{0}'
     api_scanlator_url = api_base_url + '/group/{0}'
+    api_server_url = api_base_url + '/at-home/server/{0}'
+    api_page_url = '{0}/data/{1}'
+
     most_populars_url = base_url + '/titles?s=7'
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
@@ -196,29 +200,54 @@ class Mangadex(Server):
         if r.status_code != 200:
             return None
 
-        resp_data = r.json()['data']
+        resp_json = r.json()
+        attributes = resp_json['data']['attributes']
+
+        # Filter chapters based on language.
+        # Assume English unless specified
+        translated_language = attributes['translatedLanguage'] or 'en'
+        if translated_language != self.lang_code:
+            return None
 
         data = dict(
-            pages=[],
+            slug=chapter_slug,
+            title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
+            pages=[dict(slug=attributes['hash']+'/'+page, image=None)
+                   for page in attributes['data']],
+            scanlators=[]
         )
-        for page in resp_data['pages']:
-            data['pages'].append(dict(
-                slug=None,
-                image='{0}{1}/{2}'.format(resp_data['server'], resp_data['hash'], page),
-            ))
+
+        rel_scanlators = [rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlator']
+        for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
+            data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
 
         return data
+
+    @lru_cache(maxsize=1)
+    def get_server_url(self, chapter_slug):
+        r = self.session_get(self.api_server_url.format(chapter_slug))
+        if r.status_code != 200:
+            return None
+        return r.json()['baseUrl']
 
     @do_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(page['image'], headers={
-            'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
-            'Referer': self.page_url.format(chapter_slug, 1),
-        })
+        server_url = self.get_server_url(chapter_slug)
+        if server_url == None:
+            self.get_server_url.cache_clear()
+            return None
+
+        r = self.session_get(self.api_page_url.format(server_url, page['slug']),
+                             headers={
+                                 'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
+                                 'Referer': self.page_url.format(chapter_slug, 1),
+                             })
+
         if r.status_code != 200:
+            self.get_server_url.cache_clear()
             return None
 
         mime_type = get_buffer_mime_type(r.content)
@@ -228,7 +257,7 @@ class Mangadex(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['image'].split('?')[0].split('/')[-1],
+            name=page['slug'].split('/')[1],
         )
 
     def get_manga_url(self, slug, url):
