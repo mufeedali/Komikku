@@ -125,7 +125,7 @@ class Mangadex(Server):
                     pages=[dict(slug=attributes['hash']+'/'+page, image=None)
                            for page in attributes['data']],
                     scanlators=[])
-                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlator']
+                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
                 for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
                     data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
                 chapters.append(data)
@@ -222,7 +222,7 @@ class Mangadex(Server):
             scanlators=[]
         )
 
-        rel_scanlators = [rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlator']
+        rel_scanlators = [rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
         for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
             data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
 
