@@ -55,7 +55,6 @@ class Library:
         self.search_entry.connect('changed', self.search)
         self.searchbar.connect_entry(self.search_entry)
         self.search_button = self.window.library_search_button
-        self.search_button.connect('toggled', self.toggle_search_mode)
         self.searchbar.bind_property(
             'search-mode-enabled', self.search_button, 'active', GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
         )
@@ -527,8 +526,8 @@ class Library:
     def toggle_flap(self, _button):
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
 
-    def toggle_search_mode(self, button):
-        self.searchbar.set_search_mode(button.get_active())
+    def toggle_search_mode(self):
+        self.searchbar.set_search_mode(not self.searchbar.get_search_mode())
 
     def toggle_selected_read_status(self, _action, _param, read):
         chapters_ids = []
