@@ -460,7 +460,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
         quit()
 
     def on_headerbar_toggle(self, *args):
-        if self.page == 'reader':
+        if self.page == 'reader' and self.reader.pager:
             self.reader.pager.resize_pages()
 
     def on_key_press(self, widget, event):
