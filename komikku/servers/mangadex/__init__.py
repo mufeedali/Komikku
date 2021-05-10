@@ -62,15 +62,6 @@ class Mangadex(Server):
         if username and password:
             self.do_login(username, password)
 
-    @classmethod
-    def get_manga_initial_data_from_url(cls, url):
-        if idx := skip_past(url, 'mangadex.org/title/'):
-            return dict(
-                slug=Mangadex.convert_old_slug(url[idx:]),
-            )
-
-        return None
-
     def convert_old_slug(self, slug):
         # Removing this will break manga that were added before the change to the manga slug
         slug = slug.split('/')[0]
