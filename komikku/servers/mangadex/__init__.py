@@ -111,10 +111,9 @@ class Mangadex(Server):
 
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
-    api_base_url = 'https://api.mangadex.org/v2'
+    api_base_url = 'https://api.mangadex.org'
     api_manga_url = api_base_url + '/manga/{0}'
     api_chapter_url = api_base_url + '/chapter/{0}'
-    search_url = base_url + '/search'
     most_populars_url = base_url + '/titles?s=7'
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
@@ -122,7 +121,7 @@ class Mangadex(Server):
 
     headers = {
         'User-Agent': USER_AGENT,
-        'Host': base_url.split('/')[2],
+        'Host': api_base_url.split('/')[2],
         'Referer': base_url,
     }
 
@@ -335,26 +334,22 @@ class Mangadex(Server):
 
     @do_login
     def search(self, term):
-        r = self.session_get(self.search_url, params=dict(
-            tag_mode_exc='any',
-            tag_mode_inc='all',
+        r = self.session_get(self.api_manga_url.format(''), params=dict(
             title=term,
-            s=2,
         ))
         if r.status_code != 200:
             return None
 
-        mime_type = get_buffer_mime_type(r.content)
-        if mime_type != 'text/html':
-            return None
-
-        soup = BeautifulSoup(r.text, 'html.parser')
-
         results = []
-        for element in soup.find_all('a', class_='manga_title'):
+        for result in r.json()['results']:
+            if result['result'] != 'ok':
+                continue
+            result = result['data']
+            if result['type'] != 'manga':
+                continue
             results.append(dict(
-                slug=element.get('href').replace('/title/', ''),
-                name=element.text.strip(),
+                slug=result['id'],
+                name=result['attributes']['title']['en']
             ))
 
         return results
