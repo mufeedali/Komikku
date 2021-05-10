@@ -5,12 +5,12 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
-from datetime import datetime
 from functools import lru_cache
 import html
 import logging
 from uuid import UUID
 
+from komikku.servers import convert_date_string
 from komikku.servers import do_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
@@ -93,21 +93,33 @@ class Mangadex(Server):
             return None
         return [result['data']['attributes']['name'] for result in r.json()['results']]
 
-    def list_scanlators(self, scanlators):
+    def resolve_scanlators(self, chapter_or_chapters, scanlators):
         if scanlators == []:
-            return []
+            return chapter_or_chapters
         r = self.session_get(self.api_scanlator_url.format(''), params={'ids[]': scanlators})
         if r.status_code != 200:
             return None
-        return [result['data']['attributes']['name'] for result in r.json()['results']]
+        remap = {result['data']['id']: result['data']['attributes']['name'] for result in r.json()['results']}
+
+        if isinstance(chapter_or_chapters, list):
+            chapters = chapter_or_chapters
+        else:
+            chapters = [chapter_or_chapters]
+
+        for chapter in chapters:
+            chapter['scanlators'] = [
+                remap[scanlator] if scanlator in remap else scanlator for scanlator in chapter['scanlators']
+            ]
+        return chapter_or_chapters
 
     def list_chapters(self, manga_slug):
         offset=0
         chapters = []
+        scanlators = set()
         while True:
-            r = self.session.get(self.api_chapter_url.format(''), params={
+            r = self.session_get(self.api_chapter_url.format(''), params={
                 'manga': manga_slug,
-                'translatedLanguage': self.lang_code,
+                'translatedLanguage[]': [self.lang_code],
                 'limit': CHAPTERS_PER_REQUEST,
                 'offset': offset
             })
@@ -124,14 +136,20 @@ class Mangadex(Server):
                     title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
                     pages=[dict(slug=attributes['hash']+'/'+page, image=None)
                            for page in attributes['data']],
+                    date=convert_date_string(attributes['publishAt']),
                     scanlators=[])
                 rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
-                for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
-                    data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
+                scanlators.update(rel_scanlators)
+                data['scanlators'] = rel_scanlators
                 chapters.append(data)
 
             if len(results) < CHAPTERS_PER_REQUEST:
                 break
+            offset += CHAPTERS_PER_REQUEST
+
+        scanlators = list(scanlators)
+        for n in range(0, len(scanlators), SCANLATORS_PER_REQUEST):
+            chapters = self.resolve_scanlators(chapters, scanlators[n:n + SCANLATORS_PER_REQUEST])
 
         return chapters
 
@@ -219,12 +237,12 @@ class Mangadex(Server):
             title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
             pages=[dict(slug=attributes['hash']+'/'+page, image=None)
                    for page in attributes['data']],
-            scanlators=[]
+            date=convert_date_string(attributes['publishAt']),
+            scanlators=[rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
         )
 
-        rel_scanlators = [rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
-        for n in range(0, len(rel_scanlators), SCANLATORS_PER_REQUEST):
-            data['scanlators'] += self.list_scanlators(rel_scanlators[n:n + SCANLATORS_PER_REQUEST])
+        for n in range(0, len(data['scanlators']), SCANLATORS_PER_REQUEST):
+            data = self.resolve_scanlators(data, data['scanlators'][n:n + SCANLATORS_PER_REQUEST])
 
         return data
 
