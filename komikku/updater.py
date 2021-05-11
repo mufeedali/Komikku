@@ -42,7 +42,7 @@ class Updater(GObject.GObject):
         mangas.reverse()
 
         for manga in mangas:
-            if manga.id not in self.queue:
+            if manga.id not in self.queue and manga.server.status == 'enabled':
                 self.queue.append(manga.id)
 
     @if_network_available
