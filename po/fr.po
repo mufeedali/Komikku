@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-11 03:42+0200\n"
+"POT-Creation-Date: 2021-05-11 23:44+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valéry Febvre <vfebvre@easter-eggs.com>\n"
 "Language-Team: \n"
@@ -968,65 +968,64 @@ msgstr ""
 msgid "Learn more about Komikku"
 msgstr "En savoir plus sur Komikku"
 
-#: ../data/ui/application_window.ui:503
-msgid "OK"
-msgstr "OK"
+#: ../data/ui/application_window.ui:177 ../data/ui/menu/main.xml:21
+msgid "Preferences"
+msgstr "Préférences"
 
-#: ../data/ui/application_window.ui:596 ../data/ui/explorer_dialog.ui:385
-msgid "Authors"
-msgstr "Auteurs"
-
-#: ../data/ui/application_window.ui:624 ../data/ui/explorer_dialog.ui:413
-msgid "Genres"
-msgstr "Genres"
-
-#: ../data/ui/application_window.ui:652 ../data/ui/explorer_dialog.ui:441
-msgid "Status"
-msgstr "Status"
-
-#: ../data/ui/application_window.ui:680 ../data/ui/explorer_dialog.ui:469
-msgid "Server"
-msgstr "Serveur"
-
-#: ../data/ui/application_window.ui:709 ../data/ui/explorer_dialog.ui:497
-msgid "Synopsis"
-msgstr "Synopsis"
-
-#: ../data/ui/application_window.ui:739
-msgid "Last update"
-msgstr "Dernière mise à jour"
-
-#: ../data/ui/application_window.ui:794 ../data/ui/explorer_dialog.ui:528
-msgid "Scanlators"
-msgstr "Scantrad"
-
-#: ../data/ui/application_window.ui:814
-msgid "Info"
-msgstr "Infos"
-
-#: ../data/ui/application_window.ui:850
-#: ../data/ui/categories_editor_window.ui:136
-msgid "No categories"
-msgstr "Aucune catégorie"
-
-#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
-#: ../data/ui/application_window.ui:1057
-msgid "A manga, comic and BD reader"
-msgstr "Un lecteur de manga, comics et BDs"
-
-#: ../data/ui/download_manager_dialog.ui:32 ../data/ui/menu/main.xml:11
+#: ../data/ui/application_window.ui:235 ../data/ui/menu/main.xml:11
 msgid "Download Manager"
 msgstr "Gestionnaire de téléchargement"
 
-#: ../data/ui/download_manager_dialog.ui:167
+#. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
+#: ../data/ui/application_window.ui:645
+msgid "A manga, comic and BD reader"
+msgstr "Un lecteur de manga, comics et BDs"
+
+#: ../data/ui/application_window.ui:787
+msgid "OK"
+msgstr "OK"
+
+#: ../data/ui/application_window.ui:880 ../data/ui/explorer.ui:252
+msgid "Authors"
+msgstr "Auteurs"
+
+#: ../data/ui/application_window.ui:908 ../data/ui/explorer.ui:280
+msgid "Genres"
+msgstr "Genres"
+
+#: ../data/ui/application_window.ui:936 ../data/ui/explorer.ui:308
+msgid "Status"
+msgstr "Status"
+
+#: ../data/ui/application_window.ui:964 ../data/ui/explorer.ui:336
+msgid "Server"
+msgstr "Serveur"
+
+#: ../data/ui/application_window.ui:993 ../data/ui/explorer.ui:364
+msgid "Synopsis"
+msgstr "Synopsis"
+
+#: ../data/ui/application_window.ui:1023
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
+#: ../data/ui/application_window.ui:1078 ../data/ui/explorer.ui:395
+msgid "Scanlators"
+msgstr "Scantrad"
+
+#: ../data/ui/application_window.ui:1098
+msgid "Info"
+msgstr "Infos"
+
+#: ../data/ui/application_window.ui:1134 ../data/ui/categories_editor.ui:97
+msgid "No categories"
+msgstr "Aucune catégorie"
+
+#: ../data/ui/download_manager.ui:38
 msgid "No downloads"
 msgstr "Aucun téléchargement"
 
-#: ../data/ui/explorer_dialog.ui:55
-msgid "Select a server"
-msgstr "Choisissez un serveur"
-
-#: ../data/ui/explorer_dialog.ui:556
+#: ../data/ui/explorer.ui:423
 msgid "Last Chapter"
 msgstr "Dernier chapitre"
 
@@ -1089,10 +1088,6 @@ msgstr "Éditer les catégories"
 msgid "Update Library"
 msgstr "Mettre à jour la bibliothèque"
 
-#: ../data/ui/menu/main.xml:21
-msgid "Preferences"
-msgstr "Préférences"
-
 #: ../data/ui/menu/main.xml:25
 msgid "Keyboard Shortcuts"
 msgstr "Raccourcis clavier"
@@ -1101,7 +1096,7 @@ msgstr "Raccourcis clavier"
 msgid "About Komikku"
 msgstr "À propos de Komikku"
 
-#: ../data/ui/menu/reader.xml:7 ../data/ui/preferences_window.ui:218
+#: ../data/ui/menu/reader.xml:7 ../data/ui/preferences.ui:235
 msgid "Reading Mode"
 msgstr "Mode de lecture"
 
@@ -1109,7 +1104,7 @@ msgstr "Mode de lecture"
 msgid "Type of Scaling"
 msgstr "Type de mise à l'échelle"
 
-#: ../data/ui/menu/reader.xml:63 ../data/ui/preferences_window.ui:233
+#: ../data/ui/menu/reader.xml:63 ../data/ui/preferences.ui:250
 msgid "Background Color"
 msgstr "Couleur de fond"
 
@@ -1117,125 +1112,113 @@ msgstr "Couleur de fond"
 msgid "Crop Borders"
 msgstr "Rogner les bordures"
 
-#: ../data/ui/preferences_window.ui:18
+#: ../data/ui/preferences.ui:24 ../data/ui/preferences.ui:85
 msgid "General"
 msgstr "Général"
 
-#: ../data/ui/preferences_window.ui:27
+#: ../data/ui/preferences.ui:33
 msgid "Dark Theme"
 msgstr "Thème sombre"
 
-#: ../data/ui/preferences_window.ui:29
+#: ../data/ui/preferences.ui:35
 msgid "Use dark GTK theme"
 msgstr "Utiliser le thème GTK sombre"
 
-#: ../data/ui/preferences_window.ui:44
+#: ../data/ui/preferences.ui:50
 msgid "Night Light"
 msgstr "Veilleuse"
 
-#: ../data/ui/preferences_window.ui:46
+#: ../data/ui/preferences.ui:52
 msgid "Automatically enable dark theme at night"
 msgstr "Activer automatiquement le thème sombre la nuit"
 
-#: ../data/ui/preferences_window.ui:61
+#: ../data/ui/preferences.ui:67
 msgid "Desktop Notifications"
 msgstr "Notifications de bureau"
 
-#: ../data/ui/preferences_window.ui:63
+#: ../data/ui/preferences.ui:69
 msgid "Use desktop notifications for downloads and library updates"
 msgstr ""
 "Utiliser les notifications de bureau pour les téléchargements et les mises à "
 "jour de la bibliothèque"
 
-#: ../data/ui/preferences_window.ui:92
+#: ../data/ui/preferences.ui:103
 msgid "Update at Startup"
 msgstr "Mise à jour au démarrage"
 
-#: ../data/ui/preferences_window.ui:94
+#: ../data/ui/preferences.ui:105
 msgid "Automatically update library at startup"
 msgstr "Mettre à jour automatiquement la bibliothèque au démarrage"
 
-#: ../data/ui/preferences_window.ui:110
+#: ../data/ui/preferences.ui:121
 msgid "Auto Download of New Chapters"
 msgstr "Auto-téléchargement des nouveaux chapitres"
 
-#: ../data/ui/preferences_window.ui:112
+#: ../data/ui/preferences.ui:123
 msgid "Automatically download new chapters"
 msgstr "Télécharger automatiquement les nouveaux chapitres"
 
-#: ../data/ui/preferences_window.ui:130
-msgid "Servers"
-msgstr "Serveurs"
-
-#: ../data/ui/preferences_window.ui:135 ../data/ui/preferences_window.ui:318
-msgid "Servers Languages"
-msgstr "Langues des serveurs"
-
-#: ../data/ui/preferences_window.ui:136
+#: ../data/ui/preferences.ui:147
 msgid "Restrict servers to selected languages"
 msgstr "Restreindre les serveurs aux langues sélectionnées"
 
-#: ../data/ui/preferences_window.ui:150 ../data/ui/preferences_window.ui:370
-msgid "Servers Settings"
-msgstr "Paramètres des serveurs"
-
-#: ../data/ui/preferences_window.ui:151
+#: ../data/ui/preferences.ui:162
 msgid "Enable/disable and configure servers"
 msgstr "Activer / désactiver et configurer les serveurs"
 
-#: ../data/ui/preferences_window.ui:165
+#: ../data/ui/preferences.ui:176
 msgid "Long Strip Detection"
 msgstr "Détection des longues pages verticales"
 
-#: ../data/ui/preferences_window.ui:167
+#: ../data/ui/preferences.ui:178
 msgid "Automatically detect long vertical strip when possible"
 msgstr "Auto-détecter les longues pages verticales lorsque cela est possible"
 
-#: ../data/ui/preferences_window.ui:185
+#: ../data/ui/preferences.ui:196
 msgid "Whether to enable servers with NSFW only content"
 msgstr "Activer ou non les serveurs avec uniquement du contenu NSFW"
 
-#: ../data/ui/preferences_window.ui:209
+#: ../data/ui/preferences.ui:226 ../data/ui/preferences.ui:294
 msgid "Reader"
 msgstr "Lecteur"
 
-#: ../data/ui/preferences_window.ui:225
+#: ../data/ui/preferences.ui:242
 msgid "Scaling"
 msgstr "Mise à l'échelle"
 
-#: ../data/ui/preferences_window.ui:226
+#: ../data/ui/preferences.ui:243
 msgid "Type of scaling to adapt image"
 msgstr "Type de mise à l'échelle pour adapter l'image"
 
-#: ../data/ui/preferences_window.ui:240
+#: ../data/ui/preferences.ui:257
 msgid "Borders Crop"
 msgstr "Rognage des bordures"
 
-#: ../data/ui/preferences_window.ui:242
+#: ../data/ui/preferences.ui:259
 msgid "Crop white borders of images"
 msgstr "Rogner les bordures blanches des images"
 
-#: ../data/ui/preferences_window.ui:258
+#: ../data/ui/preferences.ui:275
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: ../data/ui/preferences_window.ui:260
+#: ../data/ui/preferences.ui:277
 msgid "Automatically enter fullscreen mode"
 msgstr "Entrer automatiquement en mode plein écran"
 
-#: ../data/ui/preferences_window.ui:281
+#: ../data/ui/preferences.ui:304 ../data/ui/preferences.ui:333
 msgid "Advanced"
 msgstr "Avancé"
 
-#: ../data/ui/preferences_window.ui:286
+#: ../data/ui/preferences.ui:309
 msgid "Credentials storage"
 msgstr "Stockage des informations d'identification"
 
-#: ../data/ui/preferences_window.ui:291
+#: ../data/ui/preferences.ui:314
 msgid "Allow plaintext storage as fallback"
 msgstr "Autoriser le stockage en texte en clair comme solution de secours"
 
-#: ../data/ui/preferences_window.ui:293
+#: ../data/ui/preferences.ui:316
 msgid "Used when no keyring backends are found"
 msgstr "Utilisé lorsque aucun backend de trousseau de clés n'est trouvé"
 
@@ -1299,47 +1282,47 @@ msgctxt "Shortcut window description"
 msgid "Select all downloads"
 msgstr "Sélectionner tous les téléchargements"
 
-#: ../komikku/application.py:101
+#: ../komikku/application.py:103
 msgid "Multiple URLs not supported"
 msgstr "Les URL multiples ne sont pas pris en charge"
 
-#: ../komikku/application.py:117
+#: ../komikku/application.py:119
 msgid "Invalid URL {}, not handled by any server."
 msgstr "URL invalide {}, gérée par aucun serveur."
 
-#: ../komikku/application.py:129 ../komikku/application.py:133
+#: ../komikku/application.py:130 ../komikku/application.py:134
 msgid "Komikku"
 msgstr "Komikku"
 
-#: ../komikku/application.py:339 ../komikku/reader/__init__.py:208
+#: ../komikku/application.py:355 ../komikku/reader/__init__.py:214
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../komikku/application.py:339
+#: ../komikku/application.py:355
 msgid "Yes"
 msgstr "Oui"
 
-#: ../komikku/application.py:401
+#: ../komikku/application.py:417
 msgid "Contributors: Code, Patches, Debugging:"
 msgstr "Contributeurs: Code, correctifs, débogage :"
 
-#: ../komikku/application.py:429
+#: ../komikku/application.py:445
 msgid "Are you sure you want to quit?"
 msgstr "Êtes-vous sûr de vouloir quitter ?"
 
-#: ../komikku/application.py:432
+#: ../komikku/application.py:448
 msgid "Some chapters are currently being downloaded."
 msgstr "Certains chapitres sont en cours de téléchargement."
 
-#: ../komikku/application.py:434
+#: ../komikku/application.py:450
 msgid "Some mangas are currently being updated."
 msgstr "Certains mangas sont en cours de mise à jour."
 
-#: ../komikku/application.py:437
+#: ../komikku/application.py:453
 msgid "Quit?"
 msgstr "Quitter ?"
 
-#: ../komikku/card.py:92
+#: ../komikku/card.py:93
 #, python-brace-format
 msgid ""
 "NOTICE\n"
@@ -1350,58 +1333,62 @@ msgstr ""
 "Le serveur {0} n'est plus pris en charge.\n"
 "Veuillez basculer vers un autre serveur."
 
-#: ../komikku/card.py:138 ../komikku/categories_editor.py:78
-#: ../komikku/library.py:243
+#: ../komikku/card.py:139 ../komikku/categories_editor.py:72
+#: ../komikku/library.py:245
 msgid "Delete?"
 msgstr "Supprimer ?"
 
-#: ../komikku/card.py:139
+#: ../komikku/card.py:140
 msgid "Are you sure you want to delete this manga?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce manga ?"
 
-#: ../komikku/card.py:148
+#: ../komikku/card.py:149
 msgid "Read progress synchronization with server completed successfully"
 msgstr ""
 "Synchronisation de la progression de la lecture avec le serveur terminée "
 "avec succès"
 
-#: ../komikku/card.py:159
+#: ../komikku/card.py:160
 msgid "Failed to get manga URL"
 msgstr "Impossible de récupérer l'URL du manga"
 
-#: ../komikku/card.py:629
+#: ../komikku/card.py:626
 msgid "New"
 msgstr "Nouveau"
 
-#: ../komikku/card.py:645
+#: ../komikku/card.py:642
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: ../komikku/card.py:738
+#: ../komikku/card.py:735
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: ../komikku/card.py:740
+#: ../komikku/card.py:737
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../komikku/card.py:742
+#: ../komikku/card.py:739
 msgid "Mark as Read"
 msgstr "Marquer comme lu"
 
-#: ../komikku/card.py:744
+#: ../komikku/card.py:741
 msgid "Mark as Unread"
 msgstr "Marquer comme non lu"
 
-#: ../komikku/card.py:915
+#: ../komikku/card.py:913
 #, python-brace-format
 msgid "Disk space used: {0}"
 msgstr "Utilisation espace disque : {0}"
 
-#: ../komikku/categories_editor.py:79
+#: ../komikku/categories_editor.py:73
 #, python-brace-format
-msgid "Are you sure you want to delete the \"{0}\" category?"
-msgstr "Êtes-vous sûr de vouloir supprimer la catégorie \"{0}\" ?"
+msgid ""
+"Are you sure you want to delete\n"
+"\"{0}\" category?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer\n"
+"la catégorie \"{0}\" ?"
 
 #: ../komikku/downloader.py:191
 msgid "Download completed"
@@ -1421,45 +1408,48 @@ msgstr "{0}/{1} pages téléchargées"
 msgid "error"
 msgstr "erreur"
 
-#: ../komikku/explorer.py:290
+#: ../komikku/explorer.py:335
 #, python-brace-format
 msgid "{0} manga added"
 msgstr "{0} manga ajouté"
 
-#: ../komikku/explorer.py:388
+#: ../komikku/explorer.py:384
 msgid "Oops, server website URL is unknown."
 msgstr "Oups, l'URL du site web du serveur est inconnue."
 
-#: ../komikku/explorer.py:446
-msgid "MOST POPULARS"
-msgstr "LES PLUS POPULAIRES"
-
-#: ../komikku/explorer.py:479
-msgid "Oops, search failed. Please try again."
-msgstr "Oups, la recherche a échoué. Veuillez réessayer."
-
-#: ../komikku/explorer.py:481
-msgid "No results"
-msgstr "Aucun résultat"
-
-#: ../komikku/explorer.py:576
+#: ../komikku/explorer.py:483
 msgid "Oops, failed to retrieve manga's information."
 msgstr "Oups, les informations du manga n'ont pas pu être récupérées ."
 
-#: ../komikku/explorer.py:600
-#, python-brace-format
-msgid "Search in {0}…"
-msgstr "Rechercher dans {0}…"
+#: ../komikku/explorer.py:508
+msgid "Pinned"
+msgstr "Épinglés"
 
-#: ../komikku/library.py:244
+#: ../komikku/explorer.py:609
+msgid "MOST POPULARS"
+msgstr "LES PLUS POPULAIRES"
+
+#: ../komikku/explorer.py:642
+msgid "Oops, search failed. Please try again."
+msgstr "Oups, la recherche a échoué. Veuillez réessayer."
+
+#: ../komikku/explorer.py:644
+msgid "No results"
+msgstr "Aucun résultat"
+
+#: ../komikku/explorer.py:672
+msgid "Servers"
+msgstr "Serveurs"
+
+#: ../komikku/library.py:246
 msgid "Are you sure you want to delete selected mangas?"
 msgstr "Êtes-vous sûr de vouloir supprimer les mangas sélectionnés ?"
 
-#: ../komikku/library.py:443
+#: ../komikku/library.py:435
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: ../komikku/library.py:717
+#: ../komikku/library.py:705
 msgid "All"
 msgstr "Toutes"
 
@@ -1495,57 +1485,61 @@ msgstr "Téléchargement en cours"
 msgid "Download error"
 msgstr "Erreur de téléchargement"
 
-#: ../komikku/preferences.py:194
+#: ../komikku/preferences.py:211
 msgid "⬅ Right to Left"
 msgstr "⬅ De droite à gauche"
 
-#: ../komikku/preferences.py:195
+#: ../komikku/preferences.py:212
 msgid "➡ Left to Right"
 msgstr "➡ De gauche à droite"
 
-#: ../komikku/preferences.py:196
+#: ../komikku/preferences.py:213
 msgid "⬇ Vertical"
 msgstr "⬇ Vertical"
 
-#: ../komikku/preferences.py:197
+#: ../komikku/preferences.py:214
 msgid "⬇ Webtoon"
 msgstr "⬇ Webtoon"
 
-#: ../komikku/preferences.py:205
+#: ../komikku/preferences.py:222
 msgid "Adapt to Screen"
 msgstr "Ajuster à l'écran"
 
-#: ../komikku/preferences.py:206
+#: ../komikku/preferences.py:223
 msgid "Adapt to Width"
 msgstr "Ajuster à la largeur"
 
-#: ../komikku/preferences.py:207
+#: ../komikku/preferences.py:224
 msgid "Adapt to Height"
 msgstr "Ajuster à la hauteur"
 
-#: ../komikku/preferences.py:208
+#: ../komikku/preferences.py:225
 msgid "Original Size"
 msgstr "Taille originale"
 
-#: ../komikku/preferences.py:216
+#: ../komikku/preferences.py:233
 msgid "White"
 msgstr "Blanc"
 
-#: ../komikku/preferences.py:217
+#: ../komikku/preferences.py:234
 msgid "Black"
 msgstr "Noir"
 
-#: ../komikku/preferences.py:365
+#: ../komikku/preferences.py:301
+msgid "Servers Languages"
+msgstr "Langues des serveurs"
+
+#: ../komikku/preferences.py:380
 msgid "User Account"
 msgstr "Compte utilisateur"
 
-#: ../komikku/preferences.py:393
+#: ../komikku/preferences.py:408
 msgid "System keyring service is disabled. Credential cannot be saved."
 msgstr ""
 "Le service de trousseau de clés est désactivé. Les informations "
 "d'identification ne pourront pas être enregistrées."
 
-#: ../komikku/preferences.py:398
+#: ../komikku/preferences.py:413
 msgid ""
 "No keyring backends were found to store credential. Use plaintext storage as "
 "fallback."
@@ -1554,7 +1548,7 @@ msgstr ""
 "informations d'identification. Utilisez le stockage en texte en clair comme "
 "solution de secours."
 
-#: ../komikku/preferences.py:403
+#: ../komikku/preferences.py:418
 msgid ""
 "No keyring backends were found to store credential. Plaintext storage will "
 "be used as fallback."
@@ -1563,43 +1557,47 @@ msgstr ""
 "informations d'identification. Le stockage en texte en clair sera utilisé "
 "comme solution de secours."
 
-#: ../komikku/preferences.py:406
+#: ../komikku/preferences.py:421
 msgid "Test"
 msgstr "Tester"
 
-#: ../komikku/reader/__init__.py:204
+#: ../komikku/preferences.py:461
+msgid "Servers Settings"
+msgstr "Paramètres des serveurs"
+
+#: ../komikku/reader/__init__.py:210
 msgid "Please choose a file"
 msgstr "Veuillez choisir un fichier"
 
-#: ../komikku/reader/__init__.py:210
+#: ../komikku/reader/__init__.py:216
 msgid "Save"
 msgstr "Enregistrer"
 
-#: ../komikku/reader/__init__.py:229
+#: ../komikku/reader/__init__.py:235
 msgid ""
 "Failed to save page: missing permission to access the XDG pictures directory"
 msgstr ""
 "Échec de l'enregistrement de la page: autorisation manquante pour accéder au "
 "répertoire XDG pictures"
 
-#: ../komikku/reader/__init__.py:233
+#: ../komikku/reader/__init__.py:239
 #, python-brace-format
 msgid "Page successfully saved to {0}"
 msgstr "Page enregistrée avec succès dans {0}"
 
-#: ../komikku/reader/pager/__init__.py:454
-#: ../komikku/reader/pager/__init__.py:483
-#: ../komikku/reader/pager/webtoon.py:257
+#: ../komikku/reader/pager/__init__.py:455
+#: ../komikku/reader/pager/__init__.py:484
+#: ../komikku/reader/pager/webtoon.py:259
 msgid "There is no previous chapter."
 msgstr "Il n'y a pas de chapitre précédent."
 
-#: ../komikku/reader/pager/__init__.py:456
-#: ../komikku/reader/pager/__init__.py:481
-#: ../komikku/reader/pager/webtoon.py:255
+#: ../komikku/reader/pager/__init__.py:457
+#: ../komikku/reader/pager/__init__.py:482
+#: ../komikku/reader/pager/webtoon.py:257
 msgid "It was the last chapter."
 msgstr "C'était le dernier chapitre."
 
-#: ../komikku/reader/pager/__init__.py:510
+#: ../komikku/reader/pager/__init__.py:511
 msgid "This chapter is inaccessible."
 msgstr "Ce chapitre est inaccessible."
 
@@ -1607,7 +1605,7 @@ msgstr "Ce chapitre est inaccessible."
 msgid "Failed to load image"
 msgstr "Impossible de charger l'image"
 
-#: ../komikku/reader/pager/page.py:351
+#: ../komikku/reader/pager/page.py:356
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -1695,10 +1693,10 @@ msgstr "Mise à jour de la bibliothèque démarrée"
 msgid "Update started"
 msgstr "Mise à jour démarrée"
 
-#: ../komikku/utils.py:101
+#: ../komikku/utils.py:120
 msgid "You are currently offline"
 msgstr "Vous êtes actuellement hors ligne"
 
-#: ../komikku/utils.py:115
+#: ../komikku/utils.py:134
 msgid "No Internet connection, timeout or server down"
 msgstr "Pas de connexion Internet, délai dépassé ou serveur en panne"
