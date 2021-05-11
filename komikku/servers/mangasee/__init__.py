@@ -122,6 +122,7 @@ class Mangasee(Server):
 
                     chapters = json.loads(line.split('=')[1].strip()[:-1])
                     break
+                break
         except Exception as e:
             log_error_traceback(e)
             return None
@@ -155,6 +156,7 @@ class Mangasee(Server):
             slug = f'{slug}.{chapter_slug[-1]}'
         if chapter_slug[0] != '1':
             slug = f'{slug}-index-{chapter_slug[0]}'
+        print(slug, self.chapter_url.format(manga_slug, slug))
 
         r = self.session_get(self.chapter_url.format(manga_slug, slug))
         if r.status_code != 200:
@@ -175,7 +177,7 @@ class Mangasee(Server):
                     continue
 
                 script = script.strip()
-                if not script.startswith('jQuery(document).ready'):
+                if not script.startswith('jQuery(document).ready(function(n){window.history'):
                     continue
 
                 for line in script.split('\n'):
@@ -190,6 +192,7 @@ class Mangasee(Server):
 
                     if chapter is not None and domain is not None:
                         break
+                break
         except Exception as e:
             log_error_traceback(e)
             return None
@@ -270,6 +273,7 @@ class Mangasee(Server):
 
                         self.mangas = json.loads(line.split('vm.Directory = ')[1].strip()[:-1])
                         break
+                    break
             except Exception as e:
                 log_error_traceback(e)
                 return None
