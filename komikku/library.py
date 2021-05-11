@@ -32,6 +32,7 @@ from komikku.utils import scale_pixbuf_animation
 
 
 class Library:
+    page = None
     search_menu_filters = {}
     selection_mode = False
     selection_mode_range = False
@@ -45,6 +46,7 @@ class Library:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/library_selection_mode.xml')
 
         self.subtitle_label = self.window.library_subtitle_label
+        self.stack = self.window.library_stack
 
         # Search
         self.searchbar = self.window.library_searchbar
@@ -262,7 +264,7 @@ class Library:
 
     def enter_selection_mode(self, x=None, y=None, selected_thumbnail=None):
         # Hide search button: disable search
-        self.search_button.hide()
+        self.window.right_button_stack.hide()
 
         self.selection_mode = True
 
@@ -279,14 +281,15 @@ class Library:
         self.selection_mode_last_thumbnail_index = selected_thumbnail.get_index()
 
         self.window.headerbar.get_style_context().add_class('selection-mode')
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-library-selection-mode'))
 
     def leave_selection_mode(self, param=None):
         self.selection_mode = False
 
-        # Show search button: re-enable search
-        self.search_button.show()
+        if self.page == 'flowbox':
+            # Show search button: re-enable search
+            self.window.right_button_stack.show()
 
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
         for thumbnail in self.flowbox.get_children():
@@ -297,7 +300,7 @@ class Library:
             self.categories_list.leave_edit_mode(refresh_library=refresh_library)
 
         self.window.headerbar.get_style_context().remove_class('selection-mode')
-        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.BUTTON)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
 
     def on_button_pressed(self, _widget, event):
@@ -330,7 +333,7 @@ class Library:
     def on_key_press(self, _widget, event):
         """Search can be triggered by simply typing a printable character"""
 
-        if self.window.page != 'library':
+        if self.window.page != 'library' and self.page != 'flowbox':
             return Gdk.EVENT_PROPAGATE
 
         return self.searchbar.handle_event(event)
@@ -343,7 +346,7 @@ class Library:
 
         if nb_mangas == 1:
             # Library was previously empty
-            self.populate()
+            self.populate(update_headerbar_buttons=False)
         else:
             self.add_manga(manga, position=0)
 
@@ -434,7 +437,7 @@ class Library:
     def on_resize(self):
         self.compute_thumbnails_size()
 
-        if self.window.first_start_grid.is_ancestor(self.window.box):
+        if self.page == 'start_page':
             return
 
         for thumbnail in self.flowbox.get_children():
@@ -446,7 +449,7 @@ class Library:
     def open_download_manager(self, action, param):
         self.window.download_manager.show()
 
-    def populate(self):
+    def populate(self, update_headerbar_buttons=True):
         db_conn = create_db_connection()
         if Settings.get_default().selected_category:
             mangas_rows = db_conn.execute(
@@ -457,21 +460,12 @@ class Library:
             mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
         if len(mangas_rows) == 0 and not Settings.get_default().selected_category:
-            if self.window.overlay.is_ancestor(self.window.box):
-                self.window.box.remove(self.window.overlay)
-
             # Display first start message
-            self.window.box.add(self.window.first_start_grid)
-            self.flap_reveal_button.hide()
+            self.show_page('start_page', True)
 
             return
 
-        if self.window.first_start_grid.is_ancestor(self.window):
-            self.window.box.remove(self.window.first_start_grid)
-            self.flap_reveal_button.show()
-
-        if not self.window.overlay.is_ancestor(self.window):
-            self.window.box.add(self.window.overlay)
+        self.show_page('flowbox', update_headerbar_buttons)
 
         # Clear library flowbox
         for thumbnail in self.flowbox.get_children():
@@ -488,7 +482,7 @@ class Library:
         self.flowbox.invalidate_filter()
 
     def select_all(self, _action=None, _param=None):
-        if self.window.first_start_grid.is_ancestor(self.window.box):
+        if self.page != 'flowbox':
             return
 
         if not self.selection_mode:
@@ -503,25 +497,28 @@ class Library:
             self.flowbox.select_child(thumbnail)
 
     def show(self, invalidate_sort=False):
-        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('list-add-symbolic', Gtk.IconSize.BUTTON)
 
-        if self.window.overlay.is_ancestor(self.window):
-            self.flap_reveal_button.show()
+        if self.page == 'flowbox':
+            if self.searchbar.get_search_mode():
+                self.search_entry.grab_focus_without_selecting()
 
-        self.window.right_button_stack.show()
-        self.window.right_button_stack.set_visible_child_name('library')
+            if invalidate_sort:
+                self.flowbox.invalidate_sort()
+
+        self.update_headerbar_buttons()
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu'))
-        self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button_image.set_from_icon_name('open-menu-symbolic', Gtk.IconSize.BUTTON)
         self.window.menu_button.show()
 
-        if self.searchbar.get_search_mode():
-            self.search_entry.grab_focus_without_selecting()
+        self.window.show_page('library', True)
 
-        if invalidate_sort:
-            self.flowbox.invalidate_sort()
-
-        self.window.show_page('library')
+    def show_page(self, name, update_headerbar_buttons):
+        self.stack.set_visible_child_name(name)
+        self.page = name
+        if update_headerbar_buttons:
+            self.update_headerbar_buttons()
 
     def toggle_flap(self, _button):
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
@@ -564,6 +561,15 @@ class Library:
 
     def update_all(self, _action, _param):
         self.window.updater.update_library()
+
+    def update_headerbar_buttons(self):
+        if self.page == 'flowbox':
+            self.flap_reveal_button.show()
+            self.window.right_button_stack.show()
+            self.window.right_button_stack.set_visible_child_name('library')
+        else:
+            self.flap_reveal_button.hide()
+            self.window.right_button_stack.hide()
 
     def update_selected(self, _action, _param):
         self.window.updater.add([thumbnail.manga for thumbnail in self.flowbox.get_selected_children()])

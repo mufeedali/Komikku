@@ -207,12 +207,12 @@ class Card:
     def show(self, transition=True):
         self.title_label.set_text(self.manga.name)
 
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
         self.window.right_button_stack.set_visible_child_name('card')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
-        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
 
         self.window.show_page('card', transition=transition)
 
@@ -653,7 +653,7 @@ class ChaptersList:
             progressbar.set_fraction(row.download.percent / 100)
             hbox.pack_start(progressbar, True, True, 0)
 
-            stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.MENU)
+            stop_button = Gtk.Button.new_from_icon_name('media-playback-stop-symbolic', Gtk.IconSize.BUTTON)
             stop_button.connect('clicked', lambda button, chapter: self.window.downloader.remove(chapter), chapter)
             hbox.pack_start(stop_button, False, False, 0)
         else:

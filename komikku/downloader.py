@@ -487,13 +487,13 @@ class DownloadManager(Gtk.ScrolledWindow):
     def show(self, transition=True):
         self.populate()
 
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
 
         self.window.right_button_stack.set_visible_child_name('download_manager')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-download-manager'))
-        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
 
         self.window.show_page('download_manager', transition=transition)
 

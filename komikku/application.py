@@ -167,6 +167,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     library_searchentry = Gtk.Template.Child('library_searchentry')
     library_subtitle_label = Gtk.Template.Child('library_subtitle_label')
     library_flap = Gtk.Template.Child('library_flap')
+    library_stack = Gtk.Template.Child('library_stack')
     library_categories_stack = Gtk.Template.Child('library_categories_stack')
     library_categories_listbox = Gtk.Template.Child('library_categories_listbox')
     library_categories_edit_mode_buttonbox = Gtk.Template.Child('library_categories_edit_mode_buttonbox')
@@ -212,7 +213,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
     notification_label = Gtk.Template.Child('notification_label')
     notification_revealer = Gtk.Template.Child('notification_revealer')
 
-    first_start_grid = Gtk.Template.Child('first_start_grid')
     app_logo = Gtk.Template.Child('app_logo')
 
     def __init__(self, *args, **kwargs):

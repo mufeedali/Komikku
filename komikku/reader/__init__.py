@@ -275,7 +275,7 @@ class Reader:
         self.window.right_button_stack.set_visible_child_name('reader')
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-reader'))
-        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.MENU)
+        self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
         # Watch when menu is closed to be able to restore focus to pager
         self.window.menu_button.get_popover().connect('closed', on_menu_popover_closed)
 

@@ -111,7 +111,7 @@ class CategoriesEditor(Handy.Clamp):
     def show(self, transition=True):
         self.populate()
 
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
 
         self.window.right_button_stack.hide()
@@ -160,23 +160,23 @@ class CategoryRow(Gtk.ListBoxRow):
         self.edit_entry.set_valign(Gtk.Align.CENTER)
         self.box.pack_start(self.edit_entry, True, True, 0)
 
-        self.edit_button = Gtk.Button.new_from_icon_name('document-edit-symbolic', Gtk.IconSize.MENU)
+        self.edit_button = Gtk.Button.new_from_icon_name('document-edit-symbolic', Gtk.IconSize.BUTTON)
         self.edit_button.set_valign(Gtk.Align.CENTER)
         self.edit_button.show()
         self.edit_button.connect('clicked', self.set_edit_mode, True)
         self.box.pack_end(self.edit_button, False, True, 0)
 
-        self.delete_button = Gtk.Button.new_from_icon_name('user-trash-symbolic', Gtk.IconSize.MENU)
+        self.delete_button = Gtk.Button.new_from_icon_name('user-trash-symbolic', Gtk.IconSize.BUTTON)
         self.delete_button.set_valign(Gtk.Align.CENTER)
         self.delete_button.show()
         self.box.pack_end(self.delete_button, False, True, 0)
 
-        self.cancel_button = Gtk.Button.new_from_icon_name('edit-undo-symbolic', Gtk.IconSize.MENU)
+        self.cancel_button = Gtk.Button.new_from_icon_name('edit-undo-symbolic', Gtk.IconSize.BUTTON)
         self.cancel_button.set_valign(Gtk.Align.CENTER)
         self.cancel_button.connect('clicked', self.set_edit_mode, False)
         self.box.pack_end(self.cancel_button, False, True, 0)
 
-        self.save_button = Gtk.Button.new_from_icon_name('document-save-symbolic', Gtk.IconSize.MENU)
+        self.save_button = Gtk.Button.new_from_icon_name('document-save-symbolic', Gtk.IconSize.BUTTON)
         self.save_button.set_valign(Gtk.Align.CENTER)
         self.box.pack_end(self.save_button, False, True, 0)
 

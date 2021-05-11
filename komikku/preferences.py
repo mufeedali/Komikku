@@ -254,7 +254,7 @@ class Preferences(Handy.Deck):
         self.credentials_storage_plaintext_fallback_switch.connect('notify::active', self.on_credentials_storage_plaintext_fallback_changed)
 
     def show(self, transition=True):
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
 
         self.window.right_button_stack.hide()
@@ -476,7 +476,7 @@ class PreferencesServersSettingsSubpage:
             server = server_class(username=username, password=password)
 
         if server.logged_in:
-            button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.MENU))
+            button.set_image(Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.BUTTON))
             if self.keyring_helper.is_disabled or plaintext_checkbutton is not None and not plaintext_checkbutton.get_active():
                 return
 
@@ -486,4 +486,4 @@ class PreferencesServersSettingsSubpage:
 
             self.keyring_helper.store(server_main_id, username, password, address)
         else:
-            button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.MENU))
+            button.set_image(Gtk.Image.new_from_icon_name('computer-fail-symbolic', Gtk.IconSize.BUTTON))

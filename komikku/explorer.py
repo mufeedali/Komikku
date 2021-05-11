@@ -167,7 +167,7 @@ class Explorer(Gtk.Stack):
 
         # Server requires a user account
         if data['has_login']:
-            label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.MENU)
+            label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.BUTTON)
             box.pack_start(label, False, True, 0)
 
         # Button to pin/unpin
@@ -337,7 +337,7 @@ class Explorer(Gtk.Stack):
             self.window.library.on_manga_added(self.manga)
 
             self.card_page_add_read_button.set_sensitive(True)
-            self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+            self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.BUTTON)
             self.window.activity_indicator.stop()
 
             return False
@@ -484,6 +484,7 @@ class Explorer(Gtk.Stack):
 
             return False
 
+        self.manga = None
         self.manga_slug = manga_data['slug']
         self.window.activity_indicator.start()
 
@@ -656,8 +657,10 @@ class Explorer(Gtk.Stack):
     def show(self, transition=True, servers=None):
         self.page = None
 
-        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.MENU)
+        self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
+        self.window.right_button_stack.show()
+        self.window.right_button_stack.set_visible_child_name('explorer.servers')
 
         self.window.menu_button.hide()
 
@@ -665,20 +668,14 @@ class Explorer(Gtk.Stack):
         self.window.show_page('explorer', transition=transition)
 
     def show_page(self, name):
-        self.servers_page_search_button.hide()
-        self.search_page_server_website_button.hide()
-        self.card_page_add_read_button.hide()
-
         if name == 'servers':
             self.title_label.set_text(_('Servers'))
-            self.servers_page_search_button.show()
 
             if self.page is None and self.servers_page_searchbar.get_search_mode():
                 self.servers_page_searchbar.set_search_mode(False)
 
         elif name == 'search':
             self.title_label.set_text(self.server.name)
-            self.search_page_server_website_button.show()
 
             if self.page == 'servers':
                 self.clear_search_page_search()
@@ -698,13 +695,13 @@ class Explorer(Gtk.Stack):
             if row:
                 self.manga = Manga.get(row['id'], self.server)
 
-                self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.MENU)
+                self.card_page_add_read_button.get_children()[0].set_from_icon_name('media-playback-start-symbolic', Gtk.IconSize.BUTTON)
             else:
-                self.card_page_add_read_button.get_children()[0].set_from_icon_name('list-add-symbolic', Gtk.IconSize.MENU)
-            self.card_page_add_read_button.show()
+                self.card_page_add_read_button.get_children()[0].set_from_icon_name('list-add-symbolic', Gtk.IconSize.BUTTON)
 
         self.window.right_button_stack.set_visible_child_name('explorer.' + name)
         self.set_visible_child_name(name)
+
         self.page = name
 
     def toggle_server_pinned_state(self, button, row):
