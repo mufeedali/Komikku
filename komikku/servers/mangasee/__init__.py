@@ -156,7 +156,6 @@ class Mangasee(Server):
             slug = f'{slug}.{chapter_slug[-1]}'
         if chapter_slug[0] != '1':
             slug = f'{slug}-index-{chapter_slug[0]}'
-        print(slug, self.chapter_url.format(manga_slug, slug))
 
         r = self.session_get(self.chapter_url.format(manga_slug, slug))
         if r.status_code != 200:
