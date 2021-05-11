@@ -106,8 +106,15 @@ class Mangasee(Server):
         # Chapters
         chapters = None
         try:
-            script = soup.find_all('script')[-2].string
-            if script:
+            for script in soup.find_all('script'):
+                script = script.string
+                if not script:
+                    continue
+
+                script = script.strip()
+                if not script.startswith('function MainFunction'):
+                    continue
+
                 for line in script.split('\n'):
                     line = line.strip()
                     if not line.startswith('vm.Chapters'):
@@ -162,8 +169,15 @@ class Mangasee(Server):
         chapter = None
         domain = None
         try:
-            script = soup.find_all('script')[-2].string
-            if script:
+            for script in soup.find_all('script'):
+                script = script.string
+                if not script:
+                    continue
+
+                script = script.strip()
+                if not script.startswith('jQuery(document).ready'):
+                    continue
+
                 for line in script.split('\n'):
                     line = line.strip()
                     if not line.startswith('vm.CurChapter') and not line.startswith('vm.CurPathName'):
@@ -240,8 +254,15 @@ class Mangasee(Server):
             soup = BeautifulSoup(r.content, 'lxml')
 
             try:
-                script = soup.find_all('script')[-2].string
-                if script:
+                for script in soup.find_all('script'):
+                    script = script.string
+                    if not script:
+                        continue
+
+                    script = script.strip()
+                    if not script.startswith('function MainFunction'):
+                        continue
+
                     for line in script.split('\n'):
                         line = line.strip()
                         if not line.startswith('vm.Directory'):
@@ -256,7 +277,7 @@ class Mangasee(Server):
         if self.mangas is None:
             return None
 
-        self.mangas = sorted(self.mangas, key=lambda m: m['v'], reverse=True)
+        self.mangas = sorted(self.mangas, key=lambda m: m['vm'], reverse=True)
 
         results = []
         for manga in self.mangas[:100]:
