@@ -293,12 +293,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
         window_size = Settings.get_default().window_size
         self.set_default_size(window_size[0], window_size[1])
 
-        # Min size
-        geom = Gdk.Geometry()
-        geom.min_width = 360
-        geom.min_height = 288
-        self.set_geometry_hints(None, geom, Gdk.WindowHints.MIN_SIZE)
-
         # Titlebar
         self.left_button.connect('clicked', self.on_left_button_clicked)
 

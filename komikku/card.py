@@ -860,20 +860,21 @@ class InfoGrid:
         self.more_label = self.window.card_more_label
 
     def populate(self):
+        cover_width = 170
         manga = self.card.manga
 
         if manga.cover_fs_path is None:
-            pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', 174, -1, True)
+            pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', cover_width, -1, True)
         else:
             try:
                 if get_file_mime_type(manga.cover_fs_path) != 'image/gif':
-                    pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, 174 * self.window.hidpi_scale, -1, True)
+                    pixbuf = Pixbuf.new_from_file_at_scale(manga.cover_fs_path, cover_width * self.window.hidpi_scale, -1, True)
                 else:
-                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), 174, -1, True, True)
+                    pixbuf = scale_pixbuf_animation(PixbufAnimation.new_from_file(manga.cover_fs_path), cover_width, -1, True, True)
             except Exception:
                 # Invalid image, corrupted image, unsupported image format,...
                 pixbuf = Pixbuf.new_from_resource_at_scale(
-                    '/info/febvre/Komikku/images/missing_file.png', 174 * self.window.hidpi_scale, -1, True)
+                    '/info/febvre/Komikku/images/missing_file.png', cover_width * self.window.hidpi_scale, -1, True)
 
         self.cover_image.clear()
         if isinstance(pixbuf, PixbufAnimation):
