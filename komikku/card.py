@@ -10,6 +10,7 @@ import time
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Handy
 from gi.repository.GdkPixbuf import Pixbuf
@@ -37,16 +38,17 @@ class Card:
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card.xml')
         self.builder.add_from_resource('/info/febvre/Komikku/ui/menu/card_selection_mode.xml')
 
-        self.title_label = self.window.card_title_label
-        self.subtitle_label = self.window.card_subtitle_label
+        self.viewswitchertitle = self.window.card_viewswitchertitle
         self.resume_read_button = self.window.card_resume_read_button
-        self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
 
         self.stack = self.window.card_stack
+        self.viewswitcherbar = self.window.card_viewswitcherbar
         self.info_grid = InfoGrid(self)
         self.categories_list = CategoriesList(self)
         self.chapters_list = ChaptersList(self)
 
+        self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
+        self.viewswitchertitle.bind_property('title-visible', self.viewswitcherbar, 'reveal', GObject.BindingFlags.SYNC_CREATE)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
     @property
@@ -78,11 +80,12 @@ class Card:
         self.chapters_list.enter_selection_mode()
 
         self.window.headerbar.get_style_context().add_class('selection-mode')
+        self.viewswitchertitle.set_view_switcher_enabled(False)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
     def init(self, manga, transition=True):
-        # Default page is Chapters page
-        self.stack.set_visible_child_name('chapters')
+        # Default page is Info page
+        self.stack.set_visible_child_name('info')
 
         self.manga = manga
         # Unref chapters to force a reload
@@ -103,6 +106,7 @@ class Card:
         self.chapters_list.leave_selection_mode()
 
         self.window.headerbar.get_style_context().remove_class('selection-mode')
+        self.viewswitchertitle.set_view_switcher_enabled(True)
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
 
     def on_delete_menu_clicked(self, action, param):
@@ -205,7 +209,7 @@ class Card:
             self.chapters_list.listbox.invalidate_sort()
 
     def show(self, transition=True):
-        self.title_label.set_text(self.manga.name)
+        self.viewswitchertitle.set_title(self.manga.name)
 
         self.window.left_button_image.set_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
         self.window.library_flap_reveal_button.hide()
@@ -505,10 +509,9 @@ class ChaptersList:
     def on_selection_changed(self, _flowbox):
         number = len(self.listbox.get_selected_rows())
         if number:
-            self.card.subtitle_label.set_label(n_('{0} selected', '{0} selected', number).format(number))
-            self.card.subtitle_label.show()
+            self.card.viewswitchertitle.set_subtitle(n_('{0} selected', '{0} selected', number).format(number))
         else:
-            self.card.subtitle_label.hide()
+            self.card.viewswitchertitle.set_subtitle('')
 
     def populate(self):
         self.clear()
@@ -849,6 +852,7 @@ class InfoGrid:
         self.window.card_info_grid.set_margin_start(6)
         self.window.card_info_grid.set_margin_end(6)
 
+        self.name_label = self.window.card_name_label
         self.cover_image = self.window.card_cover_image
         self.authors_value_label = self.window.card_authors_value_label
         self.genres_value_label = self.window.card_genres_value_label
@@ -862,6 +866,8 @@ class InfoGrid:
     def populate(self):
         cover_width = 170
         manga = self.card.manga
+
+        self.name_label.set_text(manga.name)
 
         if manga.cover_fs_path is None:
             pixbuf = Pixbuf.new_from_resource_at_scale('/info/febvre/Komikku/images/missing_file.png', cover_width, -1, True)

@@ -76,48 +76,18 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox">
+                      <object class="HdyViewSwitcherTitle" id="card_viewswitchertitle">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="valign">center</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkLabel" id="card_title_label">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label">Manga title</property>
-                            <property name="ellipsize">end</property>
-                            <property name="single_line_mode">True</property>
-                            <style>
-                              <class name="title"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="card_subtitle_label">
-                            <property name="can_focus">False</property>
-                            <property name="ellipsize">end</property>
-                            <property name="single_line_mode">True</property>
-                            <style>
-                              <class name="subtitle"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
+                        <property name="stack">card_stack</property>
                       </object>
                       <packing>
                         <property name="name">card</property>
                         <property name="position">1</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <object class="GtkBox">
@@ -162,7 +132,7 @@
                       </object>
                       <packing>
                         <property name="name">reader</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -206,7 +176,7 @@
                       </object>
                       <packing>
                         <property name="name">preferences</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -220,7 +190,7 @@
                       </object>
                       <packing>
                         <property name="name">categories_editor</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -264,7 +234,7 @@
                       </object>
                       <packing>
                         <property name="name">download_manager</property>
-                        <property name="position">5</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -278,7 +248,7 @@
                       </object>
                       <packing>
                         <property name="name">explorer</property>
-                        <property name="position">6</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </object>
@@ -857,7 +827,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">0</property>
-                                            <property name="top_attach">0</property>
+                                            <property name="top_attach">1</property>
                                             <property name="height">12</property>
                                           </packing>
                                         </child>
@@ -873,7 +843,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">0</property>
+                                            <property name="top_attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -886,7 +856,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">1</property>
+                                            <property name="top_attach">2</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -901,7 +871,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">2</property>
+                                            <property name="top_attach">3</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -914,7 +884,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">3</property>
+                                            <property name="top_attach">4</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -929,7 +899,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">4</property>
+                                            <property name="top_attach">5</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -942,7 +912,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">5</property>
+                                            <property name="top_attach">6</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -957,7 +927,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">8</property>
+                                            <property name="top_attach">9</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -970,7 +940,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">9</property>
+                                            <property name="top_attach">10</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -985,7 +955,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">0</property>
-                                            <property name="top_attach">12</property>
+                                            <property name="top_attach">13</property>
                                             <property name="width">2</property>
                                           </packing>
                                         </child>
@@ -1000,7 +970,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">0</property>
-                                            <property name="top_attach">13</property>
+                                            <property name="top_attach">14</property>
                                             <property name="width">2</property>
                                           </packing>
                                         </child>
@@ -1016,7 +986,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">10</property>
+                                            <property name="top_attach">11</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -1029,7 +999,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">11</property>
+                                            <property name="top_attach">12</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -1042,7 +1012,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">0</property>
-                                            <property name="top_attach">14</property>
+                                            <property name="top_attach">15</property>
                                             <property name="width">2</property>
                                           </packing>
                                         </child>
@@ -1056,7 +1026,7 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">7</property>
+                                            <property name="top_attach">8</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -1071,7 +1041,25 @@
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
-                                            <property name="top_attach">6</property>
+                                            <property name="top_attach">7</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="card_name_label">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label" translatable="yes">name</property>
+                                            <property name="justify">center</property>
+                                            <property name="wrap">True</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                              <attribute name="size" value="18000"/>
+                                            </attributes>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">0</property>
+                                            <property name="top_attach">0</property>
+                                            <property name="width">2</property>
                                           </packing>
                                         </child>
                                       </object>
@@ -1085,6 +1073,39 @@
                             <property name="name">info</property>
                             <property name="title" translatable="yes">Info</property>
                             <property name="icon_name">preferences-system-details</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScrolledWindow">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <child>
+                              <object class="GtkViewport">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="shadow_type">none</property>
+                                <child>
+                                  <object class="HdyClamp">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="maximum_size">800</property>
+                                    <child>
+                                      <object class="GtkListBox" id="card_chapters_listbox">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="selection_mode">none</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="name">chapters</property>
+                            <property name="title" translatable="yes">Chapters</property>
+                            <property name="icon_name">view-list-bullet</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -1141,39 +1162,6 @@
                             <property name="name">categories</property>
                             <property name="title" translatable="yes">Categories</property>
                             <property name="icon_name">user-bookmarks-symbolic</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkScrolledWindow">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <child>
-                              <object class="GtkViewport">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="shadow_type">none</property>
-                                <child>
-                                  <object class="HdyClamp">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="maximum_size">800</property>
-                                    <child>
-                                      <object class="GtkListBox" id="card_chapters_listbox">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="selection_mode">none</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="name">chapters</property>
-                            <property name="title" translatable="yes">Chapters</property>
-                            <property name="icon_name">view-list-bullet</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -1185,12 +1173,11 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="HdyViewSwitcherBar">
+                      <object class="HdyViewSwitcherBar" id="card_viewswitcherbar">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="policy">auto</property>
                         <property name="stack">card_stack</property>
-                        <property name="reveal">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
