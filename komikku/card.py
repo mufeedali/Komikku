@@ -42,13 +42,13 @@ class Card:
         self.resume_read_button = self.window.card_resume_read_button
 
         self.stack = self.window.card_stack
-        self.viewswitcherbar = self.window.card_viewswitcherbar
         self.info_grid = InfoGrid(self)
         self.categories_list = CategoriesList(self)
         self.chapters_list = ChaptersList(self)
 
+        self.viewswitchertitle.bind_property('title-visible', self.window.card_viewswitcherbar, 'reveal', GObject.BindingFlags.SYNC_CREATE)
         self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
-        self.viewswitchertitle.bind_property('title-visible', self.viewswitcherbar, 'reveal', GObject.BindingFlags.SYNC_CREATE)
+        self.stack.connect('notify::visible-child', self.on_page_changed)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
     @property
@@ -162,6 +162,10 @@ class Card:
             Gtk.show_uri_on_window(None, url, time.time())
         else:
             self.window.show_notification(_('Failed to get manga URL'))
+
+    def on_page_changed(self, _stack, _param):
+        if self.selection_mode and self.stack.get_visible_child_name() != 'chapters':
+            self.leave_selection_mode()
 
     def on_resume_read_button_clicked(self, widget):
         chapters = [child.chapter for child in self.chapters_list.listbox.get_children()]
