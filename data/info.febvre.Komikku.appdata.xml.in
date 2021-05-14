@@ -45,6 +45,30 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.28.0" date="2021-05-15">
+            <description>
+                <ul>
+                    <li>Several UI changes to improve scaling on small devices screens</li>
+                    <li>[Library] Add categories edition in bulk (via multiple selection mode)</li>
+                    <li>[Reader] Fix memory leaks</li>
+                    <li>[Explorer] Allow search in servers list</li>
+                    <li>[Explorer] Added possibility to pin favorite servers</li>
+                    <li>[Updater] Prevents updating of comics whose server is disabled</li>
+                    <li>[Keyring] Improved SecretService detection</li>
+                    <li>[Servers] Add AllHentai (RU)</li>
+                    <li>[Servers] Add CatManga aka Black Cat Scanlations (EN)</li>
+                    <li>[Servers] Add Dongman Manhua (ZH Hans)</li>
+                    <li>[Servers] Add Madara (multi servers): Aloalivn (EN), Apoll Comics (ES), Wakascan (FR)24hRomance (EN), AkuManga (AR), ArazNovel (TR), Argos Scan (PT), Atikrost (TR)</li>
+                    <li>[Servers] Add MangaFreak (EN)</li>
+                    <li>[Servers] MangaSee: Update</li>
+                    <li>[Servers] Pepper&amp;Carrot: Fix pages order</li>
+                    <li>[Servers] Scantrad France: Update</li>
+                    <li>[Servers] Webtoon: Improved detail retrieval (both for originals and challenges)</li>
+                    <li>[L10n] Update French translation</li>
+                    <li>[L10n] Update German translation</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.27.0" date="2021-03-17">
             <description>
                 <ul>
