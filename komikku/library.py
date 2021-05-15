@@ -333,7 +333,7 @@ class Library:
     def on_key_press(self, _widget, event):
         """Search can be triggered by simply typing a printable character"""
 
-        if self.window.page != 'library' and self.page != 'flowbox':
+        if self.window.page != 'library' or self.page != 'flowbox':
             return Gdk.EVENT_PROPAGATE
 
         return self.searchbar.handle_event(event)

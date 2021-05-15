@@ -45,7 +45,7 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
-        <release version="0.28.0" date="2021-05-15">
+        <release version="0.28.1" date="2021-05-15">
             <description>
                 <ul>
                     <li>Several UI changes to improve scaling on small devices screens</li>
