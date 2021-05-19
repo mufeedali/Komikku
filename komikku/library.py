@@ -718,6 +718,7 @@ class CategoriesList(GObject.GObject):
                 row = Handy.ActionRow(visible=True, activatable=True)
                 row.category = category
                 row.set_title(label)
+                row.set_title_lines(0)
                 row.set_hexpand(False)
 
                 if category and Settings.get_default().selected_category == category.id:
