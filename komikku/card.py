@@ -853,8 +853,8 @@ class InfoGrid:
         self.card = card
         self.window = card.window
 
-        self.window.card_info_grid.set_margin_start(6)
-        self.window.card_info_grid.set_margin_end(6)
+        self.window.card_info_box.get_style_context().add_class('card-info-box')
+        self.window.card_info_box.get_style_context().add_class('list-bordered')
 
         self.name_label = self.window.card_name_label
         self.cover_image = self.window.card_cover_image

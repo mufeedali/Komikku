@@ -182,6 +182,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     card_categories_stack = Gtk.Template.Child('card_categories_stack')
     card_categories_listbox = Gtk.Template.Child('card_categories_listbox')
     card_chapters_listbox = Gtk.Template.Child('card_chapters_listbox')
+    card_info_box = Gtk.Template.Child('card_info_box')
     card_info_grid = Gtk.Template.Child('card_info_grid')
     card_name_label = Gtk.Template.Child('card_name_label')
     card_cover_image = Gtk.Template.Child('card_cover_image')

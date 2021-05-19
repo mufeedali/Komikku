@@ -32,7 +32,11 @@ flowbox flowboxchild {
     padding: 20px 8px 4px 8px;
 }
 
-/* Manga card page - chapters list */
+/* Manga card page */
+.card-info-box {
+    background-color: @theme_base_color;
+}
+
 .card-chapter-listboxrow {
     border-bottom: 1px solid @borders;
     padding: 6px 6px 12px 6px;

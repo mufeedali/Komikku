@@ -52,6 +52,7 @@ class Explorer(Gtk.Stack):
     search_page_filter_menu_button = Gtk.Template.Child('search_page_filter_menu_button')
     search_page_listbox = Gtk.Template.Child('search_page_listbox')
 
+    card_page_box = Gtk.Template.Child('card_page_box')
     card_page_grid = Gtk.Template.Child('card_page_grid')
     card_page_cover_image = Gtk.Template.Child('card_page_cover_image')
     card_page_authors_value_label = Gtk.Template.Child('card_page_authors_value_label')
@@ -119,7 +120,8 @@ class Explorer(Gtk.Stack):
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
         # Card page
-        self.card_page_grid.props.margin = 6
+        self.card_page_box.get_style_context().add_class('card-info-box')
+        self.card_page_box.get_style_context().add_class('list-bordered')
         self.card_page_add_read_button = self.window.explorer_card_page_add_read_button
         self.card_page_add_read_button.connect('clicked', self.on_card_page_add_read_button_clicked)
 
