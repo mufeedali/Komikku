@@ -307,10 +307,13 @@ class Manga:
             self._server = server
 
     @classmethod
-    def get(cls, id, server=None):
-        db_conn = create_db_connection()
-        row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
-        db_conn.close()
+    def get(cls, id, server=None, db_conn=None):
+        if db_conn is not None:
+            row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
+        else:
+            db_conn = create_db_connection()
+            row = db_conn.execute('SELECT * FROM mangas WHERE id = ?', (id,)).fetchone()
+            db_conn.close()
 
         if row is None:
             return None

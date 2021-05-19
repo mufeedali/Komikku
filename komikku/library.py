@@ -79,7 +79,7 @@ class Library:
         self.flowbox = self.window.library_flowbox
         self.flowbox.connect('button-press-event', self.on_button_pressed)
         self.flowbox.connect('child-activated', self.on_manga_clicked)
-        self.flowbox.connect('selected-children-changed', self.on_selection_changed)
+        self.flowbox.connect('selected-children-changed', self.update_subtitle)
         self.flowbox.connect('unselect-all', self.leave_selection_mode)
         self.gesture = Gtk.GestureLongPress.new(self.flowbox)
         self.gesture.set_touch_only(False)
@@ -427,13 +427,6 @@ class Library:
 
         self.flowbox.invalidate_filter()
 
-    def on_selection_changed(self, _flowbox):
-        number = len(self.flowbox.get_selected_children())
-        if number:
-            self.subtitle_label.set_label(n_('{0} selected', '{0} selected', number).format(number))
-        else:
-            self.subtitle_label.set_label(_('Library'))
-
     def on_resize(self):
         self.compute_thumbnails_size()
 
@@ -451,15 +444,19 @@ class Library:
 
     def populate(self, update_headerbar_buttons=True):
         db_conn = create_db_connection()
-        if Settings.get_default().selected_category:
+
+        self.update_subtitle(db_conn=db_conn)
+
+        selected_category_id = Settings.get_default().selected_category
+        if selected_category_id:
             mangas_rows = db_conn.execute(
                 'SELECT m.* FROM categories_mangas_association cma JOIN mangas m ON cma.manga_id = m.id WHERE cma.category_id = ? ORDER BY m.last_read DESC',
-                (Settings.get_default().selected_category,)
+                (selected_category_id,)
             ).fetchall()
         else:
             mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
-        if len(mangas_rows) == 0 and not Settings.get_default().selected_category:
+        if len(mangas_rows) == 0 and not seleced_category_id:
             # Display first start message
             self.show_page('start_page', True)
 
@@ -474,7 +471,7 @@ class Library:
         # Populate flowbox with mangas
         self.compute_thumbnails_size()
         for row in mangas_rows:
-            self.add_manga(Manga.get(row['id']))
+            self.add_manga(Manga.get(row['id'], db_conn=db_conn))
 
         db_conn.close()
 
@@ -576,6 +573,17 @@ class Library:
         self.window.updater.start()
 
         self.leave_selection_mode()
+
+    def update_subtitle(self, *args, db_conn=None):
+        nb_selected = len(self.flowbox.get_selected_children()) if self.selection_mode else 0
+        if nb_selected > 0:
+            subtitle = n_('{0} selected', '{0} selected', nb_selected).format(nb_selected)
+        else:
+            subtitle = _('Library')
+            if category_id := Settings.get_default().selected_category:
+                subtitle = f'{subtitle} / {Category.get(category_id, db_conn).label}'
+
+        self.subtitle_label.set_label(subtitle)
 
 
 class CategoriesList(GObject.GObject):
