@@ -456,7 +456,7 @@ class Library:
         else:
             mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
 
-        if len(mangas_rows) == 0 and not seleced_category_id:
+        if len(mangas_rows) == 0 and not selected_category_id:
             # Display first start message
             self.show_page('start_page', True)
 
