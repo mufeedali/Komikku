@@ -821,7 +821,7 @@
                                             <property name="margin_right">6</property>
                                             <property name="margin_top">6</property>
                                             <property name="margin_bottom">6</property>
-                                            <property name="label" translatable="yes">name</property>
+                                            <property name="label">name</property>
                                             <property name="justify">center</property>
                                             <property name="wrap">True</property>
                                             <attributes>
