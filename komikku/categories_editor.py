@@ -61,9 +61,7 @@ class CategoriesEditor(Handy.Clamp):
 
     def delete_category(self, _button, row):
         def confirm_callback():
-            # If category is current selected category in Library, reset selected category
-            if Settings.get_default().selected_category == row.category.id:
-                Settings.get_default().selected_category = 0
+            deleted_is_current = Settings.get_default().selected_category == row.category.id
 
             row.category.delete()
             row.destroy()
@@ -71,7 +69,11 @@ class CategoriesEditor(Handy.Clamp):
             if not self.rows:
                 self.stack.set_visible_child_name('empty')
 
-            self.window.library.categories_list.populate(refresh_library=True)
+            # If category is current selected category in Library, reset selected category
+            if deleted_is_current:
+                Settings.get_default().selected_category = 0
+
+            self.window.library.categories_list.populate(refresh_library=deleted_is_current)
 
         self.window.confirm(
             _('Delete?'),

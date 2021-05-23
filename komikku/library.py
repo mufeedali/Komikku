@@ -346,7 +346,7 @@ class Library:
 
         if nb_mangas == 1:
             # Library was previously empty
-            self.populate(update_headerbar_buttons=False)
+            self.populate()
         else:
             self.add_manga(manga, position=0)
 
@@ -442,7 +442,7 @@ class Library:
     def open_download_manager(self, action, param):
         self.window.download_manager.show()
 
-    def populate(self, update_headerbar_buttons=True):
+    def populate(self):
         db_conn = create_db_connection()
 
         self.update_subtitle(db_conn=db_conn)
@@ -469,7 +469,7 @@ class Library:
 
             return
 
-        self.show_page('flowbox', update_headerbar_buttons)
+        self.show_page('flowbox')
 
         # Clear library flowbox
         for thumbnail in self.flowbox.get_children():
@@ -518,11 +518,14 @@ class Library:
 
         self.window.show_page('library', True)
 
-    def show_page(self, name, update_headerbar_buttons):
+    def show_page(self, name):
+        if self.page == name:
+            return
+
         self.stack.set_visible_child_name(name)
+        self.update_headerbar_buttons()
+
         self.page = name
-        if update_headerbar_buttons:
-            self.update_headerbar_buttons()
 
     def toggle_flap(self, _button):
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
@@ -761,7 +764,7 @@ class CategoriesList(GObject.GObject):
             self.stack.set_visible_child_name('empty')
 
         if refresh_library:
-            self.library.populate(update_headerbar_buttons=False)
+            self.library.populate()
 
 
 class Thumbnail(Gtk.FlowBoxChild):

@@ -286,7 +286,7 @@ class CategoriesList:
 
         # Update Library if the current selected category is the activated category or the 'Uncategorized' category
         if Settings.get_default().selected_category in (-1, category_id):
-            self.window.library.populate(update_headerbar_buttons=False)
+            self.window.library.populate()
 
 
 class ChaptersList:
