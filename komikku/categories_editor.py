@@ -10,6 +10,7 @@ from gi.repository import Handy
 
 from komikku.models import Category
 from komikku.models import create_db_connection
+from komikku.models import Settings
 
 
 @Gtk.Template.from_resource('/info/febvre/Komikku/ui/categories_editor.ui')
@@ -60,6 +61,10 @@ class CategoriesEditor(Handy.Clamp):
 
     def delete_category(self, _button, row):
         def confirm_callback():
+            # If category is current selected category in Library, reset selected category
+            if Settings.get_default().selected_category == row.category.id:
+                Settings.get_default().selected_category = 0
+
             row.category.delete()
             row.destroy()
 

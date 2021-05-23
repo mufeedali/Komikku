@@ -281,8 +281,12 @@ class CategoriesList:
     def on_category_activated(self, switch, _param, category_id):
         self.card.manga.toggle_category(category_id, switch.get_active())
 
-        if Settings.get_default().selected_category:
-            self.window.library.populate()
+        # Update the categories list in Library, just in case it's necessary to show/hide the 'Uncategorized' category
+        self.window.library.categories_list.populate()
+
+        # Update Library if the current selected category is the activated category or the 'Uncategorized' category
+        if Settings.get_default().selected_category in (-1, category_id):
+            self.window.library.populate(update_headerbar_buttons=False)
 
 
 class ChaptersList:

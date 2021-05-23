@@ -448,16 +448,23 @@ class Library:
         self.update_subtitle(db_conn=db_conn)
 
         selected_category_id = Settings.get_default().selected_category
-        if selected_category_id:
+        if selected_category_id > 0:
+            # A true (from DB) category is selected
             mangas_rows = db_conn.execute(
-                'SELECT m.* FROM categories_mangas_association cma JOIN mangas m ON cma.manga_id = m.id WHERE cma.category_id = ? ORDER BY m.last_read DESC',
+                'SELECT m.id FROM categories_mangas_association cma JOIN mangas m ON cma.manga_id = m.id WHERE cma.category_id = ? ORDER BY m.last_read DESC',
                 (selected_category_id,)
             ).fetchall()
+        elif selected_category_id == -1:
+            # Virtual category 'Uncategorized' is selected
+            mangas_rows = db_conn.execute(
+                'SELECT id FROM mangas WHERE id not in (SELECT manga_id FROM categories_mangas_association) ORDER BY last_read DESC'
+            ).fetchall()
         else:
-            mangas_rows = db_conn.execute('SELECT * FROM mangas ORDER BY last_read DESC').fetchall()
+            # Virtual category 'All' is selected
+            mangas_rows = db_conn.execute('SELECT id FROM mangas ORDER BY last_read DESC').fetchall()
 
-        if len(mangas_rows) == 0 and not selected_category_id:
-            # Display first start message
+        if len(mangas_rows) == 0 and selected_category_id == 0:
+            # Display start page
             self.show_page('start_page', True)
 
             return
@@ -580,8 +587,11 @@ class Library:
             subtitle = n_('{0} selected', '{0} selected', nb_selected).format(nb_selected)
         else:
             subtitle = _('Library')
-            if category_id := Settings.get_default().selected_category:
-                subtitle = f'{subtitle} / {Category.get(category_id, db_conn).label}'
+            if (category_id := Settings.get_default().selected_category) != 0:
+                if category_id == -1:
+                    subtitle = '{0} / {1}'.format(subtitle, _('Uncategorized'))
+                else:
+                    subtitle = f'{subtitle} / {Category.get(category_id, db_conn).label}'
 
         self.subtitle_label.set_label(subtitle)
 
@@ -621,7 +631,7 @@ class CategoriesList(GObject.GObject):
         if self.edit_mode:
             return
 
-        Settings.get_default().selected_category = row.category.id if row.category else 0
+        Settings.get_default().selected_category = row.category.id if isinstance(row.category, Category) else row.category
 
         self.listbox.unselect_all()
         self.listbox.select_row(row)
@@ -688,8 +698,12 @@ class CategoriesList(GObject.GObject):
 
     def populate(self, edit_mode=False, refresh_library=False):
         db_conn = create_db_connection()
-        records = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
+        categories = db_conn.execute('SELECT * FROM categories ORDER BY label ASC').fetchall()
+        nb_categorized = db_conn.execute('SELECT count(*) FROM categories_mangas_association').fetchone()[0]
         db_conn.close()
+
+        if not categories and edit_mode:
+            return
 
         self.clear()
 
@@ -700,19 +714,28 @@ class CategoriesList(GObject.GObject):
             self.edit_mode = False
             self.edit_mode_buttonbox.hide()
 
-        if records:
+        if categories:
             self.stack.set_visible_child_name('list')
 
-            selected_category_found = False
-            for record in ['all'] + records:
-                if record == 'all':
+            items = ['all'] + categories
+            if nb_categorized > 0:
+                items += ['uncategorized']
+
+            for item in items:
+                if item == 'all':
                     if edit_mode:
                         continue
 
-                    category = None
+                    category = 0
                     label = _('All')
+                elif item == 'uncategorized':
+                    if edit_mode:
+                        continue
+
+                    category = -1
+                    label = _('Uncategorized')
                 else:
-                    category = Category.get(record['id'])
+                    category = Category.get(item['id'])
                     label = category.label
 
                 row = Handy.ActionRow(visible=True, activatable=True)
@@ -721,9 +744,9 @@ class CategoriesList(GObject.GObject):
                 row.set_title_lines(2)
                 row.set_hexpand(False)
 
-                if category and Settings.get_default().selected_category == category.id:
+                if (isinstance(category, Category) and Settings.get_default().selected_category == category.id) or \
+                    (isinstance(category, int) and Settings.get_default().selected_category == category):
                     self.listbox.select_row(row)
-                    selected_category_found = True
 
                 if edit_mode:
                     switch = Gtk.Switch(visible=True)
@@ -733,17 +756,12 @@ class CategoriesList(GObject.GObject):
                     row.add(switch)
 
                 self.listbox.add(row)
-
-            if not selected_category_found:
-                # Selected category (saved in Settings) doesn't exist anymore
-                Settings.get_default().selected_category = 0
-                self.listbox.select_row(self.listbox.get_children()[0])
         else:
             Settings.get_default().selected_category = 0
             self.stack.set_visible_child_name('empty')
 
         if refresh_library:
-            self.library.populate()
+            self.library.populate(update_headerbar_buttons=False)
 
 
 class Thumbnail(Gtk.FlowBoxChild):
