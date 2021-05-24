@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-05-24 01:42+0200\n"
-"PO-Revision-Date: 2021-05-12 10:52+0200\n"
+"PO-Revision-Date: 2021-05-24 18:58+0200\n"
 "Last-Translator: Leo Prikler <leo.prikler@student.tugraz.at>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -36,42 +36,47 @@ msgstr "Valéry Febvre"
 #: ../data/info.febvre.Komikku.appdata.xml.in:51
 msgid "Several UI changes to improve scaling on small devices screens"
 msgstr ""
+"Mehrere UI-Änderungen für bessere Skalierung bei kleineren Bildschirmen"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:52
 msgid "[Library] Add categories edition in bulk (via multiple selection mode)"
 msgstr ""
+"[Bibliothek] Bearbeitung mehrerer Kategorien (im Multiselektionsmodus) "
+"hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:53
 msgid "[Reader] Fix memory leaks"
-msgstr ""
+msgstr "[Reader] Datenlecks behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:54
 msgid "[Explorer] Allow search in servers list"
-msgstr ""
+msgstr "[Explorer] Erlaube Suche in Serverliste"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:55
 msgid "[Explorer] Added possibility to pin favorite servers"
-msgstr ""
+msgstr "[Explorer] Anpinnen von favorisierten Servern ermöglicht"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:56
 msgid "[Updater] Prevents updating of comics whose server is disabled"
 msgstr ""
+"[Updater] Verhindere, dass Comics mit ausgeschaltetem Server aktualisiert "
+"werden"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:57
 msgid "[Keyring] Improved SecretService detection"
-msgstr ""
+msgstr "[Schlüsselring] Bessere Erkennung von SecretService"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:58
 msgid "[Servers] Add AllHentai (RU)"
-msgstr ""
+msgstr "[Server] AllHentai (RU) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:59
 msgid "[Servers] Add CatManga aka Black Cat Scanlations (EN)"
-msgstr ""
+msgstr "[Server] CatManga aka Black Cat Scanlations (EN) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:60
 msgid "[Servers] Add Dongman Manhua (ZH Hans)"
-msgstr ""
+msgstr "[Server] Dongman Manhua (ZH Hans) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:61
 msgid ""
@@ -79,10 +84,13 @@ msgid ""
 "Wakascan (FR), 24hRomance (EN), AkuManga (AR), ArazNovel (TR), Argos Scan "
 "(PT), Atikrost (TR)"
 msgstr ""
+"[Server] Madara (Multi-Server) hinzugefügt: Aloalivn (EN), Apoll Comics "
+"(ES), Wakascan (FR), 24hRomance (EN), AkuManga (AR), ArazNovel (TR), Argos "
+"Scan (PT), Atikrost (TR)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:62
 msgid "[Servers] Add MangaFreak (EN)"
-msgstr ""
+msgstr "[Server] MangaFreak (EN) hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:63
 #: ../data/info.febvre.Komikku.appdata.xml.in:150
@@ -92,7 +100,7 @@ msgstr "[Server] MangaSee: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:64
 msgid "[Servers] Pepper&amp;Carrot: Fix pages order"
-msgstr ""
+msgstr "[Server] Pepper&amp;Carrot: Fehler in der Seitenordnung behoben"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:65
 #: ../data/info.febvre.Komikku.appdata.xml.in:124
@@ -103,11 +111,11 @@ msgstr "[Server] Scantrad France: Aktualisiert"
 msgid ""
 "[Servers] Webtoon: Improved details retrieval (both for originals and "
 "challenges)"
-msgstr ""
+msgstr "[Server] Webtoon: Verbesserte Detailsammlung"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:67
 msgid "[L10n] Update French translation"
-msgstr ""
+msgstr "[L10n] Französische Übersetzung aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:68
 #: ../data/info.febvre.Komikku.appdata.xml.in:86
@@ -1532,7 +1540,7 @@ msgstr "Bibliothek"
 
 #: ../komikku/library.py:595 ../komikku/library.py:739
 msgid "Uncategorized"
-msgstr ""
+msgstr "Nicht kategorisiert"
 
 #: ../komikku/library.py:733
 msgid "All"
