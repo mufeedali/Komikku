@@ -196,6 +196,7 @@ class Mangadex(Server):
             scanlators=[],
             genres=[],
             status=None,
+            cover=None,
             synopsis=None,
             chapters=[],
             server_id=self.id,
@@ -205,7 +206,6 @@ class Mangadex(Server):
 
         # FIXME: Should probably be lang_code, but the API returns weird stuff
         data['name'] = html.unescape(attributes['title']['en'])
-        data['cover'] = None # not yet supported
         # FIXME: Same lang_code weirdness
         data['genres'] = [tag['attributes']['name']['en'] for tag in attributes['tags']]
 
