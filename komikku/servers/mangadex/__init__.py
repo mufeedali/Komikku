@@ -8,10 +8,12 @@ from bs4 import BeautifulSoup
 from functools import lru_cache
 import html
 import logging
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 from uuid import UUID
 
 from komikku.servers import convert_date_string
-from komikku.servers import do_login
+from komikku.servers import do_login as with_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
@@ -65,6 +67,12 @@ class Mangadex(Server):
     def __init__(self, username=None, password=None):
         if username and password:
             self.do_login(username, password)
+
+    def do_login(self, *args):
+        Server.do_login(self, *args)
+        retry = Retry(total=5, backoff_factor=1, respect_retry_after_header=False,
+                      status_forcelist=Retry.RETRY_AFTER_STATUS_CODES)
+        self.session.mount(self.api_base_url, HTTPAdapter(max_retries=retry))
 
     def convert_old_slug(self, slug):
         # Removing this will break manga that were added before the change to the manga slug
@@ -164,7 +172,7 @@ class Mangadex(Server):
 
         return chapters
 
-    @do_login
+    @with_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -228,7 +236,7 @@ class Mangadex(Server):
 
         return data
 
-    @do_login
+    @with_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data from API
@@ -269,7 +277,7 @@ class Mangadex(Server):
             return None
         return r.json()['baseUrl']
 
-    @do_login
+    @with_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -328,7 +336,7 @@ class Mangadex(Server):
 
         return True
 
-    @do_login
+    @with_login
     def search(self, term):
         r = self.session_get(self.api_manga_base, params=dict(
             title=term,
