@@ -40,11 +40,13 @@ class Mangadex(Server):
     base_url = 'https://mangadex.org'
     action_url = base_url + '/ajax/actions.ajax.php?function={0}'
     api_base_url = 'https://api.mangadex.org'
-    api_manga_url = api_base_url + '/manga/{0}'
-    api_chapter_url = api_base_url + '/chapter/{0}'
-    api_author_url = api_base_url + '/author/{0}'
+    api_manga_base = api_base_url + '/manga'
+    api_manga_url = api_manga_base + '/{0}'
+    api_chapter_base = api_base_url + '/chapter'
+    api_chapter_url = api_manga_base + '/{0}'
+    api_author_base = api_base_url + '/author'
     api_cover_url = api_base_url + '/cover/{0}'
-    api_scanlator_url = api_base_url + '/group/{0}'
+    api_scanlator_base = api_base_url + '/group'
     api_server_url = api_base_url + '/at-home/server/{0}'
     api_page_url = '{0}/data/{1}'
 
@@ -90,7 +92,7 @@ class Mangadex(Server):
     def list_authors(self, authors):
         if authors == []:
             return []
-        r = self.session_get(self.api_author_url.format(''), params={'ids[]': authors})
+        r = self.session_get(self.api_author_base, params={'ids[]': authors})
         if r.status_code != 200:
             return None
         return [result['data']['attributes']['name'] for result in r.json()['results']]
@@ -104,8 +106,8 @@ class Mangadex(Server):
 
     def resolve_scanlators(self, chapter_or_chapters, scanlators):
         if scanlators == []:
-            return chapter_or_chapters
-        r = self.session_get(self.api_scanlator_url.format(''), params={'ids[]': scanlators})
+            return chapters
+        r = self.session_get(self.api_scanlator_base, params={'ids[]': scanlators})
         if r.status_code != 200:
             return None
         remap = {result['data']['id']: result['data']['attributes']['name'] for result in r.json()['results']}
@@ -126,7 +128,7 @@ class Mangadex(Server):
         chapters = []
         scanlators = set()
         while True:
-            r = self.session_get(self.api_chapter_url.format(''), params={
+            r = self.session_get(self.api_chapter_base, params={
                 'manga': manga_slug,
                 'translatedLanguage[]': [self.lang_code],
                 'limit': CHAPTERS_PER_REQUEST,
@@ -328,7 +330,7 @@ class Mangadex(Server):
 
     @do_login
     def search(self, term):
-        r = self.session_get(self.api_manga_url.format(''), params=dict(
+        r = self.session_get(self.api_manga_base, params=dict(
             title=term,
         ))
         if r.status_code != 200:
