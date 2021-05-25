@@ -43,6 +43,7 @@ class Mangadex(Server):
     api_manga_url = api_base_url + '/manga/{0}'
     api_chapter_url = api_base_url + '/chapter/{0}'
     api_author_url = api_base_url + '/author/{0}'
+    api_cover_url = api_base_url + '/cover/{0}'
     api_scanlator_url = api_base_url + '/group/{0}'
     api_server_url = api_base_url + '/at-home/server/{0}'
     api_page_url = '{0}/data/{1}'
@@ -51,6 +52,7 @@ class Mangadex(Server):
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
+    cover_url = 'https://uploads.mangadex.org/covers/{0}/{1}'
 
     headers = {
         'User-Agent': USER_AGENT,
@@ -92,6 +94,13 @@ class Mangadex(Server):
         if r.status_code != 200:
             return None
         return [result['data']['attributes']['name'] for result in r.json()['results']]
+
+    def get_cover(self, manga_slug, cover):
+        r = self.session_get(self.api_cover_url.format(cover))
+        if r.status_code != 200:
+            return None
+        result = r.json()
+        return self.cover_url.format(manga_slug, result['data']['attributes']['fileName'])
 
     def resolve_scanlators(self, chapter_or_chapters, scanlators):
         if scanlators == []:
@@ -207,6 +216,8 @@ class Mangadex(Server):
         for relationship in resp_json['relationships']:
             if relationship['type'] == 'author':
                 rel_authors.append(relationship['id'])
+            elif relationship['type'] == 'cover_art':
+                data['cover'] = self.get_cover(data['slug'], relationship['id'])
 
         for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
             data['authors'] += self.list_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
