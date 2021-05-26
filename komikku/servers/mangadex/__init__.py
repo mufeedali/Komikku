@@ -336,16 +336,9 @@ class Mangadex(Server):
 
         return True
 
-    @with_login
-    def search(self, term):
-        r = self.session_get(self.api_manga_base, params=dict(
-            title=term,
-        ))
-        if r.status_code != 200:
-            return None
-
+    def _search_results(self, json):
         results = []
-        for result in r.json()['results']:
+        for result in json['results']:
             if result['result'] != 'ok':
                 continue
             result = result['data']
@@ -356,8 +349,25 @@ class Mangadex(Server):
                 # FIXME: lang_code
                 name=result['attributes']['title']['en']
             ))
-
         return results
+
+    @with_login
+    def get_most_populars(self):
+        r = self.session_get(self.api_manga_base)
+        if r.status_code != 200:
+            return None
+
+        return self._search_results(r.json())
+
+    @with_login
+    def search(self, term):
+        r = self.session_get(self.api_manga_base, params=dict(
+            title=term,
+        ))
+        if r.status_code != 200:
+            return None
+
+        return self._search_results(r.json())
 
 
 class Mangadex_cs(Mangadex):
