@@ -104,6 +104,7 @@ class HeadlessBrowser(Gtk.Window):
         self.settings = self.webview.get_settings()
         self.settings.set_user_agent(USER_AGENT)
         self.settings.set_enable_dns_prefetching(True)
+        self.settings.set_enable_page_cache(False)
 
         self.web_context = self.webview.get_context()
         self.web_context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
@@ -116,7 +117,7 @@ class HeadlessBrowser(Gtk.Window):
         self.resize(1, 1)
 
     def close(self, blank=True):
-        logger.debug('WebKit2 | Load page end (success or error)')
+        logger.debug('WebKit2 | Closed')
 
         self.disconnect_all_signals()
 
@@ -136,12 +137,14 @@ class HeadlessBrowser(Gtk.Window):
 
         self.__handlers_ids = []
 
-    def open(self, uri):
+    def open(self, uri, user_agent=None):
         if self.lock:
             return False
 
+        if user_agent is not None:
+            self.settings.set_user_agent(user_agent)
+
         self.lock = True
-        self.load_failed_event = None
 
         logger.debug('WebKit2 | Load page %s' % uri)
 

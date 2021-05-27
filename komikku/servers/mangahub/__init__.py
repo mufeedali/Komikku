@@ -4,39 +4,98 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: ISO-morphism <me@iso-morphism.name>
 
+from bs4 import BeautifulSoup
 import json
-from collections import OrderedDict
+import logging
 import requests
+import time
+
+from gi.repository import GLib
+from gi.repository import WebKit2
 
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import convert_date_string
+from komikku.servers import get_soup_element_inner_text
+from komikku.servers import headless_browser
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
+headers = {
+    'User-Agent': USER_AGENT,
+}
+logger = logging.getLogger('komikku.servers.mangahub')
+
 SERVER_NAME = 'MangaHub'
 
-headers = OrderedDict(
-    [
-        ('User-Agent', USER_AGENT),
-        ('Accept-Language', 'en-US,en;q=0.5'),
-    ]
-)
 
+def get_chapter_page_html(url):
+    error = None
+    html = None
 
-# GraphQL API has a `slug` field for chapters but that is often null.
-# Chapter number (a float in the api but we treat/present as string just fine)
-# is required, and it seems pretty consistent that when viewing the website the actual
-# url slug is `chapter-{number}`. Komikku considers chapter slug to be the key, so we store
-# `chapter-{number}` as the slug, as that's likely the URL slug for the website, and remember
-# to deal with `chapter-`. An alternative approach could be to stuff the number in the `url`, but
-# that also feels even more dishonest. For the most part, we're just ignoring the `slug` parameter
-# returned by the API.
-def convert_internal_chapter_slug_to_server_chapter_number(slug):
-    return slug.replace('chapter-', '')
+    def load_page():
+        if not headless_browser.open(url):
+            return True
 
+        headless_browser.settings.set_auto_load_images(False)
 
-def convert_server_chapter_number_to_internal_chapter_slug(number):
-    return f'chapter-{number}'
+        headless_browser.connect_signal('load-changed', on_load_changed)
+        headless_browser.connect_signal('load-failed', on_load_failed)
+        headless_browser.connect_signal('notify::title', on_title_changed)
+
+    def on_get_html_finish(webview, result, user_data=None):
+        nonlocal error
+        nonlocal html
+
+        js_result = webview.run_javascript_finish(result)
+        if js_result:
+            js_value = js_result.get_js_value()
+            if js_value:
+                html = js_value.to_string()
+
+        if html is None:
+            error = f'Failed to get chapter page html: {url}'
+
+        headless_browser.close()
+
+    def on_load_changed(_webview, event):
+        if event != WebKit2.LoadEvent.FINISHED:
+            return
+
+        # Wait until all images are inserted in DOM
+        # Only 3 are inserted at page load, others are added later via AJAX
+        js = """
+            const checkReady = setInterval(() => {
+                if (document.querySelectorAll('._2aWyJ .hidden').length === 0) {
+                    clearInterval(checkReady);
+                    document.title = 'ready';
+                }
+            }, 100);
+        """
+
+        headless_browser.webview.run_javascript(js, None, None, None)
+
+    def on_load_failed(_webview, _event, _uri, gerror):
+        nonlocal error
+
+        error = f'Failed to load chapter page: {url}'
+
+        headless_browser.close()
+
+    def on_title_changed(_webview, _title):
+        if headless_browser.webview.props.title == 'ready':
+            # All images have been inserted in DOM, we can retrieve page HTML
+            headless_browser.webview.run_javascript('document.documentElement.outerHTML', None, on_get_html_finish, None)
+
+    GLib.timeout_add(100, load_page)
+
+    while html is None and error is None:
+        time.sleep(.1)
+
+    if error:
+        logger.warning(error)
+        raise requests.exceptions.RequestException()
+
+    return html
 
 
 class Mangahub(Server):
@@ -46,11 +105,11 @@ class Mangahub(Server):
     long_strip_genres = ['Webtoon', 'Webtoons', ]
 
     base_url = 'https://mangahub.io'
+    search_url = base_url + '/search'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/chapter/{0}/{1}'
     api_url = 'https://api.mghubcdn.com/graphql'
-    img_url = 'https://img.mghubcdn.com/file/imghub/{0}'
-    cover_url = 'https://thumb.mghubcdn.com/{0}'
+    image_url = 'https://img.mghubcdn.com/file/imghub/{0}'
 
     def __init__(self):
         if self.session is None:
@@ -65,13 +124,11 @@ class Mangahub(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        query = {
-            'query': '{manga(x:m01,slug:"%s"){id,title,slug,status,image,author,artist,genres,description,updatedDate,chapters{slug,title,number,date}}}'
-            % initial_data['slug']
-        }
-        resp = self.session.post(self.api_url, json=query)
-        if not resp.ok:
+        r = self.session.get(self.manga_url.format(initial_data['slug']))
+        if r.status_code != 200:
             return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
 
         data = initial_data.copy()
         data.update(dict(
@@ -85,80 +142,97 @@ class Mangahub(Server):
             cover=None,
         ))
 
-        try:
-            manga = resp.json()['data']['manga']
+        data['name'] = get_soup_element_inner_text(soup.find('h1'))
+        data['cover'] = soup.find('img', class_='manga-thumb').get('src')
 
-            data['name'] = manga['title']
-            data['cover'] = self.cover_url.format(manga['image'])
+        # Details
+        for element in soup.find_all('span', class_='_3SlhO'):
+            label = element.text.strip()
 
-            for author in (s.strip() for s in manga['author'].split(',')):
-                data['authors'].append(author)
-            for artist in (s.strip() for s in manga['artist'].split(',')):
-                if artist not in data['authors']:
-                    data['authors'].append(artist)
+            if label.startswith('Author'):
+                data['authors'] = [a.strip() for a in element.next_sibling.text.split(';')]
 
-            data['genres'].extend(genre.strip() for genre in manga['genres'].split(','))
-            if manga['status'] == 'ongoing':
-                data['status'] = 'ongoing'
-            elif manga['status'] == 'completed':
-                data['status'] = 'complete'
+            elif label.startswith('Artist'):
+                for a in element.next_sibling.text.split(';'):
+                    if a.strip() not in data['authors']:
+                        data['authors'].append(a.strip())
 
-            data['synopsis'] = manga['description']
+            elif label.startswith('Status'):
+                status = element.next_sibling.text.strip()
+                if status == 'Completed':
+                    data['status'] = 'complete'
+                else:
+                    data['status'] = 'ongoing'
 
-            for chapter in sorted(manga['chapters'], key=lambda c: c['number']):
-                title = chapter['title']
-                if not title:
-                    title = f"Chapter {chapter['number']}"
+        for a_element in soup.find('p', class_='_3Czbn'):
+            data['genres'].append(a_element.text.strip())
+
+        data['synopsis'] = soup.find('p', class_='ZyMp7').text.strip()
+
+        # Chapters
+        for ul_element in reversed(soup.find_all('ul', class_='list-group')):
+            for li_element in reversed(ul_element.find_all('li', class_='list-group-item')):
+                date_text = li_element.find(class_='UovLc').text.strip()
+                date_format = '%Y-%m-%d' if len(date_text) == 10 else None
+
                 data['chapters'].append(dict(
-                    slug=convert_server_chapter_number_to_internal_chapter_slug(chapter['number']),
-                    title=title,
-                    date=convert_date_string(chapter['date']),
+                    slug=li_element.a.get('href').split('/')[-1],
+                    title=li_element.find('span', class_='text-secondary').text.strip(),
+                    date=convert_date_string(date_text, date_format),
                 ))
 
-            return data
-        except Exception as e:
-            print(f'{self.name}: Failed to get manga data: {e}')
-            return None
+        return data
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
-        Returns manga data by hitting GraphQL API.
+        Returns chapter's data via GraphQL API or headless browser + HTML parsing
 
         Currently, only pages are expected.
         """
         query = {
             'query': '{chapter(x:m01,slug:"%s",number:%s){pages}}' % (
                 manga_slug,
-                convert_internal_chapter_slug_to_server_chapter_number(chapter_slug),
+                chapter_slug.replace('chapter-', ''),
             )
         }
-        resp = self.session.post(self.api_url, json=query)
-        if not resp.ok:
-            return None
+        r = self.session.post(self.api_url, json=query)
 
-        try:
-            data = dict(
-                pages=[],
-            )
+        data = dict(
+            pages=[],
+        )
 
-            pages = json.loads(resp.json()['data']['chapter']['pages'])
-            for path in pages.values():
+        if r.status_code == 200:
+            try:
+                pages = json.loads(r.json()['data']['chapter']['pages'])
+                for path in pages.values():
+                    data['pages'].append(dict(
+                        slug=path,
+                        image=None,
+                    ))
+            except Exception as e:
+                logger.warning(f'Failed to get chapter data: {self.name} - {e}')
+
+                return None
+        else:
+            # Alternative: retrieve chapter page HTML using headless browser
+            html = get_chapter_page_html(self.chapter_url.format(manga_slug, chapter_slug))
+
+            soup = BeautifulSoup(html, 'html.parser')
+
+            for img_element in soup.find_all('img', class_='PB0mN'):
                 data['pages'].append(dict(
-                    slug=None,
-                    image=self.img_url.format(path),
+                    slug='/'.join(img_element.get('src').split('/')[-3:]),
+                    image=None,
                 ))
 
-            return data
-        except Exception as e:
-            print(f'{self.name}: Failed to get chapter data: {e}')
-            return None
+        return data
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
         """
         r = self.session_get(
-            page['image'],
+            self.image_url.format(page['slug']),
             headers={
                 'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
                 'Referer': self.chapter_url.format(manga_slug, chapter_slug),
@@ -174,7 +248,7 @@ class Mangahub(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['image'].split('/')[-1],
+            name=page['slug'].split('/')[-1],
         )
 
     def get_manga_url(self, slug, url):
@@ -187,25 +261,30 @@ class Mangahub(Server):
         """
         Returns most popular manga list
         """
-        query = {'query': '{latestPopular(x:m01){title,slug}search(x:m01,mod:POPULAR,count:true,offset:0){rows{title,slug},count}}'}
-        resp = self.session.post(self.api_url, json=query)
-        if not resp.ok:
+        return self.search('', populars=True)
+
+    def search(self, term, populars=False):
+        params = dict(
+            q=term,
+            genres='all',
+            order='POPULAR' if populars else 'ALPHABET',
+        )
+
+        r = self.session_get(self.search_url, params=params)
+        if r.status_code != 200:
             return None
 
-        try:
-            return [{'name': row['title'], 'slug': row['slug']} for row in resp.json()['data']['search']['rows']]
-        except Exception as e:
-            print(f'{self.name}: Failed to get most populars: {e}')
+        mime_type = get_buffer_mime_type(r.content)
+        if mime_type != 'text/html':
             return None
 
-    def search(self, term):
-        query = {'query': '{search(x:m01,q:"%s",limit:10){rows{title,slug}}}' % term}
-        resp = self.session.post(self.api_url, json=query)
-        if not resp.ok:
-            return None
+        soup = BeautifulSoup(r.text, 'html.parser')
 
-        try:
-            return [{'name': row['title'], 'slug': row['slug']} for row in resp.json()['data']['search']['rows']]
-        except Exception as e:
-            print(f'{self.name}: Failed to get search results: {e}')
-            return None
+        results = []
+        for h_element in soup.find_all('h4', class_='media-heading'):
+            results.append(dict(
+                slug=h_element.a.get('href').split('/')[-1],
+                name=h_element.a.text.strip(),
+            ))
+
+        return results
