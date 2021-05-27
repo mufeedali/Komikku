@@ -7,6 +7,7 @@
 from bs4 import BeautifulSoup
 import requests
 
+from komikku.utils import skip_past
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
@@ -22,11 +23,11 @@ class Manganelo(Server):
     lang = 'en'
     long_strip_genres = ['Webtoons', ]
 
-    base_url = 'https://manganelo.com'
+    base_url = 'https://manganato.com'
     search_url = base_url + '/getstorysearchjson'
     most_populars_url = base_url + '/genre-all?type=topview'
-    manga_url = base_url + '/manga/{0}'
-    chapter_url = base_url + '/chapter/{0}/{1}'
+    manga_url = base_url + '/manga-{0}'
+    chapter_url = 'https://readmanganato.com/manga-{0}/chapter-{1}'
 
     def __init__(self):
         if self.session is None:
@@ -95,7 +96,8 @@ class Manganelo(Server):
         for li_element in reversed(li_elements):
             span_elements = li_element.find_all('span')
 
-            slug = li_element.a.get('href').split('/')[-1]
+            href = li_element.a.get('href')
+            slug = href[skip_past(href, '/chapter-'):]
             title = li_element.a.text.strip()
             date = span_elements[1].get('title')[:-6]
 
@@ -195,8 +197,9 @@ class Manganelo(Server):
 
             results = []
             for item in data:
+                link = item['link_story']
                 results.append(dict(
-                    slug=item['id_encode'],
+                    slug=link[skip_past(link, '/manga-'):],
                     name=BeautifulSoup(item['name'], 'html.parser').text,
                     cover=item['image'],
                 ))
