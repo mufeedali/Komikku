@@ -26,8 +26,8 @@ class Manganelo(Server):
     base_url = 'https://manganato.com'
     search_url = base_url + '/getstorysearchjson'
     most_populars_url = base_url + '/genre-all?type=topview'
-    manga_url = base_url + '/manga-{0}'
-    chapter_url = 'https://readmanganato.com/manga-{0}/chapter-{1}'
+    manga_url = 'https://readmanganato.com/manga-{0}'
+    chapter_url = manga_url + '/chapter-{1}'
 
     def __init__(self):
         if self.session is None:
