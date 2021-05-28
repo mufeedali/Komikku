@@ -31,6 +31,8 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
+from komikku.servers.exceptions import ServerException
+
 keyring.core.init_backend()
 
 logger = logging.getLogger('komikku')
@@ -132,6 +134,8 @@ def is_flatpak():
 def log_error_traceback(e):
     if isinstance(e, requests.exceptions.RequestException):
         return _('No Internet connection, timeout or server down')
+    elif isinstance(e, ServerException):
+        return e.message
 
     logger.info(traceback.format_exc())
 

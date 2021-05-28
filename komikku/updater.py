@@ -47,12 +47,21 @@ class Updater(GObject.GObject):
 
     @if_network_available
     def start(self):
-        def show_notification(summary, body=''):
+        notification = None
+
+        def show_notification(summary, body='', new=False):
+            nonlocal notification
+
             if notification is None:
                 # Use in-app notification
                 self.window.show_notification('{0}\n{1}'.format(summary, body))
             else:
-                notification.update(summary, body)
+                if new:
+                    notification = Notify.Notification.new(summary, body)
+                    notification.set_timeout(Notify.EXPIRES_DEFAULT)
+                else:
+                    notification.update(summary, body)
+
                 notification.show()
 
         def run():
@@ -106,7 +115,7 @@ class Updater(GObject.GObject):
                     total_errors
                 )
 
-            GLib.timeout_add(2000, show_notification, summary, message)
+            GLib.timeout_add(2000, show_notification, summary, message, True)
 
         def complete(manga, recent_chapters_ids, nb_deleted_chapters, synced):
             nb_recent_chapters = len(recent_chapters_ids)
@@ -139,8 +148,6 @@ class Updater(GObject.GObject):
         if Settings.get_default().desktop_notifications:
             notification = Notify.Notification.new('')
             notification.set_timeout(Notify.EXPIRES_DEFAULT)
-        else:
-            notification = None
 
         if self.update_library_flag:
             show_notification(_('Library update started'))

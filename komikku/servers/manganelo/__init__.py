@@ -12,9 +12,10 @@ from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.servers.exceptions import NotFoundError
 
 # NOTE: https://mangakakalot.com seems to be a clone (same IP)
-SERVER_NAME = 'MangaNelo'
+SERVER_NAME = 'MangaNato (MangaNelo)'
 
 
 class Manganelo(Server):
@@ -51,6 +52,10 @@ class Manganelo(Server):
             return None
 
         soup = BeautifulSoup(r.text, 'html.parser')
+
+        if soup.find(class_='panel-not-found'):
+            # No longer exists
+            raise NotFoundError
 
         data = initial_data.copy()
         data.update(dict(
@@ -125,6 +130,10 @@ class Manganelo(Server):
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
+        if soup.find(class_='panel-not-found'):
+            # No longer exists
+            raise NotFoundError
+
         pages_imgs = soup.find('div', class_='container-chapter-reader').find_all('img')
 
         data = dict(
@@ -143,7 +152,9 @@ class Manganelo(Server):
         Returns chapter page scan (image) content
         """
         r = self.session_get(page['image'], headers={'referer': self.chapter_url.format(manga_slug, chapter_slug)})
-        if r.status_code != 200:
+        if r.status_code == 404:
+            raise NotFoundError
+        elif r.status_code != 200:
             return None
 
         mime_type = get_buffer_mime_type(r.content)
