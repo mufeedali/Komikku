@@ -189,32 +189,28 @@ class Manganelo(Server):
 
         results = []
         for element in soup.find_all('div', class_='genres-item-info'):
+            url = element.h3.a.get('href')
             results.append(dict(
                 name=element.h3.a.get('title').strip(),
-                slug=element.h3.a.get('href').split('/')[-1],
+                slug=url[skip_past(url, '/manga-'):],
             ))
 
         return results
 
     def search(self, term):
         r = self.session_post(self.search_url, data=dict(searchword=term))
+        if r.status_code != 200:
+            return None
 
-        if r.status_code == 200:
-            # Returned data for each manga:
-            # name: name of the manga (HTML)
-            # nameunsigned: slug of the manga
-            # image: URL of the cover image
-            data = r.json(strict=False)
+        data = r.json()
 
-            results = []
-            for item in data:
-                link = item['link_story']
-                results.append(dict(
-                    slug=link[skip_past(link, '/manga-'):],
-                    name=BeautifulSoup(item['name'], 'html.parser').text,
-                    cover=item['image'],
-                ))
+        results = []
+        for item in data:
+            link = item['link_story']
+            results.append(dict(
+                slug=link[skip_past(link, '/manga-'):],
+                name=BeautifulSoup(item['name'], 'html.parser').text,
+                cover=item['image'],
+            ))
 
-            return results
-
-        return None
+        return results
