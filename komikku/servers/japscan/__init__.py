@@ -27,7 +27,7 @@ class Japscan(Server):
     lang = 'fr'
     long_strip_genres = ['Webtoon', ]
 
-    base_url = 'https://www.japscan.se'
+    base_url = 'https://www.japscan.ws'
     search_url = base_url + '/manga/'
     api_search_url = base_url + '/live-search/'
     manga_url = base_url + '/manga/{0}/'
@@ -199,7 +199,7 @@ class Japscan(Server):
         def on_load_failed(_webview, _event, _uri, gerror):
             nonlocal error
 
-            error = gerror
+            error = f'Failed to load page image: {page_url}'
 
             headless_browser.close()
 
@@ -221,9 +221,12 @@ class Japscan(Server):
 
                 # Get image data
                 surface = headless_browser.webview.get_snapshot_finish(result)
-                io_buffer = BytesIO()
-                surface.write_to_png(io_buffer)
-                image_buffer = io_buffer.getbuffer()
+                if surface:
+                    io_buffer = BytesIO()
+                    surface.write_to_png(io_buffer)
+                    image_buffer = io_buffer.getbuffer()
+                else:
+                    error = f'Failed to do page image snapshot: {page_url}'
 
                 headless_browser.close()
 
@@ -237,6 +240,7 @@ class Japscan(Server):
             time.sleep(.1)
 
         if error:
+            logger.warning(error)
             raise requests.exceptions.RequestException()
 
         return dict(
