@@ -7,6 +7,7 @@
 from bs4 import BeautifulSoup
 from io import BytesIO
 import json
+import logging
 import requests
 import time
 
@@ -19,6 +20,8 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import search_duckduckgo
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+
+logger = logging.getLogger('komikku.servers.japscan')
 
 
 class Japscan(Server):
