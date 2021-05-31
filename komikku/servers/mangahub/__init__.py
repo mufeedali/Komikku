@@ -33,10 +33,11 @@ def get_chapter_page_html(url):
     html = None
 
     def load_page():
-        if not headless_browser.open(url):
+        settings = dict(
+            auto_load_images=False,
+        )
+        if not headless_browser.open(server.base_url, user_agent=USER_AGENT, settings=settings):
             return True
-
-        headless_browser.settings.set_auto_load_images(False)
 
         headless_browser.connect_signal('load-changed', on_load_changed)
         headless_browser.connect_signal('load-failed', on_load_failed)

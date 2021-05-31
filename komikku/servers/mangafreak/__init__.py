@@ -6,6 +6,7 @@
 
 from bs4 import BeautifulSoup
 import functools
+import logging
 import requests
 import time
 
@@ -17,6 +18,8 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import headless_browser
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+
+logger = logging.getLogger('komikku.servers.mangafreak')
 
 SERVER_NAME = 'MangaFreak'
 
@@ -33,7 +36,10 @@ def bypass_cloudflare(func):
         error = None
 
         def load_page():
-            if not headless_browser.open(server.base_url):
+            settings = dict(
+                auto_load_images=False,
+            )
+            if not headless_browser.open(server.base_url, user_agent=USER_AGENT, settings=settings):
                 return True
 
             headless_browser.connect_signal('load-changed', on_load_changed)
@@ -67,7 +73,7 @@ def bypass_cloudflare(func):
         def on_load_failed(_webview, _event, _uri, gerror):
             nonlocal error
 
-            error = gerror
+            error = f'Failed to load homepage: {server.base_url}'
 
             headless_browser.close()
 
@@ -103,6 +109,7 @@ def bypass_cloudflare(func):
             time.sleep(.1)
 
         if error:
+            logger.warning(error)
             raise requests.exceptions.RequestException()
 
         return func(*args, **kwargs)

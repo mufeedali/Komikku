@@ -102,7 +102,6 @@ class HeadlessBrowser(Gtk.Window):
         self.viewport.add(self.webview)
 
         self.settings = self.webview.get_settings()
-        self.settings.set_user_agent(USER_AGENT)
         self.settings.set_enable_dns_prefetching(True)
         self.settings.set_enable_page_cache(False)
 
@@ -137,12 +136,12 @@ class HeadlessBrowser(Gtk.Window):
 
         self.__handlers_ids = []
 
-    def open(self, uri, user_agent=None):
+    def open(self, uri, user_agent=None, settings=None):
         if self.lock:
             return False
 
-        if user_agent is not None:
-            self.settings.set_user_agent(user_agent)
+        self.settings.set_user_agent(user_agent or USER_AGENT)
+        self.settings.set_auto_load_images(True if not settings or settings.get('auto_load_images', True) else False)
 
         self.lock = True
 
