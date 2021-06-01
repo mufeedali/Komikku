@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
-from bs4 import BeautifulSoup
 from functools import lru_cache
 import html
 import logging
@@ -17,16 +16,14 @@ from komikku.servers import do_login as with_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
-from komikku.utils import skip_past
 
 logger = logging.getLogger('komikku.servers.mangadex')
 
-
 SERVER_NAME = 'MangaDex'
 
-
-CHAPTERS_PER_REQUEST = 100
 AUTHORS_PER_REQUEST = 100
+CHAPTERS_PER_REQUEST = 100
+SEARCH_RESULTS_LIMIT = 100
 SCANLATORS_PER_REQUEST = 100
 
 
@@ -45,14 +42,13 @@ class Mangadex(Server):
     api_manga_base = api_base_url + '/manga'
     api_manga_url = api_manga_base + '/{0}'
     api_chapter_base = api_base_url + '/chapter'
-    api_chapter_url = api_manga_base + '/{0}'
+    api_chapter_url = api_chapter_base + '/{0}'
     api_author_base = api_base_url + '/author'
     api_cover_url = api_base_url + '/cover/{0}'
     api_scanlator_base = api_base_url + '/group'
     api_server_url = api_base_url + '/at-home/server/{0}'
     api_page_url = '{0}/data/{1}'
 
-    most_populars_url = base_url + '/titles?s=7'
     manga_url = base_url + '/title/{0}'
     chapter_url = base_url + '/chapter/{0}'
     page_url = base_url + '/chapter/{0}/{1}'
@@ -60,7 +56,6 @@ class Mangadex(Server):
 
     headers = {
         'User-Agent': USER_AGENT,
-        'Host': api_base_url.split('/')[2],
         'Referer': base_url,
     }
 
@@ -68,11 +63,12 @@ class Mangadex(Server):
         if username and password:
             self.do_login(username, password)
 
-    def do_login(self, *args):
-        Server.do_login(self, *args)
-        retry = Retry(total=5, backoff_factor=1, respect_retry_after_header=False,
-                      status_forcelist=Retry.RETRY_AFTER_STATUS_CODES)
-        self.session.mount(self.api_base_url, HTTPAdapter(max_retries=retry))
+    @staticmethod
+    def get_group_name(group_id, groups_list):
+        """Get group name from group id"""
+        matching_group = [group for group in groups_list if group['id'] == group_id]
+
+        return matching_group[0]['name']
 
     def convert_old_slug(self, slug):
         # Removing this will break manga that were added before the change to the manga slug
@@ -86,91 +82,15 @@ class Mangadex(Server):
             })
             if r.status_code != 200:
                 return None
+
             for result in r.json():
                 if str(result['data']['attributes']['legacyId']) == slug:
                     return result['data']['attributes']['newId']
 
-    @staticmethod
-    def get_group_name(group_id, groups_list):
-        """Get group name from group id."""
-        matching_group = [group for group in groups_list if group['id'] == group_id]
-        return matching_group[0]['name']
-
-
-    def list_authors(self, authors):
-        if authors == []:
-            return []
-        r = self.session_get(self.api_author_base, params={'ids[]': authors})
-        if r.status_code != 200:
-            return None
-        return [result['data']['attributes']['name'] for result in r.json()['results']]
-
-    def get_cover(self, manga_slug, cover):
-        r = self.session_get(self.api_cover_url.format(cover))
-        if r.status_code != 200:
-            return None
-        result = r.json()
-        return self.cover_url.format(manga_slug, result['data']['attributes']['fileName'])
-
-    def resolve_scanlators(self, chapter_or_chapters, scanlators):
-        if scanlators == []:
-            return chapters
-        r = self.session_get(self.api_scanlator_base, params={'ids[]': scanlators})
-        if r.status_code != 200:
-            return None
-        remap = {result['data']['id']: result['data']['attributes']['name'] for result in r.json()['results']}
-
-        if isinstance(chapter_or_chapters, list):
-            chapters = chapter_or_chapters
-        else:
-            chapters = [chapter_or_chapters]
-
-        for chapter in chapters:
-            chapter['scanlators'] = [
-                remap[scanlator] if scanlator in remap else scanlator for scanlator in chapter['scanlators']
-            ]
-        return chapter_or_chapters
-
-    def list_chapters(self, manga_slug):
-        offset=0
-        chapters = []
-        scanlators = set()
-        while True:
-            r = self.session_get(self.api_chapter_base, params={
-                'manga': manga_slug,
-                'translatedLanguage[]': [self.lang_code],
-                'limit': CHAPTERS_PER_REQUEST,
-                'offset': offset
-            })
-            if r.status_code == 204:
-                break
-            elif r.status_code != 200:
-                return None
-            results = r.json()['results']
-
-            for chapter in results:
-                attributes = chapter['data']['attributes']
-                data=dict(
-                    slug=chapter['data']['id'],
-                    title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
-                    pages=[dict(slug=attributes['hash']+'/'+page, image=None)
-                           for page in attributes['data']],
-                    date=convert_date_string(attributes['publishAt']),
-                    scanlators=[])
-                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
-                scanlators.update(rel_scanlators)
-                data['scanlators'] = rel_scanlators
-                chapters.append(data)
-
-            if len(results) < CHAPTERS_PER_REQUEST:
-                break
-            offset += CHAPTERS_PER_REQUEST
-
-        scanlators = list(scanlators)
-        for n in range(0, len(scanlators), SCANLATORS_PER_REQUEST):
-            chapters = self.resolve_scanlators(chapters, scanlators[n:n + SCANLATORS_PER_REQUEST])
-
-        return chapters
+    def do_login(self, *args):
+        Server.do_login(self, *args)
+        retry = Retry(total=5, backoff_factor=1, respect_retry_after_header=False, status_forcelist=Retry.RETRY_AFTER_STATUS_CODES)
+        self.session.mount(self.api_base_url, HTTPAdapter(max_retries=retry))
 
     @with_login
     def get_manga_data(self, initial_data):
@@ -206,6 +126,17 @@ class Mangadex(Server):
 
         # FIXME: Should probably be lang_code, but the API returns weird stuff
         data['name'] = html.unescape(attributes['title']['en'])
+
+        rel_authors = []
+        for relationship in resp_json['relationships']:
+            if relationship['type'] == 'author':
+                rel_authors.append(relationship['id'])
+            elif relationship['type'] == 'cover_art':
+                data['cover'] = self.resolve_cover(data['slug'], relationship['id'])
+
+        for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
+            data['authors'] += self.resolve_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
+
         # FIXME: Same lang_code weirdness
         data['genres'] = [tag['attributes']['name']['en'] for tag in attributes['tags']]
 
@@ -221,18 +152,7 @@ class Mangadex(Server):
         # FIXME: lang_code
         data['synopsis'] = html.unescape(attributes['description']['en'])
 
-        rel_authors = []
-
-        for relationship in resp_json['relationships']:
-            if relationship['type'] == 'author':
-                rel_authors.append(relationship['id'])
-            elif relationship['type'] == 'cover_art':
-                data['cover'] = self.get_cover(data['slug'], relationship['id'])
-
-        for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
-            data['authors'] += self.list_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
-
-        data['chapters'] += self.list_chapters(data['slug'])
+        data['chapters'] += self.resolve_chapters(data['slug'])
 
         return data
 
@@ -243,25 +163,22 @@ class Mangadex(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_get(
-            self.api_chapter_url.format(chapter_slug),
-            headers={
-                'Host': self.api_base_url.split('/')[2],
-                'Referer': self.chapter_url.format(chapter_slug),
-            }
-        )
+        r = self.session_get(self.api_chapter_url.format(chapter_slug))
         if r.status_code != 200:
             return None
 
         resp_json = r.json()
+
         attributes = resp_json['data']['attributes']
+        title = f'#{attributes["chapter"]}'
+        if attributes['title']:
+            title = f'{title} - {attributes["title"]}'
 
         data = dict(
             slug=chapter_slug,
-            title='#{0} - {1}'.format(attributes['chapter'], attributes['title']),
-            pages=[dict(slug=attributes['hash']+'/'+page, image=None)
-                   for page in attributes['data']],
-            date=convert_date_string(attributes['publishAt']),
+            title=title,
+            pages=[dict(slug=attributes['hash'] + '/' + page, image=None) for page in attributes['data']],
+            date=convert_date_string(attributes['publishAt'].split('T')[0], format='%Y-%m-%d'),
             scanlators=[rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
         )
 
@@ -269,13 +186,6 @@ class Mangadex(Server):
             data = self.resolve_scanlators(data, data['scanlators'][n:n + SCANLATORS_PER_REQUEST])
 
         return data
-
-    @lru_cache(maxsize=1)
-    def get_server_url(self, chapter_slug):
-        r = self.session_get(self.api_server_url.format(chapter_slug))
-        if r.status_code != 200:
-            return None
-        return r.json()['baseUrl']
 
     @with_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
@@ -287,11 +197,7 @@ class Mangadex(Server):
             self.get_server_url.cache_clear()
             return None
 
-        r = self.session_get(self.api_page_url.format(server_url, page['slug']),
-                             headers={
-                                 'Accept': 'image/webp,image/*;q=0.8,*/*;q=0.5',
-                                 'Referer': self.page_url.format(chapter_slug, 1),
-                             })
+        r = self.session_get(self.api_page_url.format(server_url, page['slug']))
 
         if r.status_code != 200:
             self.get_server_url.cache_clear()
@@ -312,6 +218,17 @@ class Mangadex(Server):
         Returns manga absolute URL
         """
         return self.manga_url.format(slug)
+
+    def get_most_populars(self):
+        return self.search('')
+
+    @lru_cache(maxsize=1)
+    def get_server_url(self, chapter_slug):
+        r = self.session_get(self.api_server_url.format(chapter_slug))
+        if r.status_code != 200:
+            return None
+
+        return r.json()['baseUrl']
 
     def login(self, username, password):
         r = self.session_post(
@@ -336,38 +253,121 @@ class Mangadex(Server):
 
         return True
 
-    def _search_results(self, json):
-        results = []
-        for result in json['results']:
-            if result['result'] != 'ok':
-                continue
-            result = result['data']
-            if result['type'] != 'manga':
-                continue
-            results.append(dict(
-                slug=result['id'],
-                # FIXME: lang_code
-                name=result['attributes']['title']['en']
-            ))
-        return results
+    def resolve_authors(self, authors):
+        if authors == []:
+            return []
 
-    @with_login
-    def get_most_populars(self):
-        r = self.session_get(self.api_manga_base)
+        r = self.session_get(self.api_author_base, params={'ids[]': authors})
         if r.status_code != 200:
             return None
 
-        return self._search_results(r.json())
+        return [result['data']['attributes']['name'] for result in r.json()['results']]
+
+    def resolve_chapters(self, manga_slug):
+        chapters = []
+        offset = 0
+        scanlators = set()
+
+        while True:
+            r = self.session_get(self.api_chapter_base, params={
+                'manga': manga_slug,
+                'translatedLanguage[]': [self.lang_code],
+                'limit': CHAPTERS_PER_REQUEST,
+                'offset': offset
+            })
+            if r.status_code == 204:
+                break
+            if r.status_code != 200:
+                return None
+
+            results = r.json()['results']
+
+            for chapter in results:
+                attributes = chapter['data']['attributes']
+
+                title = f'#{attributes["chapter"]}'
+                if attributes['title']:
+                    title = f'{title} - {attributes["title"]}'
+
+                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
+
+                data = dict(
+                    slug=chapter['data']['id'],
+                    title=title,
+                    pages=[dict(slug=attributes['hash'] + '/' + page, image=None) for page in attributes['data']],
+                    date=convert_date_string(attributes['publishAt'].split('T')[0], format='%Y-%m-%d'),
+                    scanlators=rel_scanlators,
+                )
+                scanlators.update(rel_scanlators)
+                chapters.append(data)
+
+            if len(results) < CHAPTERS_PER_REQUEST:
+                break
+            offset += CHAPTERS_PER_REQUEST
+
+        scanlators = list(scanlators)
+        for n in range(0, len(scanlators), SCANLATORS_PER_REQUEST):
+            chapters = self.resolve_scanlators(chapters, scanlators[n:n + SCANLATORS_PER_REQUEST])
+
+        return chapters
+
+    def resolve_cover(self, manga_slug, cover):
+        r = self.session_get(self.api_cover_url.format(cover))
+        if r.status_code != 200:
+            return None
+
+        return self.cover_url.format(manga_slug, r.json()['data']['attributes']['fileName'])
+
+    def resolve_scanlators(self, chapter_or_chapters, scanlators):
+        if scanlators == []:
+            return chapter_or_chapters
+
+        r = self.session_get(self.api_scanlator_base, params={'ids[]': scanlators})
+        if r.status_code != 200:
+            return None
+
+        remap = {result['data']['id']: result['data']['attributes']['name'] for result in r.json()['results']}
+
+        if isinstance(chapter_or_chapters, list):
+            chapters = chapter_or_chapters
+        else:
+            chapters = [chapter_or_chapters]
+
+        for chapter in chapters:
+            chapter['scanlators'] = [
+                remap[scanlator] if scanlator in remap else scanlator for scanlator in chapter['scanlators']
+            ]
+
+        return chapter_or_chapters
 
     @with_login
     def search(self, term):
-        r = self.session_get(self.api_manga_base, params=dict(
-            title=term,
-        ))
+        params = dict(
+            limit=SEARCH_RESULTS_LIMIT,
+        )
+        if term:
+            params['title'] = term
+
+        r = self.session_get(self.api_manga_base, params=params)
         if r.status_code != 200:
             return None
 
-        return self._search_results(r.json())
+        results = []
+        for result in r.json()['results']:
+            if result['result'] != 'ok':
+                continue
+
+            result = result['data']
+            if result['type'] != 'manga':
+                continue
+
+            results.append(dict(
+                slug=result['id'],
+                # FIXME: lang_code
+                name=result['attributes']['title']['en'],
+            ))
+
+        return results
 
 
 class Mangadex_cs(Mangadex):
