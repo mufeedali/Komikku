@@ -220,6 +220,7 @@ class Japscan(Server):
                     WebKit2.SnapshotRegion.FULL_DOCUMENT, WebKit2.SnapshotOptions.NONE, None, on_snapshot_finished)
 
             def on_snapshot_finished(_webview, result):
+                nonlocal error
                 nonlocal image_buffer
 
                 # Get image data

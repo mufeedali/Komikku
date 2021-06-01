@@ -36,7 +36,7 @@ def get_chapter_page_html(url):
         settings = dict(
             auto_load_images=False,
         )
-        if not headless_browser.open(server.base_url, user_agent=USER_AGENT, settings=settings):
+        if not headless_browser.open(url, user_agent=USER_AGENT, settings=settings):
             return True
 
         headless_browser.connect_signal('load-changed', on_load_changed)
