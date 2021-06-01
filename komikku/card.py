@@ -84,8 +84,8 @@ class Card:
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card-selection-mode'))
 
     def init(self, manga, transition=True):
-        # Default page is Info page
-        self.stack.set_visible_child_name('info')
+        # Default page is `Info` page except when we come from Explorer
+        self.stack.set_visible_child_name('chapters' if self.window.page == 'explorer' else 'info')
 
         self.manga = manga
         # Unref chapters to force a reload
@@ -221,6 +221,7 @@ class Card:
 
         self.window.menu_button.set_menu_model(self.builder.get_object('menu-card'))
         self.window.menu_button_image.set_from_icon_name('view-more-symbolic', Gtk.IconSize.BUTTON)
+        self.window.menu_button.show()
 
         self.window.show_page('card', transition=transition)
 
