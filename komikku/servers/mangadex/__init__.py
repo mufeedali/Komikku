@@ -7,15 +7,16 @@
 from functools import lru_cache
 import html
 import logging
+import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 from uuid import UUID
 
 from komikku.servers import convert_date_string
-from komikku.servers import do_login as with_login
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.servers.exceptions import NotFoundError
 
 logger = logging.getLogger('komikku.servers.mangadex')
 
@@ -33,11 +34,8 @@ class Mangadex(Server):
     lang = 'en'
     lang_code = 'en'
     long_strip_genres = ['Long Strip', ]
-    has_login = True
-    session_expiration_cookies = ['mangadex_rememberme_token', ]
 
     base_url = 'https://mangadex.org'
-    action_url = base_url + '/ajax/actions.ajax.php?function={0}'
     api_base_url = 'https://api.mangadex.org'
     api_manga_base = api_base_url + '/manga'
     api_manga_url = api_manga_base + '/{0}'
@@ -50,18 +48,15 @@ class Mangadex(Server):
     api_page_url = '{0}/data/{1}'
 
     manga_url = base_url + '/title/{0}'
-    chapter_url = base_url + '/chapter/{0}'
-    page_url = base_url + '/chapter/{0}/{1}'
     cover_url = 'https://uploads.mangadex.org/covers/{0}/{1}'
 
-    headers = {
-        'User-Agent': USER_AGENT,
-        'Referer': base_url,
-    }
+    def __init__(self):
+        if self.session is None:
+            self.session = requests.Session()
+            self.session.headers.update({'user-agent': USER_AGENT})
 
-    def __init__(self, username=None, password=None):
-        if username and password:
-            self.do_login(username, password)
+            retry = Retry(total=5, backoff_factor=1, respect_retry_after_header=False, status_forcelist=Retry.RETRY_AFTER_STATUS_CODES)
+            self.session.mount(self.api_base_url, HTTPAdapter(max_retries=retry))
 
     @staticmethod
     def get_group_name(group_id, groups_list):
@@ -70,29 +65,25 @@ class Mangadex(Server):
 
         return matching_group[0]['name']
 
-    def convert_old_slug(self, slug):
+    def convert_old_slug(self, slug, type):
         # Removing this will break manga that were added before the change to the manga slug
         slug = slug.split('/')[0]
         try:
             return str(UUID(slug, version=4))
         except ValueError:
             r = self.session_post(self.api_base_url + '/legacy/mapping', json={
-                'type': 'manga',
+                'type': type,
                 'ids': [int(slug)],
             })
             if r.status_code != 200:
                 return None
 
             for result in r.json():
-                if str(result['data']['attributes']['legacyId']) == slug:
+                if result['result'] == 'ok' and str(result['data']['attributes']['legacyId']) == slug:
                     return result['data']['attributes']['newId']
 
-    def do_login(self, *args):
-        Server.do_login(self, *args)
-        retry = Retry(total=5, backoff_factor=1, respect_retry_after_header=False, status_forcelist=Retry.RETRY_AFTER_STATUS_CODES)
-        self.session.mount(self.api_base_url, HTTPAdapter(max_retries=retry))
+            return None
 
-    @with_login
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -101,9 +92,11 @@ class Mangadex(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        new_slug = self.convert_old_slug(initial_data['slug'])
+        slug = self.convert_old_slug(initial_data['slug'], type='manga')
+        if slug is None:
+            raise NotFoundError
 
-        r = self.session_get(self.api_manga_url.format(new_slug))
+        r = self.session_get(self.api_manga_url.format(slug))
         if r.status_code != 200:
             return None
 
@@ -111,7 +104,7 @@ class Mangadex(Server):
 
         data = initial_data.copy()
         data.update(dict(
-            slug=new_slug,
+            slug=slug,
             authors=[],
             scanlators=[],
             genres=[],
@@ -156,7 +149,6 @@ class Mangadex(Server):
 
         return data
 
-    @with_login
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
         Returns manga chapter data from API
@@ -164,6 +156,8 @@ class Mangadex(Server):
         Currently, only pages are expected.
         """
         r = self.session_get(self.api_chapter_url.format(chapter_slug))
+        if r.status_code == 404:
+            raise NotFoundError
         if r.status_code != 200:
             return None
 
@@ -187,7 +181,6 @@ class Mangadex(Server):
 
         return data
 
-    @with_login
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         """
         Returns chapter page scan (image) content
@@ -198,7 +191,6 @@ class Mangadex(Server):
             return None
 
         r = self.session_get(self.api_page_url.format(server_url, page['slug']))
-
         if r.status_code != 200:
             self.get_server_url.cache_clear()
             return None
@@ -229,29 +221,6 @@ class Mangadex(Server):
             return None
 
         return r.json()['baseUrl']
-
-    def login(self, username, password):
-        r = self.session_post(
-            self.action_url.format('login'),
-            data={
-                'login_username': username,
-                'login_password': password,
-                'remember_me': '1',
-            },
-            headers={
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': '*/*',
-                'Referer': 'https://mangadex.org/login',
-                'Origin': 'https://mangadex.org'
-            }
-        )
-
-        if r.text != '':
-            return False
-
-        self.save_session()
-
-        return True
 
     def resolve_authors(self, authors):
         if authors == []:
@@ -340,7 +309,6 @@ class Mangadex(Server):
 
         return chapter_or_chapters
 
-    @with_login
     def search(self, term):
         params = dict(
             limit=SEARCH_RESULTS_LIMIT,
