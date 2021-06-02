@@ -7,13 +7,13 @@
     "sources": [
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ae/e7/d9c3a176ca4b02024debf82342dab36efadfc5776f9c8db077e8f6e71821/pycparser-2.20-py2.py3-none-any.whl",
-            "sha256": "7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705"
+            "url": "https://files.pythonhosted.org/packages/a8/20/025f59f929bbcaa579704f443a438135918484fffaacfaddba776b374563/cffi-1.14.5.tar.gz",
+            "sha256": "fd78e5fee591709f32ef6edb9a015b4aa1a5022598e36227500c8f4e02328d9c"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/cb/ae/380e33d621ae301770358eb11a896a34c34f30db188847a561e8e39ee866/cffi-1.14.3.tar.gz",
-            "sha256": "f92f789e4f9241cd262ad7a555ca2c648a98178a953af117ef7fad46aa1d5591"
+            "url": "https://files.pythonhosted.org/packages/ae/e7/d9c3a176ca4b02024debf82342dab36efadfc5776f9c8db077e8f6e71821/pycparser-2.20-py2.py3-none-any.whl",
+            "sha256": "7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705"
         }
     ]
 }
