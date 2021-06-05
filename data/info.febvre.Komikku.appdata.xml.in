@@ -45,6 +45,13 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.29.1" date="2021-06-05">
+            <description>
+                <ul>
+                    <li>[Library] Fix bug preventing app startup (empty library only)</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.29.0" date="2021-06-03">
             <description>
                 <ul>
