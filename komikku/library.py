@@ -465,7 +465,7 @@ class Library:
 
         if len(mangas_rows) == 0 and selected_category_id == 0:
             # Display start page
-            self.show_page('start_page', True)
+            self.show_page('start_page')
 
             return
 
