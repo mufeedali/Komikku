@@ -220,7 +220,7 @@ class Mangasee(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(page['image'])
+        r = self.session_get(page['image'], headers={'Referer': self.base_url})
         if r.status_code != 200:
             return None
 

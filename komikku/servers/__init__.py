@@ -274,7 +274,7 @@ class Server:
         if url is None:
             return None
 
-        r = self.session_get(url, headers={'referer': self.base_url})
+        r = self.session_get(url, headers={'Referer': self.base_url})
         if r is None:
             return None
 
