@@ -1,8 +1,8 @@
 {
-    "name": "python3-requests",
+    "name": "python3-cloudscraper",
     "buildsystem": "simple",
     "build-commands": [
-        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"requests\""
+        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"cloudscraper\""
     ],
     "sources": [
         {
@@ -19,6 +19,21 @@
             "type": "file",
             "url": "https://files.pythonhosted.org/packages/19/c7/fa589626997dd07bd87d9269342ccb74b1720384a4d739a1872bd84fbe68/chardet-4.0.0-py2.py3-none-any.whl",
             "sha256": "f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/60/ef/7681134338fc097acef8d9b2f8abe0458e4d87559c689a8c306d0957ece5/requests_toolbelt-0.9.1-py2.py3-none-any.whl",
+            "sha256": "380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a6/6c/a9e697edbb8b5439d2c1f98b9d7b53e0b14ce2327dafb88fcf95dcccfeec/cloudscraper-1.2.58-py2.py3-none-any.whl",
+            "sha256": "674fd739f9412188aae8d6614e3e6316939fc0670ef5646abd3d316f1a59d3c2"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8a/bb/488841f56197b13700afd5658fc279a2025a39e22449b7cf29864669b15d/pyparsing-2.4.7-py2.py3-none-any.whl",
+            "sha256": "ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"
         },
         {
             "type": "file",

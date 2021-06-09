@@ -5,8 +5,8 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
+import cloudscraper
 import json
-import requests
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
@@ -21,7 +21,6 @@ from komikku.utils import log_error_traceback
 
 headers = {
     'User-Agent': USER_AGENT,
-    'Origin': 'https://mangasee123.com',
 }
 
 
@@ -40,7 +39,7 @@ class Mangasee(Server):
 
     def __init__(self):
         if self.session is None:
-            self.session = requests.Session()
+            self.session = cloudscraper.create_scraper()
             self.session.headers = headers
 
     def get_manga_data(self, initial_data):

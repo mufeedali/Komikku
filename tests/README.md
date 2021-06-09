@@ -22,6 +22,7 @@
     pip install dateparser
     pip install python-magic
     pip install pillow
+    pip install cloudscraper
     pip install pure-protobuf
     pip install unidecode
     pip install keyring
