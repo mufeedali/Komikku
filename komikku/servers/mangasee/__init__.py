@@ -11,7 +11,7 @@ import json
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
-from komikku.servers import USER_AGENT
+from komikku.servers import USER_AGENT_MOBILE
 from komikku.utils import log_error_traceback
 
 #
@@ -20,7 +20,7 @@ from komikku.utils import log_error_traceback
 #
 
 headers = {
-    'User-Agent': USER_AGENT,
+    'User-Agent': USER_AGENT_MOBILE,
 }
 
 
