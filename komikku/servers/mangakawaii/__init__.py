@@ -5,14 +5,16 @@
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
 from bs4 import BeautifulSoup
+import cloudscraper
 import json
-import requests
+import re
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
-from komikku.servers import USER_AGENT
+from komikku.servers import USER_AGENT_MOBILE
 
+RE_API_CHAPTERS_URL = re.compile(r'.*(/arrilot/load-widget\?id=.*)\",.*')
 SERVER_NAME = 'MangaKawaii'
 
 
@@ -22,20 +24,22 @@ class Mangakawaii(Server):
     lang = 'fr'
     long_strip_genres = ['Webtoon', ]
 
-    base_url = 'https://www.mangakawaii.com'
+    base_url = 'https://www.mangakawaii.net'
     search_url = base_url + '/recherche-manga'
     most_populars_url = base_url + '/filterMangaList?page=1&cat=&alpha=&sortBy=views&asc=false&author='
     most_populars_referer_url = base_url + '/liste-manga'
     manga_url = base_url + '/manga/{0}'
     chapter_url = base_url + '/manga/{0}/{1}/1'
-    cdn_base_url = 'https://cdn.mangakawaii.com'
-    image_url = cdn_base_url + '/uploads/manga/{0}/chapters/{1}/{2}'
+    cdn_base_url = 'https://cdn.mangakawaii.net'
+    image_url = cdn_base_url + '/uploads/manga/{0}/chapters_fr/{1}/{2}'
     cover_url = cdn_base_url + '/uploads/manga/{0}/cover/cover_250x350.jpg'
+
+    csrf_token = None
 
     def __init__(self):
         if self.session is None:
-            self.session = requests.Session()
-            self.session.headers.update({'user-agent': USER_AGENT})
+            self.session = cloudscraper.create_scraper()
+            self.session.headers.update({'User-Agent': USER_AGENT_MOBILE})
 
     def get_manga_data(self, initial_data):
         """
@@ -105,20 +109,33 @@ class Mangakawaii(Server):
                 data['synopsis'] = element.dd.text.strip()
 
         # Chapters
-        elements = soup.find('table', class_='table--manga').find_all('tr')
-        for element in reversed(elements):
-            if not element.get('class'):
-                # Skip volume row
-                continue
+        element = soup.find('div', id='arrilot-widget-container-2')
+        if element and element.script:
+            api_chapters_url = RE_API_CHAPTERS_URL.findall(element.script.string)[0]
+            r = self.session_get(self.base_url + api_chapters_url, headers={'Referer': self.manga_url.format(data['slug'])})
+            if r.status_code != 200:
+                return None
 
-            a_element = element.find('td', class_='table__chapter').a
-            date = list(element.find('td', class_='table__date').stripped_strings)[0]
+            mime_type = get_buffer_mime_type(r.content)
+            if mime_type != 'text/html':
+                return None
 
-            data['chapters'].append(dict(
-                slug=a_element.get('href').split('/')[-1],
-                title=a_element.text.strip(),
-                date=convert_date_string(date, format='%d.%m.%Y'),
-            ))
+            soup = BeautifulSoup(r.text, 'html.parser')
+
+            elements = soup.find_all('tr')
+            for element in reversed(elements):
+                if not element.get('class'):
+                    # Skip volume row
+                    continue
+
+                a_element = element.find('td', class_='table__chapter').a
+                date = list(element.find('td', class_='table__date').stripped_strings)[0]
+
+                data['chapters'].append(dict(
+                    slug=a_element.get('href').split('/')[-1],
+                    title=a_element.text.strip(),
+                    date=convert_date_string(date, format='%d.%m.%Y'),
+                ))
 
         return data
 
@@ -167,7 +184,12 @@ class Mangakawaii(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(self.image_url.format(manga_slug, chapter_slug, page['image']))
+        r = self.session_get(
+            self.image_url.format(manga_slug, chapter_slug, page['image']),
+            headers={
+                'Referer': self.chapter_url.format(manga_slug, chapter_slug),
+            }
+        )
         if r.status_code != 200:
             return None
 
@@ -194,8 +216,8 @@ class Mangakawaii(Server):
         r = self.session_get(
             self.most_populars_url,
             headers={
-                'x-requested-with': 'XMLHttpRequest',
-                'referer': self.most_populars_referer_url,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': self.most_populars_referer_url,
             }
         )
         if r.status_code != 200:
@@ -217,14 +239,12 @@ class Mangakawaii(Server):
         return results
 
     def search(self, term):
-        self.session_get(self.base_url)
-
         r = self.session_get(
             self.search_url,
-            params=dict(query=term),
+            params=dict(query=term, search_type='manga'),
             headers={
-                'x-requested-with': 'XMLHttpRequest',
-                'referer': self.base_url,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': self.base_url,
             }
         )
 
