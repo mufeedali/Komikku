@@ -77,8 +77,11 @@ Dependencies:
 * `python-lxml`
 * `python-magic` or `file-magic`
 * `python-pillow`
+* `python-requests`
 * `python-pure-protobuf`
 * `python-unidecode`
+
+[comment]: # (Always include requests as dependency -- not all servers need CloudScraper and most use requests directly.)
 
 This is the best practice to test Komikku without installing using meson and ninja.
 
