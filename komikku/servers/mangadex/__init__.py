@@ -22,10 +22,8 @@ logger = logging.getLogger('komikku.servers.mangadex')
 
 SERVER_NAME = 'MangaDex'
 
-AUTHORS_PER_REQUEST = 100
 CHAPTERS_PER_REQUEST = 100
 SEARCH_RESULTS_LIMIT = 100
-SCANLATORS_PER_REQUEST = 100
 
 
 class Mangadex(Server):
@@ -96,7 +94,8 @@ class Mangadex(Server):
         if slug is None:
             raise NotFoundError
 
-        r = self.session_get(self.api_manga_url.format(slug))
+        r = self.session_get(self.api_manga_url.format(slug),
+                             params={'includes[]': ['author', 'artist', 'cover_art']})
         if r.status_code != 200:
             return None
 
@@ -120,15 +119,11 @@ class Mangadex(Server):
         # FIXME: Should probably be lang_code, but the API returns weird stuff
         data['name'] = html.unescape(attributes['title']['en'])
 
-        rel_authors = []
         for relationship in resp_json['relationships']:
             if relationship['type'] == 'author':
-                rel_authors.append(relationship['id'])
+                data['authors'].append(relationship['attributes']['name'])
             elif relationship['type'] == 'cover_art':
-                data['cover'] = self.resolve_cover(data['slug'], relationship['id'])
-
-        for n in range(0, len(rel_authors), AUTHORS_PER_REQUEST):
-            data['authors'] += self.resolve_authors(rel_authors[n:n + AUTHORS_PER_REQUEST])
+                data['cover'] = self.cover_url.format(slug, relationship['attributes']['fileName'])
 
         # FIXME: Same lang_code weirdness
         data['genres'] = [tag['attributes']['name']['en'] for tag in attributes['tags']]
@@ -155,7 +150,8 @@ class Mangadex(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_get(self.api_chapter_url.format(chapter_slug))
+        r = self.session_get(self.api_chapter_url.format(chapter_slug),
+                             params={'includes[]': ['scanlators']})
         if r.status_code == 404:
             raise NotFoundError
         if r.status_code != 200:
@@ -168,16 +164,14 @@ class Mangadex(Server):
         if attributes['title']:
             title = f'{title} - {attributes["title"]}'
 
+        scanlators = [rel['attributes']['name'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
         data = dict(
             slug=chapter_slug,
             title=title,
             pages=[dict(slug=attributes['hash'] + '/' + page, image=None) for page in attributes['data']],
             date=convert_date_string(attributes['publishAt'].split('T')[0], format='%Y-%m-%d'),
-            scanlators=[rel['id'] for rel in resp_json['relationships'] if rel['type'] == 'scanlation_group']
+            scanlators=scanlators
         )
-
-        for n in range(0, len(data['scanlators']), SCANLATORS_PER_REQUEST):
-            data = self.resolve_scanlators(data, data['scanlators'][n:n + SCANLATORS_PER_REQUEST])
 
         return data
 
@@ -222,16 +216,6 @@ class Mangadex(Server):
 
         return r.json()['baseUrl']
 
-    def resolve_authors(self, authors):
-        if authors == []:
-            return []
-
-        r = self.session_get(self.api_author_base, params={'ids[]': authors})
-        if r.status_code != 200:
-            return None
-
-        return [result['data']['attributes']['name'] for result in r.json()['results']]
-
     def resolve_chapters(self, manga_slug):
         chapters = []
         offset = 0
@@ -242,7 +226,8 @@ class Mangadex(Server):
                 'manga': manga_slug,
                 'translatedLanguage[]': [self.lang_code],
                 'limit': CHAPTERS_PER_REQUEST,
-                'offset': offset
+                'offset': offset,
+                'includes[]': ['scanlation_group']
             })
             if r.status_code == 204:
                 break
@@ -258,56 +243,22 @@ class Mangadex(Server):
                 if attributes['title']:
                     title = f'{title} - {attributes["title"]}'
 
-                rel_scanlators = [rel['id'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
+                scanlators = [rel['attributes']['name'] for rel in chapter['relationships'] if rel['type'] == 'scanlation_group']
 
                 data = dict(
                     slug=chapter['data']['id'],
                     title=title,
                     pages=[dict(slug=attributes['hash'] + '/' + page, image=None) for page in attributes['data']],
                     date=convert_date_string(attributes['publishAt'].split('T')[0], format='%Y-%m-%d'),
-                    scanlators=rel_scanlators,
+                    scanlators=scanlators,
                 )
-                scanlators.update(rel_scanlators)
                 chapters.append(data)
 
             if len(results) < CHAPTERS_PER_REQUEST:
                 break
             offset += CHAPTERS_PER_REQUEST
 
-        scanlators = list(scanlators)
-        for n in range(0, len(scanlators), SCANLATORS_PER_REQUEST):
-            chapters = self.resolve_scanlators(chapters, scanlators[n:n + SCANLATORS_PER_REQUEST])
-
         return chapters
-
-    def resolve_cover(self, manga_slug, cover):
-        r = self.session_get(self.api_cover_url.format(cover))
-        if r.status_code != 200:
-            return None
-
-        return self.cover_url.format(manga_slug, r.json()['data']['attributes']['fileName'])
-
-    def resolve_scanlators(self, chapter_or_chapters, scanlators):
-        if scanlators == []:
-            return chapter_or_chapters
-
-        r = self.session_get(self.api_scanlator_base, params={'ids[]': scanlators})
-        if r.status_code != 200:
-            return None
-
-        remap = {result['data']['id']: result['data']['attributes']['name'] for result in r.json()['results']}
-
-        if isinstance(chapter_or_chapters, list):
-            chapters = chapter_or_chapters
-        else:
-            chapters = [chapter_or_chapters]
-
-        for chapter in chapters:
-            chapter['scanlators'] = [
-                remap[scanlator] if scanlator in remap else scanlator for scanlator in chapter['scanlators']
-            ]
-
-        return chapter_or_chapters
 
     def search(self, term):
         params = dict(
