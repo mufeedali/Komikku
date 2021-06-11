@@ -45,6 +45,15 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.29.2" date="2021-06-12">
+            <description>
+                <ul>
+                    <li>[Servers] Mangadex: Update</li>
+                    <li>[Servers] MangaKawaii: Update</li>
+                    <li>[Servers] MangaSee: Update</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.29.1" date="2021-06-05">
             <description>
                 <ul>
