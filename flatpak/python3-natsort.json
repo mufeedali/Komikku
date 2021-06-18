@@ -1,0 +1,14 @@
+{
+    "name": "python3-natsort",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"natsort\""
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/63/23/8b6acd2e9c0b427802dd45aacf0b2a0250893c3b26c7b1340589a588cc2a/natsort-7.1.1-py3-none-any.whl",
+            "sha256": "d0f4fc06ca163fa4a5ef638d9bf111c67f65eedcc7920f98dec08e489045b67e"
+        }
+    ]
+}

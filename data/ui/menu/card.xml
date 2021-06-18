@@ -40,6 +40,17 @@
                         <attribute name="action">app.card.sort-order</attribute>
                         <attribute name="target">date-asc</attribute>
                     </item>
+
+                    <item>
+                        <attribute name="label" translatable="yes">⬆ By Title</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">natural-desc</attribute>
+                    </item>
+                    <item>
+                        <attribute name="label" translatable="yes">⬇ By Title</attribute>
+                        <attribute name="action">app.card.sort-order</attribute>
+                        <attribute name="target">natural-asc</attribute>
+                    </item>
                 </section>
             </submenu>
         </section>

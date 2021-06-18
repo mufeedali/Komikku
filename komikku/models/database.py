@@ -386,7 +386,7 @@ class Manga:
     def chapters(self):
         if self._chapters is None:
             db_conn = create_db_connection()
-            if self.sort_order == 'asc':
+            if self.sort_order and self.sort_order.endswith('asc'):
                 rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank ASC', (self.id,))
             else:
                 rows = db_conn.execute('SELECT * FROM chapters WHERE manga_id = ? ORDER BY rank DESC', (self.id,))

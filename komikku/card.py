@@ -5,6 +5,7 @@
 from copy import deepcopy
 from gettext import gettext as _
 from gettext import ngettext as n_
+import natsort
 import time
 
 from gi.repository import Gdk
@@ -51,10 +52,6 @@ class Card:
         self.stack.connect('notify::visible-child', self.on_page_changed)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
 
-    @property
-    def sort_order(self):
-        return self.manga.sort_order or 'desc'
-
     def add_actions(self):
         self.delete_action = Gio.SimpleAction.new('card.delete', None)
         self.delete_action.connect('activate', self.on_delete_menu_clicked)
@@ -65,7 +62,7 @@ class Card:
         self.window.application.add_action(self.update_action)
 
         self.sort_order_action = Gio.SimpleAction.new_stateful('card.sort-order', GLib.VariantType.new('s'), GLib.Variant('s', 'desc'))
-        self.sort_order_action.connect('change-state', self.on_sort_order_changed)
+        self.sort_order_action.connect('change-state', self.chapters_list.on_sort_order_changed)
         self.window.application.add_action(self.sort_order_action)
 
         open_in_browser_action = Gio.SimpleAction.new('card.open-in-browser', None)
@@ -169,7 +166,7 @@ class Card:
 
     def on_resume_read_button_clicked(self, widget):
         chapters = [child.chapter for child in self.chapters_list.listbox.get_children()]
-        if self.sort_order in ['desc', 'date-desc']:
+        if self.chapters_list.sort_order.endswith('desc'):
             chapters.reverse()
 
         chapter = None
@@ -183,34 +180,20 @@ class Card:
 
         self.window.reader.init(self.manga, chapter)
 
-    def on_sort_order_changed(self, action, variant):
-        value = variant.get_string()
-        if value == self.manga.sort_order:
-            return
-
-        self.manga.update(dict(sort_order=value))
-        self.set_sort_order()
-
     def on_update_menu_clicked(self, action, param):
         self.window.updater.add(self.manga)
         self.window.updater.start()
 
     def populate(self):
+        self.chapters_list.set_sort_order(invalidate=False)
         self.chapters_list.populate()
         self.info_grid.populate()
         self.categories_list.populate()
-
-        self.set_sort_order(invalidate=False)
 
     def set_actions_enabled(self, enabled):
         self.delete_action.set_enabled(enabled)
         self.update_action.set_enabled(enabled)
         self.sort_order_action.set_enabled(enabled)
-
-    def set_sort_order(self, invalidate=True):
-        self.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
-        if invalidate:
-            self.chapters_list.listbox.invalidate_sort()
 
     def show(self, transition=True):
         self.viewswitchertitle.set_title(self.manga.name)
@@ -313,30 +296,9 @@ class ChaptersList:
 
         self.window.downloader.connect('download-changed', self.update_chapter_row)
 
-        def sort(child1, child2):
-            """
-            This function gets two children and has to return:
-            - a negative integer if the firstone should come before the second one
-            - zero if they are equal
-            - a positive integer if the second one should come before the firstone
-            """
-            if self.card.sort_order in ('asc', 'desc'):
-                if child1.chapter.rank > child2.chapter.rank:
-                    return -1 if self.card.sort_order == 'desc' else 1
-
-                if child1.chapter.rank < child2.chapter.rank:
-                    return 1 if self.card.sort_order == 'desc' else -1
-
-            elif self.card.sort_order in ('date-asc', 'date-desc'):
-                if child1.chapter.date > child2.chapter.date and child1.chapter.id > child2.chapter.id:
-                    return -1 if self.card.sort_order == 'date-desc' else 1
-
-                if child1.chapter.date < child2.chapter.date and child1.chapter.id < child2.chapter.id:
-                    return 1 if self.card.sort_order == 'date-desc' else -1
-
-            return 0
-
-        self.listbox.set_sort_func(sort)
+    @property
+    def sort_order(self):
+        return self.card.manga.sort_order or 'desc'
 
     def add_actions(self):
         # Menu actions in selection mode
@@ -522,6 +484,14 @@ class ChaptersList:
         else:
             self.card.viewswitchertitle.set_subtitle('')
 
+    def on_sort_order_changed(self, action, variant):
+        value = variant.get_string()
+        if value == self.card.manga.sort_order:
+            return
+
+        self.card.manga.update(dict(sort_order=value))
+        self.set_sort_order()
+
     def populate(self):
         self.clear()
 
@@ -545,9 +515,11 @@ class ChaptersList:
                 self.listbox.add(row)
                 yield True
 
-            self.window.activity_indicator.stop()
+            self.listbox.set_sort_func(self.sort_func)
+            self.listbox.invalidate_sort()
             self.card.set_actions_enabled(True)
             self.card.resume_read_button.set_sensitive(True)
+            self.window.activity_indicator.stop()
 
         def run_generator(func):
             self.window.activity_indicator.start()
@@ -557,6 +529,8 @@ class ChaptersList:
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
 
         self.populate_generator_stop_flag = False
+        self.listbox.set_sort_func(None)
+
         run_generator(add_chapters_rows)
 
     def populate_chapter_row(self, row):
@@ -734,6 +708,11 @@ class ChaptersList:
 
         run_generator(select_chapters_rows)
 
+    def set_sort_order(self, invalidate=True):
+        self.card.sort_order_action.set_state(GLib.Variant('s', self.sort_order))
+        if invalidate:
+            self.listbox.invalidate_sort()
+
     def show_chapter_menu(self, button, row):
         chapter = row.chapter
         self.action_row = row
@@ -754,6 +733,36 @@ class ChaptersList:
 
         popover.bind_model(menu, None)
         popover.popup()
+
+    def sort_func(self, child1, child2):
+        """
+        This function gets two children and has to return:
+        - a negative integer if the firstone should come before the second one
+        - zero if they are equal
+        - a positive integer if the second one should come before the firstone
+        """
+        if self.sort_order in ('asc', 'desc'):
+            if child1.chapter.rank > child2.chapter.rank:
+                return -1 if self.sort_order == 'desc' else 1
+
+            if child1.chapter.rank < child2.chapter.rank:
+                return 1 if self.sort_order == 'desc' else -1
+
+        elif self.sort_order in ('date-asc', 'date-desc') and child1.chapter.date and child2.chapter.date:
+            if child1.chapter.date > child2.chapter.date and child1.chapter.id > child2.chapter.id:
+                return -1 if self.sort_order == 'date-desc' else 1
+
+            if child1.chapter.date < child2.chapter.date and child1.chapter.id < child2.chapter.id:
+                return 1 if self.sort_order == 'date-desc' else -1
+
+        elif self.sort_order in ('natural-asc', 'natural-desc'):
+            l = natsort.natsorted([child1.chapter.title, child2.chapter.title], alg=natsort.ns.INT | natsort.ns.IC)
+            if l[0] == child1.chapter.title:
+                return 1 if self.sort_order == 'natural-desc' else -1
+
+            return -1 if self.sort_order == 'natural-desc' else 1
+
+        return 0
 
     def toggle_selected_chapters_read_status(self, action, param, read):
         chapters_ids = []
