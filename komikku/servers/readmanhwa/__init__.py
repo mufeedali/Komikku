@@ -97,7 +97,7 @@ class Readmanhwa(Server):
 
         # Name & cover
         data['name'] = manga['title']
-        data['cover'] = manga['thumb_url']
+        data['cover'] = self.base_url + manga['thumb_url']
 
         # Authors & Artists
         for author in manga['authors']:
@@ -153,7 +153,7 @@ class Readmanhwa(Server):
         """
         Returns chapter page scan (image) content
         """
-        r = self.session_get(page['image'])
+        r = self.session_get(self.base_url + page['image'])
         if r.status_code != 200:
             return None
 
