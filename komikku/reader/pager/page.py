@@ -49,7 +49,6 @@ class Page(Gtk.Overlay):
         self.viewport = Gtk.Viewport()
         self.image = Gtk.Image()
         self.imagebuf = None
-        self.surface = None
         self.viewport.add(self.image)
         self.scrolledwindow.add(self.viewport)
         self.add(self.scrolledwindow)
@@ -94,7 +93,6 @@ class Page(Gtk.Overlay):
         self.status = 'cleaned'
         self.loadable = False
         self.imagebuf = None
-        self.surface = None
         self.image.clear()
 
     def on_button_retry_clicked(self, button):
@@ -276,10 +274,7 @@ class Page(Gtk.Overlay):
                     self.error = 'corrupt_file'
                     self.imagebuf = Imagebuf.new_from_resource('/info/febvre/Komikku/images/missing_file.png')
         else:
-            # old_surface = self.surface
             self.image.clear()
-            self.surface = None
-            # del old_surface
 
         # Crop image borders
         imagebuf = self.imagebuf.crop_borders() if self.reader.manga.borders_crop == 1 else self.imagebuf
@@ -339,8 +334,11 @@ class Page(Gtk.Overlay):
         if isinstance(pixbuf, PixbufAnimation):
             self.image.set_from_animation(pixbuf)
         else:
-            self.surface = create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale)
-            self.image.set_from_surface(self.surface)
+            if self.window.hidpi_scale != 1:
+                surface = create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale)
+                self.image.set_from_surface(surface)
+            else:
+                self.image.set_from_pixbuf(pixbuf)
 
         if self.reader.reading_mode == 'webtoon':
             self.set_size_request(pixbuf.get_width() / self.window.hidpi_scale, pixbuf.get_height() / self.window.hidpi_scale)

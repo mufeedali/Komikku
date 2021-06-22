@@ -134,7 +134,6 @@ class BasePager:
         if self.zoom['active'] is False:
             self.set_interactive(False)
 
-            image = page.image
             pixbuf = page.imagebuf.get_pixbuf()
 
             # Record hadjustment and vadjustment values
@@ -143,8 +142,8 @@ class BasePager:
 
             # Adjust image's width to 2x window's width
             factor = 2
-            orig_width = page.surface.get_width() / self.window.hidpi_scale
-            orig_height = page.surface.get_height() / self.window.hidpi_scale
+            orig_width = page.image.get_pixbuf().get_width() / self.window.hidpi_scale
+            orig_height = page.image.get_pixbuf().get_height() / self.window.hidpi_scale
             zoom_width = self.reader.size.width * factor
             zoom_height = orig_height * (zoom_width / orig_width)
             ratio = zoom_width / orig_width
@@ -166,7 +165,10 @@ class BasePager:
             scaled_pixbuf = pixbuf.scale_simple(
                 zoom_width * self.window.hidpi_scale, zoom_height * self.window.hidpi_scale, InterpType.BILINEAR)
 
-            image.set_from_surface(create_cairo_surface_from_pixbuf(scaled_pixbuf, self.window.hidpi_scale))
+            if self.window.hidpi_scale != 1:
+                page.image.set_from_surface(create_cairo_surface_from_pixbuf(scaled_pixbuf, self.window.hidpi_scale))
+            else:
+                page.image.set_from_pixbuf(scaled_pixbuf)
 
             self.zoom['active'] = True
         else:
