@@ -94,6 +94,9 @@ class BasePager:
         raise NotImplementedError()
 
     def on_btn_press(self, widget, event):
+        if event.get_source_device().get_source() == Gdk.InputSource.TOUCHSCREEN:
+            return Gdk.EVENT_PROPAGATE
+
         if event.button == 1:
             if self.btn_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
