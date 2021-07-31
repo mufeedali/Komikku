@@ -99,7 +99,7 @@ class Readmanga(Server):
             a_element = element.find('a')
             slug = a_element.get('href').split('/', 2)[2]
             title = a_element.find(text=True, recursive=False).strip()
-            date = element.find('td', align='right').text.strip()
+            date = element.find('td', class_='text-right').text.strip()
 
             data['chapters'].append(dict(
                 slug=slug,
