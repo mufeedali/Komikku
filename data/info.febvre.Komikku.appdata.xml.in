@@ -45,6 +45,16 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.30.0" date="2021-08-04">
+            <description>
+                <ul>
+                    <li>[Card] Chapters list: Add sorting by title (can be slow with long lists)</li>
+                    <li>[Reader] Improve touch screen support</li>
+                    <li>[Servers] Read Manga: Update</li>
+                    <li>[Servers] ReadManhwa: Update</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.29.2" date="2021-06-12">
             <description>
                 <ul>
