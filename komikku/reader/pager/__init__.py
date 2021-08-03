@@ -30,7 +30,6 @@ class BasePager:
         self.scrolledwindow = self.reader.scrolledwindow
         self.scrolledwindow.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
             Gdk.EventMask.KEY_PRESS_MASK |
             Gdk.EventMask.SMOOTH_SCROLL_MASK
         )
@@ -94,9 +93,6 @@ class BasePager:
         raise NotImplementedError()
 
     def on_btn_press(self, widget, event):
-        if event.get_source_device().get_source() == Gdk.InputSource.TOUCHSCREEN:
-            return Gdk.EVENT_PROPAGATE
-
         if event.button == 1:
             if self.btn_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
                 # Schedule single click event to be able to detect double click
