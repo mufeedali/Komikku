@@ -101,7 +101,6 @@ class Mangadex(Server):
 
             return lang_code_alt_name or en_alt_name
 
-
     def get_manga_data(self, initial_data):
         """
         Returns manga data from API
@@ -114,8 +113,7 @@ class Mangadex(Server):
         if slug is None:
             raise NotFoundError
 
-        r = self.session_get(self.api_manga_url.format(slug),
-                             params={'includes[]': ['author', 'artist', 'cover_art']})
+        r = self.session_get(self.api_manga_url.format(slug), params={'includes[]': ['author', 'artist', 'cover_art']})
         if r.status_code != 200:
             return None
 
@@ -167,7 +165,6 @@ class Mangadex(Server):
         else:
             logger.warn('{}: No synopsis', data['name'])
 
-
         data['chapters'] += self.resolve_chapters(data['slug'])
 
         return data
@@ -178,8 +175,7 @@ class Mangadex(Server):
 
         Currently, only pages are expected.
         """
-        r = self.session_get(self.api_chapter_url.format(chapter_slug),
-                             params={'includes[]': ['scanlators']})
+        r = self.session_get(self.api_chapter_url.format(chapter_slug), params={'includes[]': ['scanlation_group']})
         if r.status_code == 404:
             raise NotFoundError
         if r.status_code != 200:
