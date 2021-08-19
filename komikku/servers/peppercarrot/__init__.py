@@ -40,7 +40,7 @@ class Peppercarrot(Server):
     lang = 'en'
 
     base_url = 'https://www.peppercarrot.com'
-    manga_url = base_url + '/{0}/'
+    manga_url = base_url + '/{0}/webcomics/index.html'
     chapters_url = base_url + '/0_sources/episodes-v1.json'
     image_url = base_url + '/0_sources/{0}/low-res/{1}_{2}'
     cover_url = base_url + '/0_sources/0ther/artworks/low-res/2016-02-24_vertical-cover_remake_by-David-Revoy.jpg'
@@ -86,7 +86,7 @@ class Peppercarrot(Server):
         chapters_data = r.json()
 
         # Chapters
-        for index, element in enumerate(reversed(soup.find('div', class_='homecontent').find_all('figure'))):
+        for index, element in enumerate(reversed(soup.find('div', class_='container').find_all('figure'))):
             if 'notranslation' in element.get('class'):
                 # Skipped not translated episodes
                 continue
@@ -94,7 +94,7 @@ class Peppercarrot(Server):
             data['chapters'].append(dict(
                 slug=chapters_data[index]['name'],
                 date=None,
-                title=element.a.get('title'),
+                title=element.a.img.get('title').split('(')[0].strip(),
             ))
 
         return data
