@@ -20,7 +20,7 @@ class Dbmultiverse(Server):
     lang = 'en'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/en/chapters.html'
+    manga_url = base_url + '/en/chapters.html?comic=page'
     page_url = base_url + '/en/page-{0}.html'
     cover_url = base_url + '/image.php?comic=page&num=0&lg=en&ext=jpg&small=1&pw=8f3722a594856af867d55c57f31ee103'
 
@@ -160,7 +160,7 @@ class Dbmultiverse_de(Dbmultiverse):
     lang = 'de'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/de/chapters.html'
+    manga_url = base_url + '/de/chapters.html?comic=page'
     page_url = base_url + '/de/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse ist ein kostenloser Online-Comic, gezeichnet von Fans, u. a. Gogeta Jr, Asura und Salagir. Es knüpft direkt an DBZ an als eine Art Fortsetzung. Veröffentlichung dreimal pro Woche: Mittwoch, Freitag und Sonntag um 20.00 MEZ."
@@ -172,7 +172,7 @@ class Dbmultiverse_es(Dbmultiverse):
     lang = 'es'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/es/chapters.html'
+    manga_url = base_url + '/es/chapters.html?comic=page'
     page_url = base_url + '/es/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse (DBM) es un cómic online gratuito, realizado por un gran equipo de fans. Es nuestra propia continuación de DBZ."
@@ -184,7 +184,7 @@ class Dbmultiverse_fr(Dbmultiverse):
     lang = 'fr'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/fr/chapters.html'
+    manga_url = base_url + '/fr/chapters.html?comic=page'
     page_url = base_url + '/fr/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse (DBM) est une BD en ligne gratuite, faite par toute une équipe de fans. C'est notre suite personnelle à DBZ."
@@ -196,7 +196,7 @@ class Dbmultiverse_it(Dbmultiverse):
     lang = 'it'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/it/chapters.html'
+    manga_url = base_url + '/it/chapters.html?comic=page'
     page_url = base_url + '/it/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse (abbreviato in DBM) è un Fumetto gratuito pubblicato online e rappresenta un possibile seguito di DBZ. I creatori sono due fan: Gogeta Jr e Salagir."
@@ -208,7 +208,7 @@ class Dbmultiverse_pt(Dbmultiverse):
     lang = 'pt'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/pt/chapters.html'
+    manga_url = base_url + '/pt/chapters.html?comic=page'
     page_url = base_url + '/pt/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse (DBM) é uma BD online grátis, feita por dois fãs Gogeta Jr e Salagir. É a sequela do DBZ."
@@ -220,7 +220,7 @@ class Dbmultiverse_ru(Dbmultiverse):
     lang = 'ru'
 
     base_url = 'https://www.dragonball-multiverse.com'
-    manga_url = base_url + '/ru_RU/chapters.html'
+    manga_url = base_url + '/ru_RU/chapters.html?comic=page'
     page_url = base_url + '/ru_RU/page-{0}.html'
 
     synopsis = "Dragon Ball Multiverse (DBM) это бесплатный онлайн комикс (манга), сделана двумя фанатами, Gogeta Jr и Salagir. Это продолжение DBZ."
