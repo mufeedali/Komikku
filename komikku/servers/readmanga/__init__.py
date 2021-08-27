@@ -139,7 +139,7 @@ class Readmanga(Server):
                 if not line.startswith('rm_h.init'):
                     continue
 
-                pages_data = '[{0}]'.format(line[11:-2].replace('\'', '"'))
+                pages_data = '[{0}]'.format(line[24:-2].replace('\'', '"'))
                 urls = json.loads(pages_data)[0]
                 for split_url in urls:
                     url = split_url[0] + split_url[2]
