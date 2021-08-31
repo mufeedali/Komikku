@@ -748,7 +748,7 @@ class CategoriesList(GObject.GObject):
                 row.set_hexpand(False)
 
                 if (isinstance(category, Category) and Settings.get_default().selected_category == category.id) or \
-                    (isinstance(category, int) and Settings.get_default().selected_category == category):
+                        (isinstance(category, int) and Settings.get_default().selected_category == category):
                     self.listbox.select_row(row)
 
                 if edit_mode:

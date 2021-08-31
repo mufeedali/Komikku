@@ -756,8 +756,8 @@ class ChaptersList:
                 return 1 if self.sort_order == 'date-desc' else -1
 
         elif self.sort_order in ('natural-asc', 'natural-desc'):
-            l = natsort.natsorted([child1.chapter.title, child2.chapter.title], alg=natsort.ns.INT | natsort.ns.IC)
-            if l[0] == child1.chapter.title:
+            lst = natsort.natsorted([child1.chapter.title, child2.chapter.title], alg=natsort.ns.INT | natsort.ns.IC)
+            if lst[0] == child1.chapter.title:
                 return 1 if self.sort_order == 'natural-desc' else -1
 
             return -1 if self.sort_order == 'natural-desc' else 1

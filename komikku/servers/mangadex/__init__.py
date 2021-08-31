@@ -204,7 +204,7 @@ class Mangadex(Server):
         Returns chapter page scan (image) content
         """
         server_url = self.get_server_url(chapter_slug)
-        if server_url == None:
+        if server_url is None:
             self.get_server_url.cache_clear()
             return None
 

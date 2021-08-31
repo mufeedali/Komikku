@@ -7,10 +7,10 @@ from gettext import gettext as _
 
 class ServerException(Exception):
     def __init__(self, message):
-            self.message = _('Error: {}').format(message)
-            super().__init__(self.message)
+        self.message = _('Error: {}').format(message)
+        super().__init__(self.message)
 
 
 class NotFoundError(ServerException):
     def __init__(self):
-            super().__init__(_('No longer exists.'))
+        super().__init__(_('No longer exists.'))
