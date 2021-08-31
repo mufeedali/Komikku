@@ -157,9 +157,9 @@ headless_browser = HeadlessBrowser()
 
 
 class Server:
-    id = NotImplemented
-    name = NotImplemented
-    lang = NotImplemented
+    id: str
+    name: str
+    lang: str
 
     has_login = False
     headers = None
@@ -476,11 +476,31 @@ def get_file_mime_type(path):
 
 
 def get_server_class_name_by_id(id):
+    """Returns server class name
+
+    id format is:
+
+    name[_lang][_whatever][:module_name]
+
+    - `name` is the name of the server.
+    - `lang` is the language of the server (optional).
+      Only useful when server belongs to a multi-languages server.
+    - `whatever` is any string (optional).
+      Only useful when a server must be backed up because it's dead.
+      Beware, if `whatever` is defined, `lang` must be present even if it's empty.
+      Example of value: old, bak, dead,...
+    - `module_name` is the name of the module in which the server is defined (optional).
+      Only useful if `module_name` is different from `name`.
+    """
     return id.split(':')[0].capitalize()
 
 
 def get_server_dir_name_by_id(id):
-    return id.split(':')[0]
+    name = id.split(':')[0]
+    # Remove _whatever
+    name = '_'.join(filter(None, name.split('_')[:2]))
+
+    return name
 
 
 def get_server_main_id_by_id(id):

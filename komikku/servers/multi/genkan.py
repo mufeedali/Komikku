@@ -4,6 +4,18 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+# Genkan CMS
+
+# Supported servers
+# Edelgarde Scans [EN]: https://edelgardescans.com
+# Hatigarm Scans [EN]: https://hatigarmscanz.net
+# Hunlight Scans [EN]: https://hunlight-scans.info
+# Leviatan Scans [EN/ES]: https://leviatanscans.com (disabled)
+# One Shot Scans [EN]: https://oneshotscans.com (disabled)
+# Reaper Scans [EN]: https://reaperscans.com
+# The Nonames Scans [EN]: https://the-nonames.com
+# Zero Scans [EN]: https://zeroscans.com
+
 from bs4 import BeautifulSoup
 import json
 import requests
@@ -13,10 +25,15 @@ from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
 
-# All theses servers use Genkan CMS
-
 
 class Genkan(Server):
+    base_url: str
+    search_url: str
+    most_populars_url: str
+    manga_url: str
+    chapter_url: str
+    image_url: str
+
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
@@ -213,128 +230,3 @@ class GenkanInitial(Genkan):
             return results
 
         return None
-
-
-class Edelgardescans(Genkan):
-    id = 'edelgardescans:genkan'
-    name = 'Edelgarde Scans'
-    lang = 'en'
-
-    base_url = 'https://edelgardescans.com'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Hatigarmscans(GenkanInitial):
-    id = 'hatigarmscans:genkan'
-    name = 'Hatigarm Scans'
-    lang = 'en'
-
-    base_url = 'https://hatigarmscanz.net'
-    search_url = base_url + '/comics'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Hunlightscans(Genkan):
-    id = 'hunlightscans:genkan'
-    name = 'Hunlight Scans'
-    lang = 'en'
-
-    base_url = 'https://hunlight-scans.info'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Leviatanscans(Genkan):
-    id = 'leviatanscans:genkan'
-    name = 'Leviatan Scans'
-    lang = 'en'
-    status = 'disabled'  # Switch to Mandara (Wordpress)
-
-    base_url = 'https://leviatanscans.com'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Leviatanscans_es(GenkanInitial):
-    id = 'leviatanscans_es:genkan'
-    name = 'Leviatan Scans'
-    lang = 'es'
-    status = 'disabled'
-
-    # Search is broken -> inherit from GenkanInitial instead of Genkan class
-
-    base_url = 'https://es.leviatanscans.com'
-    search_url = base_url + '/comics'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Oneshotscans(Genkan):
-    id = 'oneshotscans:genkan'
-    name = 'One Shot Scans'
-    lang = 'en'
-    status = 'disabled'
-
-    base_url = 'https://oneshotscans.com'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Reaperscans(GenkanInitial):
-    id = 'reaperscans:genkan'
-    name = 'Reaper Scans'
-    lang = 'en'
-
-    # Use Cloudflare
-    # Search is partially broken -> inherit from GenkanInitial instead of Genkan class
-
-    base_url = 'https://reaperscans.com'
-    search_url = base_url + '/comics'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Thenonamesscans(Genkan):
-    id = 'thenonamesscans:genkan'
-    name = 'The Nonames Scans'
-    lang = 'en'
-
-    base_url = 'https://the-nonames.com'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'
-
-
-class Zeroscans(Genkan):
-    id = 'zeroscans:genkan'
-    name = 'Zero Scans'
-    lang = 'en'
-
-    base_url = 'https://zeroscans.com'
-    search_url = base_url + '/comics?query={0}'
-    most_populars_url = base_url + '/home'
-    manga_url = base_url + '/comics/{0}'
-    chapter_url = base_url + '/comics/{0}/{1}'
-    image_url = base_url + '{0}'

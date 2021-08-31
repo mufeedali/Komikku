@@ -6,20 +6,14 @@
 
 from komikku.servers.multi.foolslide import FoOlSlide
 
-#
-# BEWARE: Jaimini's Box server is disabled
-# Dead since 07/09/2020
-#
 
+class Tuttoanimemanga(FoOlSlide):
+    id = 'tuttoanimemanga'
+    name = 'Tutto Anime Manga'
+    lang = 'it'
 
-class Jaiminisbox__old(FoOlSlide):
-    id = 'jaiminisbox__old'
-    name = "Jaimini's Box"
-    lang = 'en'
-    status = 'disabled'
-
-    base_url = 'https://jaiminisbox.com/reader'
+    base_url = 'http://tuttoanimemanga.net/slide'
     search_url = base_url + '/search'
     mangas_url = base_url + '/directory'
     manga_url = base_url + '/series/{0}'
-    chapter_url = base_url + '/read/{0}/en/{1}/page/1'
+    chapter_url = base_url + '/read/{0}/it/{1}/page/1'

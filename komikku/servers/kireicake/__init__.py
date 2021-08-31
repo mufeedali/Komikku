@@ -6,19 +6,13 @@
 
 from komikku.servers.multi.foolslide import FoOlSlide
 
-#
-# BEWARE: Jaimini's Box server is disabled
-# Dead since 07/09/2020
-#
 
-
-class Jaiminisbox__old(FoOlSlide):
-    id = 'jaiminisbox__old'
-    name = "Jaimini's Box"
+class Kireicake(FoOlSlide):
+    id = 'kireicake'
+    name = 'Kirei Cake'
     lang = 'en'
-    status = 'disabled'
 
-    base_url = 'https://jaiminisbox.com/reader'
+    base_url = 'https://reader.kireicake.com'
     search_url = base_url + '/search'
     mangas_url = base_url + '/directory'
     manga_url = base_url + '/series/{0}'

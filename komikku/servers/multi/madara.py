@@ -4,6 +4,18 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 
+# Madara – WordPress Theme for Manga
+
+# Supported servers:
+# AkuManga [AR]: https://akumanga.com
+# Aloalivn [EN]: https://aloalivn.com
+# Apoll Comics [ES]: https://apollcomics.xyz
+# ArazNovel [TR]: https://araznovel.com
+# Argos Scan [PT]: https://argosscan.com
+# Atikrost [TR]: https://atikrost.com
+# 24hRomance [EN]: https://24hromance.com
+# Wakascan [FR]: https://wakascan.com
+
 from bs4 import BeautifulSoup
 import datetime
 import requests
@@ -55,9 +67,10 @@ class Madara(Server):
         ))
 
         data['name'] = get_soup_element_inner_text(soup.find('h1'))
-        data['cover'] = soup.find('div', class_='summary_image').a.img.get('data-src')
-        if data['cover'] is None:
-            data['cover'] = soup.find('div', class_='summary_image').a.img.get('src')
+        if cover_div := soup.find('div', class_='summary_image'):
+            data['cover'] = cover_div.a.img.get('data-src')
+            if data['cover'] is None:
+                data['cover'] = cover_div.a.img.get('src')
 
         # Details
         for element in soup.find('div', class_='summary_content').find_all('div', class_='post-content_item'):
@@ -231,67 +244,3 @@ class Madara(Server):
             ))
 
         return results
-
-
-class Akumanga(Madara):
-    id = 'akumanga:madara'
-    name = 'AkuManga'
-    lang = 'ar'
-
-    base_url = 'https://akumanga.com/'
-
-
-class Aloalivn(Madara):
-    id = 'aloalivn:madara'
-    name = 'Aloalivn'
-    lang = 'en'
-
-    base_url = 'https://aloalivn.com/'
-
-
-class Apollcomics(Madara):
-    id = 'apollcomics:madara'
-    name = 'Apoll Comics'
-    lang = 'es'
-
-    base_url = 'https://apollcomics.xyz/'
-
-
-class Araznovel(Madara):
-    id = 'araznovel:madara'
-    name = 'ArazNovel'
-    lang = 'tr'
-
-    base_url = 'https://araznovel.com/'
-
-
-class Argosscan(Madara):
-    id = 'argosscan:madara'
-    name = 'Argos Scan'
-    lang = 'pt'
-
-    base_url = 'https://argosscan.com/'
-
-
-class Atikrost(Madara):
-    id = 'atikrost:madara'
-    name = 'Atikrost'
-    lang = 'tr'
-
-    base_url = 'https://atikrost.com/'
-
-
-class Romance24h(Madara):
-    id = 'romance24h:madara'
-    name = '24hRomance'
-    lang = 'en'
-
-    base_url = 'https://24hromance.com/'
-
-
-class Wakascan(Madara):
-    id = 'wakascan:madara'
-    name = 'Wakascan'
-    lang = 'fr'
-
-    base_url = 'https://wakascan.com/'

@@ -22,7 +22,7 @@ from komikku.utils import get_data_dir
 
 logger = logging.getLogger('komikku')
 
-VERSION = 7
+VERSION = 8
 
 
 def adapt_json(data):
@@ -79,6 +79,8 @@ def execute_sql(conn, sql):
     try:
         c = conn.cursor()
         c.execute(sql)
+        conn.commit()
+        c.close()
         return True
     except Exception as e:
         print('SQLite-error:', e)
@@ -209,6 +211,44 @@ def init_db():
             # Version 0.25.0
             if execute_sql(db_conn, sql_create_categories_table) and execute_sql(db_conn, sql_create_categories_mangas_association_table):
                 db_conn.execute('PRAGMA user_version = {0}'.format(7))
+
+        if 0 < db_version <= 7:
+            # Version 0.31.0
+            ids_mapping = dict(
+                jaiminisbox__old='jaiminisbox',
+                kireicake='kireicake:jaiminisbox',
+                lupiteam='lupiteam:jaiminisbox',
+                tuttoanimemanga='tuttoanimemanga:jaiminisbox',
+
+                readcomicsonline='readcomicsonline:hatigarmscans',
+
+                hatigarmscans__old='hatigarmscans',
+
+                edelgardescans='edelgardescans:genkan',
+                hatigarmscans='hatigarmscans:genkan',
+                hunlightscans='hunlightscans:genkan',
+                leviatanscans__old='leviatanscans:genkan',
+                leviatanscans_es_old='leviatanscans_es:genkan',
+                oneshotscans__old='oneshotscans:genkan',
+                reaperscans='reaperscans:genkan',
+                thenonamesscans='thenonamesscans:genkan',
+                zeroscans='zeroscans:genkan',
+
+                akumanga='akumanga:madara',
+                aloalivn='aloalivn:madara',
+                apollcomics='apollcomics:madara',
+                araznovel='araznovel:madara',
+                argosscan='argosscan:madara',
+                atikrost='atikrost:madara',
+                romance24h='romance24h:madara',
+                wakascan='wakascan:madara',
+            )
+            res = True
+            for new, old in ids_mapping.items():
+                res &= execute_sql(db_conn, f"UPDATE mangas SET server_id = '{new}' WHERE server_id = '{old}';")
+
+            if res:
+                db_conn.execute('PRAGMA user_version = {0}'.format(8))
 
         print('DB version', db_conn.execute('PRAGMA user_version').fetchone()[0])
 
