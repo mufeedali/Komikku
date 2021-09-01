@@ -51,6 +51,7 @@ class Card:
         self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
         self.stack.connect('notify::visible-child', self.on_page_changed)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
+        self.window.connect('check-resize', self.resize_listener)
 
     def add_actions(self):
         self.delete_action = Gio.SimpleAction.new('card.delete', None)
@@ -217,6 +218,13 @@ class Card:
         self.info_grid.refresh()
         self.chapters_list.refresh(chapters)
 
+    def resize_listener(self, box):
+        size = box.get_size()
+
+        if size.width < 600:
+            self.window.card_cover_box.set_orientation(Gtk.Orientation.VERTICAL)
+        else:
+            self.window.card_cover_box.set_orientation(Gtk.Orientation.HORIZONTAL)
 
 class CategoriesList:
     def __init__(self, card):
@@ -225,7 +233,6 @@ class CategoriesList:
 
         self.stack = self.window.card_categories_stack
         self.listbox = self.window.card_categories_listbox
-        self.listbox.get_style_context().add_class('list-bordered')
 
     def clear(self):
         for row in self.listbox.get_children():
@@ -284,7 +291,6 @@ class ChaptersList:
         self.window = card.window
 
         self.listbox = self.window.card_chapters_listbox
-        self.listbox.get_style_context().add_class('list-bordered')
         self.listbox.connect('key-press-event', self.on_key_pressed)
         self.listbox.connect('row-activated', self.on_chapter_row_clicked)
         self.listbox.connect('selected-rows-changed', self.on_selection_changed)
@@ -867,9 +873,6 @@ class InfoGrid:
         self.card = card
         self.window = card.window
 
-        self.window.card_info_box.get_style_context().add_class('card-info-box')
-        self.window.card_info_box.get_style_context().add_class('list-bordered')
-
         self.name_label = self.window.card_name_label
         self.cover_image = self.window.card_cover_image
         self.authors_value_label = self.window.card_authors_value_label
@@ -877,9 +880,10 @@ class InfoGrid:
         self.status_value_label = self.window.card_status_value_label
         self.scanlators_value_label = self.window.card_scanlators_value_label
         self.server_value_label = self.window.card_server_value_label
+        self.chapters_value_label = self.window.card_chapters_value_label
         self.last_update_value_label = self.window.card_last_update_value_label
         self.synopsis_value_label = self.window.card_synopsis_value_label
-        self.more_label = self.window.card_more_label
+        self.more_value_label = self.window.card_more_value_label
 
     def populate(self):
         cover_width = 170
@@ -907,27 +911,32 @@ class InfoGrid:
             self.cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
         authors = html_escape(', '.join(manga.authors)) if manga.authors else '-'
-        self.authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))
+        self.authors_value_label.set_markup(authors)
 
         genres = html_escape(', '.join(manga.genres)) if manga.genres else '-'
-        self.genres_value_label.set_markup('<span size="small">{0}</span>'.format(genres))
+        self.genres_value_label.set_markup(genres)
 
         status = _(manga.STATUSES[manga.status]) if manga.status else '-'
-        self.status_value_label.set_markup('<span size="small">{0}</span>'.format(status))
+        self.status_value_label.set_markup(status)
 
         scanlators = html_escape(', '.join(manga.scanlators)) if manga.scanlators else '-'
-        self.scanlators_value_label.set_markup('<span size="small">{0}</span>'.format(scanlators))
+        self.scanlators_value_label.set_markup(scanlators)
 
         self.server_value_label.set_markup(
-            '<span size="small">{0} [{1}] - {2} chapters</span>'.format(
-                html_escape(manga.server.name), manga.server.lang.upper(), len(manga.chapters)
+            '{0} [{1}]'.format(
+                html_escape(manga.server.name), manga.server.lang.upper()
             )
         )
 
-        self.last_update_value_label.set_markup(
-            '<span size="small">{0}</span>'.format(manga.last_update.strftime('%m/%d/%Y')) if manga.last_update else '-')
+        self.chapters_value_label.set_markup(
+            '{0} Chapters'.format(
+               len(manga.chapters)
+           )
+        )
 
-        self.synopsis_value_label.set_text(manga.synopsis or '-')
+        self.last_update_value_label.set_markup(manga.last_update.strftime('%m/%d/%Y') if manga.last_update else '-')
+
+        self.synopsis_value_label.set_markup(manga.synopsis or '-')
 
         self.set_disk_usage()
 
@@ -935,4 +944,4 @@ class InfoGrid:
         self.set_disk_usage()
 
     def set_disk_usage(self):
-        self.more_label.set_markup('<i>{0}</i>'.format(_('Disk space used: {0}').format(folder_size(self.card.manga.path))))
+        self.more_value_label.set_text(folder_size(self.card.manga.path))

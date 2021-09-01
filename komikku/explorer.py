@@ -11,6 +11,7 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
+from gi.repository import Handy
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 from gi.repository import Pango
@@ -53,12 +54,14 @@ class Explorer(Gtk.Stack):
     search_page_listbox = Gtk.Template.Child('search_page_listbox')
 
     card_page_box = Gtk.Template.Child('card_page_box')
-    card_page_grid = Gtk.Template.Child('card_page_grid')
+    card_page_cover_box = Gtk.Template.Child('card_page_cover_box')
     card_page_cover_image = Gtk.Template.Child('card_page_cover_image')
     card_page_authors_value_label = Gtk.Template.Child('card_page_authors_value_label')
+    card_page_name_value_label = Gtk.Template.Child('card_page_name_value_label')
     card_page_genres_value_label = Gtk.Template.Child('card_page_genres_value_label')
     card_page_status_value_label = Gtk.Template.Child('card_page_status_value_label')
     card_page_server_value_label = Gtk.Template.Child('card_page_server_value_label')
+    card_page_chapters_value_label = Gtk.Template.Child('card_page_chapters_value_label')
     card_page_synopsis_value_label = Gtk.Template.Child('card_page_synopsis_value_label')
     card_page_scanlators_value_label = Gtk.Template.Child('card_page_scanlators_value_label')
     card_page_last_chapter_value_label = Gtk.Template.Child('card_page_last_chapter_value_label')
@@ -81,8 +84,9 @@ class Explorer(Gtk.Stack):
 
         self.servers_page_search_button.connect('clicked', self.toggle_servers_search)
 
-        self.servers_page_pinned_listbox.get_style_context().add_class('list-bordered')
         self.servers_page_pinned_listbox.connect('row-activated', self.on_server_clicked)
+
+        self.window.connect('check-resize', self.resize_listener)
 
         def _servers_filter(row):
             """
@@ -92,21 +96,29 @@ class Explorer(Gtk.Stack):
             """
             term = self.servers_page_searchentry.get_text().strip().lower()
 
+            # Rows must be manually hidden or shown; it's a workaround to properly
+            # apply the .content class's rounded corners on filtered lists
+            # See here - https://gitlab.gnome.org/GNOME/libhandy/-/blob/master/src/hdy-preferences-window.c#L119
             if not hasattr(row, 'server_data'):
                 # Languages headers should be displayed when term is empty
-                return True if term == '' else False
+                if term == '':
+                    row.show()
+                    return True
+                else:
+                    row.hide()
+                    return False
 
             server_name = row.server_data['name']
             server_lang = row.server_data['lang']
 
             # Search in name and language
-            return (
-                term in server_name.lower() or
-                term in LANGUAGES[server_lang].lower() or
-                term in server_lang.lower()
-            )
+            if term in server_name.lower() or term in LANGUAGES[server_lang].lower() or term in server_lang.lower():
+                row.show()
+                return True
+            else:
+                row.hide()
+                return False
 
-        self.servers_page_listbox.get_style_context().add_class('list-bordered')
         self.servers_page_listbox.connect('row-activated', self.on_server_clicked)
         self.servers_page_listbox.set_filter_func(_servers_filter)
 
@@ -116,12 +128,9 @@ class Explorer(Gtk.Stack):
         self.search_page_searchbar.connect_entry(self.search_page_searchentry)
         self.search_page_searchentry.connect('activate', self.search)
 
-        self.search_page_listbox.get_style_context().add_class('list-bordered')
         self.search_page_listbox.connect('row-activated', self.on_manga_clicked)
 
         # Card page
-        self.card_page_box.get_style_context().add_class('card-info-box')
-        self.card_page_box.get_style_context().add_class('list-bordered')
         self.card_page_add_read_button = self.window.explorer_card_page_add_read_button
         self.card_page_add_read_button.connect('clicked', self.on_card_page_add_read_button_clicked)
 
@@ -130,15 +139,13 @@ class Explorer(Gtk.Stack):
         self.window.stack.add_named(self, 'explorer')
 
     def build_server_row(self, data):
-        row = Gtk.ListBoxRow()
-        row.get_style_context().add_class('explorer-dialog-server-listboxrow')
+        row = Handy.ActionRow()
+        row.set_activatable(True)
 
         row.server_data = data
         if 'manga_initial_data' in data:
             row.manga_data = data.pop('manga_initial_data')
 
-        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-        row.add(box)
 
         # Server logo
         logo = Gtk.Image()
@@ -148,36 +155,30 @@ class Explorer(Gtk.Stack):
             logo.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
         else:
             logo.set_size_request(24, 24)
-        box.pack_start(logo, False, True, 0)
+        row.add_prefix(logo)
 
         # Server title & language
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-
-        label = Gtk.Label(xalign=0)
         title = data['name']
         if data['is_nsfw']:
             title += ' (NSFW)'
-        label.set_text(title)
-        vbox.pack_start(label, True, True, 0)
-
-        label = Gtk.Label(xalign=0)
-        label.set_text(LANGUAGES[data['lang']])
-        label.get_style_context().add_class('subtitle')
-        vbox.pack_start(label, False, True, 0)
-
-        box.pack_start(vbox, True, True, 0)
+        row.set_title(title)
+        row.set_subtitle(LANGUAGES[data['lang']])
+        widget_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        row.add(widget_box)
 
         # Server requires a user account
         if data['has_login']:
             label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.BUTTON)
-            box.pack_start(label, False, True, 0)
+            widget_box.pack_start(label, False, True, 0)
 
         # Button to pin/unpin
         button = Gtk.ToggleButton()
         button.set_image(Gtk.Image.new_from_icon_name('view-pin-symbolic', Gtk.IconSize.BUTTON))
         button.set_active(data['id'] in Settings.get_default().pinned_servers)
         button.connect('toggled', self.toggle_server_pinned_state, row)
-        box.pack_start(button, False, True, 0)
+        button.set_valign(Gtk.Align.CENTER)
+        button.set_halign(Gtk.Align.CENTER)
+        widget_box.pack_start(button, False, True, 0)
 
         return row
 
@@ -444,32 +445,39 @@ class Explorer(Gtk.Stack):
             else:
                 self.card_page_cover_image.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
 
+            self.card_page_name_value_label.set_label(manga_data['name'])
+
             authors = html_escape(', '.join(self.manga_data['authors'])) if self.manga_data['authors'] else '-'
-            self.card_page_authors_value_label.set_markup('<span size="small">{0}</span>'.format(authors))
+            self.card_page_authors_value_label.set_markup(authors)
 
             genres = html_escape(', '.join(self.manga_data['genres'])) if self.manga_data['genres'] else '-'
-            self.card_page_genres_value_label.set_markup('<span size="small">{0}</span>'.format(genres))
+            self.card_page_genres_value_label.set_markup(genres)
 
             status = _(Manga.STATUSES[self.manga_data['status']]) if self.manga_data['status'] else '-'
-            self.card_page_status_value_label.set_markup('<span size="small">{0}</span>'.format(status))
+            self.card_page_status_value_label.set_markup(status)
 
             scanlators = html_escape(', '.join(self.manga_data['scanlators'])) if self.manga_data['scanlators'] else '-'
-            self.card_page_scanlators_value_label.set_markup('<span size="small">{0}</span>'.format(scanlators))
+            self.card_page_scanlators_value_label.set_markup(scanlators)
 
             self.card_page_server_value_label.set_markup(
-                '<span size="small"><a href="{0}">{1} [{2}]</a>\n{3} chapters</span>'.format(
+                '<a href="{0}">{1} [{2}]</a>'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
                     html_escape(self.server.name),
                     self.server.lang.upper(),
+                )
+            )
+
+            self.card_page_chapters_value_label.set_markup(
+                '{0} Chapters'.format(
                     len(self.manga_data['chapters'])
                 )
             )
 
-            self.card_page_last_chapter_value_label.set_text(
+            self.card_page_last_chapter_value_label.set_markup(
                 self.manga_data['chapters'][-1]['title'] if self.manga_data['chapters'] else '-'
             )
 
-            self.card_page_synopsis_value_label.set_text(self.manga_data['synopsis'] or '-')
+            self.card_page_synopsis_value_label.set_markup(self.manga_data['synopsis'] or '-')
 
             self.window.activity_indicator.stop()
             self.show_page('card')
@@ -500,10 +508,14 @@ class Explorer(Gtk.Stack):
 
         pinned_servers = Settings.get_default().pinned_servers
         if len(pinned_servers) == 0:
+            self.servers_page_pinned_listbox.hide()
             return
 
+        if not self.servers_page_searchbar.get_search_mode():
+            self.servers_page_pinned_listbox.show()
+
         # Add header
-        row = Gtk.ListBoxRow(activatable=False)
+        row = Gtk.ListBoxRow(activatable=False, can_focus=False)
         row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
         label = Gtk.Label(xalign=0)
         label.get_style_context().add_class('subtitle')
@@ -537,7 +549,7 @@ class Explorer(Gtk.Stack):
                 # Add language header
                 last_lang = server_data['lang']
 
-                row = Gtk.ListBoxRow(activatable=False)
+                row = Gtk.ListBoxRow(activatable=False, can_focus=False)
                 row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
                 label = Gtk.Label(xalign=0)
                 label.get_style_context().add_class('subtitle')
@@ -614,15 +626,11 @@ class Explorer(Gtk.Stack):
                 self.search_page_listbox.add(row)
 
             for item in result:
-                row = Gtk.ListBoxRow()
+                row = Handy.ActionRow()
                 row.manga_data = item
-                box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-                row.add(box)
-                label = Gtk.Label(xalign=0, margin=6)
-                label.set_ellipsize(Pango.EllipsizeMode.END)
-                label.set_text(item['name'])
-                box.pack_start(label, True, True, 0)
-
+                row.set_activatable(True)
+                row.set_title(item['name'])
+                row.set_title_lines(3)
                 self.search_page_listbox.add(row)
 
             self.search_page_listbox.show_all()
@@ -718,7 +726,7 @@ class Explorer(Gtk.Stack):
                     continue
 
                 if child_row.server_data['id'] == row.server_data['id']:
-                    child_row.get_children()[0].get_children()[-1].set_active(button.get_active())
+                    child_row.get_children()[-1].get_children()[-1].set_active(button.get_active())
                     break
 
         self.populate_pinned_servers()
@@ -730,3 +738,11 @@ class Explorer(Gtk.Stack):
             self.servers_page_pinned_listbox.hide()
         else:
             self.servers_page_pinned_listbox.show()
+
+    def resize_listener(self, box):
+        size = box.get_size()
+
+        if size.width < 600:
+            self.card_page_cover_box.set_orientation(Gtk.Orientation.VERTICAL)
+        else:
+            self.card_page_cover_box.set_orientation(Gtk.Orientation.HORIZONTAL)

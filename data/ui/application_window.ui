@@ -476,54 +476,49 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="HdyClamp">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="valign">center</property>
+                                    <property name="maximum_size">800</property>
+                                    <property name="margin-start">6</property>
+                                    <property name="margin-end">6</property>
                                     <child>
-                                      <object class="GtkSearchEntry" id="library_searchentry">
+                                      <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="primary_icon_name">edit-find-symbolic</property>
-                                        <property name="primary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">False</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkMenuButton" id="library_search_menu_button">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="valign">center</property>
+                                        <style>
+                                          <class name="linked"/>
+                                        </style>
                                         <child>
-                                          <object class="GtkImage">
+                                          <object class="GtkSearchEntry" id="library_searchentry">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="icon_name">go-down-symbolic</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="hexpand">True</property>
+                                            <property name="primary_icon_name">edit-find-symbolic</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">False</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkMenuButton" id="library_search_menu_button">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">True</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="icon_name">go-down-symbolic</property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
                                     </child>
-                                    <style>
-                                      <class name="search-box"/>
-                                    </style>
                                   </object>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkScrolledWindow">
@@ -810,272 +805,441 @@
                                     <child>
                                       <object class="GtkBox" id="card_info_box">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
-                                        <property name="spacing">6</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="spacing">12</property>
+                                        <property name="margin">12</property>
                                         <child>
-                                          <object class="GtkLabel" id="card_name_label">
+                                          <object class="GtkBox" id="card_cover_box">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="margin_left">6</property>
-                                            <property name="margin_right">6</property>
-                                            <property name="margin_top">6</property>
-                                            <property name="margin_bottom">6</property>
-                                            <property name="label">name</property>
-                                            <property name="justify">center</property>
-                                            <property name="wrap">True</property>
-                                            <attributes>
-                                              <attribute name="weight" value="bold"/>
-                                              <attribute name="size" value="18000"/>
-                                            </attributes>
+                                            <property name="spacing">24</property>
+                                            <property name="can-focus">False</property>
+                                            <child>
+                                              <object class="GtkFrame">
+                                                <property name="visible">True</property>
+                                                <property name="halign">center</property>
+                                                <property name="valign">center</property>
+                                                <property name="hexpand">False</property>
+                                                <property name="vexpand">False</property>
+                                                <property name="can-focus">False</property>
+                                                <style>
+                                                  <class name="card-cover-frame"/>
+                                                </style>
+                                                <child>
+                                                  <object class="GtkImage" id="card_cover_image">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="halign">center</property>
+                                                    <property name="valign">center</property>
+                                                    <style>
+                                                      <class name="card-cover-image"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="visible">True</property>
+                                                <property name="orientation">vertical</property>
+                                                <property name="valign">center</property>
+                                                <property name="halign">start</property>
+                                                <property name="can-focus">False</property>
+                                                <child>
+                                                  <object class="GtkLabel" id="card_name_label">
+                                                    <property name="visible">True</property>
+                                                    <property name="label">name</property>
+                                                    <property name="wrap">True</property>
+                                                    <property name="halign">start</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="max-width-chars">26</property>
+                                                    <property name="hexpand">True</property>
+                                                    <style>
+                                                      <class name="title-1"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel" id="card_authors_value_label">
+                                                    <property name="visible">True</property>
+                                                    <property name="label">authors value</property>
+                                                    <property name="wrap">True</property>
+                                                    <property name="halign">start</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="max-width-chars">100</property>
+                                                    <style>
+                                                      <class name="dim-title"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
                                           </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkGrid" id="card_info_grid">
+                                          <object class="GtkBox">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="margin_left">6</property>
-                                            <property name="margin_right">6</property>
-                                            <property name="row_spacing">6</property>
-                                            <property name="column_spacing">6</property>
-                                            <property name="column_homogeneous">True</property>
+                                            <property name="valign">fill</property>
+                                            <property name="halign">fill</property>
+                                            <property name="hexpand">True</property>
+                                            <property name="orientation">vertical</property>
+                                            <property name="spacing">12</property>
                                             <child>
-                                              <object class="GtkImage" id="card_cover_image">
+                                              <object class="GtkBox">
                                                 <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="halign">center</property>
-                                                <property name="valign">start</property>
+                                                <property name="orientation">vertical</property>
+                                                <property name="spacing">12</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="label" translatable="yes">Details</property>
+                                                    <property name="justify">left</property>
+                                                    <property name="halign">start</property>
+                                                    <style>
+                                                      <class name="title-4"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkListBox" id="card_info_rows">
+                                                    <property name="visible">True</property>
+                                                    <property name="halign">fill</property>
+                                                    <property name="hexpand">True</property>
+                                                    <property name="selection-mode">none</property>
+                                                    <style>
+                                                      <class name="content"/>
+                                                      <class name="card-info-rows"/>
+                                                    </style>
+                                                    <child>
+                                                      <object class="GtkListBoxRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">view-dual-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Genres</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_genres_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">genres value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkListBoxRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">document-edit-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Scanlators</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_scanlators_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">scanlators value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkListBoxRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">content-loading-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Status</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_status_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">status value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkListBoxRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">view-list-bullet-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Chapters</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_chapters_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">chapter value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkListBoxRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">document-open-recent-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Last Update</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_last_update_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">last update value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkListBoxRow" id="server_row">
+                                                        <property name="visible">True</property>
+                                                        <property name="activatable">False</property>
+                                                        <property name="can_focus">False</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="orientation">horizontal</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                              <object class="GtkImage">
+                                                                <property name="visible">True</property>
+                                                                <property name="icon-name">web-browser-symbolic</property>
+                                                                <property name="halign">start</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <property name="visible">True</property>
+                                                                <property name="label" translatable="yes">Server</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="card_server_value_label">
+                                                                <property name="visible">True</property>
+                                                                <property name="label">server value</property>
+                                                                <property name="justify">right</property>
+                                                                <property name="wrap">True</property>
+                                                                <property name="wrap_mode">word-char</property>
+                                                                <property name="halign">end</property>
+                                                                <property name="hexpand">True</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
                                               </object>
-                                              <packing>
-                                                <property name="left_attach">0</property>
-                                                <property name="top_attach">0</property>
-                                                <property name="height">12</property>
-                                              </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkLabel" id="card_authors_label_label">
+                                              <object class="GtkBox">
                                                 <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Authors</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
+                                                <property name="orientation">vertical</property>
+                                                <property name="spacing">12</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="label" translatable="yes">Synopsis</property>
+                                                    <property name="justify">left</property>
+                                                    <property name="halign">start</property>
+                                                    <style>
+                                                      <class name="title-4"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel" id="card_synopsis_value_label">
+                                                    <property name="visible">True</property>
+                                                    <property name="label">synopsis value</property>
+                                                    <property name="hexpand">True</property>
+                                                    <property name="wrap">True</property>
+                                                    <property name="wrap_mode">word-char</property>
+                                                    <property name="halign">fill</property>
+                                                    <property name="xalign">0</property>
+                                                    <style>
+                                                      <class name="card-info-label"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
                                               </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">0</property>
-                                              </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkLabel" id="card_authors_value_label">
+                                              <object class="GtkBox">
                                                 <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">authors value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
+                                                <property name="orientation">vertical</property>
+                                                <property name="spacing">12</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="label" translatable="yes">More</property>
+                                                    <property name="justify">left</property>
+                                                    <property name="halign">start</property>
+                                                    <style>
+                                                      <class name="title-4"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkListBox">
+                                                    <property name="visible">True</property>
+                                                    <property name="halign">fill</property>
+                                                    <property name="hexpand">True</property>
+                                                    <property name="selection-mode">none</property>
+                                                    <style>
+                                                      <class name="content"/>
+                                                    </style>
+                                                    <child>
+                                                      <object class="HdyActionRow">
+                                                        <property name="visible">True</property>
+                                                        <property name="title" translatable="yes">Size on disk</property>
+                                                        <property name="activatable">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <child type="prefix">
+                                                          <object class="GtkImage">
+                                                            <property name="visible">True</property>
+                                                            <property name="icon-name">drive-harddisk-symbolic</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel" id="card_more_value_label">
+                                                            <property name="visible">True</property>
+                                                            <property name="label">more info</property>
+                                                            <property name="wrap">True</property>
+                                                            <property name="wrap_mode">word-char</property>
+                                                            <property name="halign">start</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
                                               </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">1</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_genres_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Genres</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">2</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_genres_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">genres value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">3</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_status_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Status</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">4</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_status_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">status value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">5</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_server_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Server</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">8</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_server_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">server value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">9</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_synopsis_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="halign">start</property>
-                                                <property name="label" translatable="yes">Synopsis</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">0</property>
-                                                <property name="top_attach">12</property>
-                                                <property name="width">2</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_synopsis_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">synopsis value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="wrap_mode">word-char</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">0</property>
-                                                <property name="top_attach">13</property>
-                                                <property name="width">2</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_last_update_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Last update</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">10</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_last_update_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">last update value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">11</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_more_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="margin_top">9</property>
-                                                <property name="label">more info</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">0</property>
-                                                <property name="top_attach">14</property>
-                                                <property name="width">2</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_scanlators_value_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label">scanlators value</property>
-                                                <property name="wrap">True</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">7</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel" id="card_scanlators_label_label">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Scanlators</property>
-                                                <property name="xalign">0</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="bold"/>
-                                                </attributes>
-                                              </object>
-                                              <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="top_attach">6</property>
-                                              </packing>
                                             </child>
                                           </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
                                         </child>
                                       </object>
                                     </child>
@@ -1109,6 +1273,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="selection_mode">none</property>
+                                        <property name="margin">12</property>
+                                        <style>
+                                          <class name="content"/>
+                                        </style>
                                       </object>
                                     </child>
                                   </object>
@@ -1146,6 +1314,10 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="selection_mode">none</property>
+                                            <property name="margin">12</property>
+                                            <style>
+                                              <class name="content"/>
+                                            </style>
                                           </object>
                                           <packing>
                                             <property name="name">list</property>

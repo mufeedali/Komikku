@@ -1,21 +1,8 @@
-.list-bordered {
-    border-right: 1px solid @borders;
-    border-left: 1px solid @borders;
-}
-
 .button-warning {
     color: @warning_color;
 }
 
 /* Library page */
-.search-box entry {
-    border-width: 1px 0 1px 1px;
-    border-radius: 3.5px 0 0 3.5px;
-}
-.search-box button {
-    border-width: 1px 1px 1px 0;
-    border-radius: 0 3.5px 3.5px 0;
-}
 
 flowbox flowboxchild {
     padding: 6px; /* default is 4px */
@@ -33,13 +20,37 @@ flowbox flowboxchild {
 }
 
 /* Manga card page */
-.card-info-box {
+.card-info-rows {
+    margin-bottom: 6px;
+}
+
+.card-info-rows row {
+    margin: 0px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.card-info-rows row:active {
     background-color: @theme_base_color;
 }
 
+.card-info-label {
+    background-color: @theme_base_color;
+    border-style: solid;
+    border-width: 1px;
+    border-color: alpha(@borders, 0.7);
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.card-info-label:backdrop {
+    color: @theme_text_color;
+}
+
 .card-chapter-listboxrow {
-    border-bottom: 1px solid @borders;
-    padding: 6px 6px 12px 6px;
+    padding: 12px 6px 12px 12px;
 }
 .card-chapter-label {
     font-size: 14px;
@@ -59,6 +70,17 @@ flowbox flowboxchild {
     border-radius: .25rem;
 }
 
+.card-cover-frame {
+    box-shadow: 0px 0px 24px 6px rgba(0, 0, 0, 0.15);
+    border-width: 0px;
+}
+
+.dim-title {
+    font-weight: 800;
+    font-size: 16pt;
+    color: alpha(@theme_fg_color, 0.5);
+}
+
 /* Reader page */
 .reader-controls-bottom-box {
     background: rgba(0, 0, 0, .75);
@@ -73,10 +95,6 @@ flowbox flowboxchild {
     margin-bottom: 8px;
 }
 
-/* Explorer - servers page */
-.explorer-dialog-server-listboxrow {
-    padding: 16px 12px;
-}
 
 .explorer-dialog-server-header-listboxrow {
     padding: 12px;
@@ -84,6 +102,7 @@ flowbox flowboxchild {
     font-weight: bold;
     background: @insensitive_bg_color;
 }
+
 
 /* Explorer - search page */
 .explorer-dialog-search-section-listboxrow {
