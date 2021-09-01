@@ -50,15 +50,19 @@ def check_db():
     db_conn = create_db_connection()
 
     if db_conn:
-        res = db_conn.execute('PRAGMA integrity_check').fetchone()  # PRAGMA quick_check
+        try:
+            res = db_conn.execute('PRAGMA integrity_check').fetchone()  # PRAGMA quick_check
 
-        fk_violations = len(db_conn.execute('PRAGMA foreign_key_check').fetchall())
+            fk_violations = len(db_conn.execute('PRAGMA foreign_key_check').fetchall())
+
+            ret = res[0] == 'ok' and fk_violations == 0
+        except sqlite3.DatabaseError as e:
+            logger.error(e)
+            ret = False
 
         db_conn.close()
 
-        return res[0] == 'ok' and fk_violations == 0
-
-    return False
+    return ret
 
 
 def create_db_connection():
