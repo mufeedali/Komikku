@@ -145,7 +145,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     is_maximized = False
     is_fullscreen = False
-    _prev_size = None
+    size = None
 
     headerbar_revealer = Gtk.Template.Child('headerbar_revealer')
     headerbar = Gtk.Template.Child('headerbar')
@@ -182,7 +182,6 @@ class ApplicationWindow(Handy.ApplicationWindow):
     card_categories_stack = Gtk.Template.Child('card_categories_stack')
     card_categories_listbox = Gtk.Template.Child('card_categories_listbox')
     card_chapters_listbox = Gtk.Template.Child('card_chapters_listbox')
-    card_info_box = Gtk.Template.Child('card_info_box')
     card_name_label = Gtk.Template.Child('card_name_label')
     card_cover_image = Gtk.Template.Child('card_cover_image')
     card_cover_box = Gtk.Template.Child('card_cover_box')
@@ -544,16 +543,16 @@ class ApplicationWindow(Handy.ApplicationWindow):
 
     def on_resize(self, _window, _allocation):
         size = self.get_size()
-        if self._prev_size and self._prev_size.width == size.width and self._prev_size.height == size.height:
+        if self.size and self.size.width == size.width and self.size.height == size.height:
             return
 
-        self._prev_size = size
+        self.mobile_width = size.width <= 720
+        self.size = size
 
         self.library.on_resize()
-        if self.page == 'reader':
-            self.reader.on_resize()
-
-        self.mobile_width = size.width <= 800
+        self.card.on_resize()
+        self.reader.on_resize()
+        self.explorer.on_resize()
 
     def on_preferences_menu_clicked(self, action, param):
         self.preferences.show()

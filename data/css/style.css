@@ -20,37 +20,31 @@ flowbox flowboxchild {
 }
 
 /* Manga card page */
-.card-info-rows {
-    margin-bottom: 6px;
-}
-
-.card-info-rows row {
-    margin: 0px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 18px;
-    padding-bottom: 18px;
-}
-
-.card-info-rows row:active {
+.card-info-details-box {
     background-color: @theme_base_color;
+    border: 1px solid alpha(@borders, 0.7);
+    border-radius: 8px;
+    -gtk-outline-radius: 7px;
 }
-
-.card-info-label {
-    background-color: @theme_base_color;
-    border-style: solid;
-    border-width: 1px;
+.card-info-details-box > box {
+    padding: 6px 12px; min-height: 50px;
+}
+.card-info-details-box > box:not(:first-child) {
     border-color: alpha(@borders, 0.7);
-    border-radius: 9px;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
+}
+
+.card-info-synopsis-label {
+    background-color: @theme_base_color;
+    border: 1px solid alpha(@borders, 0.7);
+    border-radius: 8px;
+    -gtk-outline-radius: 7px;
     padding: 12px;
 }
 
-.card-info-label:backdrop {
-    color: @theme_text_color;
-}
-
 .card-chapter-listboxrow {
-    padding: 12px 6px 12px 12px;
+    padding: 6px 6px 12px 6px;
 }
 .card-chapter-label {
     font-size: 14px;
@@ -58,7 +52,6 @@ flowbox flowboxchild {
 .card-chapter-label-started {
     color: @warning_color;
 }
-
 .card-chapter-sublabel {
     font-size: 10px;
 }
@@ -68,17 +61,6 @@ flowbox flowboxchild {
     background-color: #3399ff;
     padding: 0 .4em;
     border-radius: .25rem;
-}
-
-.card-cover-frame {
-    box-shadow: 0px 0px 24px 6px rgba(0, 0, 0, 0.15);
-    border-width: 0px;
-}
-
-.dim-title {
-    font-weight: 800;
-    font-size: 16pt;
-    color: alpha(@theme_fg_color, 0.5);
 }
 
 /* Reader page */
@@ -95,8 +77,8 @@ flowbox flowboxchild {
     margin-bottom: 8px;
 }
 
-
-.explorer-dialog-server-header-listboxrow {
+/* Explorer - servers page */
+.explorer-server-header-listboxrow {
     padding: 12px;
     font-size: 14pt;
     font-weight: bold;
@@ -105,7 +87,7 @@ flowbox flowboxchild {
 
 
 /* Explorer - search page */
-.explorer-dialog-search-section-listboxrow {
+.explorer-search-section-listboxrow {
     font-weight: bold;
     color: @insensitive_fg_color;
     background: @insensitive_bg_color;

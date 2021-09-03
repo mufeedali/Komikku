@@ -14,7 +14,6 @@ from gi.repository import Gtk
 from gi.repository import Handy
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
-from gi.repository import Pango
 
 from komikku.models import create_db_connection
 from komikku.models import Manga
@@ -53,7 +52,6 @@ class Explorer(Gtk.Stack):
     search_page_filter_menu_button = Gtk.Template.Child('search_page_filter_menu_button')
     search_page_listbox = Gtk.Template.Child('search_page_listbox')
 
-    card_page_box = Gtk.Template.Child('card_page_box')
     card_page_cover_box = Gtk.Template.Child('card_page_cover_box')
     card_page_cover_image = Gtk.Template.Child('card_page_cover_image')
     card_page_authors_value_label = Gtk.Template.Child('card_page_authors_value_label')
@@ -85,8 +83,6 @@ class Explorer(Gtk.Stack):
         self.servers_page_search_button.connect('clicked', self.toggle_servers_search)
 
         self.servers_page_pinned_listbox.connect('row-activated', self.on_server_clicked)
-
-        self.window.connect('check-resize', self.resize_listener)
 
         def _servers_filter(row):
             """
@@ -146,7 +142,6 @@ class Explorer(Gtk.Stack):
         if 'manga_initial_data' in data:
             row.manga_data = data.pop('manga_initial_data')
 
-
         # Server logo
         logo = Gtk.Image()
         if data['logo_path']:
@@ -177,7 +172,6 @@ class Explorer(Gtk.Stack):
         button.set_active(data['id'] in Settings.get_default().pinned_servers)
         button.connect('toggled', self.toggle_server_pinned_state, row)
         button.set_valign(Gtk.Align.CENTER)
-        button.set_halign(Gtk.Align.CENTER)
         widget_box.pack_start(button, False, True, 0)
 
         return row
@@ -380,6 +374,9 @@ class Explorer(Gtk.Stack):
 
         self.populate_card(row.manga_data)
 
+    def on_resize(self):
+        self.card_page_cover_box.set_orientation(Gtk.Orientation.VERTICAL if self.window.mobile_width else Gtk.Orientation.HORIZONTAL)
+
     def on_search_page_server_website_button_clicked(self, _button):
         if self.server.base_url:
             Gtk.show_uri_on_window(None, self.server.base_url, time.time())
@@ -460,18 +457,14 @@ class Explorer(Gtk.Stack):
             self.card_page_scanlators_value_label.set_markup(scanlators)
 
             self.card_page_server_value_label.set_markup(
-                '<a href="{0}">{1} [{2}]</a>'.format(
+                '<a href="{0}">{1}</a> [{2}]'.format(
                     self.server.get_manga_url(self.manga_data['slug'], self.manga_data.get('url')),
                     html_escape(self.server.name),
                     self.server.lang.upper(),
                 )
             )
 
-            self.card_page_chapters_value_label.set_markup(
-                '{0} Chapters'.format(
-                    len(self.manga_data['chapters'])
-                )
-            )
+            self.card_page_chapters_value_label.set_markup(str(len(self.manga_data['chapters'])))
 
             self.card_page_last_chapter_value_label.set_markup(
                 self.manga_data['chapters'][-1]['title'] if self.manga_data['chapters'] else '-'
@@ -516,7 +509,7 @@ class Explorer(Gtk.Stack):
 
         # Add header
         row = Gtk.ListBoxRow(activatable=False, can_focus=False)
-        row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
+        row.get_style_context().add_class('explorer-server-header-listboxrow')
         label = Gtk.Label(xalign=0)
         label.get_style_context().add_class('subtitle')
         label.set_text(_('Pinned').upper())
@@ -550,7 +543,7 @@ class Explorer(Gtk.Stack):
                 last_lang = server_data['lang']
 
                 row = Gtk.ListBoxRow(activatable=False, can_focus=False)
-                row.get_style_context().add_class('explorer-dialog-server-header-listboxrow')
+                row.get_style_context().add_class('explorer-server-header-listboxrow')
                 label = Gtk.Label(xalign=0)
                 label.get_style_context().add_class('subtitle')
                 label.set_text(LANGUAGES[server_data['lang']].upper())
@@ -615,7 +608,7 @@ class Explorer(Gtk.Stack):
 
             if most_populars:
                 row = Gtk.ListBoxRow()
-                row.get_style_context().add_class('explorer-dialog-search-section-listboxrow')
+                row.get_style_context().add_class('explorer-search-section-listboxrow')
                 row.manga_data = None
                 box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
                 row.add(box)
@@ -738,11 +731,3 @@ class Explorer(Gtk.Stack):
             self.servers_page_pinned_listbox.hide()
         else:
             self.servers_page_pinned_listbox.show()
-
-    def resize_listener(self, box):
-        size = box.get_size()
-
-        if size.width < 600:
-            self.card_page_cover_box.set_orientation(Gtk.Orientation.VERTICAL)
-        else:
-            self.card_page_cover_box.set_orientation(Gtk.Orientation.HORIZONTAL)

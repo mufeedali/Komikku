@@ -43,7 +43,7 @@ class Card:
         self.resume_read_button = self.window.card_resume_read_button
 
         self.stack = self.window.card_stack
-        self.info_grid = InfoGrid(self)
+        self.info = Info(self)
         self.categories_list = CategoriesList(self)
         self.chapters_list = ChaptersList(self)
 
@@ -51,7 +51,6 @@ class Card:
         self.resume_read_button.connect('clicked', self.on_resume_read_button_clicked)
         self.stack.connect('notify::visible-child', self.on_page_changed)
         self.window.updater.connect('manga-updated', self.on_manga_updated)
-        self.window.connect('check-resize', self.resize_listener)
 
     def add_actions(self):
         self.delete_action = Gio.SimpleAction.new('card.delete', None)
@@ -153,7 +152,7 @@ class Card:
             if nb_recent_chapters > 0 or nb_deleted_chapters > 0 or synced:
                 self.chapters_list.populate()
 
-            self.info_grid.populate()
+            self.info.populate()
 
     def on_open_in_browser_menu_clicked(self, action, param):
         if url := self.manga.server.get_manga_url(self.manga.slug, self.manga.url):
@@ -164,6 +163,9 @@ class Card:
     def on_page_changed(self, _stack, _param):
         if self.selection_mode and self.stack.get_visible_child_name() != 'chapters':
             self.leave_selection_mode()
+
+    def on_resize(self):
+        self.info.on_resize()
 
     def on_resume_read_button_clicked(self, widget):
         chapters = [child.chapter for child in self.chapters_list.listbox.get_children()]
@@ -188,7 +190,7 @@ class Card:
     def populate(self):
         self.chapters_list.set_sort_order(invalidate=False)
         self.chapters_list.populate()
-        self.info_grid.populate()
+        self.info.populate()
         self.categories_list.populate()
 
     def set_actions_enabled(self, enabled):
@@ -215,16 +217,9 @@ class Card:
         self.chapters_list.populate_generator_stop_flag = True
 
     def refresh(self, chapters):
-        self.info_grid.refresh()
+        self.info.refresh()
         self.chapters_list.refresh(chapters)
 
-    def resize_listener(self, box):
-        size = box.get_size()
-
-        if size.width < 600:
-            self.window.card_cover_box.set_orientation(Gtk.Orientation.VERTICAL)
-        else:
-            self.window.card_cover_box.set_orientation(Gtk.Orientation.HORIZONTAL)
 
 class CategoriesList:
     def __init__(self, card):
@@ -868,11 +863,12 @@ class ChaptersList:
                 break
 
 
-class InfoGrid:
+class Info:
     def __init__(self, card):
         self.card = card
         self.window = card.window
 
+        self.cover_box = self.window.card_cover_box
         self.name_label = self.window.card_name_label
         self.cover_image = self.window.card_cover_image
         self.authors_value_label = self.window.card_authors_value_label
@@ -923,22 +919,23 @@ class InfoGrid:
         self.scanlators_value_label.set_markup(scanlators)
 
         self.server_value_label.set_markup(
-            '{0} [{1}]'.format(
-                html_escape(manga.server.name), manga.server.lang.upper()
+            '<a href="{0}">{1}</a> [{2}]'.format(
+                manga.server.get_manga_url(manga.slug, manga.url),
+                html_escape(manga.server.name),
+                manga.server.lang.upper(),
             )
         )
 
-        self.chapters_value_label.set_markup(
-            '{0} Chapters'.format(
-               len(manga.chapters)
-           )
-        )
+        self.chapters_value_label.set_markup(str(len(manga.chapters)))
 
         self.last_update_value_label.set_markup(manga.last_update.strftime('%m/%d/%Y') if manga.last_update else '-')
 
         self.synopsis_value_label.set_markup(manga.synopsis or '-')
 
         self.set_disk_usage()
+
+    def on_resize(self):
+        self.cover_box.set_orientation(Gtk.Orientation.VERTICAL if self.window.mobile_width else Gtk.Orientation.HORIZONTAL)
 
     def refresh(self):
         self.set_disk_usage()

@@ -174,6 +174,9 @@ class Reader:
             self.set_orientation()
 
     def on_resize(self):
+        if self.window.page != 'reader':
+            return
+
         self.pager.resize_pages()
 
     def on_scaling_changed(self, action, variant):
