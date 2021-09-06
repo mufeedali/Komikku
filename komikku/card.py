@@ -287,7 +287,7 @@ class ChaptersList:
 
         self.listbox = self.window.card_chapters_listbox
         self.listbox.connect('key-press-event', self.on_key_pressed)
-        self.listbox.connect('row-activated', self.on_chapter_row_clicked)
+        self.listbox.connect('row-activated', self.on_chapter_row_activated)
         self.listbox.connect('selected-rows-changed', self.on_selection_changed)
         self.listbox.connect('unselect-all', self.card.leave_selection_mode)
 
@@ -367,16 +367,7 @@ class ChaptersList:
         for row in self.listbox.get_children():
             row._selected = False
 
-    def on_chapter_row_button_pressed(self, event_box, event):
-        row = event_box.get_parent()
-        if not self.card.selection_mode and event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3 and row is not None:
-            self.card.enter_selection_mode()
-            self.on_chapter_row_clicked(None, row)
-            return Gdk.EVENT_STOP
-
-        return Gdk.EVENT_PROPAGATE
-
-    def on_chapter_row_clicked(self, _listbox, row):
+    def on_chapter_row_activated(self, _listbox, row):
         _ret, state = Gtk.get_current_event_state()
         modifiers = Gtk.accelerator_get_default_mod_mask()
 
@@ -538,11 +529,8 @@ class ChaptersList:
         for child in row.get_children():
             child.destroy()
 
-        event_box = Gtk.EventBox.new()
-        event_box.connect('button-press-event', self.on_chapter_row_button_pressed)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        event_box.add(box)
-        row.add(event_box)
+        row.add(box)
 
         chapter = row.chapter
 
