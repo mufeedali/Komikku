@@ -7,10 +7,20 @@
     <content_rating type="oars-1.1" />
 
     <name>Komikku</name>
-    <summary>A manga, comic and BD reader for GNOME</summary>
+    <summary>Read your favorite manga online or offline</summary>
     <description>
-        <p>Komikku is a manga, comic and BD reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
+        <p>Komikku is a manga, manhwa, manhua, webtoon, webcomics and comics reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
     </description>
+
+    <requires>
+        <display_length compare="ge">360</display_length>
+    </requires>
+
+    <recommends>
+        <control>keyboard</control>
+        <control>pointing</control>
+        <control>touch</control>
+    </recommends>
 
     <custom>
         <value key="Purism::form_factor">workstation</value>
