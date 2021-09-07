@@ -119,6 +119,10 @@ meson ..
 ninja install
 ```
 
+## Code of Conduct
+We follow the [GNOME Code of Conduct](/CODE_OF_CONDUCT.md).
+All communications in project spaces are expected to follow it.
+
 ## Translations
 
 Helping to translate Komikku or add support to a new language is very welcome.
