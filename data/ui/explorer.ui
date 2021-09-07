@@ -73,7 +73,7 @@
                             <property name="can-focus">False</property>
                             <property name="selection-mode">none</property>
                             <style>
-                              <class name="content"/>
+                              <class name="explorer-rounded-listbox"/>
                             </style>
                           </object>
                           <packing>
@@ -89,7 +89,7 @@
                             <property name="can-focus">False</property>
                             <property name="selection-mode">none</property>
                             <style>
-                              <class name="content"/>
+                              <class name="explorer-rounded-listbox"/>
                             </style>
                           </object>
                           <packing>
@@ -211,7 +211,7 @@
                         <property name="can-focus">False</property>
                         <property name="selection-mode">none</property>
                         <style>
-                          <class name="content"/>
+                          <class name="explorer-rounded-listbox"/>
                         </style>
                       </object>
                     </child>

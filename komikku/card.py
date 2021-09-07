@@ -867,7 +867,7 @@ class Info:
         self.chapters_value_label = self.window.card_chapters_value_label
         self.last_update_value_label = self.window.card_last_update_value_label
         self.synopsis_value_label = self.window.card_synopsis_value_label
-        self.more_value_label = self.window.card_more_value_label
+        self.size_on_disk_value_label = self.window.card_size_on_disk_value_label
 
     def populate(self):
         cover_width = 170
@@ -916,7 +916,7 @@ class Info:
 
         self.chapters_value_label.set_markup(str(len(manga.chapters)))
 
-        self.last_update_value_label.set_markup(manga.last_update.strftime('%m/%d/%Y') if manga.last_update else '-')
+        self.last_update_value_label.set_markup(manga.last_update.strftime(_('%m/%d/%Y')) if manga.last_update else '-')
 
         self.synopsis_value_label.set_markup(manga.synopsis or '-')
 
@@ -929,4 +929,4 @@ class Info:
         self.set_disk_usage()
 
     def set_disk_usage(self):
-        self.more_value_label.set_text(folder_size(self.card.manga.path))
+        self.size_on_disk_value_label.set_text(folder_size(self.card.manga.path))

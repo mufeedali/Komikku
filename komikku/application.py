@@ -195,7 +195,7 @@ class ApplicationWindow(Handy.ApplicationWindow):
     card_chapters_value_label = Gtk.Template.Child('card_chapters_value_label')
     card_last_update_value_label = Gtk.Template.Child('card_last_update_value_label')
     card_synopsis_value_label = Gtk.Template.Child('card_synopsis_value_label')
-    card_more_value_label = Gtk.Template.Child('card_more_value_label')
+    card_size_on_disk_value_label = Gtk.Template.Child('card_size_on_disk_value_label')
 
     reader_fullscreen_button = Gtk.Template.Child('reader_fullscreen_button')
     reader_overlay = Gtk.Template.Child('reader_overlay')

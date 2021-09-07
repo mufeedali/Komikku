@@ -1151,8 +1151,7 @@
                                                             <property name="hexpand">True</property>
                                                             <property name="label">chapter value</property>
                                                             <property name="justify">right</property>
-                                                            <property name="wrap">True</property>
-                                                            <property name="wrap-mode">word-char</property>
+                                                            <property name="single-line-mode">True</property>
                                                           </object>
                                                           <packing>
                                                             <property name="expand">False</property>
@@ -1207,8 +1206,7 @@
                                                             <property name="hexpand">True</property>
                                                             <property name="label">last update value</property>
                                                             <property name="justify">right</property>
-                                                            <property name="wrap">True</property>
-                                                            <property name="wrap-mode">word-char</property>
+                                                            <property name="single-line-mode">True</property>
                                                           </object>
                                                           <packing>
                                                             <property name="expand">False</property>
@@ -1367,37 +1365,68 @@
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkListBox">
+                                                  <object class="GtkBox">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="hexpand">True</property>
-                                                    <property name="selection-mode">none</property>
+                                                    <property name="orientation">vertical</property>
                                                     <child>
-                                                      <object class="HdyActionRow">
+                                                      <object class="GtkBox">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
-                                                        <property name="title" translatable="yes">Size on disk</property>
+                                                        <property name="spacing">12</property>
                                                         <child>
                                                           <object class="GtkImage">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
+                                                            <property name="halign">start</property>
                                                             <property name="icon-name">drive-harddisk-symbolic</property>
                                                           </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                          </packing>
                                                         </child>
                                                         <child>
-                                                          <object class="GtkLabel" id="card_more_value_label">
+                                                          <object class="GtkLabel">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">start</property>
-                                                            <property name="label">more info</property>
+                                                            <property name="label" translatable="yes">Size on Disk</property>
                                                             <property name="wrap">True</property>
                                                             <property name="wrap-mode">word-char</property>
                                                           </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                          </packing>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel" id="card_size_on_disk_value_label">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="hexpand">True</property>
+                                                            <property name="label">size on disk value</property>
+                                                            <property name="justify">right</property>
+                                                            <property name="single-line-mode">True</property>
+                                                          </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">2</property>
+                                                          </packing>
                                                         </child>
                                                       </object>
+                                                      <packing>
+                                                        <property name="expand">False</property>
+                                                        <property name="fill">True</property>
+                                                        <property name="position">0</property>
+                                                      </packing>
                                                     </child>
                                                     <style>
-                                                      <class name="content"/>
+                                                      <class name="card-info-details-box"/>
                                                     </style>
                                                   </object>
                                                   <packing>

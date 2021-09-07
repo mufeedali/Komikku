@@ -3,7 +3,6 @@
 }
 
 /* Library page */
-
 flowbox flowboxchild {
     padding: 6px; /* default is 4px */
 }
@@ -27,7 +26,8 @@ flowbox flowboxchild {
     -gtk-outline-radius: 7px;
 }
 .card-info-details-box > box {
-    padding: 6px 12px; min-height: 50px;
+    padding: 3px 12px;
+    min-height: 50px;
 }
 .card-info-details-box > box:not(:first-child) {
     border-color: alpha(@borders, 0.7);
@@ -77,23 +77,42 @@ flowbox flowboxchild {
     margin-bottom: 8px;
 }
 
-/* Explorer - servers page */
-.explorer-server-header-listboxrow {
-    padding: 12px;
-    font-size: 14pt;
+/* Explorer page */
+.explorer-rounded-listbox {
+    background-color: @theme_base_color;
+    border: 1px solid alpha(@borders, 0.7);
+    border-radius: 8px;
+    -gtk-outline-radius: 7px;
+}
+.explorer-rounded-listbox > row.header {
     font-weight: bold;
-    background: @insensitive_bg_color;
+    background-color: @insensitive_bg_color;
+    min-height: 31px;
+}
+.explorer-rounded-listbox > row {
+    border-color: alpha(@borders, 0.7);
+    padding: 3px 12px;
+    min-height: 50px;
+}
+.explorer-rounded-listbox > row:first-child {
+    border-top-left-radius: 8px;
+    -gtk-outline-top-left-radius: 7px;
+    border-top-right-radius: 8px;
+    -gtk-outline-top-right-radius: 7px;
+}
+.explorer-rounded-listbox > row:last-child {
+    border-bottom-left-radius: 8px;
+    -gtk-outline-bottom-left-radius: 7px;
+    border-bottom-right-radius: 8px;
+    -gtk-outline-bottom-right-radius: 7px;
+}
+.explorer-rounded-listbox > row:not(:first-child) {
+    border-color: alpha(@borders, 0.7);
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
 }
 
-
-/* Explorer - search page */
-.explorer-search-section-listboxrow {
-    font-weight: bold;
-    color: @insensitive_fg_color;
-    background: @insensitive_bg_color;
-}
-
-/* Download manager dialog */
+/* Download manager page */
 .download-manager-download-listboxrow {
     border-bottom: 1px solid @borders;
     padding: 6px 6px 12px 6px;

@@ -11,7 +11,7 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
-from gi.repository import Handy
+from gi.repository import Pango
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufAnimation
 
@@ -92,28 +92,19 @@ class Explorer(Gtk.Stack):
             """
             term = self.servers_page_searchentry.get_text().strip().lower()
 
-            # Rows must be manually hidden or shown; it's a workaround to properly
-            # apply the .content class's rounded corners on filtered lists
-            # See here - https://gitlab.gnome.org/GNOME/libhandy/-/blob/master/src/hdy-preferences-window.c#L119
             if not hasattr(row, 'server_data'):
                 # Languages headers should be displayed when term is empty
-                if term == '':
-                    row.show()
-                    return True
-                else:
-                    row.hide()
-                    return False
+                return True if term == '' else False
 
             server_name = row.server_data['name']
             server_lang = row.server_data['lang']
 
             # Search in name and language
-            if term in server_name.lower() or term in LANGUAGES[server_lang].lower() or term in server_lang.lower():
-                row.show()
-                return True
-            else:
-                row.hide()
-                return False
+            return (
+                term in server_name.lower() or
+                term in LANGUAGES[server_lang].lower() or
+                term in server_lang.lower()
+            )
 
         self.servers_page_listbox.connect('row-activated', self.on_server_clicked)
         self.servers_page_listbox.set_filter_func(_servers_filter)
@@ -135,12 +126,14 @@ class Explorer(Gtk.Stack):
         self.window.stack.add_named(self, 'explorer')
 
     def build_server_row(self, data):
-        row = Handy.ActionRow()
-        row.set_activatable(True)
+        row = Gtk.ListBoxRow()
 
         row.server_data = data
         if 'manga_initial_data' in data:
             row.manga_data = data.pop('manga_initial_data')
+
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        row.add(box)
 
         # Server logo
         logo = Gtk.Image()
@@ -150,29 +143,37 @@ class Explorer(Gtk.Stack):
             logo.set_from_surface(create_cairo_surface_from_pixbuf(pixbuf, self.window.hidpi_scale))
         else:
             logo.set_size_request(24, 24)
-        row.add_prefix(logo)
+        box.pack_start(logo, False, True, 0)
 
         # Server title & language
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, homogeneous=True)
+
+        label = Gtk.Label(xalign=0)
         title = data['name']
         if data['is_nsfw']:
             title += ' (NSFW)'
-        row.set_title(title)
-        row.set_subtitle(LANGUAGES[data['lang']])
-        widget_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-        row.add(widget_box)
+        label.set_text(title)
+        vbox.pack_start(label, True, True, 0)
+
+        label = Gtk.Label(xalign=0)
+        label.set_text(LANGUAGES[data['lang']])
+        label.get_style_context().add_class('subtitle')
+        vbox.pack_start(label, False, True, 0)
+
+        box.pack_start(vbox, True, True, 0)
 
         # Server requires a user account
         if data['has_login']:
             label = Gtk.Image.new_from_icon_name('dialog-password-symbolic', Gtk.IconSize.BUTTON)
-            widget_box.pack_start(label, False, True, 0)
+            box.pack_start(label, False, True, 0)
 
         # Button to pin/unpin
         button = Gtk.ToggleButton()
         button.set_image(Gtk.Image.new_from_icon_name('view-pin-symbolic', Gtk.IconSize.BUTTON))
+        button.set_valign(Gtk.Align.CENTER)
         button.set_active(data['id'] in Settings.get_default().pinned_servers)
         button.connect('toggled', self.toggle_server_pinned_state, row)
-        button.set_valign(Gtk.Align.CENTER)
-        widget_box.pack_start(button, False, True, 0)
+        box.pack_start(button, False, True, 0)
 
         return row
 
@@ -369,9 +370,6 @@ class Explorer(Gtk.Stack):
         return Gdk.EVENT_PROPAGATE
 
     def on_manga_clicked(self, listbox, row):
-        if row.manga_data is None:
-            return
-
         self.populate_card(row.manga_data)
 
     def on_resize(self):
@@ -507,9 +505,9 @@ class Explorer(Gtk.Stack):
         if not self.servers_page_searchbar.get_search_mode():
             self.servers_page_pinned_listbox.show()
 
-        # Add header
-        row = Gtk.ListBoxRow(activatable=False, can_focus=False)
-        row.get_style_context().add_class('explorer-server-header-listboxrow')
+        # Add header row
+        row = Gtk.ListBoxRow(activatable=False)
+        row.get_style_context().add_class('header')
         label = Gtk.Label(xalign=0)
         label.get_style_context().add_class('subtitle')
         label.set_text(_('Pinned').upper())
@@ -539,11 +537,11 @@ class Explorer(Gtk.Stack):
         last_lang = None
         for server_data in self.servers:
             if server_data['lang'] != last_lang:
-                # Add language header
+                # Add language header row
                 last_lang = server_data['lang']
 
-                row = Gtk.ListBoxRow(activatable=False, can_focus=False)
-                row.get_style_context().add_class('explorer-server-header-listboxrow')
+                row = Gtk.ListBoxRow(activatable=False)
+                row.get_style_context().add_class('header')
                 label = Gtk.Label(xalign=0)
                 label.get_style_context().add_class('subtitle')
                 label.set_text(LANGUAGES[server_data['lang']].upper())
@@ -607,23 +605,28 @@ class Explorer(Gtk.Stack):
             self.window.activity_indicator.stop()
 
             if most_populars:
-                row = Gtk.ListBoxRow()
-                row.get_style_context().add_class('explorer-search-section-listboxrow')
+                row = Gtk.ListBoxRow(activatable=False)
+                row.get_style_context().add_class('header')
                 row.manga_data = None
-                box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+                box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
                 row.add(box)
-                label = Gtk.Label(xalign=0, margin=6)
+                label = Gtk.Label(xalign=0)
+                label.get_style_context().add_class('subtitle')
                 label.set_text(_('MOST POPULARS'))
                 box.pack_start(label, True, True, 0)
 
                 self.search_page_listbox.add(row)
 
             for item in result:
-                row = Handy.ActionRow()
+                row = Gtk.ListBoxRow()
                 row.manga_data = item
-                row.set_activatable(True)
-                row.set_title(item['name'])
-                row.set_title_lines(3)
+                box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+                label = Gtk.Label(xalign=0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                label.set_text(item['name'])
+                box.pack_start(label, True, True, 0)
+                row.add(box)
+
                 self.search_page_listbox.add(row)
 
             self.search_page_listbox.show_all()
