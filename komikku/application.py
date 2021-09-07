@@ -569,8 +569,8 @@ class ApplicationWindow(Handy.ApplicationWindow):
         shortcuts_overview.present()
 
     def on_window_state_event(self, widget, event):
-        self.is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
-        self.is_fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) != 0
+        self.is_maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) == Gdk.WindowState.MAXIMIZED
+        self.is_fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) == Gdk.WindowState.FULLSCREEN
 
     def save_window_size(self):
         if not self.is_maximized and not self.is_fullscreen:
@@ -587,11 +587,13 @@ class ApplicationWindow(Handy.ApplicationWindow):
         if not self.is_fullscreen:
             self.reader.controls.on_fullscreen()
             self.fullscreen()
+            self.is_fullscreen = True
 
     def set_unfullscreen(self):
         if self.is_fullscreen:
             self.reader.controls.on_unfullscreen()
             self.unfullscreen()
+            self.is_fullscreen = False
 
     def show_notification(self, message, interval=5):
         self.notification_label.set_text(message)
