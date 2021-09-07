@@ -929,4 +929,4 @@ class Info:
         self.set_disk_usage()
 
     def set_disk_usage(self):
-        self.size_on_disk_value_label.set_text(folder_size(self.card.manga.path))
+        self.size_on_disk_value_label.set_text(folder_size(self.card.manga.path) or '-')
