@@ -30,13 +30,21 @@ class BasePager:
         self.scrolledwindow = self.reader.scrolledwindow
         self.scrolledwindow.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
             Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.TOUCH_MASK |
             Gdk.EventMask.SMOOTH_SCROLL_MASK
         )
         self.scrolledwindow.set_kinetic_scrolling(True)
         self.scrolledwindow.set_overlay_scrolling(True)
         self.scrolledwindow.get_hscrollbar().hide()
         self.scrolledwindow.get_vscrollbar().hide()
+
+        # Gesture for mouse click/touch navigation
+        self.gesture_click = Gtk.GestureMultiPress.new(self.scrolledwindow)
+        self.gesture_click.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        self.gesture_click.set_exclusive(True)
+        self.gesture_click.set_button(1)
 
         self.connect('motion-notify-event', self.on_motion_notify)
 
@@ -69,7 +77,7 @@ class BasePager:
 
         # Mouse click
         if self.btn_press_handler_id:
-            self.scrolledwindow.disconnect(self.btn_press_handler_id)
+            self.gesture_click.disconnect(self.btn_press_handler_id)
             self.btn_press_handler_id = None
 
     def enable_keyboard_and_mouse_click_navigation(self):
@@ -79,7 +87,7 @@ class BasePager:
 
         # Mouse click
         if self.btn_press_handler_id is None:
-            self.btn_press_handler_id = self.scrolledwindow.connect('button-press-event', self.on_btn_press)
+            self.btn_press_handler_id = self.gesture_click.connect('released', self.on_btn_released)
 
     @abstractmethod
     def goto_page(self, page_index):
@@ -92,19 +100,24 @@ class BasePager:
     def init(self):
         raise NotImplementedError()
 
-    def on_btn_press(self, widget, event):
-        if event.button == 1:
-            if self.btn_press_timeout_id is None and event.type == Gdk.EventType.BUTTON_PRESS:
-                # Schedule single click event to be able to detect double click
-                self.btn_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
+    def on_btn_released(self, gesture, n_press, _x, _y):
+        sequence = gesture.get_current_sequence()
+        event = gesture.get_last_event(sequence)
 
-            elif event.type == Gdk.EventType._2BUTTON_PRESS:
-                # Remove scheduled single click event
-                if self.btn_press_timeout_id:
-                    GLib.source_remove(self.btn_press_timeout_id)
-                    self.btn_press_timeout_id = None
+        if self.window.page != 'reader' or not event:
+            return Gdk.EVENT_PROPAGATE
 
-                GLib.idle_add(self.on_double_click, event.copy())
+        if self.btn_press_timeout_id is None and event.type in (Gdk.EventType.BUTTON_RELEASE, Gdk.EventType.TOUCH_END) and n_press == 1:
+            # Schedule single click event to be able to detect double click
+            self.btn_press_timeout_id = GLib.timeout_add(self.default_double_click_time + 100, self.on_single_click, event.copy())
+
+        elif n_press == 2:
+            # Remove scheduled single click event
+            if self.btn_press_timeout_id:
+                GLib.source_remove(self.btn_press_timeout_id)
+                self.btn_press_timeout_id = None
+
+            GLib.idle_add(self.on_double_click, event.copy())
 
         return Gdk.EVENT_STOP
 
@@ -141,8 +154,12 @@ class BasePager:
 
             # Adjust image's width to 2x window's width
             factor = 2
-            orig_width = page.image.get_pixbuf().get_width() / self.window.hidpi_scale
-            orig_height = page.image.get_pixbuf().get_height() / self.window.hidpi_scale
+            if page.image.get_storage_type() == Gtk.ImageType.PIXBUF:
+                storage = page.image.props.pixbuf
+            elif page.image.get_storage_type() == Gtk.ImageType.SURFACE:
+                storage = page.image.props.surface
+            orig_width = storage.get_width() / self.window.hidpi_scale
+            orig_height = storage.get_height() / self.window.hidpi_scale
             zoom_width = self.reader.size.width * factor
             zoom_height = orig_height * (zoom_width / orig_width)
             ratio = zoom_width / orig_width
