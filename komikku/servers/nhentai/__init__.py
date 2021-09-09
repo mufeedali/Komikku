@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2020 Leo Prikler
+# Copyright (C) 2020 Liliana Prikler
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
-# Author: Leo Prikler <leo.prikler@student.tugraz.at>
+# Author: Liliana Prikler <liliana.prikler@gmail.com>
 
 from bs4 import BeautifulSoup
 import json
