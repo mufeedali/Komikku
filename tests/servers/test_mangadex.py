@@ -26,13 +26,12 @@ def test_mangadex(mangadex_server):
             log_error_traceback(e)
 
         assert response is not None
-        yield step
+    yield step
 
     # Search
     print('Search')
     try:
         response = mangadex_server.search('tales of demons and gods')
-        print(response)
         slug = response[0]['slug']
     except Exception as e:
         slug = None

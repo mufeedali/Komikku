@@ -163,7 +163,7 @@ class Mangadex(Server):
             # Fall back to english synopsis
             data['synopsis'] = html.unescape(attributes['description']['en'])
         else:
-            logger.warn('{}: No synopsis', data['name'])
+            logger.warning('{}: No synopsis', data['name'])
 
         data['chapters'] += self.resolve_chapters(data['slug'])
 
@@ -313,7 +313,7 @@ class Mangadex(Server):
                     name=name,
                 ))
             else:
-                logger.warn("ignoring result {}, missing name".format(result['id']))
+                logger.warning("ignoring result {}, missing name".format(result['id']))
 
         return results
 
