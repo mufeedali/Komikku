@@ -4,9 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Mariusz Kurek <mariuszkurek@pm.me>
 
+from bs4 import BeautifulSoup
+import datetime
 import requests
 
-from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
@@ -35,31 +36,31 @@ class Guya(Server):
         if r.status_code != 200:
             return None
 
-        r = r.json()
+        resp_data = r.json()
 
         data = initial_data.copy()
         data.update(dict(
-            slug=initial_data['slug'],
-            authors=[r['author']],
-            scanlators=list(r['groups'].values()),
+            authors=[resp_data['author']],
+            scanlators=list(resp_data['groups'].values()),
             genres=[],
             status=None,
-            cover=self.base_url + r['cover'],
-            synopsis=r['description'],
+            cover=self.base_url + resp_data['cover'],
+            synopsis=BeautifulSoup(resp_data['description'], 'html.parser').text.strip() if resp_data['description'] else None,
             chapters=self.resolve_chapters(initial_data['slug']),
-            server_id=self.id
+            server_id=self.id,
         ))
 
         return data
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
-        r = self.resolve_chapters(manga_slug)
-        if not r:
+        chapters = self.resolve_chapters(manga_slug)
+        if not chapters:
             return None
 
-        for chapter in r:
+        for chapter in chapters:
             if chapter['slug'] == chapter_slug:
                 return chapter
+
         return None
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
@@ -77,7 +78,7 @@ class Guya(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['slug'].split('_')[0]
+            name=page['slug'].split('_')[0],
         )
 
     def get_manga_url(self, slug, url):
@@ -90,32 +91,31 @@ class Guya(Server):
         return self.search('')
 
     def resolve_chapters(self, manga_slug):
-        chapters = []
+        data = []
 
         r = self.session_get(self.api_manga_url.format(manga_slug))
         if r.status_code != 200:
             return None
 
-        groups = r.json()['groups']
+        resp_data = r.json()
+        groups = resp_data['groups']
+        chapters = resp_data['chapters']
 
-        r = r.json()['chapters']
+        for chapter_id, chapter in chapters.items():
+            title = '#' + chapter_id
+            if chapter['title']:
+                title += ' - ' + chapter['title']
 
-        for chapter in r.keys():
-            ch_info = r[chapter]
-            title = '#' + chapter
-            if ch_info['title']:
-                title = title + ' - ' + ch_info['title']
-
-            for group in ch_info['groups'].keys():
-                chapters.append(dict(
-                    slug=ch_info['folder'] + '/' + group,
+            for group_id, pages in chapter['groups'].items():
+                data.append(dict(
+                    slug=chapter['folder'] + '/' + group_id,
                     title=title,
-                    pages=[dict(slug=slug, image=None) for slug in ch_info['groups'][group]],
-                    scanlators=[groups[group]],
-                    date=convert_date_string(str(ch_info['release_date'][group]))
+                    pages=[dict(slug=slug, image=None) for slug in pages],
+                    scanlators=[groups[group_id]],
+                    date=datetime.date.fromtimestamp(chapter['release_date'][group_id]),
                 ))
 
-        return chapters
+        return data
 
     def search(self, term):
         params = None
@@ -123,22 +123,21 @@ class Guya(Server):
         if r.status_code != 200:
             return None
 
-        r = r.json()
+        resp_data = r.json()
         results = []
 
-        for result in r.keys():
-            if term and term.casefold() not in result.casefold():
+        for name, item in resp_data.items():
+            if term and term.casefold() not in name.casefold():
                 continue
 
             # The only indicator of a series being in Polish on Magical Translators is slug ending with PL.
-            if self.name == 'Magical Translators':
-                if r[result]['slug'].endswith('PL') != (self.lang == 'pl'):
+            if self.id == 'magicaltranslators_pl':
+                if not item['slug'].endswith('-PL'):
                     continue
 
             results.append(dict(
-                slug=r[result]['slug'],
-                name=result,
-                cover=self.base_url + r[result]['cover']
+                slug=item['slug'],
+                name=name,
             ))
 
         return results
