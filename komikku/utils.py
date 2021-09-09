@@ -31,8 +31,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
 
-# prevent recursive import by importing directly from _exceptions
-from komikku._exceptions import ServerException
+from komikku.servers.exceptions import ServerException
 
 keyring.core.init_backend()
 
