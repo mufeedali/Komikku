@@ -210,7 +210,7 @@ class Webtoon(Server):
             if li_element.get('data-episode-no') is None:
                 continue
 
-            date_element = li_element.find('p', class_='date')
+            date_element = li_element.find('span', class_='date')
             if date_element.span:
                 date_element.span.decompose()
 
