@@ -21,6 +21,7 @@ import requests
 import subprocess
 import traceback
 
+gi.require_version('Gdk', '3.0')
 gi.require_version('GdkPixbuf', '2.0')
 
 from gi.repository import Gdk
@@ -30,8 +31,6 @@ from gi.repository.GdkPixbuf import InterpType
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository.GdkPixbuf import PixbufLoader
 from gi.repository.GdkPixbuf import PixbufSimpleAnim
-
-from komikku.servers.exceptions import ServerException
 
 keyring.core.init_backend()
 
@@ -132,6 +131,8 @@ def is_flatpak():
 
 
 def log_error_traceback(e):
+    from komikku.servers.exceptions import ServerException
+
     if isinstance(e, requests.exceptions.RequestException):
         return _('No Internet connection, timeout or server down')
     elif isinstance(e, ServerException):
