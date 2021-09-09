@@ -142,35 +142,3 @@ class Guya(Server):
             ))
 
         return results
-
-
-class Dankefurslesen(Guya):
-    id = 'dankefurslesen'
-    base_url = 'https://danke.moe'
-    name = 'Danke fürs Lesen'
-
-
-class Coloredcouncil(Guya):
-    id = 'coloredcouncil'
-    base_url = 'https://coloredcouncil.moe'
-    name = 'Colored Council'
-
-
-class Hachirumi(Guya):
-    id = 'hachirumi'
-    base_url = 'https://hachirumi.com'
-    name = 'Hachirumi'
-    is_nsfw = True
-
-
-class Magicaltranslators(Guya):
-    id = 'magicaltranslators'
-    base_url = 'https://mahoushoujobu.com'
-    name = 'Magical Translators'
-
-
-class Magicaltranslators_pl(Guya):
-    id = 'magicaltranslators_pl'
-    base_url = 'https://mahoushoujobu.com'
-    name = 'Magical Translators'
-    lang = 'pl'
