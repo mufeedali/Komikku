@@ -14,7 +14,7 @@ from komikku.servers import USER_AGENT
 
 headers = {
     'User-Agent': USER_AGENT,
-    'Origin': 'https://readcomiconline.to',
+    'Origin': 'https://readcomiconline.li',
 }
 
 
@@ -23,7 +23,7 @@ class Readcomiconline(Server):
     name = 'Read Comic Online'
     lang = 'en'
 
-    base_url = 'https://readcomiconline.to'
+    base_url = 'https://readcomiconline.li'
     most_populars_url = base_url + '/ComicList/MostPopular'
     search_url = base_url + '/Search/SearchSuggest'
     manga_url = base_url + '/Comic/{0}'
@@ -73,17 +73,31 @@ class Readcomiconline(Server):
         else:
             data['cover'] = '{0}{1}'.format(self.base_url, cover_path)
 
-        p_elements = info_elements[0].find_all('p')
-        data['genres'] = [a_element.text.strip() for a_element in p_elements[0].find_all('a')]
-        data['authors'] = [a_element.text.strip() for a_element in p_elements[2].find_all('a')]
-        data['authors'] += [a_element.text.strip() for a_element in p_elements[3].find_all('a')]
+        for p_element in info_elements[0].find_all('p'):
+            if not p_element.span:
+                continue
 
-        if 'Completed' in p_elements[5].text:
-            data['status'] = 'complete'
-        elif 'Ongoing' in p_elements[5].text:
-            data['status'] = 'ongoing'
+            span_element = p_element.span.extract()
+            label = span_element.text.strip()
 
-        data['synopsis'] = p_elements[7].text.strip()
+            if label.startswith('Genres'):
+                data['genres'] = [a_element.text.strip() for a_element in p_element.find_all('a')]
+
+            elif label.startswith(('Writer', 'Artist')):
+                for a_element in p_element.find_all('a'):
+                    value = a_element.text.strip()
+                    if value not in data['authors']:
+                        data['authors'].append(value)
+
+            elif label.startswith('Status'):
+                value = p_element.text.strip()
+                if 'Completed' in value:
+                    data['status'] = 'complete'
+                elif 'Ongoing' in value:
+                    data['status'] = 'ongoing'
+
+            elif label.startswith('Summary'):
+                data['synopsis'] = p_element.text.strip()
 
         # Chapters (Issues)
         for tr_element in reversed(soup.find('table', class_='listing').find_all('tr')[2:]):
@@ -208,6 +222,9 @@ class Readcomiconline(Server):
         )
         if r.status_code != 200:
             return None
+        if not r.text:
+            # No results
+            return results
 
         mime_type = get_buffer_mime_type(r.content)
         if mime_type != 'text/html':
@@ -215,7 +232,10 @@ class Readcomiconline(Server):
 
         soup = BeautifulSoup(r.content, 'html.parser')
 
-        for a_element in soup.find_all('a'):
+        for a_element in soup:
+            if not a_element.get('href'):
+                continue
+
             results.append(dict(
                 name=a_element.text.strip(),
                 slug=a_element.get('href').split('/')[-1],
