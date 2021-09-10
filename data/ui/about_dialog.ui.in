@@ -8,7 +8,7 @@
     <property name="program_name">@prettyname@</property>
     <property name="version">@VERSION@</property>
     <property name="copyright">© 2019-2021 @authorfullname@</property>
-    <property name="comments" translatable="yes">A manga, comic and BD reader for GNOME
+    <property name="comments" translatable="yes">A manga reader for GNOME
 
 Never forget, you can support the authors
 by buying the official comics when they are
@@ -32,21 +32,12 @@ available in your region/language.</property>
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
             <property name="position">0</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>

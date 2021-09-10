@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@prettyname@
-Comment=A manga, comic and BD reader
+Comment=A manga reader for GNOME
 Exec=@bindir@/@projectname@ %U
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=@appid@
@@ -9,6 +9,6 @@ Type=Application
 StartupNotify=true
 Categories=Office;Viewer;GTK;GNOME;
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-Keywords=manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;
+Keywords=manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;webcomic;scan;offline;
 # Translators: Do NOT translate or transliterate this text (these are enum types)!
 X-Purism-FormFactor=Workstation;Mobile;

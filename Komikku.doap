@@ -5,9 +5,9 @@
          xmlns="http://usefulinc.com/ns/doap#">
 
   <name xml:lang="en">Komikku</name>
-  <shortdesc xml:lang="en">A manga, comic and BD reader for GNOME</shortdesc>
-  <description xml:lang="en">A manga, comic and BD reader for GNOME</description>
-  <homepage rdf:resource="https://gitlab.com/valos/Komikku" />
+  <shortdesc xml:lang="en">A manga reader for GNOME</shortdesc>
+  <description xml:lang="en">A manga reader for GNOME</description>
+  <homepage rdf:resource="https://valos.gitlab.io/Komikku/" />
   <bug-database rdf:resource="https://gitlab.com/valos/Komikku/issues" />
   <category rdf:resource="http://api.gnome.org/doap-extensions#apps" />
   <programming-language>Python</programming-language>

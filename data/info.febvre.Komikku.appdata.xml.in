@@ -9,7 +9,7 @@
     <name>Komikku</name>
     <summary>Read your favorite manga online or offline</summary>
     <description>
-        <p>Komikku is a manga, manhwa, manhua, webtoon, webcomics and comics reader for GNOME. It focuses on providing a clean, intuitive and responsive interface.</p>
+        <p>Komikku is a manga, manhwa, manhua, webtoons, webcomics and comics reader for GNOME. It focuses on providing a clean, intuitive and adaptive interface.</p>
     </description>
 
     <requires>
