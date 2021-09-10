@@ -73,7 +73,7 @@
                             <property name="can-focus">False</property>
                             <property name="selection-mode">none</property>
                             <style>
-                              <class name="explorer-rounded-listbox"/>
+                              <class name="rounded-listbox"/>
                             </style>
                           </object>
                           <packing>
@@ -89,7 +89,7 @@
                             <property name="can-focus">False</property>
                             <property name="selection-mode">none</property>
                             <style>
-                              <class name="explorer-rounded-listbox"/>
+                              <class name="rounded-listbox"/>
                             </style>
                           </object>
                           <packing>
@@ -209,9 +209,10 @@
                       <object class="GtkListBox" id="search_page_listbox">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="valign">start</property>
                         <property name="selection-mode">none</property>
                         <style>
-                          <class name="explorer-rounded-listbox"/>
+                          <class name="rounded-listbox"/>
                         </style>
                       </object>
                     </child>

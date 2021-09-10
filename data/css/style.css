@@ -77,38 +77,38 @@ flowbox flowboxchild {
     margin-bottom: 8px;
 }
 
-/* Explorer page */
-.explorer-rounded-listbox {
-    background-color: @theme_base_color;
+/* Explorer/Download manager pages */
+.rounded-listbox {
+    background-color: @theme_bg_color;
     border: 1px solid alpha(@borders, 0.7);
     border-radius: 8px;
     -gtk-outline-radius: 7px;
 }
-.explorer-rounded-listbox > row.header {
+.rounded-listbox > row.header {
     font-weight: bold;
     background-color: @insensitive_bg_color;
     min-height: 31px;
 }
-.explorer-rounded-listbox > row {
+.rounded-listbox > row {
+    border-style: solid;
     border-color: alpha(@borders, 0.7);
     padding: 3px 12px;
     min-height: 50px;
 }
-.explorer-rounded-listbox > row:first-child {
+.rounded-listbox > row:first-child {
+    border-width: 0px;
     border-top-left-radius: 8px;
     -gtk-outline-top-left-radius: 7px;
     border-top-right-radius: 8px;
     -gtk-outline-top-right-radius: 7px;
 }
-.explorer-rounded-listbox > row:last-child {
+.rounded-listbox > row:last-child {
     border-bottom-left-radius: 8px;
     -gtk-outline-bottom-left-radius: 7px;
     border-bottom-right-radius: 8px;
     -gtk-outline-bottom-right-radius: 7px;
 }
-.explorer-rounded-listbox > row:not(:first-child) {
-    border-color: alpha(@borders, 0.7);
-    border-style: solid;
+.rounded-listbox > row:not(:first-child) {
     border-width: 1px 0px 0px 0px;
 }
 

@@ -93,8 +93,8 @@ class Explorer(Gtk.Stack):
             term = self.servers_page_searchentry.get_text().strip().lower()
 
             if not hasattr(row, 'server_data'):
-                # Languages headers should be displayed when term is empty
-                return True if term == '' else False
+                # Languages headers are always visible
+                return True
 
             server_name = row.server_data['name']
             server_lang = row.server_data['lang']
@@ -498,12 +498,16 @@ class Explorer(Gtk.Stack):
             row.destroy()
 
         pinned_servers = Settings.get_default().pinned_servers
-        if len(pinned_servers) == 0:
+        rows = []
+        for server_data in self.servers:
+            if server_data['id'] not in pinned_servers:
+                continue
+
+            rows.append(self.build_server_row(server_data))
+
+        if len(rows) == 0:
             self.servers_page_pinned_listbox.hide()
             return
-
-        if not self.servers_page_searchbar.get_search_mode():
-            self.servers_page_pinned_listbox.show()
 
         # Add header row
         row = Gtk.ListBoxRow(activatable=False)
@@ -514,11 +518,7 @@ class Explorer(Gtk.Stack):
         row.add(label)
         self.servers_page_pinned_listbox.add(row)
 
-        for server_data in self.servers:
-            if server_data['id'] not in pinned_servers:
-                continue
-
-            row = self.build_server_row(server_data)
+        for row in rows:
             self.servers_page_pinned_listbox.add(row)
 
         self.servers_page_pinned_listbox.show_all()
@@ -651,6 +651,7 @@ class Explorer(Gtk.Stack):
 
         self.search_lock = True
         self.clear_search_page_results()
+        self.search_page_listbox.hide()
         self.window.activity_indicator.start()
 
         thread = threading.Thread(target=run, args=(self.server, ))
