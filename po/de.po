@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-10 14:02+0200\n"
-"PO-Revision-Date: 2021-05-24 18:58+0200\n"
+"PO-Revision-Date: 2021-09-10 19:03+0200\n"
 "Last-Translator: Liliana Prikler <liliana.prikler@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -19,13 +19,18 @@ msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:10
 msgid "Read your favorite manga online or offline"
-msgstr ""
+msgstr "Lies deine Lieblingsmanga online oder offline"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:12
+#, human-verified-fuzzy
 msgid ""
 "Komikku is a manga, manhwa, manhua, webtoons, webcomics and comics reader "
 "for GNOME. It focuses on providing a clean, intuitive and adaptive interface."
 msgstr ""
+"Komikku ist ein Reader für Manga, Manhwa, Manhua, Webtoons, Webcomics und "
+"Comics.\n"
+"Die Benutzerschittstelle orientiert sich an GNOME-Standards, um möglichst "
+"klar und intuitiv zu sein."
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:51
 msgid "Valéry Febvre"
@@ -35,10 +40,12 @@ msgstr "Valéry Febvre"
 msgid ""
 "[Card] Chapters list: Add sorting by title (can be slow with long lists)"
 msgstr ""
+"[Mangakarte] Sortierung nach Titel hinzugefügt (kann bei vielen Kapiteln "
+"lange dauern)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:63
 msgid "[Reader] Improve touch screen support"
-msgstr ""
+msgstr "[Reader] Verbesserter Touchscreen-Support"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:64
 #: ../data/info.febvre.Komikku.appdata.xml.in:203
@@ -47,11 +54,11 @@ msgstr "[Server] Read Manga: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:65
 msgid "[Servers] ReadManhwa: Update"
-msgstr ""
+msgstr "[Server] ReadManhwa: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:72
 msgid "[Servers] Mangadex: Update"
-msgstr ""
+msgstr "[Server] Mangadex: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:73
 #: ../data/info.febvre.Komikku.appdata.xml.in:131
@@ -70,36 +77,42 @@ msgstr "[Server] MangaSee: Aktualisiert"
 #: ../data/info.febvre.Komikku.appdata.xml.in:81
 msgid "[Library] Fix bug preventing app startup (empty library only)"
 msgstr ""
+"[Bibliothek] Fehler behoben, der die App bei leerer Bibliothek am Starten "
+"hindert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:88
 msgid "[Library] Displayed currently selected category in subtitle"
-msgstr ""
+msgstr "[Bibliothek] Zeige aktive Kategorie als Untertitel"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:89
 msgid "[Library] Add 'Uncategorized' category"
-msgstr ""
+msgstr "[Bibliothek] Kategorie 'Unkategorisiert' hinzugefügt"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:90
 msgid "[Servers] Mangadex: The long-awaited comeback"
-msgstr ""
+msgstr "[Server] Mangadex: Die lang ersehnte Rückkehr"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:91
 msgid ""
 "[Servers] MangaNato: Update (previously called MangaNelo). Previous manga "
 "and chapters won’t work after this update and need to be readded."
 msgstr ""
+"[Server] MangaNato (ehemals MangaNelo): Aktualisiert.\n"
+"\n"
+"Manga und Kapitel, die auf den alten Server verweisen müssen manuell "
+"aktualisiert (erneut hinzugefügt) werden."
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:93
 msgid "[Servers] JapScan: Update"
-msgstr ""
+msgstr "[Server] JapScan: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:94
 msgid "[Servers] MangaHub: Update"
-msgstr ""
+msgstr "[Server] MangaHub: Aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:95
 msgid "[L10n] Update French and German translation"
-msgstr ""
+msgstr "[L10n] Französische und deutsche Übersetzung aktualisiert"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:102
 msgid "Several UI changes to improve scaling on small devices screens"
@@ -1088,8 +1101,10 @@ msgstr "@prettyname@"
 msgid ""
 "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;webcomic;scan;offline;"
 msgstr ""
+"manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;webcomic;scan;offline;"
 
 #: ../data/ui/about_dialog.ui.in:11
+#, human-verified-fuzzy
 msgid ""
 "A manga reader for GNOME\n"
 "\n"
@@ -1097,6 +1112,11 @@ msgid ""
 "by buying the official comics when they are\n"
 "available in your region/language."
 msgstr ""
+"Ein Manga-Reader für GNOME\n"
+"\n"
+"Nicht vergessen, dass du mit dem Kauf offizieller Veröffentlichungen\n"
+"– so in deiner Region bzw. Sprache verfügbar – Autoren finanziell\n"
+"unterstützen kannst."
 
 #: ../data/ui/about_dialog.ui.in:17
 msgid "Learn more about Komikku"
@@ -1113,7 +1133,7 @@ msgstr "Download-Manager"
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
 #: ../data/ui/application_window.ui:624
 msgid "A manga reader for GNOME"
-msgstr ""
+msgstr "Manga-Reader für GNOME"
 
 #: ../data/ui/application_window.ui:763
 msgid "OK"
@@ -1137,7 +1157,7 @@ msgstr "Status"
 
 #: ../data/ui/application_window.ui:1191
 msgid "Last Update"
-msgstr ""
+msgstr "Zuletzt aktualisiert"
 
 #: ../data/ui/application_window.ui:1246 ../data/ui/explorer.ui:678
 msgid "Server"
@@ -1149,11 +1169,11 @@ msgstr "Inhalt"
 
 #: ../data/ui/application_window.ui:1356
 msgid "More"
-msgstr ""
+msgstr "Mehr"
 
 #: ../data/ui/application_window.ui:1395
 msgid "Size on Disk"
-msgstr ""
+msgstr "Speicherverbrauch"
 
 #: ../data/ui/application_window.ui:1461
 msgid "Info"
@@ -1203,11 +1223,11 @@ msgstr "Nach Datum ⬇"
 
 #: ../data/ui/menu/card.xml:45
 msgid "⬆ By Title"
-msgstr ""
+msgstr "Nach Titel ⬆"
 
 #: ../data/ui/menu/card.xml:50
 msgid "⬇ By Title"
-msgstr ""
+msgstr "Nach Titel ⬇"
 
 #: ../data/ui/menu/card.xml:60
 msgid "Open in Browser"
@@ -1565,7 +1585,7 @@ msgid "Oops, failed to retrieve manga's information."
 msgstr "Ups, Information zum Manga konnten nicht geholt werden."
 
 #: ../komikku/explorer.py:513
-#, fuzzy
+#, human-verified-fuzzy
 msgid "Pinned"
 msgstr "Favoriten"
 
@@ -1735,10 +1755,12 @@ msgid ""
 "Failed to sync read progress with server:\n"
 "{message}"
 msgstr ""
+"Lesefortschritt konnte nicht mit Server synchronisiert werden:\n"
+"{message}"
 
 #: ../komikku/reader/pager/__init__.py:325
 msgid "Failed to sync read progress with server"
-msgstr ""
+msgstr "Lesefortschritt konnte nicht mit Server synchronisiert werden"
 
 #: ../komikku/reader/pager/__init__.py:497
 #: ../komikku/reader/pager/__init__.py:526
@@ -1810,11 +1832,11 @@ msgstr "Tags, die von der Suche ausgeschlossen werden sollen"
 
 #: ../komikku/servers/exceptions.py:10
 msgid "Error: {}"
-msgstr ""
+msgstr "Fehler: {}"
 
 #: ../komikku/servers/exceptions.py:16
 msgid "No longer exists."
-msgstr ""
+msgstr "Existiert nicht mehr."
 
 #: ../komikku/servers/readmanhwa/__init__.py:44
 msgid "NSFW Content"
@@ -1863,95 +1885,3 @@ msgstr "Sie sind zurzeit offline"
 #: ../komikku/utils.py:137
 msgid "No Internet connection, timeout or server down"
 msgstr "Keine Internetverbindung, Timeout oder Serverfehler"
-
-#~ msgid "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;"
-#~ msgstr "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;"
-
-#~ msgid ""
-#~ "A manga, comic and BD reader for GNOME\n"
-#~ "\n"
-#~ "Never forget, you can support the authors\n"
-#~ "by buying the official comics when they are\n"
-#~ "available in your region/language."
-#~ msgstr ""
-#~ "Ein Manga/Comic/BD-Reader für GNOME\n"
-#~ "\n"
-#~ "Nicht vergessen, dass du Autoren durch den Kauf \n"
-#~ "offizieller Manga/Comics/BDs unterstützen kannst, \n"
-#~ "wenn diese in deiner Sprache/deinem Land erhältlich sind."
-
-#~ msgid "A manga, comic and BD reader"
-#~ msgstr "Ein Manga/Comic/BD-Reader"
-
-#~ msgid "A manga, comic and BD reader for GNOME"
-#~ msgstr "Manga/Comic/BD-Reader für GNOME"
-
-#~ msgid ""
-#~ "Komikku is a manga, comic and BD reader for GNOME. It focuses on "
-#~ "providing a clean, intuitive and responsive interface."
-#~ msgstr ""
-#~ "Komikku ist ein Manga/Comic/BD-Reader für GNOME. Es legt Fokus auf eine "
-#~ "klare, intuitive und responsive Benutzeroberfläche. "
-
-#~ msgid "@appid@"
-#~ msgstr "@appid@"
-
-#~ msgid "Authors"
-#~ msgstr "Autoren"
-
-#~ msgid "Last update"
-#~ msgstr "Zuletzt aktualisiert"
-
-#, python-brace-format
-#~ msgid "Disk space used: {0}"
-#~ msgstr "Belegter Speicherplatz: {0}"
-
-#~ msgid "Select a server"
-#~ msgstr "Server auswählen"
-
-#~ msgid "Are you sure you want to delete the \"{0}\" category?"
-#~ msgstr "Sind Sie sicher, dass Sie die Kategorie \"{0}\" löschen wollen?"
-
-#~ msgid "Search in {0}…"
-#~ msgstr "Suche in {0}…"
-
-#~ msgid "[Explorer] Search: Add button to open server's Website in browser"
-#~ msgstr ""
-#~ "[Explorer] Suche: Knopf hinzugefügt, mit dem die Website des Servers "
-#~ "geöffnet werden kann"
-
-#~ msgid "manga;reader;viewer;comic;webtoon;scan;offline;"
-#~ msgstr "manga;reader;viewer;comic;webtoon;scan;offline;"
-
-#~ msgid "Mark as read"
-#~ msgstr "Als gelesen markieren"
-
-#~ msgid "Mark as unread"
-#~ msgstr "Als ungelesen markieren"
-
-#~ msgid "Right to Left ←"
-#~ msgstr "Rechts nach Links ←"
-
-#~ msgid "Left to Right →"
-#~ msgstr "Links nach Rechts →"
-
-#~ msgid "Vertical ↓"
-#~ msgstr "Vertikal ↓"
-
-#~ msgid "Webtoon ↓"
-#~ msgstr "Webtoon ↓"
-
-#~ msgid "By Chapter Number (9-0)"
-#~ msgstr "Nach Kapitel-Nummer absteigend"
-
-#~ msgid "By Chapter Number (0-9)"
-#~ msgstr "Nach Kapitel-Nummer aufsteigend"
-
-#~ msgid "Reading direction"
-#~ msgstr "Leserichtung"
-
-#~ msgid "Reading Direction"
-#~ msgstr "Leserichtung"
-
-#~ msgid "Use desktop notifications for downloads"
-#~ msgstr "Nutzt Desktop-Benachrichtigungen für Downloads"
