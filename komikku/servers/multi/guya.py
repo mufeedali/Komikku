@@ -131,7 +131,10 @@ class Guya(Server):
                 continue
 
             # The only indicator of a series being in Polish on Magical Translators is slug ending with PL.
-            if self.id == 'magicaltranslators_pl':
+            if self.id == 'magicaltranslators':
+                if item['slug'].endswith('-PL'):
+                    continue
+            elif self.id == 'magicaltranslators_pl':
                 if not item['slug'].endswith('-PL'):
                     continue
 
