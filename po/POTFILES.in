@@ -28,6 +28,7 @@ komikku/reader/pager/__init__.py
 komikku/reader/pager/page.py
 komikku/reader/pager/webtoon.py
 komikku/servers/dynasty/__init__.py
+komikku/servers/exceptions.py
 komikku/servers/readmanhwa/__init__.py
 komikku/updater.py
 komikku/utils.py
