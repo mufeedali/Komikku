@@ -85,7 +85,7 @@
 
        <section>
             <item>
-                <attribute name="label">Save Page</attribute>
+                <attribute name="label" translatable="yes">Save Page</attribute>
                 <attribute name="action">app.reader.save-page</attribute>
             </item>
         </section>
