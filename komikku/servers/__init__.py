@@ -350,7 +350,7 @@ class Server:
         return r
 
     def update_chapter_read_progress(self, data, manga_slug, manga_name, chapter_slug, chapter_url):
-        return False
+        return NotImplemented
 
 
 def convert_date_string(date, format=None):

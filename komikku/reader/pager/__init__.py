@@ -5,6 +5,7 @@
 from abc import abstractmethod
 import datetime
 from gettext import gettext as _
+import threading
 
 from gi.repository import Gdk
 from gi.repository import GLib
@@ -14,6 +15,7 @@ from gi.repository.GdkPixbuf import InterpType
 
 from komikku.reader.pager.page import Page
 from komikku.utils import create_cairo_surface_from_pixbuf
+from komikku.utils import log_error_traceback
 
 
 class BasePager:
@@ -285,14 +287,7 @@ class BasePager:
             recent=0,
         ))
 
-        # Sync read progress with server if function is supported
-        chapter.manga.server.update_chapter_read_progress(
-            dict(
-                page=page.index + 1,
-                completed=chapter_is_read,
-            ),
-            self.reader.manga.slug, self.reader.manga.name, chapter.slug, chapter.url
-        )
+        self.sync_progress_with_server(page, chapter_is_read)
 
         return GLib.SOURCE_REMOVE
 
@@ -303,6 +298,35 @@ class BasePager:
     def show_cursor(self):
         # Restore the default cursor
         self.get_window().set_cursor(None)
+
+    def sync_progress_with_server(self, page, chapter_is_read):
+        # Sync reading progress with server if function is supported
+        chapter = page.chapter
+
+        def run():
+            try:
+                res = chapter.manga.server.update_chapter_read_progress(
+                    dict(
+                        page=page.index + 1,
+                        completed=chapter_is_read,
+                    ),
+                    self.reader.manga.slug, self.reader.manga.name, chapter.slug, chapter.url
+                )
+                if res != NotImplemented and not res:
+                    # Failed to save progress
+                    on_error('server')
+            except Exception as e:
+                on_error('connection', log_error_traceback(e))
+
+        def on_error(_kind, message=None):
+            if message is not None:
+                self.window.show_notification(_(f'Failed to sync read progress with server:\n{message}'), 2)
+            else:
+                self.window.show_notification(_('Failed to sync read progress with server'), 2)
+
+        thread = threading.Thread(target=run)
+        thread.daemon = True
+        thread.start()
 
 
 class Pager(Handy.Carousel, BasePager):

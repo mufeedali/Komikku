@@ -240,7 +240,7 @@ class Komga(Server):
     @do_login
     @is_ready
     def search(self, term):
-        r = self.session.get(self.api_search_url, params=dict(search=term))
+        r = self.session_get(self.api_search_url, params=dict(search=term))
         if r.status_code != 200:
             return None
 
