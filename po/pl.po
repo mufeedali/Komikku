@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.30.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-11 01:12+0200\n"
-"PO-Revision-Date: 2021-09-10 18:40+0200\n"
+"PO-Revision-Date: 2021-09-11 10:01+0200\n"
 "Last-Translator: Mariusz Kurek <mariuszkurek@pm.me>\n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -39,55 +39,58 @@ msgstr "Valéry Febvre"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:62
 msgid "[UI] Major redesign (except Library and Reader)"
-msgstr ""
+msgstr "[UI] Mocno przeprojektowany (z wyjątkiem Biblioteki i Czytnika)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:63
 msgid "[Card] Fixed chapters list scrolling on mobile devices"
 msgstr ""
+"[Karta] Naprawiono przewijanie listy rozdziałów na urządzeniach mobilnych"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:64
 msgid "[Reader] Fix fullscreen/unfullscreen on mobile devices"
 msgstr ""
+"[Czytnik] Naprawiono przełączanie pełnego ekranu na urządzeniach mobilnych"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:65
 msgid "[Reader] Fixed navigation between pages on mobile devices"
 msgstr ""
+"[Czytnik] Naprawiono nawigację między stronami na urządzeniach mobilnych"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:66
 msgid "[Reader] Fixed zoom on mobile devices"
-msgstr ""
+msgstr "[Czytnik] Naprawiono powiększanie na urządzeniach mobilnych"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:67
 msgid "[Servers] Add Colored Council [EN]"
-msgstr ""
+msgstr "[Serwery] Dodano Colored Council [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:68
 msgid "[Servers] Add Danke fürs Lesen [EN]"
-msgstr ""
+msgstr "[Serwery] Dodano Danke fürs Lesen [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:69
 msgid "[Servers] Add Guya [EN]"
-msgstr ""
+msgstr "[Serwery] Dodano Guya [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:70
 msgid "[Servers] Add Hachirumi [EN]"
-msgstr ""
+msgstr "[Serwery] Dodano Hachirumi [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:71
 msgid "[Servers] Add Jpmangas [FR]"
-msgstr ""
+msgstr "[Serwery] Dodano Jpmangas [FR]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:72
 msgid "[Servers] Add Magical Translators [EN/ES]"
-msgstr ""
+msgstr "[Serwery] Dodano Magical Translators [EN/PL]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:73
 msgid "[Servers] Read Manga server: Update"
-msgstr ""
+msgstr "[Serwery] Serwer Read Manga: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:74
 msgid "[Servers] Read Comic Online: Update"
-msgstr ""
+msgstr "[Serwery] Read Comic Online: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:75
 #: ../data/info.febvre.Komikku.appdata.xml.in:211
@@ -101,15 +104,15 @@ msgstr "[Serwery] MangaDex: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:77
 msgid "[Servers] Dragon Ball Multiverse: Update"
-msgstr ""
+msgstr "[Serwery] Dragon Ball Multiverse: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:78
 msgid "[Servers] Pepper&amp;Carrot: Update"
-msgstr ""
+msgstr "[Serwery] Pepper&amp;Carrot: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:79
 msgid "[L10n] Add Spanish translation"
-msgstr ""
+msgstr "[L10n] Dodano tłumaczenie na hiszpański i polski"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:86
 msgid ""
@@ -1354,7 +1357,7 @@ msgstr "Przycinanie krawędzi"
 
 #: ../data/ui/menu/reader.xml:88
 msgid "Save Page"
-msgstr ""
+msgstr "Zapisz stronę"
 
 #: ../data/ui/preferences.ui:24 ../data/ui/preferences.ui:85
 msgid "General"
