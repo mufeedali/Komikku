@@ -56,6 +56,32 @@
 
     <launchable type="desktop-id">info.febvre.Komikku.desktop</launchable>
     <releases>
+        <release version="0.31.0" date="2021-09-10">
+            <description>
+                <ul>
+                    <li>[UI] Major redesign (except Library and Reader)</li>
+                    <li>[Card] Fixed chapters list scrolling on mobile devices</li>
+                    <li>[Reader] Fix fullscreen/unfullscreen on mobile devices</li>
+                    <li>[Reader] Fixed navigation between pages on mobile devices</li>
+                    <li>[Reader] Fixed zoom on mobile devices</li>
+                    <li>[Servers] Add Colored Council [EN]</li>
+                    <li>[Servers] Add Danke fürs Lesen [EN]</li>
+                    <li>[Servers] Add Guya [EN]</li>
+                    <li>[Servers] Add Hachirumi [EN]</li>
+                    <li>[Servers] Add Jpmangas [FR]</li>
+                    <li>[Servers] Add Magical Translators [EN/PL]</li>
+                    <li>[Servers] Read Manga server: Update</li>
+                    <li>[Servers] Read Comic Online: Update</li>
+                    <li>[Servers] Webtoon: Update</li>
+                    <li>[Servers] MangaDex: Update</li>
+                    <li>[Servers] Dragon Ball Multiverse: Update</li>
+                    <li>[Servers] Pepper&amp;Carrot: Update</li>
+                    <li>[Servers] Komga: Fix crashes when viewing manga from offline</li>
+                    <li>[L10n] Add Polish translation</li>
+                    <li>[L10n] Add Spanish translation</li>
+                </ul>
+            </description>
+        </release>
         <release version="0.30.0" date="2021-08-04">
             <description>
                 <ul>
