@@ -29,7 +29,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="Shortcut window description">Keyboard Shortcuts</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Open shortcuts window</property>
                 <property name="accelerator">&lt;Primary&gt;question</property>
               </object>
             </child>
@@ -78,11 +78,11 @@
         <child>
             <object class="GtkShortcutsGroup">
                 <property name="visible">True</property>
-                <property name="title" context="Shortcut window description">Reader</property>
+                <property name="title" translatable="yes" context="Shortcut window description">Reader</property>
                 <child>
                     <object class="GtkShortcutsShortcut">
                         <property name="visible">True</property>
-                        <property name="title" translatable="yes" context="Shortcut window description">Save Page</property>
+                        <property name="title" translatable="yes" context="Shortcut window description">Save page</property>
                         <property name="accelerator">&lt;Primary&gt;S</property>
                     </object>
                 </child>
