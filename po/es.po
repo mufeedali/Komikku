@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Komikku 0.30.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-11 01:12+0200\n"
-"PO-Revision-Date: 2021-08-27 17:16+0200\n"
+"PO-Revision-Date: 2021-09-11 10:41+0200\n"
 "Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -20,13 +20,16 @@ msgstr ""
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:10
 msgid "Read your favorite manga online or offline"
-msgstr ""
+msgstr "Lea su manga favorito en línea o sin conexión"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:12
 msgid ""
 "Komikku is a manga, manhwa, manhua, webtoons, webcomics and comics reader "
 "for GNOME. It focuses on providing a clean, intuitive and adaptive interface."
 msgstr ""
+"Komikku es un lector de manga, manhwa, manhua, webtoons, webcomics y cómics "
+"para GNOME. Se centra en proporcionar una interfaz limpia, intuitiva y "
+"adaptable."
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:51
 msgid "Valéry Febvre"
@@ -34,55 +37,60 @@ msgstr "Valéry Febvre"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:62
 msgid "[UI] Major redesign (except Library and Reader)"
-msgstr ""
+msgstr "[IU] Rediseño importante (excepto Biblioteca y Lector)"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:63
 msgid "[Card] Fixed chapters list scrolling on mobile devices"
 msgstr ""
+"[Ficha] Corrige el desplazamiento de la lista de capítulos en los "
+"dispositivos móviles"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:64
 msgid "[Reader] Fix fullscreen/unfullscreen on mobile devices"
 msgstr ""
+"[Lector] Fijar la pantalla completa/no pantalla completa en los dispositivos "
+"móviles"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:65
 msgid "[Reader] Fixed navigation between pages on mobile devices"
 msgstr ""
+"[Lector] Corrige la navegación entre páginas en los dispositivos móviles"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:66
 msgid "[Reader] Fixed zoom on mobile devices"
-msgstr ""
+msgstr "[Lector] Zoom fijo en los dispositivos móviles"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:67
 msgid "[Servers] Add Colored Council [EN]"
-msgstr ""
+msgstr "[Servidores] Añade Colored Council [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:68
 msgid "[Servers] Add Danke fürs Lesen [EN]"
-msgstr ""
+msgstr "[Servidores] Añade Danke fürs Lesen [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:69
 msgid "[Servers] Add Guya [EN]"
-msgstr ""
+msgstr "[Servidores] Añade Guya [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:70
 msgid "[Servers] Add Hachirumi [EN]"
-msgstr ""
+msgstr "[Servidores] Añade Hachirumi [EN]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:71
 msgid "[Servers] Add Jpmangas [FR]"
-msgstr ""
+msgstr "[Servidores] Añade Jpmangas [FR]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:72
 msgid "[Servers] Add Magical Translators [EN/ES]"
-msgstr ""
+msgstr "[Servidores] Añade Magical Translators [EN/ES]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:73
 msgid "[Servers] Read Manga server: Update"
-msgstr ""
+msgstr "[Servidores] Servidor de Read Manga: Actualización"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:74
 msgid "[Servers] Read Comic Online: Update"
-msgstr ""
+msgstr "[Servidores] Read Comic Online: Actualización"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:75
 #: ../data/info.febvre.Komikku.appdata.xml.in:211
@@ -96,15 +104,15 @@ msgstr "[Servidores] MangaDex: Actualización"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:77
 msgid "[Servers] Dragon Ball Multiverse: Update"
-msgstr ""
+msgstr "[Servidores] Dragon Ball Multiverse: Actualización"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:78
 msgid "[Servers] Pepper&amp;Carrot: Update"
-msgstr ""
+msgstr "[Servidores] Pepper&amp;Carrot: Actualización"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:79
 msgid "[L10n] Add Spanish translation"
-msgstr ""
+msgstr "[L10n] Añade la traducción al español"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:86
 msgid ""
@@ -492,7 +500,7 @@ msgid ""
 "servers with NSFW only content"
 msgstr ""
 "[Preferencias] Biblioteca: Añade nueva opción para permitir al usuario "
-"activar/desactivar los servidores con contenido no apropiado sólo"
+"activar/desactivar los servidores con sólo contenido inapropiado"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:249
 msgid "[Servers] Add Mangahub"
@@ -1189,6 +1197,7 @@ msgstr "@prettyname@"
 msgid ""
 "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;webcomic;scan;offline;"
 msgstr ""
+"manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;webcomic;scan;offline;"
 
 #: ../data/ui/about_dialog.ui.in:11
 msgid ""
@@ -1198,6 +1207,11 @@ msgid ""
 "by buying the official comics when they are\n"
 "available in your region/language."
 msgstr ""
+"Un lector de manga para GNOME\n"
+"\n"
+"No olvide que puede apoyar a los autores\n"
+"comprando los cómics oficiales cuando estén\n"
+"disponibles en su región/idioma."
 
 #: ../data/ui/about_dialog.ui.in:17
 msgid "Learn more about Komikku"
@@ -1214,7 +1228,7 @@ msgstr "Gestor de descargas"
 #. The subtitle of the umbrella sentence in the first start screen. This is a sentence which gives the user a starting point what he can do if he opens the application for the first time.
 #: ../data/ui/application_window.ui:624
 msgid "A manga reader for GNOME"
-msgstr ""
+msgstr "Un lector de manga para GNOME"
 
 #: ../data/ui/application_window.ui:763
 msgid "OK"
@@ -1222,7 +1236,7 @@ msgstr "VALE"
 
 #: ../data/ui/application_window.ui:928 ../data/ui/explorer.ui:358
 msgid "Details"
-msgstr ""
+msgstr "Detalles"
 
 #: ../data/ui/application_window.ui:967 ../data/ui/explorer.ui:398
 msgid "Genres"
@@ -1238,7 +1252,7 @@ msgstr "Estado"
 
 #: ../data/ui/application_window.ui:1191
 msgid "Last Update"
-msgstr ""
+msgstr "Última actualización"
 
 #: ../data/ui/application_window.ui:1246 ../data/ui/explorer.ui:679
 msgid "Server"
@@ -1250,11 +1264,11 @@ msgstr "Sinopsis"
 
 #: ../data/ui/application_window.ui:1356
 msgid "More"
-msgstr ""
+msgstr "Más"
 
 #: ../data/ui/application_window.ui:1395
 msgid "Size on Disk"
-msgstr ""
+msgstr "Tamaño en disco"
 
 #: ../data/ui/application_window.ui:1461
 msgid "Info"
@@ -1365,7 +1379,7 @@ msgstr "Ajustar bordes"
 
 #: ../data/ui/menu/reader.xml:88
 msgid "Save Page"
-msgstr ""
+msgstr "Guardar página"
 
 #: ../data/ui/preferences.ui:24 ../data/ui/preferences.ui:85
 msgid "General"
@@ -1431,7 +1445,7 @@ msgstr "Detecta automáticamente la franja vertical larga cuando es posible"
 
 #: ../data/ui/preferences.ui:196
 msgid "Whether to enable servers with NSFW only content"
-msgstr "Si se habilitan los servidores con contenido no apropiado sólo"
+msgstr "Si se habilitan los servidores con sólo contenido inapropiado"
 
 #: ../data/ui/preferences.ui:226 ../data/ui/preferences.ui:294
 msgid "Reader"
@@ -1843,10 +1857,12 @@ msgid ""
 "Failed to sync read progress with server:\n"
 "{message}"
 msgstr ""
+"Fallo en la sincronización del progreso de lectura con el servidor:\n"
+"{message}"
 
 #: ../komikku/reader/pager/__init__.py:325
 msgid "Failed to sync read progress with server"
-msgstr ""
+msgstr "Fallo en la sincronización del progreso de lectura con el servidor"
 
 #: ../komikku/reader/pager/__init__.py:497
 #: ../komikku/reader/pager/__init__.py:526
@@ -1926,11 +1942,11 @@ msgstr "Ya no existe."
 
 #: ../komikku/servers/readmanhwa/__init__.py:44
 msgid "NSFW Content"
-msgstr "Contenido no apropiado"
+msgstr "Contenido inapropiado"
 
 #: ../komikku/servers/readmanhwa/__init__.py:45
 msgid "Whether to show manga containing NSFW content"
-msgstr "Si se muestra el manga con contenido no apropiado"
+msgstr "Si se muestra el manga con contenido inapropiado"
 
 #: ../komikku/updater.py:98
 msgid "Library update completed with errors"
@@ -1973,44 +1989,3 @@ msgid "No Internet connection, timeout or server down"
 msgstr ""
 "Sin conexión a Internet, se ha agotado el tiempo de espera o se ha caído el "
 "servidor"
-
-#~ msgid "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;"
-#~ msgstr ""
-#~ "manga;reader;viewer;comic;manhwa;manhua;bd;webtoon;scan;offline;lector;"
-#~ "visor;"
-
-#~ msgid ""
-#~ "A manga, comic and BD reader for GNOME\n"
-#~ "\n"
-#~ "Never forget, you can support the authors\n"
-#~ "by buying the official comics when they are\n"
-#~ "available in your region/language."
-#~ msgstr ""
-#~ "Un lector de manga, cómic y BD para GNOME\n"
-#~ "\n"
-#~ "No olvide que puedes apoyar a los autores\n"
-#~ "comprando los cómics oficiales cuando estén\n"
-#~ "disponibles en su región/idioma."
-
-#~ msgid "A manga, comic and BD reader"
-#~ msgstr "Lector de manga, cómic y BD"
-
-#~ msgid "A manga, comic and BD reader for GNOME"
-#~ msgstr "Un lector de manga, cómic y BD para GNOME"
-
-#~ msgid ""
-#~ "Komikku is a manga, comic and BD reader for GNOME. It focuses on "
-#~ "providing a clean, intuitive and responsive interface."
-#~ msgstr ""
-#~ "Komikku es un lector de manga, cómics y BD para GNOME. Se centra en "
-#~ "proporcionar una interfaz limpia, intuitiva y responsiva."
-
-#~ msgid "Authors"
-#~ msgstr "Autores"
-
-#~ msgid "Last update"
-#~ msgstr "Última actualización"
-
-#, python-brace-format
-#~ msgid "Disk space used: {0}"
-#~ msgstr "Espacio en disco utilizado: {0}"
