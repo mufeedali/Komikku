@@ -292,7 +292,7 @@ class Explorer(Gtk.Stack):
         if self.page == 'servers':
             # Back to Library if:
             # - user click on 'Back' button
-            # - or use 'Esc' key and 'severs' page in not in search mode
+            # - or use 'Esc' key and 'severs' page is not in search mode
             if source == 'click' or not self.servers_page_searchbar.get_search_mode():
                 self.window.library.show()
 
@@ -733,5 +733,5 @@ class Explorer(Gtk.Stack):
 
         if button.get_active():
             self.servers_page_pinned_listbox.hide()
-        else:
+        elif len(self.servers_page_pinned_listbox.get_children()) > 0:
             self.servers_page_pinned_listbox.show()
