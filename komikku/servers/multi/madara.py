@@ -13,6 +13,7 @@
 # ArazNovel [TR]: https://araznovel.com
 # Argos Scan [PT]: https://argosscan.com
 # Atikrost [TR]: https://atikrost.com
+# Best Manga [RU]: https://bestmanga.club
 # 24hRomance [EN]: https://24hromance.com
 # Wakascan [FR]: https://wakascan.com
 
@@ -92,15 +93,15 @@ class Madara(Server):
                     data['genres'].append(genre)
             elif label.startswith(('Status', 'Durum', 'الحالة', 'Статус')):
                 status = content_element.text.strip()
-                if status in ('Completed', 'Completo', 'Concluído', 'Tamamlandı', 'مكتملة'):
+                if status in ('Completed', 'Completo', 'Concluído', 'Tamamlandı', 'مكتملة', 'Закончена'):
                     data['status'] = 'complete'
-                elif status in ('OnGoing', 'Продолжается', 'Updating', 'Devam Ediyor', 'Em Lançamento', 'Em andamento', 'مستمرة', 'Выпускается'):
+                elif status in ('OnGoing', 'Updating', 'Devam Ediyor', 'Em Lançamento', 'Em andamento', 'مستمرة', 'Продолжается', 'Выпускается'):
                     data['status'] = 'ongoing'
 
         summary_container = soup.find('div', class_='summary__content')
         if summary_container:
-            if p_element := summary_container.find('p'):
-                data['synopsis'] = p_element.text.strip()
+            if p_elements := summary_container.find_all('p'):
+                data['synopsis'] = '\n\n'.join([p_element.text.strip() for p_element in p_elements])
             else:
                 data['synopsis'] = summary_container.text.strip()
 
