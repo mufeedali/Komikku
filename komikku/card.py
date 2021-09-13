@@ -918,7 +918,7 @@ class Info:
 
         self.last_update_value_label.set_markup(manga.last_update.strftime(_('%m/%d/%Y')) if manga.last_update else '-')
 
-        self.synopsis_value_label.set_markup(manga.synopsis or '-')
+        self.synopsis_value_label.set_markup(html_escape(manga.synopsis) or '-')
 
         self.set_disk_usage()
 
