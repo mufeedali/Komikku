@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Komikku 0.30.0\n"
+"Project-Id-Version: Komikku 0.31.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-12 00:58+0200\n"
-"PO-Revision-Date: 2021-09-11 10:01+0200\n"
+"PO-Revision-Date: 2021-09-13 11:35+0200\n"
 "Last-Translator: Mariusz Kurek <mariuszkurek@pm.me>\n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -82,7 +82,7 @@ msgstr "[Serwery] Dodano Jpmangas [FR]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:72
 msgid "[Servers] Add Magical Translators [EN/PL]"
-msgstr ""
+msgstr "[Serwery] Dodano Magical Translators [EN/PL]"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:73
 msgid "[Servers] Read Manga server: Update"
@@ -112,15 +112,15 @@ msgstr "[Serwery] Pepper&amp;Carrot: aktualizacja"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:79
 msgid "[Servers] Komga: Fix crashes when viewing manga from offline"
-msgstr ""
+msgstr "[Serwery] Komga: naprawiono crashe podczas przeglądania mangi offline"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:80
 msgid "[L10n] Add Polish translation"
-msgstr ""
+msgstr "[L10n] Dodano tłumaczenie na polski"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:81
 msgid "[L10n] Add Spanish translation"
-msgstr "[L10n] Dodano tłumaczenie na hiszpański i polski"
+msgstr "[L10n] Dodano tłumaczenie na hiszpański"
 
 #: ../data/info.febvre.Komikku.appdata.xml.in:88
 msgid ""
@@ -1493,7 +1493,7 @@ msgstr "Przełącz tryb pełnoekranowy"
 #: ../data/ui/shortcuts_overview.ui:32
 msgctxt "Shortcut window description"
 msgid "Open shortcuts window"
-msgstr ""
+msgstr "Otwórz okno skrótów"
 
 #: ../data/ui/shortcuts_overview.ui:41
 msgctxt "Shortcut window description"
@@ -1528,12 +1528,12 @@ msgstr "Wybierz wszystkie rozdziały"
 #: ../data/ui/shortcuts_overview.ui:81
 msgctxt "Shortcut window description"
 msgid "Reader"
-msgstr ""
+msgstr "Czytnik"
 
 #: ../data/ui/shortcuts_overview.ui:85
 msgctxt "Shortcut window description"
 msgid "Save page"
-msgstr ""
+msgstr "Zapisz stronę"
 
 #: ../data/ui/shortcuts_overview.ui:94
 msgctxt "Shortcut window description"
@@ -1979,10 +1979,3 @@ msgstr "Obecnie jesteś offline"
 msgid "No Internet connection, timeout or server down"
 msgstr ""
 "Brak połączenia z internetem, upłynął limit czasu albo serwer nie odpowiada"
-
-#~ msgid "[Servers] Add Magical Translators [EN/ES]"
-#~ msgstr "[Serwery] Dodano Magical Translators [EN/PL]"
-
-#~ msgctxt "Shortcut window description"
-#~ msgid "Keyboard Shortcuts"
-#~ msgstr "Skróty klawiszowe"
