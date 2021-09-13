@@ -1,35 +1,32 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2020 Liliana Prikler
+# Copyright (C) 2021 Liliana Prikler
 # SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
 # Author: Liliana Prikler <liliana.prikler@gmail.com>
 
 from bs4 import BeautifulSoup
-from gettext import gettext as _
-import json
 import logging
 from operator import itemgetter
 import requests
-
-from gi.repository import GLib
 
 from komikku.servers import convert_date_string
 from komikku.servers import get_buffer_mime_type
 from komikku.servers import Server
 from komikku.servers import USER_AGENT
+from komikku.servers.exceptions import NotFoundError
 
 logger = logging.getLogger('komikku.servers.bilibili')
 
-SEARCH_RESULTS_LIMIT=10
+SEARCH_RESULTS_LIMIT = 10
 
 
 class Bilibili(Server):
-    lang = 'en'
     id = 'bilibili'
-    name = 'Bilibili'
+    name = 'BILIBILI COMICS'
+    lang = 'en'
 
     base_url = 'https://www.bilibilicomics.com'
-    manga_url = 'https://www.bilibilicomics.com/detail/mc{}'
+    manga_url = base_url + '/detail/mc{}'
 
     query_params = "?device=pc&platform=web"
 
@@ -43,9 +40,10 @@ class Bilibili(Server):
     def __init__(self):
         if self.session is None:
             self.session = requests.Session()
-            self.session.headers.update({'user-agent': USER_AGENT,
-                                         'referer': self.base_url,
-                                         'accept': 'application/json, text/plain, */*'})
+            self.session.headers.update({
+                'User-Agent': USER_AGENT,
+                'Referer': self.base_url,
+            })
 
     def get_manga_data(self, initial_data):
         """
@@ -55,10 +53,12 @@ class Bilibili(Server):
         """
         assert 'slug' in initial_data, 'Slug is missing in initial data'
 
-        r = self.session_post(self.api_manga_url,
-                              json=dict(
-                                  comic_id=int(initial_data['slug'])
-                              ))
+        r = self.session_post(
+            self.api_manga_url,
+            json=dict(
+                comic_id=int(initial_data['slug']),
+            )
+        )
         if r.status_code != 200:
             return None
 
@@ -74,21 +74,17 @@ class Bilibili(Server):
             status='completed' if json_data['is_finish'] else 'ongoing',
             cover=json_data['vertical_cover'],
             chapters=[
-                dict(slug=str(ep['id']),
-                     title='#{} - {}'.format(ep['short_title'], ep['title']),
-                     date=convert_date_string(ep['pub_time']))
+                dict(
+                    slug=str(ep['id']),
+                    title='#{} - {}'.format(ep['short_title'], ep['title']),
+                    date=convert_date_string(ep['pub_time'].split('T')[0], format='%Y-%m-%d'),
+                )
                 for ep in sorted(json_data['ep_list'], key=itemgetter('ord'))
             ],
-            server_id=self.id
+            server_id=self.id,
         ))
 
         return data
-
-    def get_manga_url(self, slug, url):
-        """
-        Returns manga absolute URL
-        """
-        return self.manga_url.format(slug)
 
     def get_manga_chapter_data(self, manga_slug, manga_name, chapter_slug, chapter_url):
         """
@@ -112,19 +108,17 @@ class Bilibili(Server):
 
     def get_manga_chapter_page_image(self, manga_slug, manga_name, chapter_slug, page):
         r = self.session_post(self.api_image_token_url, json=dict(urls='["{}"]'.format(page['slug'])))
-
         if r.status_code != 200:
             return None
 
-        page = r.json()['data'][0]
+        data = r.json()['data'][0]
 
-        r = self.session_get(page['url'],
-                             params=dict(token=page['token']),
-                             headers=dict(user_agent=USER_AGENT,
-                                          referer=self.base_url))
-
-        print (r, r.text)
-
+        r = self.session_get(
+            data['url'] + '?token=' + data['token'],
+            headers={
+                'Origin': self.base_url,
+            }
+        )
         if r.status_code != 200:
             return None
 
@@ -135,22 +129,23 @@ class Bilibili(Server):
         return dict(
             buffer=r.content,
             mime_type=mime_type,
-            name=page['slug'].split('/')[1],
+            name=page['slug'].split('/')[-1],
         )
 
     def get_most_populars(self):
-        r = self.session_post(self.api_most_populars_url,
-                              json=dict(
-                                  area_id=-1,
-                                  is_finish=-1,
-                                  is_free=1,
-                                  order=0,
-                                  page_num=1,
-                                  page_size=2*SEARCH_RESULTS_LIMIT,
-                                  style_id=-1,
-                                  style_prefer="[]"
-                              ))
-
+        r = self.session_post(
+            self.api_most_populars_url,
+            json=dict(
+                area_id=-1,
+                is_finish=-1,
+                is_free=1,
+                order=0,
+                page_num=1,
+                page_size=2 * SEARCH_RESULTS_LIMIT,
+                style_id=-1,
+                style_prefer='[]',
+            )
+        )
         if r.status_code != 200:
             return None
 
@@ -158,25 +153,32 @@ class Bilibili(Server):
         for manga in r.json()['data']:
             results.append(dict(
                 slug=manga['season_id'],
-                name=manga['title']
+                name=manga['title'],
             ))
 
         return results
 
-    def search(self, term):
-        r = self.session_post(self.api_search_url,
-                              json=dict(
-                                  area_id=-1,
-                                  is_finish=-1,
-                                  is_free=1,
-                                  order=0,
-                                  page_num=1,
-                                  page_size=SEARCH_RESULTS_LIMIT,
-                                  style_id=-1,
-                                  style_prefer="[]",
-                                  key_word=term
-                              ))
+    def get_manga_url(self, slug, url):
+        """
+        Returns manga absolute URL
+        """
+        return self.manga_url.format(slug)
 
+    def search(self, term):
+        r = self.session_post(
+            self.api_search_url,
+            json=dict(
+                area_id=-1,
+                is_finish=-1,
+                is_free=1,
+                order=0,
+                page_num=1,
+                page_size=SEARCH_RESULTS_LIMIT,
+                style_id=-1,
+                style_prefer='[]',
+                key_word=term,
+            )
+        )
         if r.status_code != 200:
             return None
 
@@ -184,7 +186,7 @@ class Bilibili(Server):
         for manga in r.json()['data']['list']:
             results.append(dict(
                 slug=(manga['id']),
-                name=BeautifulSoup(manga['title'], 'lxml').text
+                name=BeautifulSoup(manga['title'], 'lxml').text,
             ))
 
         return results
