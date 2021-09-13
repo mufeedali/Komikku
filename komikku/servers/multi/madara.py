@@ -77,24 +77,24 @@ class Madara(Server):
             label = element.find('div', class_='summary-heading').text.strip()
             content_element = element.find('div', class_='summary-content')
 
-            if label.startswith(('Author', 'Artist', 'Autor', 'Artista', 'Yazar', 'Sanatçı', 'Çizer', 'الرسام', 'المؤلف')):
+            if label.startswith(('Author', 'Artist', 'Autor', 'Artista', 'Yazar', 'Sanatçı', 'Çizer', 'الرسام', 'المؤلف', 'Автор', 'Художник')):
                 for author in content_element.text.strip().split(','):
                     author = author.strip()
                     if author in ('', 'Updating'):
                         continue
                     if author not in data['authors']:
                         data['authors'].append(author)
-            elif label.startswith(('Genre', 'Gênero', 'Tür', 'Kategoriler', 'التصنيف')):
+            elif label.startswith(('Genre', 'Gênero', 'Tür', 'Kategoriler', 'التصنيف', 'Жанр')):
                 for genre in content_element.text.strip().split(','):
                     genre = genre.strip()
                     if genre == '':
                         continue
                     data['genres'].append(genre)
-            elif label.startswith(('Status', 'Durum', 'الحالة')):
+            elif label.startswith(('Status', 'Durum', 'الحالة', 'Статус')):
                 status = content_element.text.strip()
                 if status in ('Completed', 'Completo', 'Concluído', 'Tamamlandı', 'مكتملة'):
                     data['status'] = 'complete'
-                elif status in ('OnGoing', 'Продолжается', 'Updating', 'Devam Ediyor', 'Em Lançamento', 'Em andamento', 'مستمرة'):
+                elif status in ('OnGoing', 'Продолжается', 'Updating', 'Devam Ediyor', 'Em Lançamento', 'Em andamento', 'مستمرة', 'Выпускается'):
                     data['status'] = 'ongoing'
 
         summary_container = soup.find('div', class_='summary__content')
